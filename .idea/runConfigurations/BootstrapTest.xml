@@ -1,0 +1,6 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="BootstrapTest" type="PHPUnitRunConfigurationType" factoryName="PHPUnit" singleton="true">
+    <TestRunner class="tests\unit\BootstrapTest" file="$PROJECT_DIR$/backend/tests/unit/BootstrapTest.php" scope="Class" />
+    <method />
+  </configuration>
+</component>

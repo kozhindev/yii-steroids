@@ -35,6 +35,7 @@ build/Release
 # Dependency directories
 node_modules/
 jspm_packages/
+/vendor
 
 # Typescript v1 declaration files
 typings/
@@ -57,3 +58,22 @@ typings/
 # dotenv environment variables file
 .env
 
+# phpstorm project files
+/.idea/workspace.xml
+/.idea/modules.xml
+/.idea/*.iml
+/.idea/dictionaries/
+/.idea/dataSources.*
+/.idea/libraries/
+/.idea/jsLibraryMappings.xml
+
+# windows thumbnail cache
+Thumbs.db
+
+# Mac DS_Store Files
+.DS_Store
+
+# composer itself is not needed
+composer.phar
+
+/backend/tests/data/files/*
