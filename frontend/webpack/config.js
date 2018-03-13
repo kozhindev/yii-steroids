@@ -4,8 +4,6 @@ const fs = require('fs');
 const _merge = require('lodash/merge');
 const _values = require('lodash/values');
 const utils = require('./utils');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
-// const DashboardPlugin = require('webpack-dashboard/plugin');
 
 module.exports = (config, entry) => {
     // Set defaults
@@ -156,11 +154,6 @@ module.exports = (config, entry) => {
             utils.isProduction() && new webpack.optimize.OccurrenceOrderPlugin(),
             !utils.isProduction() && new webpack.NamedModulesPlugin(),
             !utils.isProduction() && new webpack.HotModuleReplacementPlugin(),
-            // !utils.isProduction() && new DashboardPlugin(),
-            new ExtractTextPlugin({
-                filename: 'style.css',
-                allChunks: true
-            }),
         ].filter(Boolean),
     };
 
@@ -172,6 +165,7 @@ module.exports = (config, entry) => {
             inline: true,
             historyApiFallback: true,
             port: config.port,
+            host: config.host,
             disableHostCheck: true,
             headers: {
                 'Host': config.host,
@@ -196,6 +190,7 @@ module.exports = (config, entry) => {
             if (item.use) {
                 item.use = _values(item.use).filter(Boolean);
             }
+
             return item;
         })
         .filter(Boolean);
