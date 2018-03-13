@@ -5,7 +5,7 @@ const _merge = require('lodash/merge');
 const _values = require('lodash/values');
 const utils = require('./utils');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
-const DashboardPlugin = require('webpack-dashboard/plugin');
+// const DashboardPlugin = require('webpack-dashboard/plugin');
 
 module.exports = (config, entry) => {
     // Set defaults
@@ -46,7 +46,8 @@ module.exports = (config, entry) => {
                         enforce: true
                     }
                 }
-            }
+            },
+            minimize: utils.isProduction(),
         },
         module: {
             rules: {
@@ -152,19 +153,10 @@ module.exports = (config, entry) => {
                     NODE_ENV: '"production"'
                 }
             }),
-            utils.isProduction() && new webpack.optimize.UglifyJsPlugin({
-                compress: {
-                    warnings: false,
-                    screw_ie8: true,
-                    drop_console: true,
-                    drop_debugger: true
-                },
-                sourceMap: false,
-            }),
             utils.isProduction() && new webpack.optimize.OccurrenceOrderPlugin(),
             !utils.isProduction() && new webpack.NamedModulesPlugin(),
             !utils.isProduction() && new webpack.HotModuleReplacementPlugin(),
-            !utils.isProduction() && new DashboardPlugin(),
+            // !utils.isProduction() && new DashboardPlugin(),
             new ExtractTextPlugin({
                 filename: 'style.css',
                 allChunks: true
@@ -181,7 +173,6 @@ module.exports = (config, entry) => {
             historyApiFallback: true,
             port: config.port,
             disableHostCheck: true,
-            stdin: true,
             headers: {
                 'Host': config.host,
                 'Access-Control-Allow-Origin': '*'
