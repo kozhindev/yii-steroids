@@ -7,6 +7,11 @@ const WebpackDevServer = require('webpack-dev-server');
 // Publish api
 module.exports = api;
 
+// Disable auto start for storybook mode
+if (process.argv[1].indexOf('@storybook') !== -1) {
+    return;
+}
+
 // Auto start after define config
 setTimeout(() => Promise.all(api._entries)
     .then(result => {

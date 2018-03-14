@@ -19,7 +19,7 @@ module.exports = (config, entry) => {
     // Init default webpack config
     let webpackConfig = {
         entry,
-        devtool: !utils.isProduction() ? 'eval-source-map' : false,
+        devtool: !utils.isProduction() ? 'eval' : false,
         mode: utils.isProduction() ? 'production' : 'development',
         output: utils.isProduction()
             ? {
@@ -62,7 +62,7 @@ module.exports = (config, entry) => {
                                     'transform-object-rest-spread',
                                     'transform-export-extensions',
                                     utils.isProduction() && 'transform-runtime',
-                                    'react-hot-loader/babel',
+                                    !utils.isProduction() && 'react-hot-loader/babel',
                                 ].filter(Boolean),
                                 presets: ['env', 'react'],
                             }
@@ -152,8 +152,8 @@ module.exports = (config, entry) => {
                 }
             }),
             utils.isProduction() && new webpack.optimize.OccurrenceOrderPlugin(),
-            !utils.isProduction() && new webpack.NamedModulesPlugin(),
-            !utils.isProduction() && new webpack.HotModuleReplacementPlugin(),
+           // !utils.isProduction() && new webpack.NamedModulesPlugin(),
+           !utils.isProduction() && new webpack.HotModuleReplacementPlugin(),
         ].filter(Boolean),
     };
 
@@ -194,6 +194,13 @@ module.exports = (config, entry) => {
             return item;
         })
         .filter(Boolean);
+
+    // Add hot replace to each bundles
+    if (!utils.isProduction()) {
+        Object.keys(webpackConfig.entry).map(key => {
+            webpackConfig.entry[key].unshift(`webpack-dev-server/client?http://${config.host}:${config.port}`, 'webpack/hot/dev-server');
+        });
+    }
 
     return webpackConfig;
 };

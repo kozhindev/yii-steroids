@@ -5,6 +5,7 @@ module.exports = {
 
     _entries: [],
     _config: {},
+    _webpackConfig: {},
 
     config(value) {
         this._config = value;
@@ -109,5 +110,9 @@ module.exports = {
         );
         return this;
     },
+
+    storybook() {
+        return {};
+    }
 
 };
