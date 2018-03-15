@@ -2,7 +2,11 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import {view} from 'components';
+import fieldHoc from '../fieldHoc';
 
+@fieldHoc({
+    attributes: ['from', 'to'],
+})
 export default class RangeField extends React.Component {
 
     static propTypes = {
@@ -15,5 +19,13 @@ export default class RangeField extends React.Component {
         disabled: PropTypes.bool,
     };
 
+    render() {
+        const RangeFieldView = this.props.view || view.get('form.RangeFieldView');
+        return (
+            <RangeFieldView
+                {...this.props}
+            />
+        );
+    }
 
 }

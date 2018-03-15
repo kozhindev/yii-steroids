@@ -2,7 +2,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import {view} from 'components';
+import fieldHoc from '../fieldHoc';
 
+@fieldHoc()
 export default class InputField extends React.Component {
 
     static propTypes = {
@@ -17,5 +19,13 @@ export default class InputField extends React.Component {
         inputProps: PropTypes.object,
     };
 
+    render() {
+        const InputFieldView = this.props.view || view.get('form.InputFieldView');
+        return (
+            <InputFieldView
+                {...this.props}
+            />
+        );
+    }
 
 }
