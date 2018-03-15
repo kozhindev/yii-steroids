@@ -1,12 +1,11 @@
 const path = require('path');
 const fs = require('fs');
-const _values = require('lodash/values');
-const _merge = require('lodash/merge');
+const _ = require('lodash');
 const utils = require('./utils');
 const getConfigDefault = require('./config.default');
 
 module.exports = (config) => {
-    config = _merge(getConfigDefault(), config);
+    config = _.merge(getConfigDefault(), config);
 
     // Init default webpack config
     let webpackConfig = {
@@ -73,7 +72,7 @@ module.exports = (config) => {
     };
 
     // Merge with custom
-    webpackConfig = _merge(
+    webpackConfig = _.merge(
         webpackConfig,
         config.webpack
     );
@@ -83,7 +82,7 @@ module.exports = (config) => {
         .map(key => {
             const item = webpackConfig.module.rules[key];
             if (item.use) {
-                item.use = _values(item.use).filter(Boolean);
+                item.use = _.values(item.use).filter(Boolean);
             }
 
             return item;

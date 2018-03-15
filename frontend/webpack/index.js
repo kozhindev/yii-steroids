@@ -3,7 +3,6 @@ const api = require('./api');
 const getConfigMain = require('./config.main');
 const getConfigDevServer = require('./config.devServer');
 const WebpackDevServer = require('webpack-dev-server');
-const _merge = require('lodash/merge');
 
 // Publish api
 module.exports = api;

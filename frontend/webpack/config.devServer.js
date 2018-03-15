@@ -1,8 +1,8 @@
-const _merge = require('lodash/merge');
+const _ = require('lodash');
 const getConfigDefault = require('./config.default');
 
 module.exports = (config) => {
-    config = _merge(getConfigDefault(), config);
+    config = _.merge(getConfigDefault(), config);
 
     let devServerConfig = {
         contentBase: config.outputPath,
@@ -29,7 +29,7 @@ module.exports = (config) => {
     };
 
     // Merge with custom
-    devServerConfig = _merge(devServerConfig, config.devServer);
+    devServerConfig = _.merge(devServerConfig, config.devServer);
 
     return devServerConfig;
 };
