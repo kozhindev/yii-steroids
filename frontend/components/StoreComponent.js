@@ -1,6 +1,6 @@
 import {createStore, applyMiddleware} from 'redux';
-import _merge from 'lodash/merge';
-import _isPlainObject from 'lodash/isPlainObject';
+import _merge from 'lodash-es/merge';
+import _isPlainObject from 'lodash-es/isPlainObject';
 
 import reducer from 'reducers';
 

@@ -2,10 +2,13 @@ import React from 'react';
 import {Provider} from 'react-redux';
 import {configure, addDecorator} from '@storybook/react';
 import {view, store} from 'components';
+import 'bootstrap/scss/bootstrap.scss'
 
 addDecorator(getStory => (
     <Provider store={store.store}>
-        {getStory()}
+        <div style={{padding: '20px'}}>
+            {getStory()}
+        </div>
     </Provider>
 ));
 

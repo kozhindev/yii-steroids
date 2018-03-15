@@ -21,6 +21,7 @@ class Button extends React.PureComponent {
         onClick: PropTypes.func,
         disabled: PropTypes.bool,
         submitting: PropTypes.bool,
+        block: PropTypes.bool,
         className: PropTypes.string,
         view: PropTypes.func,
     };
@@ -31,6 +32,7 @@ class Button extends React.PureComponent {
         color: 'default',
         disabled: false,
         submitting: false,
+        block: false,
     };
 
     static contextTypes = {
