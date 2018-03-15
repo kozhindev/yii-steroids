@@ -1,6 +1,6 @@
 const path = require('path');
 
-module.exports = require('../../frontend/webpack')
+require('../../frontend/webpack')
     .base('./app/*/client.js')
     .config({
         webpack: {

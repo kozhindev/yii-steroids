@@ -1,1 +1,1 @@
-module.exports = require('../webpack').storybook();
+module.exports = require('../frontend/webpack/config.storybook')();

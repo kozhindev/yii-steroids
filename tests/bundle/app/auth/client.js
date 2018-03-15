@@ -6,7 +6,7 @@ class MyComponent extends React.Component {
     render() {
         return (
             <div>
-                266677gedfg
+                Test
             </div>
         );
     }

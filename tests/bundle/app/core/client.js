@@ -1,3 +1,3 @@
-import _trimStart from '../../../../node_modules/lodash/trimStart';
+import _trimStart from 'lodash-es/trimStart';
 
 console.log(1);
