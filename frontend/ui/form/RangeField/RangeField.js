@@ -14,9 +14,28 @@ export default class RangeField extends React.Component {
         hint: PropTypes.string,
         attributeFrom: PropTypes.string,
         attributeTo: PropTypes.string,
-        value: PropTypes.number,
-        onChange: PropTypes.func,
+        inputFrom: PropTypes.shape({
+            name: PropTypes.string,
+            value: PropTypes.any,
+            onChange: PropTypes.func,
+        }),
+        inputTo: PropTypes.shape({
+            name: PropTypes.string,
+            value: PropTypes.any,
+            onChange: PropTypes.func,
+        }),
+        placeholderFrom: PropTypes.string,
+        placeholderTo: PropTypes.string,
         disabled: PropTypes.bool,
+        inputFromProps: PropTypes.object,
+        inputToProps: PropTypes.object,
+        onChange: PropTypes.func,
+        className: PropTypes.string,
+        view: PropTypes.func,
+    };
+
+    static defaultProps = {
+        disabled: false,
     };
 
     render() {
@@ -24,6 +43,24 @@ export default class RangeField extends React.Component {
         return (
             <RangeFieldView
                 {...this.props}
+                inputFromProps={{
+                    name: this.props.inputFrom.name,
+                    value: this.props.inputFrom.value || '',
+                    onChange: e => this.props.inputFrom.onChange(e.target.value),
+                    type: 'text',
+                    placeholder: this.props.placeholderFrom,
+                    disabled: this.props.disabled,
+                    ...this.props.inputFromProps,
+                }}
+                inputToProps={{
+                    name: this.props.inputTo.name,
+                    value: this.props.inputTo.value || '',
+                    onChange: e => this.props.inputTo.onChange(e.target.value),
+                    type: 'text',
+                    placeholder: this.props.placeholderTo,
+                    disabled: this.props.disabled,
+                    ...this.props.inputToProps,
+                }}
             />
         );
     }

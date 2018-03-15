@@ -25,11 +25,10 @@ export default class InputField extends React.Component {
         view: PropTypes.func,
     };
 
-    constructor() {
-        super(...arguments);
-
-        this._onChange = this._onChange.bind(this);
-    }
+    static defaultProps = {
+        type: 'text',
+        disabled: false,
+    };
 
     render() {
         // No render for hidden input
@@ -43,8 +42,8 @@ export default class InputField extends React.Component {
                 {...this.props}
                 inputProps={{
                     name: this.props.input.name,
-                    value: this.props.input.value,
-                    onChange: this._onChange,
+                    value: this.props.input.value || '',
+                    onChange: e => this.props.input.onChange(e.target.value),
                     type: this.props.type,
                     placeholder: this.props.placeholder,
                     disabled: this.props.disabled,
@@ -52,15 +51,6 @@ export default class InputField extends React.Component {
                 }}
             />
         );
-    }
-
-    _onChange(e) {
-        const value = e.target.value;
-
-        this.props.input.onChange(value);
-        if (this.props.onChange) {
-            this.props.onChange(value);
-        }
     }
 
 }
