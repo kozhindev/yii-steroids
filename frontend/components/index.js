@@ -1,10 +1,11 @@
-import ViewComponent from './ViewComponent';
 import HtmlComponent from "./HtmlComponent";
-//import store from '../store';
+import StoreComponent from "./StoreComponent";
+import ViewComponent from './ViewComponent';
 
 const components = {};
-export const view = components.view = new ViewComponent();
 export const html = components.html = new HtmlComponent();
+export const store = components.store = new StoreComponent();
+export const view = components.view = new ViewComponent();
 
 // Apply configuration
 const customConfig = {};//store.getState().config || {};

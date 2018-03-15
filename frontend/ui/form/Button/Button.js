@@ -21,6 +21,8 @@ class Button extends React.PureComponent {
         onClick: PropTypes.func,
         disabled: PropTypes.bool,
         submitting: PropTypes.bool,
+        className: PropTypes.string,
+        view: PropTypes.func,
     };
 
     static defaultProps = {
@@ -54,7 +56,7 @@ class Button extends React.PureComponent {
 export default class ButtonWrapper extends React.Component {
 
     static contextTypes = {
-        formId: PropTypes.string.isRequired,
+        formId: PropTypes.string,
     };
 
     render() {
