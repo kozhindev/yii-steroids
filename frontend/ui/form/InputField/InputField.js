@@ -16,6 +16,7 @@ export default class InputField extends React.Component {
             value: PropTypes.any,
             onChange: PropTypes.func,
         }),
+        required: PropTypes.bool,
         type: PropTypes.oneOf(['text', 'email', 'hidden', 'phone', 'password']),
         placeholder: PropTypes.string,
         disabled: PropTypes.bool,

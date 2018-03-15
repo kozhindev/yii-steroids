@@ -3,6 +3,8 @@ import PropTypes from 'prop-types';
 import _get from 'lodash-es/get';
 import _upperFirst from 'lodash-es/upperFirst';
 
+import FieldLayout from './FieldLayout';
+
 class FieldHoc extends React.PureComponent {
 
     constructor() {
@@ -20,6 +22,7 @@ class FieldHoc extends React.PureComponent {
         const WrappedComponent = _wrappedComponent;
 
         if (this.props.formId) {
+            // TODO
             // <Field component=... />
         }
 
@@ -46,10 +49,12 @@ class FieldHoc extends React.PureComponent {
         }
 
         return (
-            <WrappedComponent
-                {...props}
-                {...inputProps}
-            />
+            <FieldLayout {...props}>
+                <WrappedComponent
+                    {...props}
+                    {...inputProps}
+                />
+            </FieldLayout>
         );
     }
 }

@@ -8,6 +8,14 @@ export default class RangeFieldView extends React.PureComponent {
 
     static propTypes = {
         label: PropTypes.string,
+        hint: PropTypes.string,
+        required: PropTypes.bool,
+        placeholderFrom: PropTypes.string,
+        placeholderTo: PropTypes.string,
+        disabled: PropTypes.bool,
+        inputFromProps: PropTypes.object,
+        inputToProps: PropTypes.object,
+        className: PropTypes.string,
     };
 
     render() {

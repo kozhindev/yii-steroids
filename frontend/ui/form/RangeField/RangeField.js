@@ -24,6 +24,7 @@ export default class RangeField extends React.Component {
             value: PropTypes.any,
             onChange: PropTypes.func,
         }),
+        required: PropTypes.bool,
         placeholderFrom: PropTypes.string,
         placeholderTo: PropTypes.string,
         disabled: PropTypes.bool,

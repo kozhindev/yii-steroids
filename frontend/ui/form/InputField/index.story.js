@@ -6,5 +6,5 @@ import InputField from './InputField';
 
 storiesOf('Form', module)
     .add('Input', () => (
-        <InputField />
+        <InputField label='Text' />
     ));
