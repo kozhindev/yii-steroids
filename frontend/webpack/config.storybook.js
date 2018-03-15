@@ -12,43 +12,6 @@ module.exports = (config) => {
     let webpackConfig = {
         module: {
             rules: {
-                js: {
-                    test: /\.js$/,
-                    use: {
-                        babel: {
-                            loader: 'babel-loader',
-                            options: {
-                                cacheDirectory: true,
-                                plugins: [
-                                    'transform-decorators-legacy',
-                                    'transform-class-properties',
-                                    'transform-object-rest-spread',
-                                    'transform-export-extensions',
-                                    utils.isProduction() && 'transform-runtime',
-                                    !utils.isProduction() && 'react-hot-loader/babel',
-                                ].filter(Boolean),
-                                presets: [
-                                    'env',
-                                    'react',
-                                    utils.isProduction() && 'minify'
-                                ].filter(Boolean),
-                            }
-                        },
-                        eslint: !utils.isProduction() && fs.existsSync(config.cwd + '/.eslintrc') && {
-                            loader: 'eslint-loader',
-                            options: {
-                                configFile: config.cwd + '/.eslintrc',
-                            }
-                        },
-                    },
-                    exclude: /node_modules(\/|\\+)(?!yii-steroids)/,
-                },
-                json: {
-                    test: /\.json$/,
-                    use: {
-                        json: 'json-loader'
-                    },
-                },
                 less: {
                     test: /\.less$/,
                     use: {
@@ -96,21 +59,9 @@ module.exports = (config) => {
                         },
                     },
                 },
-                md: {
-                    test: /\.md$/,
-                    use: [
-                        {
-                            loader: 'html-loader',
-                        },
-                        {
-                            loader: 'markdown-loader',
-                        },
-                    ],
-                },
             },
         },
         resolve: {
-            extensions: ['.js'],
             alias: {
                 app: path.resolve(config.cwd, 'app'),
                 actions: 'core/frontend/actions',
@@ -118,17 +69,13 @@ module.exports = (config) => {
                 reducers: 'core/frontend/reducers',
                 shared: 'core/frontend/shared',
             },
-            modules: [
-                path.resolve(config.cwd, 'node_modules'), // the old 'fallback' option (needed for npm link-ed packages)
-                path.resolve(config.cwd, 'app'),
-            ],
         },
     };
 
     // Merge with custom
     webpackConfig = _merge(
         webpackConfig,
-        config.storybook
+        config.webpack
     );
 
     // Normalize rules (objects -> arrays)

@@ -1,11 +1,14 @@
 import ViewComponent from './ViewComponent';
+import HtmlComponent from "./HtmlComponent";
 //import store from '../store';
 
-export const view = new ViewComponent();
+const components = {};
+export const view = components.view = new ViewComponent();
+export const html = components.html = new HtmlComponent();
 
 // Apply configuration
 const customConfig = {};//store.getState().config || {};
-Object.keys(exports).forEach(name => ({
-    ...exports[name],
+Object.keys(components).forEach(name => ({
+    ...components[name],
     ...customConfig[name],
 }));

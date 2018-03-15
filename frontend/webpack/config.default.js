@@ -10,6 +10,5 @@ module.exports = () => {
         staticPath: utils.isProduction() ? 'static/1.0/' : '',
         webpack: {}, // you custom webpack config
         devServer: {}, // you custom dev server config
-        storybook: {}, // you custom story book config
     };
 };
