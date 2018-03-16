@@ -2,8 +2,17 @@ import React from 'react';
 import {Provider} from 'react-redux';
 import {configure, addDecorator} from '@storybook/react';
 import {view, store} from 'components';
+import { setOptions } from '@storybook/addon-options';
 import 'bootstrap/scss/bootstrap.scss'
 
+
+//global options
+setOptions({
+    showAddonPanel: true,
+    downPanelInRight: true,
+});
+
+//wrapper for all stoies
 addDecorator(getStory => (
     <Provider store={store.store}>
         <div style={{padding: '20px'}}>

@@ -12,7 +12,17 @@ export default class ButtonView extends React.PureComponent {
         label: PropTypes.string,
         type: PropTypes.oneOf(['button', 'submit']),
         size: PropTypes.oneOf(['sm', 'md', 'lg']),
-        color: PropTypes.oneOf(['default', 'primary', 'info', 'success', 'warning', 'danger']),
+        color: PropTypes.oneOf([
+            'primary',
+            'secondary',
+            'success',
+            'danger',
+            'warning',
+            'info',
+            'light',
+            'dark',
+        ]),
+        outline: PropTypes.bool,
         url: PropTypes.string,
         onClick: PropTypes.func,
         disabled: PropTypes.bool,
@@ -23,31 +33,43 @@ export default class ButtonView extends React.PureComponent {
     };
 
     render() {
-        console.log(this.props.block);
         return (
-            <button className={bem(
-                bem.block({
-                    color: this.props.color,
-                    size: this.props.size,
-                    disabled: this.props.disabled,
-                    submitting: this.props.submitting,
-                }),
-                this.props.className,
-                'btn',
-                'btn-' + this.props.size,
-                'btn-' + this.props.color,
-                 this.props.block ? 'btn-block' : '',
-            )}>
-                {this.props.icon && (
-                    <span
+            <div>
+                {!this.props.url && (
+                    <button
+                        disabled={this.props.disabled}
                         className={bem(
-                            bem.element('icon'),
-                            this.props.icon,
+                            bem.block({
+                                color: this.props.color,
+                                outline: this.props.outline,
+                                size: this.props.size,
+                                disabled: this.props.disabled,
+                                submitting: this.props.submitting,
+                            }),
+                            this.props.className,
+                            'btn',
+                            'btn-' + this.props.size,
+                            'btn-' + (this.props.outline ? 'outline-' : '') + this.props.color,
+                            this.props.block ? 'btn-block' : '',
+                    )}>
+                        {this.props.icon && (
+                            <span
+                                className={bem(
+                                    bem.element('icon'),
+                                    this.props.icon,
+                                )}
+                            />
                         )}
-                    />
+                        {this.props.children}
+                    </button>
+                ) || (
+                    <a className={bem.block({link: true})}
+                       href={this.props.url}
+                    >
+                        {this.props.children}
+                    </a>
                 )}
-                {this.props.children}
-            </button>
+            </div>
         );
     }
 }
