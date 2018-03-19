@@ -1,11 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import {connect} from 'react-redux';
+import {submit} from 'redux-form';
 
 import {view} from 'components';
 import fieldHoc from '../fieldHoc';
 
 @fieldHoc()
-export default class InputField extends React.PureComponent {
+export default class TextField extends React.PureComponent {
 
     static propTypes = {
         label: PropTypes.string,
@@ -17,9 +19,9 @@ export default class InputField extends React.PureComponent {
             onChange: PropTypes.func,
         }),
         required: PropTypes.bool,
-        type: PropTypes.oneOf(['text', 'email', 'hidden', 'phone', 'password']),
         placeholder: PropTypes.string,
         disabled: PropTypes.bool,
+        submitOnEnter: PropTypes.bool,
         inputProps: PropTypes.object,
         onChange: PropTypes.func,
         className: PropTypes.string,
@@ -27,31 +29,40 @@ export default class InputField extends React.PureComponent {
     };
 
     static defaultProps = {
-        type: 'text',
         disabled: false,
     };
 
-    render() {
-        // No render for hidden input
-        if (this.props.type === 'hidden') {
-            return null;
-        }
+    constructor() {
+        super(...arguments);
 
-        const InputFieldView = this.props.view || view.get('form.InputFieldView');
+        this._onKeyUp = this._onKeyUp.bind(this);
+    }
+
+    render() {
+        const TextFieldView = this.props.view || view.get('form.TextFieldView');
         return (
-            <InputFieldView
+            <TextFieldView
                 {...this.props}
                 inputProps={{
                     name: this.props.input.name,
                     value: this.props.input.value || '',
                     onChange: e => this.props.input.onChange(e.target.value),
-                    type: this.props.type,
+                    onKeyUp: this._onKeyUp,
                     placeholder: this.props.placeholder,
                     disabled: this.props.disabled,
                     ...this.props.inputProps,
                 }}
             />
         );
+    }
+
+    _onKeyUp(e) {
+        if (this.props.submitOnEnter && this.props.formId && e.keyCode === 13 && !e.shiftKey) {
+            e.preventDefault();
+
+            // TODO This is not worked in redux... =(
+            this.props.dispatch(submit(this.props.formId));
+        }
     }
 
 }

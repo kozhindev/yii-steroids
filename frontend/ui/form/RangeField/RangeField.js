@@ -7,7 +7,7 @@ import fieldHoc from '../fieldHoc';
 @fieldHoc({
     attributes: ['from', 'to'],
 })
-export default class RangeField extends React.Component {
+export default class RangeField extends React.PureComponent {
 
     static propTypes = {
         label: PropTypes.string,

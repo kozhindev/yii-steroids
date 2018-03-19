@@ -2,9 +2,9 @@ import React from 'react';
 
 import {storiesOf} from '@storybook/react';
 
-import InputField from './InputField';
+import TextField from './TextField';
 
 storiesOf('Form', module)
-    .add('InputField', () => (
-        <InputField label='Text' />
+    .add('TextField', () => (
+        <TextField label='Message'/>
     ));

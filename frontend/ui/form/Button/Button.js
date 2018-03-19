@@ -53,7 +53,7 @@ class Button extends React.PureComponent {
 
 }
 
-export default class ButtonWrapper extends React.Component {
+export default class ButtonWrapper extends React.PureComponent {
 
     static contextTypes = {
         formId: PropTypes.string,
