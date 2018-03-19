@@ -7,8 +7,8 @@ import { withKnobs, text, boolean, select } from '@storybook/addon-knobs/react';
 
 import Button from './Button';
 
-const storiesButton = storiesOf('Button', module);
-storiesButton.addDecorator(withKnobs);
+const stories = storiesOf('Button', module);
+stories.addDecorator(withKnobs);
 
 Button.propTypes = {
     label: PropTypes.string,
@@ -61,10 +61,10 @@ const sizes = {
     lg: 'Large',
 };
 
-storiesButton.add('info',
+stories.add('info',
     withInfo(
         {
-            inline: true,
+            text: 'Some description',
         },
     )(() => (
         <Button
@@ -74,13 +74,13 @@ storiesButton.add('info',
             size={select('Size', sizes, 'md')}
             block={boolean('Block', false)}
             className={text('Class', '')}
-            url={text('Link url', '')}
+            url={text('Link url',)}
         >
             {text('Label', 'Button')}
         </Button>
     )));
 
-storiesButton.add('examples', () => (
+stories.add('examples', () => (
     <div>
         <h2 className='mb-2'>
             Color

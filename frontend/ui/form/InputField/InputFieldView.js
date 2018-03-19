@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 
 import {html} from 'components';
 const bem = html.bem('InputFieldView');
+import './InputFieldView.scss';
 
 export default class InputFieldView extends React.PureComponent {
 

@@ -2,6 +2,7 @@ import React from 'react';
 import {Provider} from 'react-redux';
 import {configure, addDecorator} from '@storybook/react';
 import {view, store} from 'components';
+import { setDefaults } from '@storybook/addon-info';
 import { setOptions } from '@storybook/addon-options';
 import 'bootstrap/scss/bootstrap.scss'
 
@@ -10,6 +11,11 @@ import 'bootstrap/scss/bootstrap.scss'
 setOptions({
     showAddonPanel: true,
     downPanelInRight: true,
+});
+
+//global options for addon-info
+setDefaults({
+    inline: true,
 });
 
 //wrapper for all stoies
