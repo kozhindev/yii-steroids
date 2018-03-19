@@ -5,6 +5,7 @@ import {view, store} from 'components';
 import { setDefaults } from '@storybook/addon-info';
 import { setOptions } from '@storybook/addon-options';
 import 'bootstrap/scss/bootstrap.scss'
+import {withKnobs} from "@storybook/addon-knobs/react";
 
 
 //global options
@@ -15,8 +16,11 @@ setOptions({
 
 //global options for addon-info
 setDefaults({
+    header: false,
     inline: true,
 });
+
+addDecorator(withKnobs);
 
 //wrapper for all stoies
 addDecorator(getStory => (

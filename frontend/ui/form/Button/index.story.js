@@ -1,14 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-
 import {storiesOf} from '@storybook/react';
-import { withInfo } from '@storybook/addon-info';
-import { withKnobs, text, boolean, select } from '@storybook/addon-knobs/react';
-
+import {withInfo} from '@storybook/addon-info';
+import {text, boolean, select} from '@storybook/addon-knobs/react';
 import Button from './Button';
-
-const stories = storiesOf('Button', module);
-stories.addDecorator(withKnobs);
 
 Button.propTypes = {
     label: PropTypes.string,
@@ -61,174 +56,169 @@ const sizes = {
     lg: 'Large',
 };
 
-stories.add('info',
-    withInfo(
-        {
-            text: 'Some description',
-        },
-    )(() => (
-        <Button
-            disabled={boolean('Disabled', false)}
-            color={select('Color', colors, 'primary')}
-            outline={boolean('Outline', false)}
-            size={select('Size', sizes, 'md')}
-            block={boolean('Block', false)}
-            className={text('Class', '')}
-            url={text('Link url',)}
-        >
-            {text('Label', 'Button')}
-        </Button>
-    )));
+storiesOf('Form', module)
+    .add('Button', context => (
+        <div>
+            {withInfo()(() => (
+                <Button
+                    disabled={boolean('Disabled', false)}
+                    color={select('Color', colors, 'primary')}
+                    outline={boolean('Outline', false)}
+                    size={select('Size', sizes, 'md')}
+                    block={boolean('Block', false)}
+                    className={text('Class', '')}
+                    url={text('Link url',)}
+                >
+                    {text('Label', 'Button')}
+                </Button>
+            ))(context)}
 
-stories.add('examples', () => (
-    <div>
-        <h2 className='mb-2'>
-            Color
-        </h2>
-        <div className='d-flex mb-3'>
-            <div className="mr-3">
-                <Button color='primary'>
-                    Primary
-                </Button>
+            <h2 className='mb-2'>
+                Color
+            </h2>
+            <div className='d-flex mb-3'>
+                <div className="mr-3">
+                    <Button color='primary'>
+                        Primary
+                    </Button>
+                </div>
+                <div className="mr-3">
+                    <Button color='secondary'>
+                        Secondary
+                    </Button>
+                </div>
+                <div className='mr-3'>
+                    <Button color='success'>
+                        Success
+                    </Button>
+                </div>
+                <div className="mr-3">
+                    <Button color='danger'>
+                        Danger
+                    </Button>
+                </div>
+                <div className="mr-3">
+                    <Button color='warning'>
+                        Warning
+                    </Button>
+                </div>
+                <div className="mr-3">
+                    <Button color='info'>
+                        Info
+                    </Button>
+                </div>
+                <div className="mr-3">
+                    <Button color='light'>
+                        Light
+                    </Button>
+                </div>
+                <div className="mr-3">
+                    <Button color='dark'>
+                        Dark
+                    </Button>
+                </div>
             </div>
-            <div className="mr-3">
-                <Button color='secondary'>
-                    Secondary
-                </Button>
+
+            <h2 className='mb-2'>
+                Color + Outline
+            </h2>
+            <div className='d-flex mb-3'>
+                <div className="mr-3">
+                    <Button color='primary' outline>
+                        Primary
+                    </Button>
+                </div>
+                <div className="mr-3">
+                    <Button color='secondary' outline>
+                        Secondary
+                    </Button>
+                </div>
+                <div className='mr-3'>
+                    <Button color='success' outline>
+                        Success
+                    </Button>
+                </div>
+                <div className="mr-3">
+                    <Button color='danger' outline>
+                        Danger
+                    </Button>
+                </div>
+                <div className="mr-3">
+                    <Button color='warning' outline>
+                        Warning
+                    </Button>
+                </div>
+                <div className="mr-3">
+                    <Button color='info' outline>
+                        Info
+                    </Button>
+                </div>
+                <div className="mr-3">
+                    <Button color='light' outline>
+                        Light
+                    </Button>
+                </div>
+                <div className="mr-3">
+                    <Button color='dark' outline>
+                        Dark
+                    </Button>
+                </div>
             </div>
-            <div className='mr-3'>
-                <Button color='success'>
-                    Success
-                </Button>
+
+            <h2 className='mb-2'>
+                Size
+            </h2>
+            <div className='d-flex mb-3'>
+                <div className="mr-3">
+                    <Button size='sm'>
+                        Small
+                    </Button>
+                </div>
+                <div className="mr-3">
+                    <Button size='md'>
+                        Middle
+                    </Button>
+                </div>
+                <div className="mr-3">
+                    <Button size='lg'>
+                        Large
+                    </Button>
+                </div>
             </div>
-            <div className="mr-3">
-                <Button color='danger'>
-                    Danger
-                </Button>
+
+            <h2 className='mb-2'>
+                Disabled
+            </h2>
+            <div className="d-flex mb-3">
+                <div className="mr-3">
+                    <Button disabled>
+                        Disabled
+                    </Button>
+                </div>
             </div>
-            <div className="mr-3">
-                <Button color='warning'>
-                    Warning
-                </Button>
+
+            <h2 className='mb-2'>
+                Link
+            </h2>
+            <div className="d-flex mb-3">
+                <div className="mr-3">
+                    <Button url='https://google.ru'>
+                        Link
+                    </Button>
+                </div>
             </div>
-            <div className="mr-3">
-                <Button color='info'>
-                    Info
-                </Button>
-            </div>
-            <div className="mr-3">
-                <Button color='light'>
-                    Light
-                </Button>
-            </div>
-            <div className="mr-3">
-                <Button color='dark'>
-                    Dark
-                </Button>
+
+            <h2 className='mb-2'>
+                Block
+            </h2>
+            <div className="row mb-3">
+                <div className="col-6">
+                    <Button block>
+                        Block
+                    </Button>
+                </div>
             </div>
         </div>
-
-        <h2 className='mb-2'>
-            Color + Outline
-        </h2>
-        <div className='d-flex mb-3'>
-            <div className="mr-3">
-                <Button color='primary' outline>
-                    Primary
-                </Button>
-            </div>
-            <div className="mr-3">
-                <Button color='secondary' outline>
-                    Secondary
-                </Button>
-            </div>
-            <div className='mr-3'>
-                <Button color='success' outline>
-                    Success
-                </Button>
-            </div>
-            <div className="mr-3">
-                <Button color='danger' outline>
-                    Danger
-                </Button>
-            </div>
-            <div className="mr-3">
-                <Button color='warning' outline>
-                    Warning
-                </Button>
-            </div>
-            <div className="mr-3">
-                <Button color='info' outline>
-                    Info
-                </Button>
-            </div>
-            <div className="mr-3">
-                <Button color='light' outline>
-                    Light
-                </Button>
-            </div>
-            <div className="mr-3">
-                <Button color='dark' outline>
-                    Dark
-                </Button>
-            </div>
-        </div>
-
-
-        <h2 className='mb-2'>
-            Size
-        </h2>
-        <div className='d-flex mb-3'>
-            <div className="mr-3">
-                <Button size='sm'>
-                    Small
-                </Button>
-            </div>
-            <div className="mr-3">
-                <Button size='md'>
-                    Middle
-                </Button>
-            </div>
-            <div className="mr-3">
-                <Button size='lg'>
-                    Large
-                </Button>
-            </div>
-        </div>
-
-        <h2 className='mb-2'>
-            Disabled
-        </h2>
-        <div className="d-flex mb-3">
-            <div className="mr-3">
-                <Button disabled>
-                    Disabled
-                </Button>
-            </div>
-        </div>
-
-        <h2 className='mb-2'>
-            Link
-        </h2>
-        <div className="d-flex mb-3">
-            <div className="mr-3">
-                <Button url='https://google.ru'>
-                    Link
-                </Button>
-            </div>
-        </div>
-
-        <h2 className='mb-2'>
-            Block
-        </h2>
-        <div className="row mb-3">
-            <div className="col-6">
-                <Button block>
-                    Block
-                </Button>
-            </div>
-        </div>
-    </div>
 ));
 
 
