@@ -1,0 +1,12 @@
+
+
+class BaseDataProvider {
+
+    getItems() {
+
+    }
+
+    search() {
+
+    }
+}

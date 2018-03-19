@@ -5,7 +5,7 @@ import {view} from 'components';
 import fieldHoc from '../fieldHoc';
 
 @fieldHoc()
-export default class InputField extends React.PureComponent {
+export default class NumberField extends React.PureComponent {
 
     static propTypes = {
         label: PropTypes.string,
@@ -17,7 +17,9 @@ export default class InputField extends React.PureComponent {
             onChange: PropTypes.func,
         }),
         required: PropTypes.bool,
-        type: PropTypes.oneOf(['text', 'email', 'hidden', 'phone', 'password']),
+        min: PropTypes.number,
+        max: PropTypes.number,
+        step: PropTypes.number,
         placeholder: PropTypes.string,
         disabled: PropTypes.bool,
         inputProps: PropTypes.object,
@@ -27,25 +29,22 @@ export default class InputField extends React.PureComponent {
     };
 
     static defaultProps = {
-        type: 'text',
         disabled: false,
     };
 
     render() {
-        // No render for hidden input
-        if (this.props.type === 'hidden') {
-            return null;
-        }
-
-        const InputFieldView = this.props.view || view.get('form.InputFieldView');
+        const NumberFieldView = this.props.view || view.get('form.NumberFieldView') || view.get('form.InputFieldView');
         return (
-            <InputFieldView
+            <NumberFieldView
                 {...this.props}
                 inputProps={{
                     name: this.props.input.name,
                     value: this.props.input.value || '',
                     onChange: e => this.props.input.onChange(e.target.value),
-                    type: this.props.type,
+                    type: 'number',
+                    min: this.props.min,
+                    max: this.props.max,
+                    step: this.props.step,
                     placeholder: this.props.placeholder,
                     disabled: this.props.disabled,
                     ...this.props.inputProps,

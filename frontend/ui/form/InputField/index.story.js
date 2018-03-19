@@ -10,7 +10,6 @@ import InputField from './InputField';
 const stories = storiesOf('InputField', module);
 stories.addDecorator(withKnobs);
 
-
 stories.add('info',
     withInfo(
         {
@@ -19,20 +18,14 @@ stories.add('info',
     )(() => (
 
         <InputField
-            input={{
-                name: 'test',
-            }}
+            label='Text'
         />
     )));
 
 stories.add('examples', () => (
     <div>
         <InputField
-            input={{
-                name: 'test',
-            }}
+            label='Text'
         />
     </div>
 ));
-
-

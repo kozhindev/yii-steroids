@@ -2,16 +2,17 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import {html} from 'components';
-const bem = html.bem('InputFieldView');
-import './InputFieldView.scss';
+const bem = html.bem('NumberFieldView');
 
-export default class InputFieldView extends React.PureComponent {
+export default class NumberFieldView extends React.PureComponent {
 
     static propTypes = {
         label: PropTypes.string,
         hint: PropTypes.string,
         required: PropTypes.bool,
-        type: PropTypes.oneOf(['text', 'email', 'hidden', 'phone', 'password']),
+        min: PropTypes.number,
+        max: PropTypes.number,
+        step: PropTypes.number,
         placeholder: PropTypes.string,
         disabled: PropTypes.bool,
         inputProps: PropTypes.object,

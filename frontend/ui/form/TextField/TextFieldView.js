@@ -2,16 +2,14 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import {html} from 'components';
-const bem = html.bem('InputFieldView');
-import './InputFieldView.scss';
+const bem = html.bem('TextFieldView');
 
-export default class InputFieldView extends React.PureComponent {
+export default class TextFieldView extends React.PureComponent {
 
     static propTypes = {
         label: PropTypes.string,
         hint: PropTypes.string,
         required: PropTypes.bool,
-        type: PropTypes.oneOf(['text', 'email', 'hidden', 'phone', 'password']),
         placeholder: PropTypes.string,
         disabled: PropTypes.bool,
         inputProps: PropTypes.object,
@@ -20,7 +18,7 @@ export default class InputFieldView extends React.PureComponent {
 
     render() {
         return (
-            <input
+            <textarea
                 className={bem(bem.block(), 'form-control', this.props.className)}
                 {...this.props.inputProps}
             />
