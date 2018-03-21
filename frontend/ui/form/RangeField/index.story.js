@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import { withInfo } from '@storybook/addon-info';
-import {text, boolean} from '@storybook/addon-knobs/react';
+import {text, boolean, select} from '@storybook/addon-knobs/react';
 import {storiesOf} from '@storybook/react';
 
 import RangeField from './RangeField';
@@ -24,6 +24,7 @@ RangeField.propTypes = {
         onChange: PropTypes.func,
     }),
     required: PropTypes.bool,
+    size: PropTypes.oneOf(['sm', 'md', 'lg']),
     placeholderFrom: PropTypes.string,
     placeholderTo: PropTypes.string,
     disabled: PropTypes.bool,
@@ -38,6 +39,11 @@ RangeField.defaultProps = {
     disabled: false,
 };
 
+const sizes = {
+    sm: 'Small',
+    md: 'Middle',
+    lg: 'Large',
+};
 
 storiesOf('Form', module)
     .add('RangeField', context => (
@@ -47,6 +53,7 @@ storiesOf('Form', module)
                     label={text('Label', 'Range')}
                     disabled={boolean('Disabled', false)}
                     required={boolean('Required', false)}
+                    size={select('Size', sizes, 'md')}
                     className={text('Class', '')}
                     placeholderFrom={text('Placeholder From')}
                     placeholderTo={text('Placeholder To')}

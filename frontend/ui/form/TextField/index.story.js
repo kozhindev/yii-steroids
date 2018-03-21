@@ -5,7 +5,7 @@ import {storiesOf} from '@storybook/react';
 import TextField from './TextField';
 import './TextFieldView.scss';
 import { withInfo } from '@storybook/addon-info';
-import {text, boolean} from '@storybook/addon-knobs/react';
+import {text, boolean, select} from '@storybook/addon-knobs/react';
 
 
 TextField.propTypes = {
@@ -18,6 +18,7 @@ TextField.propTypes = {
         onChange: PropTypes.func,
     }),
     required: PropTypes.bool,
+    size: PropTypes.oneOf(['sm', 'md', 'lg']),
     placeholder: PropTypes.string,
     disabled: PropTypes.bool,
     submitOnEnter: PropTypes.bool,
@@ -29,6 +30,13 @@ TextField.propTypes = {
 
 TextField.defaultProps = {
     disabled: false,
+    size: 'md',
+};
+
+const sizes = {
+    sm: 'Small',
+    md: 'Middle',
+    lg: 'Large',
 };
 
 storiesOf('Form', module)
@@ -39,6 +47,7 @@ storiesOf('Form', module)
                     label={text('Label', 'Message')}
                     disabled={boolean('Disabled', false)}
                     required={boolean('Required', false)}
+                    size={select('Size', sizes, 'md')}
                     className={text('Class', '')}
                     placeholder={text('Placeholder')}
                     submitOnEnter={boolean('SubmitOnEnter', false)}

@@ -2,8 +2,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {storiesOf} from '@storybook/react';
 import {withInfo} from '@storybook/addon-info';
+import { withReadme } from 'storybook-readme';
 import {text, boolean, select} from '@storybook/addon-knobs/react';
 import Button from './Button';
+import README from './README.md'
 
 Button.propTypes = {
     label: PropTypes.string,
@@ -57,6 +59,7 @@ const sizes = {
 };
 
 storiesOf('Form', module)
+    .addDecorator(withReadme(README))
     .add('Button', context => (
         <div>
             {withInfo()(() => (

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 import {storiesOf} from '@storybook/react';
 import { withInfo } from '@storybook/addon-info';
-import {text, boolean} from '@storybook/addon-knobs/react';
+import {text, boolean, select} from '@storybook/addon-knobs/react';
 
 import PasswordField from './PasswordField';
 import './PasswordFieldVIew.scss';
@@ -18,6 +18,7 @@ PasswordField.propTypes = {
         onChange: PropTypes.func,
     }),
     required: PropTypes.bool,
+    size: PropTypes.oneOf(['sm', 'md', 'lg']),
     security: PropTypes.bool,
     placeholder: PropTypes.string,
     disabled: PropTypes.bool,
@@ -30,6 +31,13 @@ PasswordField.propTypes = {
 PasswordField.defaultProps = {
     disabled: false,
     security: false,
+    size: 'md',
+};
+
+const sizes = {
+    sm: 'Small',
+    md: 'Middle',
+    lg: 'Large',
 };
 
 storiesOf('Form', module)
@@ -42,6 +50,7 @@ storiesOf('Form', module)
                     required={boolean('Required', false)}
                     className={text('Class', '')}
                     placeholder={text('Placeholder')}
+                    size={select('Size', sizes, 'md')}
                     security={boolean('Security', false)}
                 />
             ))(context)}

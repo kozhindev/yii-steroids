@@ -17,6 +17,7 @@ export default class PasswordField extends React.PureComponent {
             onChange: PropTypes.func,
         }),
         required: PropTypes.bool,
+        size: PropTypes.oneOf(['sm', 'md', 'lg']),
         security: PropTypes.bool,
         placeholder: PropTypes.string,
         disabled: PropTypes.bool,
@@ -27,6 +28,7 @@ export default class PasswordField extends React.PureComponent {
     };
 
     static defaultProps = {
+        size: 'md',
         disabled: false,
         security: false,
     };

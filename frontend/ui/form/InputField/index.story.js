@@ -18,6 +18,7 @@ InputField.propTypes = {
         onChange: PropTypes.func,
     }),
     required: PropTypes.bool,
+    size: PropTypes.oneOf(['sm', 'md', 'lg']),
     type: PropTypes.oneOf(['text', 'email', 'hidden', 'phone', 'password']),
     placeholder: PropTypes.string,
     disabled: PropTypes.bool,
@@ -28,6 +29,7 @@ InputField.propTypes = {
 };
 
 InputField.defaultProps = {
+    size: 'md',
     type: 'text',
     disabled: false,
 };
@@ -41,6 +43,12 @@ const types = {
     password: 'Password',
 };
 
+const sizes = {
+    sm: 'Small',
+    md: 'Middle',
+    lg: 'Large',
+};
+
 storiesOf('Form', module)
     .add('InputField', context => (
         <div>
@@ -50,6 +58,7 @@ storiesOf('Form', module)
                     disabled={boolean('Disabled', false)}
                     required={boolean('Required', false)}
                     className={text('Class', '')}
+                    size={select('Size', sizes, 'md')}
                     type={select('Type', types, 'text')}
                     placeholder={text('Placeholder')}
                 />
