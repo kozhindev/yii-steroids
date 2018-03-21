@@ -1,0 +1,11 @@
+.FieldLayoutView {
+  &__label {
+    &_required:after {
+      display: inline-block;
+      content: '*';
+      //color: $danger;
+      color: red;
+      margin: 0 0 0 3px;
+    }
+  }
+}

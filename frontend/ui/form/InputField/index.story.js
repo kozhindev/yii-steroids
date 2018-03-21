@@ -6,6 +6,7 @@ import { withInfo } from '@storybook/addon-info';
 import {text, boolean, select } from '@storybook/addon-knobs/react';
 
 import InputField from './InputField';
+import './InputFieldView.scss';
 
 InputField.propTypes = {
     label: PropTypes.string,
@@ -38,15 +39,16 @@ const types = {
     hidden: 'Hidden',
     phone: 'Phone',
     password: 'Password',
-}
+};
 
 storiesOf('Form', module)
     .add('InputField', context => (
         <div>
             {withInfo()(() => (
                 <InputField
-                    label='Text'
+                    label={text('Label', 'Text')}
                     disabled={boolean('Disabled', false)}
+                    required={boolean('Required', false)}
                     className={text('Class', '')}
                     type={select('Type', types, 'text')}
                     placeholder={text('Placeholder')}
@@ -66,5 +68,4 @@ storiesOf('Form', module)
                 <InputField label='Password' type='password'/>
             </div>
         </div>
-
-    ));
+));
