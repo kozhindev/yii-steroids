@@ -17,6 +17,7 @@ export default class NumberField extends React.PureComponent {
             onChange: PropTypes.func,
         }),
         required: PropTypes.bool,
+        size: PropTypes.oneOf(['sm', 'md', 'lg']),
         min: PropTypes.number,
         max: PropTypes.number,
         step: PropTypes.number,
@@ -30,6 +31,7 @@ export default class NumberField extends React.PureComponent {
 
     static defaultProps = {
         disabled: false,
+        size: 'md',
     };
 
     render() {

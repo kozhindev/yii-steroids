@@ -16,11 +16,22 @@ class Button extends React.PureComponent {
         label: PropTypes.string,
         type: PropTypes.oneOf(['button', 'submit']),
         size: PropTypes.oneOf(['sm', 'md', 'lg']),
-        color: PropTypes.oneOf(['default', 'primary', 'info', 'success', 'warning', 'danger']),
+        color: PropTypes.oneOf([
+            'primary',
+            'secondary',
+            'success',
+            'danger',
+            'warning',
+            'info',
+            'light',
+            'dark',
+        ]),
+        outline: PropTypes.bool,
         url: PropTypes.string,
         onClick: PropTypes.func,
         disabled: PropTypes.bool,
         submitting: PropTypes.bool,
+        block: PropTypes.bool,
         className: PropTypes.string,
         view: PropTypes.func,
     };
@@ -28,9 +39,11 @@ class Button extends React.PureComponent {
     static defaultProps = {
         type: 'button',
         size: 'md',
-        color: 'default',
+        color: 'primary',
+        outline: false,
         disabled: false,
         submitting: false,
+        block: false,
     };
 
     static contextTypes = {

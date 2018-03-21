@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 
 import {html} from 'components';
 const bem = html.bem('InputFieldView');
+import './InputFieldView.scss';
 
 export default class InputFieldView extends React.PureComponent {
 
@@ -10,6 +11,7 @@ export default class InputFieldView extends React.PureComponent {
         label: PropTypes.string,
         hint: PropTypes.string,
         required: PropTypes.bool,
+        size: PropTypes.oneOf(['sm', 'md', 'lg']),
         type: PropTypes.oneOf(['text', 'email', 'hidden', 'phone', 'password']),
         placeholder: PropTypes.string,
         disabled: PropTypes.bool,
@@ -20,8 +22,19 @@ export default class InputFieldView extends React.PureComponent {
     render() {
         return (
             <input
-                className={bem(bem.block(), 'form-control', this.props.className)}
+                className={bem(
+                    bem.block({
+                        size: this.props.size,
+                    }),
+                    'form-control',
+                    'form-control-' + this.props.size,
+                    this.props.className
+                )}
                 {...this.props.inputProps}
+                type={this.props.type}
+                placeholder={this.props.placeholder}
+                disabled={this.props.disabled}
+                required={this.props.required}
             />
         );
     }

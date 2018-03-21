@@ -19,6 +19,7 @@ export default class TextField extends React.PureComponent {
             onChange: PropTypes.func,
         }),
         required: PropTypes.bool,
+        size: PropTypes.oneOf(['sm', 'md', 'lg']),
         placeholder: PropTypes.string,
         disabled: PropTypes.bool,
         submitOnEnter: PropTypes.bool,
@@ -30,6 +31,7 @@ export default class TextField extends React.PureComponent {
 
     static defaultProps = {
         disabled: false,
+        size: 'md',
     };
 
     constructor() {

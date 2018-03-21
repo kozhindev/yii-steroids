@@ -1,13 +1,12 @@
 const webpack = require('webpack');
 const path = require('path');
 const fs = require('fs');
-const _values = require('lodash/values');
-const _merge = require('lodash/merge');
+const _ = require('lodash');
 const utils = require('./utils');
 const getConfigDefault = require('./config.default');
 
 module.exports = (config, entry) => {
-    config = _merge(getConfigDefault(), config);
+    config = _.merge(getConfigDefault(), config);
 
     const webpackVersion = 3;
 
@@ -145,7 +144,7 @@ module.exports = (config, entry) => {
     };
 
     if (webpackVersion === 4) {
-        webpackConfig = _merge(webpackConfig, {
+        webpackConfig = _.merge(webpackConfig, {
             mode: utils.isProduction() ? 'production' : 'development',
             optimization: {
                 splitChunks: {
@@ -164,14 +163,14 @@ module.exports = (config, entry) => {
     }
 
     // Merge with custom
-    webpackConfig = _merge(webpackConfig, config.webpack);
+    webpackConfig = _.merge(webpackConfig, config.webpack);
 
     // Normalize rules (objects -> arrays)
     webpackConfig.module.rules = Object.keys(webpackConfig.module.rules)
         .map(key => {
             const item = webpackConfig.module.rules[key];
             if (item.use) {
-                item.use = _values(item.use).filter(Boolean);
+                item.use = _.values(item.use).filter(Boolean);
             }
 
             return item;

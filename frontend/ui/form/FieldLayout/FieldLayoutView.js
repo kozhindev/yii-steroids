@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import {html} from 'components';
+import './FieldLayoutView.scss'
 const bem = html.bem('FieldLayoutView');
 
 export default class FieldLayoutView extends React.PureComponent {
@@ -24,7 +25,11 @@ export default class FieldLayoutView extends React.PureComponent {
     render() {
         return (
             <div className={bem.block()}>
-                {this.props.label ? this.props.label + ':' : ''}
+                {this.props.label && (
+                    <label className={bem.element('label', {required: this.props.required})}>
+                        {this.props.label + ':'}
+                    </label>
+                )}
                 {this.props.children}
             </div>
         );

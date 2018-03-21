@@ -10,6 +10,7 @@ export default class TextFieldView extends React.PureComponent {
         label: PropTypes.string,
         hint: PropTypes.string,
         required: PropTypes.bool,
+        size: PropTypes.oneOf(['sm', 'md', 'lg']),
         placeholder: PropTypes.string,
         disabled: PropTypes.bool,
         inputProps: PropTypes.object,
@@ -19,7 +20,14 @@ export default class TextFieldView extends React.PureComponent {
     render() {
         return (
             <textarea
-                className={bem(bem.block(), 'form-control', this.props.className)}
+                className={bem(
+                    bem.block({
+                        size: this.props.size,
+                    }),
+                    'form-control',
+                    'form-control-' + this.props.size,
+                    this.props.className
+                )}
                 {...this.props.inputProps}
             />
         );

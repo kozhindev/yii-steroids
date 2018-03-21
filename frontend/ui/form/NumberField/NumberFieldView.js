@@ -10,6 +10,7 @@ export default class NumberFieldView extends React.PureComponent {
         label: PropTypes.string,
         hint: PropTypes.string,
         required: PropTypes.bool,
+        size: PropTypes.oneOf(['sm', 'md', 'lg']),
         min: PropTypes.number,
         max: PropTypes.number,
         step: PropTypes.number,
@@ -22,7 +23,14 @@ export default class NumberFieldView extends React.PureComponent {
     render() {
         return (
             <input
-                className={bem(bem.block(), 'form-control', this.props.className)}
+                className={bem(
+                    bem.block({
+                        size: this.props.size,
+                    }),
+                    'form-control',
+                    'form-control-' + this.props.size,
+                    this.props.className
+                )}
                 {...this.props.inputProps}
             />
         );

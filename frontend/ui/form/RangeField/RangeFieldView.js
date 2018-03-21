@@ -10,6 +10,7 @@ export default class RangeFieldView extends React.PureComponent {
         label: PropTypes.string,
         hint: PropTypes.string,
         required: PropTypes.bool,
+        size: PropTypes.oneOf(['sm', 'md', 'lg']),
         placeholderFrom: PropTypes.string,
         placeholderTo: PropTypes.string,
         disabled: PropTypes.bool,
@@ -20,14 +21,19 @@ export default class RangeFieldView extends React.PureComponent {
 
     render() {
         return (
-            <div className={bem(bem.block(), this.props.className)}>
+            <div className={bem(
+                bem.block({
+                    size: this.props.size,
+                }),
+                this.props.className
+            )}>
                 <input
-                    className='form-control'
+                    className={'form-control form-control-' + this.props.size}
                     {...this.props.inputFromProps}
                 />
                 -
                 <input
-                    className='form-control'
+                    className={'form-control form-control-' + this.props.size}
                     {...this.props.inputToProps}
                 />
             </div>

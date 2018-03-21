@@ -25,6 +25,7 @@ export default class RangeField extends React.PureComponent {
             onChange: PropTypes.func,
         }),
         required: PropTypes.bool,
+        size: PropTypes.oneOf(['sm', 'md', 'lg']),
         placeholderFrom: PropTypes.string,
         placeholderTo: PropTypes.string,
         disabled: PropTypes.bool,
@@ -36,6 +37,7 @@ export default class RangeField extends React.PureComponent {
     };
 
     static defaultProps = {
+        size: 'md',
         disabled: false,
     };
 

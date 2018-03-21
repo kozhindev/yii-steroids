@@ -2,10 +2,32 @@ import React from 'react';
 import {Provider} from 'react-redux';
 import {configure, addDecorator} from '@storybook/react';
 import {view, store} from 'components';
+import { setDefaults } from '@storybook/addon-info';
+import { setOptions } from '@storybook/addon-options';
+import 'bootstrap/scss/bootstrap.scss'
+import {withKnobs} from "@storybook/addon-knobs/react";
 
+
+//global options
+setOptions({
+    showAddonPanel: true,
+    downPanelInRight: true,
+});
+
+//global options for addon-info
+setDefaults({
+    header: false,
+    inline: true,
+});
+
+addDecorator(withKnobs);
+
+//wrapper for all stoies
 addDecorator(getStory => (
     <Provider store={store.store}>
-        {getStory()}
+        <div style={{padding: '20px'}}>
+            {getStory()}
+        </div>
     </Provider>
 ));
 
