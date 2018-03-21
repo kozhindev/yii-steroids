@@ -1,12 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {connect} from 'react-redux';
-import {submit} from 'redux-form';
+import enhanceWithClickOutside from 'react-click-outside';
 
-import {view} from 'components';
+import {view, locale} from 'components';
 import fieldHoc from '../fieldHoc';
+import dataProviderHoc from '../dataProviderHoc';
 
 @fieldHoc()
+@dataProviderHoc()
+@enhanceWithClickOutside
 export default class DropDownField extends React.PureComponent {
 
     static propTypes = {
@@ -20,34 +22,44 @@ export default class DropDownField extends React.PureComponent {
         }),
         required: PropTypes.bool,
         placeholder: PropTypes.string,
+        searchPlaceholder: PropTypes.string,
         disabled: PropTypes.bool,
         inputProps: PropTypes.object,
         onChange: PropTypes.func,
         className: PropTypes.string,
         view: PropTypes.func,
-
-        // dataProvider
-            // ArrayDataProvider | array
-            //   items
-            //   autoComplete
-            //   minLength
-            //   delay
-            // EnumDataProvider
-            //   enumClassName string|func
-            //   autoComplete
-            //   minLength
-            //   delay
-            // RemoteDataProvider
-            //   action
-            //   params
-            //     modelClass
-            //   autoFetch
-            //   autoComplete
-            //   minLength
-            //   delay
-        searchPlaceholder: PropTypes.string,
+        showReset: PropTypes.bool,
         multiple: PropTypes.bool,
-        autoSelectFirst: PropTypes.bool,
+        items: PropTypes.arrayOf(PropTypes.shape({
+            id: PropTypes.oneOfType([
+                PropTypes.number,
+                PropTypes.string,
+            ]),
+            label: PropTypes.string,
+        })),
+        selectedItems: PropTypes.arrayOf(PropTypes.shape({
+            id: PropTypes.oneOfType([
+                PropTypes.number,
+                PropTypes.string,
+            ]),
+            label: PropTypes.string,
+        })),
+        hoveredItem: PropTypes.shape({
+            id: PropTypes.oneOfType([
+                PropTypes.number,
+                PropTypes.string,
+            ]),
+            label: PropTypes.string,
+        }),
+        autoComplete: PropTypes.bool,
+        autoCompleteMinLength: PropTypes.number,
+        autoCompleteDelay: PropTypes.number,
+        isOpened: PropTypes.bool,
+        onOpen: PropTypes.func,
+        onClose: PropTypes.func,
+        onSearch: PropTypes.func,
+        onItemClick: PropTypes.func,
+        onItemMouseOver: PropTypes.func,
     };
 
     static defaultProps = {
@@ -57,7 +69,12 @@ export default class DropDownField extends React.PureComponent {
     constructor() {
         super(...arguments);
 
-        this._onKeyUp = this._onKeyUp.bind(this);
+        this._onSearch = this._onSearch.bind(this);
+        this._onReset = this._onReset.bind(this);
+    }
+
+    handleClickOutside() {
+        this.props.onClose();
     }
 
     render() {
@@ -65,26 +82,35 @@ export default class DropDownField extends React.PureComponent {
         return (
             <DropDownFieldView
                 {...this.props}
-                inputProps={{
-                    name: this.props.input.name,
-                    value: this.props.input.value || '',
-                    onChange: e => this.props.input.onChange(e.target.value),
-                    onKeyUp: this._onKeyUp,
-                    placeholder: this.props.placeholder,
-                    disabled: this.props.disabled,
-                    ...this.props.inputProps,
+                searchInputProps={{
+                    type: 'search',
+                    placeholder: this.props.searchPlaceholder || locale.t('Начните вводить символы для поиска...'),
+                    onChange: this._onSearch,
+                    tabIndex: -1
                 }}
+                items={this.props.items.map(item => ({
+                    ...item,
+                    isSelected: !!this.props.selectedItems.find(selectedItem => selectedItem.id === item.id),
+                    isHovered: this.props.hoveredItem && this.props.hoveredItem.id === item.id,
+                }))}
+                selectedItems={this.props.selectedItems}
+                isOpened={this.props.isOpened}
+                showReset={this.props.showReset}
+                onOpen={this.props.onOpen}
+                onReset={this._onReset}
+                onItemClick={this.props.onItemClick}
+                onItemMouseOver={this.props.onItemMouseOver}
             />
         );
     }
 
-    _onKeyUp(e) {
-        if (this.props.submitOnEnter && this.props.formId && e.keyCode === 13 && !e.shiftKey) {
-            e.preventDefault();
-
-            // TODO This is not worked in redux... =(
-            this.props.dispatch(submit(this.props.formId));
-        }
+    _onSearch(e) {
+        this.props.onSearch(e.target.value);
     }
+
+    _onReset() {
+        this.props.input.onChange(null);
+    }
+
 
 }

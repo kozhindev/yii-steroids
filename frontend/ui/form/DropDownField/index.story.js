@@ -6,17 +6,36 @@ import DropDownField from './DropDownField';
 
 storiesOf('Form', module)
     .add('DropDownField', () => (
-        <DropDownField
-            label='Type'
-            items={[
-                {
-                    id: 1,
-                    label: 'First',
-                },
-                {
-                    id: 2,
-                    label: 'Second',
-                },
-            ]}
-        />
+        <div>
+            <DropDownField
+                label='Single'
+                searchPlaceholder='Поиск'
+                items={[
+                    {
+                        id: 1,
+                        label: 'First',
+                    },
+                    {
+                        id: 2,
+                        label: 'Second',
+                    },
+                ]}
+            />
+            <DropDownField
+                label='Multiple'
+                searchPlaceholder='Поиск'
+                multiple
+                autoComplete
+                items={[
+                    {
+                        id: 1,
+                        label: 'First',
+                    },
+                    {
+                        id: 2,
+                        label: 'Second',
+                    },
+                ]}
+            />
+        </div>
     ));

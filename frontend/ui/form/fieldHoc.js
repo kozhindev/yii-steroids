@@ -43,6 +43,12 @@ class FieldHoc extends React.PureComponent {
         return (props.prefix || '') + name;
     }
 
+    static ID_COUNTER = 1;
+
+    static generateUniqueId() {
+        return 'field' + FieldHoc.ID_COUNTER++;
+    }
+
     constructor() {
         super(...arguments);
 
@@ -59,6 +65,9 @@ class FieldHoc extends React.PureComponent {
             this.state = {
                 value: _get(this.props, 'input.value'),
             };
+            this._fieldId = FieldHoc.generateUniqueId();
+        } else {
+            this._fieldId = this.props.formId + '_' + FieldHoc.getName(this.props, this.props._config.attributes[0])
         }
     }
 
@@ -89,6 +98,7 @@ class FieldHoc extends React.PureComponent {
                     {...props}
                     {...inputProps}
                     formId={this.props.formId}
+                    fieldId={this._fieldId}
                 />
             </FieldLayout>
         );
