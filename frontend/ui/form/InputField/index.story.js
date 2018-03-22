@@ -1,46 +1,18 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-
 import {storiesOf} from '@storybook/react';
 import { withInfo } from '@storybook/addon-info';
+import { withReadme } from 'storybook-readme';
 import {text, boolean, select } from '@storybook/addon-knobs/react';
 
-import InputField from './InputField';
-import './InputFieldView.scss';
-
-InputField.propTypes = {
-    label: PropTypes.string,
-    hint: PropTypes.string,
-    attribute: PropTypes.string,
-    input: PropTypes.shape({
-        name: PropTypes.string,
-        value: PropTypes.any,
-        onChange: PropTypes.func,
-    }),
-    required: PropTypes.bool,
-    size: PropTypes.oneOf(['sm', 'md', 'lg']),
-    type: PropTypes.oneOf(['text', 'email', 'hidden', 'phone', 'password']),
-    placeholder: PropTypes.string,
-    disabled: PropTypes.bool,
-    inputProps: PropTypes.object,
-    onChange: PropTypes.func,
-    className: PropTypes.string,
-    view: PropTypes.func,
-};
-
-InputField.defaultProps = {
-    size: 'md',
-    type: 'text',
-    disabled: false,
-};
-
+import InputField from "./InputField";
+import README from './README.md'
 
 const types = {
     text: 'Text',
     email: 'Email',
-    hidden: 'Hidden',
     phone: 'Phone',
     password: 'Password',
+    hidden: 'Hidden',
 };
 
 const sizes = {
@@ -50,31 +22,47 @@ const sizes = {
 };
 
 storiesOf('Form', module)
+    .addDecorator(withReadme(README))
     .add('InputField', context => (
         <div>
             {withInfo()(() => (
                 <InputField
                     label={text('Label', 'Text')}
-                    disabled={boolean('Disabled', false)}
-                    required={boolean('Required', false)}
-                    className={text('Class', '')}
-                    size={select('Size', sizes, 'md')}
-                    type={select('Type', types, 'text')}
-                    placeholder={text('Placeholder')}
+                    disabled={boolean('Disabled', InputField.defaultProps.disabled)}
+                    required={boolean('Required', InputField.defaultProps.required)}
+                    className={text('Class', InputField.defaultProps.className)}
+                    size={select('Size', sizes, InputField.defaultProps.size)}
+                    type={select('Type', types, InputField.defaultProps.type)}
+                    placeholder={text('Placeholder', InputField.defaultProps.placeholder)}
                 />
             ))(context)}
 
-            <div className="mb-3">
-                <InputField label='Text' type='text'/>
+            <div className='row mb-4'>
+                {Object.keys(sizes).map(size => (
+                    <div className='col' key={size}>
+                        <InputField label={size} size={size}/>
+                    </div>
+                ))}
             </div>
-            <div className="mb-3">
-                <InputField label='Email' type='email'/>
+
+            <div className='row mb-4'>
+                {Object.keys(types).map(type => (
+                    <div className='col' key={type}>
+                        <InputField label={type} type={type}/>
+                    </div>
+                ))}
             </div>
-            <div className="mb-3">
-                <InputField label='Phone' type='phone'/>
-            </div>
-            <div className="mb-3">
-                <InputField label='Password' type='password'/>
+
+            <div className='row mb-4'>
+                <div className='col'>
+                    <InputField label='Disabled' disabled/>
+                </div>
+                <div className='col'>
+                    <InputField label='Required' required/>
+                </div>
+                <div className='col'>
+                    <InputField label='Placeholder' placeholder='Your text...'/>
+                </div>
             </div>
         </div>
 ));
