@@ -1,10 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import _remove from 'lodash/remove';
-import _filter from 'lodash/filter';
-import _isArray from 'lodash/isArray';
-import _isFunction from 'lodash/isFunction';
-import _isObject from 'lodash/isObject';
+import _remove from 'lodash-es/remove';
+import _filter from 'lodash-es/filter';
+import _isArray from 'lodash-es/isArray';
+import _isFunction from 'lodash-es/isFunction';
+import _isObject from 'lodash-es/isObject';
 
 import {http} from 'components';
 

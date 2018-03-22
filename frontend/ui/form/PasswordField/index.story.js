@@ -1,12 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-
 import {storiesOf} from '@storybook/react';
 import { withInfo } from '@storybook/addon-info';
+import {withReadme} from "storybook-readme";
 import {text, boolean, select} from '@storybook/addon-knobs/react';
 
 import PasswordField from './PasswordField';
 import './PasswordFieldVIew.scss';
+import README from './README.md'
 
 PasswordField.propTypes = {
     label: PropTypes.string,
@@ -41,6 +42,7 @@ const sizes = {
 };
 
 storiesOf('Form', module)
+    .addDecorator(withReadme(README))
     .add('PasswordField', context => (
         <div>
             {withInfo()(() => (

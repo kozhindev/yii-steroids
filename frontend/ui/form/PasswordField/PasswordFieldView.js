@@ -3,9 +3,9 @@ import PropTypes from 'prop-types';
 
 import {html} from 'components';
 
-const bem = html.bem('NumberFieldView');
+const bem = html.bem('PasswordFieldView');
 
-export default class NumberFieldView extends React.PureComponent {
+export default class PasswordFieldView extends React.PureComponent {
 
     static propTypes = {
         label: PropTypes.string,
@@ -24,30 +24,31 @@ export default class NumberFieldView extends React.PureComponent {
 
     render() {
         return (
-            <div>
-                <input
-                    className={bem(
-                        bem.block({
-                            size: this.props.size,
-                        }),
-                        'form-control',
-                        'form-control-' + this.props.size,
-                        this.props.className
-                    )}
-                    {...this.props.inputProps}
-                />
-                {this.props.security && (
-                    <div>
-                        {this.props.securityLevel}
-                        &nbsp;
-                        <a
-                            href='javascript:void(0)'
+            <div className={bem.block()}>
+                <div className={bem.element('input-container')}>
+                    <input
+                        className={bem(
+                            bem.element('input', {
+                                size: this.props.size,
+                            }),
+                            'form-control',
+                            'form-control-' + this.props.size,
+                            this.props.className
+                        )}
+                        {...this.props.inputProps}
+                    />
+                    {this.props.security && (
+                        <span
+                            className={bem(bem.element('icon-eye'), 'material-icons')}
                             onMouseDown={this.props.onShowPassword}
                             onMouseUp={this.props.onHidePassword}
                         >
-                            show
-                        </a>
-                    </div>
+                            remove_red_eye
+                        </span>
+                    )}
+                </div>
+                {this.props.security && (
+                    <div className={bem.element('security-bar', this.props.securityLevel)}/>
                 )}
             </div>
         );

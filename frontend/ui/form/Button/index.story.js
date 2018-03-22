@@ -5,6 +5,7 @@ import { withReadme } from 'storybook-readme';
 import {text, boolean, select} from '@storybook/addon-knobs/react';
 
 import Button from './Button';
+import './ButtonView.scss'
 import README from './README.md'
 
 const colors = {
