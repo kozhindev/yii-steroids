@@ -10,7 +10,25 @@ import {view} from 'components';
         submitting: props.formId ? isSubmitting('myForm')(state) : !!props.submitting,
     })
 )
-class Button extends React.PureComponent {
+class ButtonInternal extends React.PureComponent {
+
+    render() {
+        const ButtonView = this.props.view || view.get('form.ButtonView');
+        const disabled = this.props.submitting || this.props.disabled;
+        return (
+            <ButtonView
+                {...this.props}
+                disabled={disabled}
+                onClick={!disabled ? this.props.onClick : undefined}
+            >
+                {this.props.label || this.props.children}
+            </ButtonView>
+        );
+    }
+
+}
+
+export default class Button extends React.PureComponent {
 
     static propTypes = {
         label: PropTypes.string,
@@ -44,6 +62,7 @@ class Button extends React.PureComponent {
         disabled: false,
         submitting: false,
         block: false,
+        className: '',
     };
 
     static contextTypes = {
@@ -51,30 +70,8 @@ class Button extends React.PureComponent {
     };
 
     render() {
-        const ButtonView = this.props.view || view.get('form.ButtonView');
-        const disabled = this.props.submitting || this.props.disabled;
         return (
-            <ButtonView
-                {...this.props}
-                disabled={disabled}
-                onClick={!disabled ? this.props.onClick : undefined}
-            >
-                {this.props.label || this.props.children}
-            </ButtonView>
-        );
-    }
-
-}
-
-export default class ButtonWrapper extends React.PureComponent {
-
-    static contextTypes = {
-        formId: PropTypes.string,
-    };
-
-    render() {
-        return (
-            <Button
+            <ButtonInternal
                 {...this.props}
                 formId={this.context.formId}
             />

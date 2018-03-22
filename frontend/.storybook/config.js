@@ -2,27 +2,61 @@ import React from 'react';
 import {Provider} from 'react-redux';
 import {configure, addDecorator} from '@storybook/react';
 import {view, store} from 'components';
-import { setDefaults } from '@storybook/addon-info';
-import { setOptions } from '@storybook/addon-options';
+import {setDefaults} from '@storybook/addon-info';
+import {setOptions} from '@storybook/addon-options';
 import 'bootstrap/scss/bootstrap.scss'
 import {withKnobs} from "@storybook/addon-knobs/react";
 
-
-//global options
+// Global options for addon-options
 setOptions({
     showAddonPanel: true,
     downPanelInRight: true,
 });
 
-//global options for addon-info
+// Global options for addon-info
 setDefaults({
-    header: false,
     inline: true,
+    propTables: null,
+    maxPropsIntoLine: 1,
+    styles: stylesheet => ({
+        ...stylesheet,
+        header: {
+            ...stylesheet.header,
+            h1: {
+                display: 'none',
+            },
+            h2: {
+                ...stylesheet.header.h2,
+                fontWeight: 500,
+                fontSize: '25px',
+            },
+        },
+        infoBody: {
+            ...stylesheet.infoBody,
+            marginTop: 0,
+            padding: 0,
+            border: 0,
+            boxShadow: '',
+        },
+        source: {
+            ...stylesheet.source,
+            h1: {
+                opacity: 0,
+                fontSize: '10px',
+            },
+        },
+        propTableHead: {
+            ...stylesheet.propTableHead,
+            fontSize: 16,
+            margin: '5px 0',
+        },
+    }),
 });
 
+// Add knobs addon
 addDecorator(withKnobs);
 
-//wrapper for all stoies
+// Wrapper for all stories
 addDecorator(getStory => (
     <Provider store={store.store}>
         <div style={{padding: '20px'}}>
@@ -31,9 +65,9 @@ addDecorator(getStory => (
     </Provider>
 ));
 
-// automatically import all views
+// Automatically import all views
 view.add(require.context('../ui', true, /View.js$/));
 
-// automatically import all files ending in *.stories.js
+// Automatically import all files ending in *.stories.js
 const reqStory = require.context('../ui', true, /.story.js$/);
 configure(() => reqStory.keys().forEach(fileName => reqStory(fileName)), module);

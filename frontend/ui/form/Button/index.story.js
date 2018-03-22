@@ -1,45 +1,11 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import {storiesOf} from '@storybook/react';
 import {withInfo} from '@storybook/addon-info';
 import { withReadme } from 'storybook-readme';
 import {text, boolean, select} from '@storybook/addon-knobs/react';
+
 import Button from './Button';
 import README from './README.md'
-
-Button.propTypes = {
-    label: PropTypes.string,
-    type: PropTypes.oneOf(['button', 'submit']),
-    size: PropTypes.oneOf(['sm', 'md', 'lg']),
-    color: PropTypes.oneOf([
-        'primary',
-        'secondary',
-        'success',
-        'danger',
-        'warning',
-        'info',
-        'light',
-        'dark',
-    ]),
-    outline: PropTypes.bool,
-    url: PropTypes.string,
-    onClick: PropTypes.func,
-    disabled: PropTypes.bool,
-    submitting: PropTypes.bool,
-    block: PropTypes.bool,
-    className: PropTypes.string,
-    view: PropTypes.func,
-};
-
-Button.defaultProps = {
-    type: 'button',
-    size: 'md',
-    color: 'primary',
-    outline: false,
-    disabled: false,
-    submitting: false,
-    block: false,
-};
 
 const colors = {
     primary: 'Primary',
@@ -51,7 +17,6 @@ const colors = {
     light: 'Light',
     dark: 'Dark',
 };
-
 const sizes = {
     sm: 'Small',
     md: 'Middle',
@@ -60,168 +25,94 @@ const sizes = {
 
 storiesOf('Form', module)
     .addDecorator(withReadme(README))
-    .add('Button', context => (
+    .add(Button.name, context => (
         <div>
             {withInfo()(() => (
                 <Button
-                    disabled={boolean('Disabled', false)}
-                    color={select('Color', colors, 'primary')}
-                    outline={boolean('Outline', false)}
-                    size={select('Size', sizes, 'md')}
-                    block={boolean('Block', false)}
-                    className={text('Class', '')}
-                    url={text('Link url',)}
+                    disabled={boolean('Disabled', Button.defaultProps.disabled)}
+                    color={select('Color', colors, Button.defaultProps.color)}
+                    outline={boolean('Outline', Button.defaultProps.outline)}
+                    size={select('Size', sizes, Button.defaultProps.size)}
+                    block={boolean('Block', Button.defaultProps.block)}
+                    className={text('Class', Button.defaultProps.className)}
+                    url={text('Link url', Button.defaultProps.url)}
                 >
                     {text('Label', 'Button')}
                 </Button>
             ))(context)}
-
-            <h2 className='mb-2'>
-                Color
-            </h2>
-            <div className='d-flex mb-3'>
-                <div className="mr-3">
-                    <Button color='primary'>
-                        Primary
+            <h6>
+                Colors
+            </h6>
+            <div className='clearfix mb-2'>
+                {Object.keys(colors).map(color => (
+                    <Button
+                        key={color}
+                        color={color}
+                        className='float-left mr-2'
+                    >
+                        {colors[color]}
                     </Button>
-                </div>
-                <div className="mr-3">
-                    <Button color='secondary'>
-                        Secondary
-                    </Button>
-                </div>
-                <div className='mr-3'>
-                    <Button color='success'>
-                        Success
-                    </Button>
-                </div>
-                <div className="mr-3">
-                    <Button color='danger'>
-                        Danger
-                    </Button>
-                </div>
-                <div className="mr-3">
-                    <Button color='warning'>
-                        Warning
-                    </Button>
-                </div>
-                <div className="mr-3">
-                    <Button color='info'>
-                        Info
-                    </Button>
-                </div>
-                <div className="mr-3">
-                    <Button color='light'>
-                        Light
-                    </Button>
-                </div>
-                <div className="mr-3">
-                    <Button color='dark'>
-                        Dark
-                    </Button>
-                </div>
+                ))}
             </div>
-
-            <h2 className='mb-2'>
-                Color + Outline
-            </h2>
-            <div className='d-flex mb-3'>
-                <div className="mr-3">
-                    <Button color='primary' outline>
-                        Primary
+            <div className='clearfix mb-4'>
+                {Object.keys(colors).map(color => (
+                    <Button
+                        key={color}
+                        color={color}
+                        className='float-left mr-2'
+                        outline
+                    >
+                        {colors[color]}
                     </Button>
-                </div>
-                <div className="mr-3">
-                    <Button color='secondary' outline>
-                        Secondary
-                    </Button>
-                </div>
-                <div className='mr-3'>
-                    <Button color='success' outline>
-                        Success
-                    </Button>
-                </div>
-                <div className="mr-3">
-                    <Button color='danger' outline>
-                        Danger
-                    </Button>
-                </div>
-                <div className="mr-3">
-                    <Button color='warning' outline>
-                        Warning
-                    </Button>
-                </div>
-                <div className="mr-3">
-                    <Button color='info' outline>
-                        Info
-                    </Button>
-                </div>
-                <div className="mr-3">
-                    <Button color='light' outline>
-                        Light
-                    </Button>
-                </div>
-                <div className="mr-3">
-                    <Button color='dark' outline>
-                        Dark
-                    </Button>
-                </div>
+                ))}
             </div>
-
-            <h2 className='mb-2'>
+            <h6>
                 Size
-            </h2>
-            <div className='d-flex mb-3'>
-                <div className="mr-3">
-                    <Button size='sm'>
-                        Small
+            </h6>
+            <div className='clearfix mb-4'>
+                {Object.keys(sizes).map(size => (
+                    <Button
+                        key={size}
+                        size={size}
+                        className='float-left mr-2'
+                    >
+                        {sizes[size]}
                     </Button>
-                </div>
-                <div className="mr-3">
-                    <Button size='md'>
-                        Middle
-                    </Button>
-                </div>
-                <div className="mr-3">
-                    <Button size='lg'>
-                        Large
-                    </Button>
-                </div>
+                ))}
             </div>
-
-            <h2 className='mb-2'>
-                Disabled
-            </h2>
-            <div className="d-flex mb-3">
-                <div className="mr-3">
+            <div className='clearfix mb-4'>
+                <div className='float-left mr-4'>
+                    <h6>
+                        Disabled
+                    </h6>
                     <Button disabled>
                         Disabled
                     </Button>
                 </div>
-            </div>
-
-            <h2 className='mb-2'>
-                Link
-            </h2>
-            <div className="d-flex mb-3">
-                <div className="mr-3">
+                <div className='float-left mr-4'>
+                    <h6>
+                        Disabled
+                    </h6>
+                    <Button disabled>
+                        Disabled
+                    </Button>
+                </div>
+                <div className='float-left mr-4 col-2'>
+                    <h6>
+                        Block
+                    </h6>
+                    <Button block>
+                        Block
+                    </Button>
+                </div>
+                <div className='float-left mr-4'>
+                    <h6>
+                        Link
+                    </h6>
                     <Button url='https://google.ru'>
                         Link
                     </Button>
                 </div>
             </div>
-
-            <h2 className='mb-2'>
-                Block
-            </h2>
-            <div className="row mb-3">
-                <div className="col-6">
-                    <Button block>
-                        Block
-                    </Button>
-                </div>
-            </div>
         </div>
 ));
-
-
