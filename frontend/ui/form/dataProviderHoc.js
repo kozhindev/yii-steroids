@@ -14,7 +14,13 @@ export default (config = defaultConfig) => WrappedComponent => class DataProvide
 
     static WrappedComponent = WrappedComponent;
 
+    /**
+     * Proxy real name, prop types and default props for storybook
+     */
+    static displayName = WrappedComponent.displayName || WrappedComponent.name;
+
     static propTypes = {
+        ...WrappedComponent.propTypes,
         multiple: PropTypes.bool,
         items: PropTypes.oneOfType([
             PropTypes.arrayOf(PropTypes.shape({
@@ -39,6 +45,7 @@ export default (config = defaultConfig) => WrappedComponent => class DataProvide
     };
 
     static defaultProps = {
+        ...WrappedComponent.defaultProps,
         autoCompleteMinLength: 2,
         autoCompleteDelay: 100,
     };

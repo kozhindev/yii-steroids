@@ -7,7 +7,6 @@ import './TextFieldView.scss';
 import { withInfo } from '@storybook/addon-info';
 import {text, boolean, select} from '@storybook/addon-knobs/react';
 
-
 TextField.propTypes = {
     label: PropTypes.string,
     hint: PropTypes.string,

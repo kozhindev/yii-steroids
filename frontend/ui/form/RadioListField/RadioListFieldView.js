@@ -1,0 +1,55 @@
+import React from 'react';
+import PropTypes from 'prop-types';
+
+import {html} from 'components';
+
+const bem = html.bem('RadioListFieldView');
+
+export default class RadioListFieldView extends React.PureComponent {
+
+    static propTypes = {
+        fieldId: PropTypes.string,
+        label: PropTypes.string,
+        hint: PropTypes.string,
+        required: PropTypes.bool,
+        size: PropTypes.oneOf(['sm', 'md', 'lg']),
+        disabled: PropTypes.bool,
+        inputProps: PropTypes.object,
+        className: PropTypes.string,
+        items: PropTypes.arrayOf(PropTypes.shape({
+            id: PropTypes.oneOfType([
+                PropTypes.number,
+                PropTypes.string,
+            ]),
+            label: PropTypes.string,
+        })),
+        onItemClick: PropTypes.func,
+    };
+
+    render() {
+        return (
+            <div>
+                {this.props.items.map(item => (
+                    <div
+                        key={item.id}
+                        className='custom-control custom-radio'
+                    >
+                        <input
+                            {...this.props.inputProps}
+                            id={this.props.fieldId + '_' + item.id}
+                            className='custom-control-input'
+                            onChange={() => this.props.onItemClick(item)}
+                        />
+                        <label
+                            className='custom-control-label'
+                            htmlFor={this.props.fieldId + '_' + item.id}
+                        >
+                            {item.label}
+                        </label>
+                    </div>
+                ))}
+            </div>
+        );
+    }
+
+}
