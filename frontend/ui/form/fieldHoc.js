@@ -9,6 +9,7 @@ import FieldLayout from './FieldLayout';
 
 const defaultConfig = {
     attributes: [''],
+    layoutProps: null,
 };
 const selectors = {};
 
@@ -85,7 +86,10 @@ class FieldHoc extends React.PureComponent {
         });
 
         return (
-            <FieldLayout {...props}>
+            <FieldLayout
+                {...props}
+                {..._config.layoutProps}
+            >
                 {this.props.formId && _config.attributes.map(attribute => (
                     <Field
                         key={this.props.formId + attribute}
@@ -130,9 +134,16 @@ class FieldHoc extends React.PureComponent {
     }
 }
 
-export default (config = defaultConfig) => WrappedComponent => class FieldHocWrapper extends React.PureComponent {
+export default config => WrappedComponent => class FieldHocWrapper extends React.PureComponent {
 
     static WrappedComponent = WrappedComponent;
+
+    /**
+     * Proxy real name, prop types and default props for storybook
+     */
+    static displayName = WrappedComponent.displayName || WrappedComponent.name;
+    static propTypes = WrappedComponent.propTypes;
+    static defaultProps = WrappedComponent.defaultProps;
 
     static contextTypes = {
         formId: PropTypes.string,
@@ -155,7 +166,10 @@ export default (config = defaultConfig) => WrappedComponent => class FieldHocWra
                 layout={this.props.layout || this.context.layout}
                 layoutCols={this.props.layoutCols || this.context.layoutCols}
                 _wrappedComponent={WrappedComponent}
-                _config={config}
+                _config={{
+                    ...defaultConfig,
+                    ...config,
+                }}
             />
         );
     }
