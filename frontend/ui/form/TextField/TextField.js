@@ -30,8 +30,12 @@ export default class TextField extends React.PureComponent {
     };
 
     static defaultProps = {
-        disabled: false,
         size: 'md',
+        disabled: false,
+        required: false,
+        className: '',
+        placeholder: '',
+        submitOnEnter: false,
     };
 
     constructor() {

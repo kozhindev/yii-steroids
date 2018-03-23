@@ -5,7 +5,6 @@ import {withReadme} from "storybook-readme";
 import {text, boolean, select} from '@storybook/addon-knobs/react';
 
 import PasswordField from './PasswordField';
-import './PasswordFieldVIew.scss';
 import README from './README.md'
 
 const sizes = {

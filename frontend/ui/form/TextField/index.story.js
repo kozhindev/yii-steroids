@@ -1,36 +1,13 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import {storiesOf} from '@storybook/react';
-
-import TextField from './TextField';
-import './TextFieldView.scss';
 import { withInfo } from '@storybook/addon-info';
+import {withReadme} from "storybook-readme";
 import {text, boolean, select} from '@storybook/addon-knobs/react';
 
-TextField.propTypes = {
-    label: PropTypes.string,
-    hint: PropTypes.string,
-    attribute: PropTypes.string,
-    input: PropTypes.shape({
-        name: PropTypes.string,
-        value: PropTypes.any,
-        onChange: PropTypes.func,
-    }),
-    required: PropTypes.bool,
-    size: PropTypes.oneOf(['sm', 'md', 'lg']),
-    placeholder: PropTypes.string,
-    disabled: PropTypes.bool,
-    submitOnEnter: PropTypes.bool,
-    inputProps: PropTypes.object,
-    onChange: PropTypes.func,
-    className: PropTypes.string,
-    view: PropTypes.func,
-};
+import TextField from './TextField';
+import README from './README.md'
+import PasswordField from "../PasswordField/PasswordField";
 
-TextField.defaultProps = {
-    disabled: false,
-    size: 'md',
-};
 
 const sizes = {
     sm: 'Small',
@@ -39,17 +16,18 @@ const sizes = {
 };
 
 storiesOf('Form', module)
+    .addDecorator(withReadme(README))
     .add('TextField', context => (
         <div>
             {withInfo()(() => (
                 <TextField
                     label={text('Label', 'Message')}
-                    disabled={boolean('Disabled', false)}
-                    required={boolean('Required', false)}
-                    size={select('Size', sizes, 'md')}
-                    className={text('Class', '')}
-                    placeholder={text('Placeholder')}
-                    submitOnEnter={boolean('SubmitOnEnter', false)}
+                    disabled={boolean('Disabled', TextField.defaultProps.disabled)}
+                    required={boolean('Required', TextField.defaultProps.required)}
+                    className={text('Class', TextField.defaultProps.className)}
+                    placeholder={text('Placeholder', PasswordField.defaultProps.placeholder)}
+                    size={select('Size', sizes, TextField.defaultProps.size)}
+                    submitOnEnter={boolean('SubmitOnEnter', TextField.defaultProps.submitOnEnter)}
                 />
             ))(context)}
         </div>

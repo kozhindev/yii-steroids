@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import {html} from 'components';
+import './PasswordFieldVIew.scss';
 
 const bem = html.bem('PasswordFieldView');
 
