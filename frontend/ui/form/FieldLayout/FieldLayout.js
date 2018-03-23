@@ -24,6 +24,8 @@ export default class FieldLayout extends React.PureComponent {
     static defaultProps = {
         layout: 'default',
         layoutCols: [3, 6],
+        required: false,
+        className: '',
     };
 
     render() {
