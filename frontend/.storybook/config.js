@@ -41,6 +41,7 @@ setDefaults({
         source: {
             ...stylesheet.source,
             h1: {
+                marginTop: '10px',
                 opacity: 0,
                 fontSize: '10px',
             },

@@ -6,7 +6,6 @@ import {text, boolean, select} from '@storybook/addon-knobs/react';
 
 import TextField from './TextField';
 import README from './README.md'
-import PasswordField from "../PasswordField/PasswordField";
 
 
 const sizes = {

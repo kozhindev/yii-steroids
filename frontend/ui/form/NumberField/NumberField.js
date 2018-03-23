@@ -30,8 +30,14 @@ export default class NumberField extends React.PureComponent {
     };
 
     static defaultProps = {
-        disabled: false,
         size: 'md',
+        disabled: false,
+        required: false,
+        className: '',
+        placeholder: '',
+        min: null,
+        max: null,
+        step: null,
     };
 
     render() {
