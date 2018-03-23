@@ -25,17 +25,22 @@ export default class RangeFieldView extends React.PureComponent {
                 bem.block({
                     size: this.props.size,
                 }),
-                this.props.className
+                this.props.className,
+                'row align-items-center'
             )}>
-                <input
-                    className={'form-control form-control-' + this.props.size}
-                    {...this.props.inputFromProps}
-                />
+                <div className='col'>
+                    <input
+                        className={'form-control form-control-' + this.props.size}
+                        {...this.props.inputFromProps}
+                    />
+                </div>
                 -
-                <input
-                    className={'form-control form-control-' + this.props.size}
-                    {...this.props.inputToProps}
-                />
+                <div className='col'>
+                    <input
+                        className={'form-control form-control-' + this.props.size}
+                        {...this.props.inputToProps}
+                    />
+                </div>
             </div>
         );
     }

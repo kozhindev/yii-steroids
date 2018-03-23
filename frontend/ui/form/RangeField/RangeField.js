@@ -39,6 +39,10 @@ export default class RangeField extends React.PureComponent {
     static defaultProps = {
         size: 'md',
         disabled: false,
+        required: false,
+        className: '',
+        placeholderFrom: '',
+        placeholderTo: '',
     };
 
     render() {
