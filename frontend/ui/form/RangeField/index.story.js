@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { withInfo } from '@storybook/addon-info';
+import {withInfo} from '@storybook/addon-info';
 import {text, boolean, select} from '@storybook/addon-knobs/react';
 import {storiesOf} from '@storybook/react';
 
@@ -59,5 +59,11 @@ storiesOf('Form', module)
                     placeholderTo={text('Placeholder To')}
                 />
             ))(context)}
+            <div className='mb-5'>
+                <RangeField
+                    type='date'
+                    label='Date period'
+                />
+            </div>
         </div>
     ));

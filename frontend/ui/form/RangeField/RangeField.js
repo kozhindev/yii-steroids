@@ -1,8 +1,13 @@
 import React from 'react';
+import {findDOMNode} from 'react-dom';
 import PropTypes from 'prop-types';
+import moment from 'moment';
+import _get from 'lodash-es/get';
 
 import {view} from 'components';
 import fieldHoc from '../fieldHoc';
+import InputField from '../InputField';
+import DateField from '../DateField';
 
 @fieldHoc({
     attributes: ['from', 'to'],
@@ -25,45 +30,125 @@ export default class RangeField extends React.PureComponent {
             onChange: PropTypes.func,
         }),
         required: PropTypes.bool,
+        type: PropTypes.oneOf(['input', 'date']),
+        fieldComponent: PropTypes.func,
         size: PropTypes.oneOf(['sm', 'md', 'lg']),
         placeholderFrom: PropTypes.string,
         placeholderTo: PropTypes.string,
         disabled: PropTypes.bool,
-        inputFromProps: PropTypes.object,
-        inputToProps: PropTypes.object,
+        fromProps: PropTypes.object,
+        toProps: PropTypes.object,
         onChange: PropTypes.func,
         className: PropTypes.string,
         view: PropTypes.func,
     };
 
     static defaultProps = {
+        type: 'input',
         size: 'md',
         disabled: false,
     };
 
+    static fieldsMap = {
+        input: InputField,
+        date: DateField,
+    };
+
+    constructor() {
+        super(...arguments);
+
+        this.refTo = null;
+        this._timer = null;
+    }
+
+    componentWillReceiveProps(nextProps) {
+        // Auto focus on set 'from' value
+        if (!this.props.inputFrom.value && nextProps.inputFrom.value && !nextProps.inputTo.value) {
+            this._timer = setTimeout(() => {
+                const inputEl = findDOMNode(this.refTo).querySelector('input');
+                if (inputEl) {
+                    inputEl.focus();
+                }
+            });
+        }
+    }
+
+    componentWillUnmount() {
+        clearTimeout(this._timer);
+    }
+
     render() {
         const RangeFieldView = this.props.view || view.get('form.RangeFieldView');
+        const FieldComponent = this.props.fieldComponent || RangeField.fieldsMap[this.props.type];
+        const FieldComponentInternal = FieldComponent.WrappedComponent;
+
+        let fieldProps = {
+            disabled: this.props.disabled,
+            size: this.props.size,
+        };
+        let fieldFromProps = {};
+        let fieldToProps = {};
+
+        switch (this.props.type) {
+            case 'date':
+                const valueFromFormat = _get(this.props.fromProps, 'valueFormat', FieldComponentInternal.defaultProps.valueFormat)
+                const valueToFormat = _get(this.props.toProps, 'valueFormat', FieldComponentInternal.defaultProps.valueFormat)
+                const from = this.props.inputFrom.value ? moment(this.props.inputFrom.value, valueFromFormat).toDate() : undefined;
+                const to = this.props.inputTo.value ? moment(this.props.inputTo.value, valueToFormat).toDate() : undefined;
+                const modifiers = {
+                    start: from,
+                    end: to,
+                };
+                fieldFromProps = {
+                    ...fieldFromProps,
+                    pickerProps: {
+                        dayPickerProps: {
+                            selectedDays: [from, { from, to }],
+                            disabledDays: {after: to},
+                            toMonth: to,
+                            modifiers,
+                            numberOfMonths: 2,
+                        },
+                    },
+                };
+                fieldToProps = {
+                    ...fieldToProps,
+                    pickerProps: {
+                        dayPickerProps: {
+                            selectedDays: [from, { from, to }],
+                            disabledDays: {before: from},
+                            modifiers,
+                            month: from,
+                            fromMonth: from,
+                            numberOfMonths: 2,
+                        },
+                    },
+                };
+                break;
+        }
+
         return (
             <RangeFieldView
                 {...this.props}
-                inputFromProps={{
-                    name: this.props.inputFrom.name,
-                    value: this.props.inputFrom.value || '',
-                    onChange: e => this.props.inputFrom.onChange(e.target.value),
-                    type: 'text',
-                    placeholder: this.props.placeholderFrom,
-                    disabled: this.props.disabled,
-                    ...this.props.inputFromProps,
-                }}
-                inputToProps={{
-                    name: this.props.inputTo.name,
-                    value: this.props.inputTo.value || '',
-                    onChange: e => this.props.inputTo.onChange(e.target.value),
-                    type: 'text',
-                    placeholder: this.props.placeholderTo,
-                    disabled: this.props.disabled,
-                    ...this.props.inputToProps,
-                }}
+                fromField={(
+                    <FieldComponentInternal
+                        input={this.props.inputFrom}
+                        placeholder={this.props.placeholderFrom}
+                        {...fieldProps}
+                        {...fieldFromProps}
+                        {...this.props.fromProps}
+                    />
+                )}
+                toField={(
+                    <FieldComponentInternal
+                        ref={el => (this.refTo = el)}
+                        input={this.props.inputTo}
+                        placeholder={this.props.placeholderTo}
+                        {...fieldProps}
+                        {...fieldToProps}
+                        {...this.props.toProps}
+                    />
+                )}
             />
         );
     }

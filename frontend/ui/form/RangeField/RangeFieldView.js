@@ -11,11 +11,9 @@ export default class RangeFieldView extends React.PureComponent {
         hint: PropTypes.string,
         required: PropTypes.bool,
         size: PropTypes.oneOf(['sm', 'md', 'lg']),
-        placeholderFrom: PropTypes.string,
-        placeholderTo: PropTypes.string,
+        fromField: PropTypes.node,
+        toField: PropTypes.node,
         disabled: PropTypes.bool,
-        inputFromProps: PropTypes.object,
-        inputToProps: PropTypes.object,
         className: PropTypes.string,
     };
 
@@ -27,15 +25,9 @@ export default class RangeFieldView extends React.PureComponent {
                 }),
                 this.props.className
             )}>
-                <input
-                    className={'form-control form-control-' + this.props.size}
-                    {...this.props.inputFromProps}
-                />
+                {this.props.fromField}
                 -
-                <input
-                    className={'form-control form-control-' + this.props.size}
-                    {...this.props.inputToProps}
-                />
+                {this.props.toField}
             </div>
         );
     }

@@ -52,6 +52,7 @@
     "react": "^16.2.0",
     "react-click-outside": "^3.0.1",
     "react-datepicker": "^1.2.2",
+    "react-day-picker": "^7.1.4",
     "react-dom": "^16.2.0",
     "react-hot-loader": "^4.0.0",
     "react-quill": "^1.2.6",

@@ -3,9 +3,10 @@ import PropTypes from 'prop-types';
 import {storiesOf} from '@storybook/react';
 
 import TextField from './TextField';
-import './TextFieldView.scss';
 import { withInfo } from '@storybook/addon-info';
 import {text, boolean, select} from '@storybook/addon-knobs/react';
+
+import './TextFieldView.scss';
 
 TextField.propTypes = {
     label: PropTypes.string,

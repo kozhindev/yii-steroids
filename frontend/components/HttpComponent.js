@@ -1,7 +1,7 @@
 import React from 'react';
 import _trimStart from 'lodash/trimStart';
 import _trimEnd from 'lodash/trimEnd';
-import {setFlashes} from 'actions/notifications';
+// TODO import {setFlashes} from 'actions/notifications';
 import axios from 'axios';
 
 export default class HttpComponent {
@@ -116,7 +116,7 @@ export default class HttpComponent {
             .then(response => {
                 // Flash
                 if (response.flashes) {
-                    this.store.dispatch(setFlashes(response.flashes));
+                    //this.store.dispatch(setFlashes(response.flashes));
                 }
 
                 // Ajax redirect

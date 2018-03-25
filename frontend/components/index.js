@@ -1,15 +1,16 @@
-import HtmlComponent from "./HtmlComponent";
-import StoreComponent from "./StoreComponent";
-import ViewComponent from './ViewComponent';
+import _lowerFirst from 'lodash-es/lowerFirst';
 
-const components = {};
-export const html = components.html = new HtmlComponent();
-export const store = components.store = new StoreComponent();
-export const view = components.view = new ViewComponent();
+// Load
+const reqComponents = require.context('.', false, /Component.js$/);
+reqComponents.keys().forEach(fileName => {
+    const name = _lowerFirst(fileName.substr(2, fileName.length - 14));
+    const ComponentClass = reqComponents(fileName).default;
+    module.exports[name] = new ComponentClass();
+});
 
-// Apply configuration
+// Configure
 const customConfig = {};//store.getState().config || {};
-Object.keys(components).forEach(name => ({
-    ...components[name],
+Object.keys(module.exports).forEach(name => ({
+    ...module.exports[name],
     ...customConfig[name],
 }));
