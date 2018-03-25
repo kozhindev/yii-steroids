@@ -47,6 +47,10 @@ export default class RangeField extends React.PureComponent {
         type: 'input',
         size: 'md',
         disabled: false,
+        required: false,
+        className: '',
+        placeholderFrom: '',
+        placeholderTo: '',
     };
 
     static fieldsMap = {

@@ -23,11 +23,16 @@ export default class RangeFieldView extends React.PureComponent {
                 bem.block({
                     size: this.props.size,
                 }),
-                this.props.className
+                this.props.className,
+                'row align-items-center'
             )}>
-                {this.props.fromField}
+                <div className='col'>
+                    {this.props.fromField}
+                </div>
                 -
-                {this.props.toField}
+                <div className='col'>
+                    {this.props.toField}
+                </div>
             </div>
         );
     }

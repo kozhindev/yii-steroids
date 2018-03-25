@@ -1,38 +1,11 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-
 import {storiesOf} from '@storybook/react';
 import { withInfo } from '@storybook/addon-info';
+import {withReadme} from "storybook-readme";
 import {text, boolean, select} from '@storybook/addon-knobs/react';
 
 import PasswordField from './PasswordField';
-import './PasswordFieldVIew.scss';
-
-PasswordField.propTypes = {
-    label: PropTypes.string,
-    hint: PropTypes.string,
-    attribute: PropTypes.string,
-    input: PropTypes.shape({
-        name: PropTypes.string,
-        value: PropTypes.any,
-        onChange: PropTypes.func,
-    }),
-    required: PropTypes.bool,
-    size: PropTypes.oneOf(['sm', 'md', 'lg']),
-    security: PropTypes.bool,
-    placeholder: PropTypes.string,
-    disabled: PropTypes.bool,
-    inputProps: PropTypes.object,
-    onChange: PropTypes.func,
-    className: PropTypes.string,
-    view: PropTypes.func,
-};
-
-PasswordField.defaultProps = {
-    disabled: false,
-    security: false,
-    size: 'md',
-};
+import README from './README.md'
 
 const sizes = {
     sm: 'Small',
@@ -41,18 +14,41 @@ const sizes = {
 };
 
 storiesOf('Form', module)
+    .addDecorator(withReadme(README))
     .add('PasswordField', context => (
         <div>
             {withInfo()(() => (
                 <PasswordField
                     label={text('Label', 'Password')}
-                    disabled={boolean('Disabled', false)}
-                    required={boolean('Required', false)}
-                    className={text('Class', '')}
-                    placeholder={text('Placeholder')}
-                    size={select('Size', sizes, 'md')}
-                    security={boolean('Security', false)}
+                    disabled={boolean('Disabled', PasswordField.defaultProps.disabled)}
+                    required={boolean('Required', PasswordField.defaultProps.required)}
+                    className={text('Class', PasswordField.defaultProps.className)}
+                    placeholder={text('Placeholder', PasswordField.defaultProps.placeholder)}
+                    size={select('Size', sizes, PasswordField.defaultProps.size)}
+                    security={boolean('Security', PasswordField.defaultProps.security)}
                 />
             ))(context)}
+
+            <div className='row mb-4'>
+                {Object.keys(sizes).map(size => (
+                    <div className='col' key={size}>
+                        <PasswordField label={size} size={size}/>
+                    </div>
+                ))}
+            </div>
+            <div className='row'>
+                <div className='col'>
+                    <PasswordField label='Disabled' disabled/>
+                </div>
+                <div className='col'>
+                    <PasswordField label='Required' required/>
+                </div>
+                <div className='col'>
+                    <PasswordField label='Placeholder' placeholder='Your password...'/>
+                </div>
+                <div className='col'>
+                    <PasswordField label='Security' security/>
+                </div>
+            </div>
         </div>
     ));
