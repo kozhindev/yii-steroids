@@ -10,7 +10,17 @@ export default class FieldSet extends React.PureComponent {
         ]),
         prefix: PropTypes.string,
         layout: PropTypes.string,
-        layoutCols: PropTypes.arrayOf(PropTypes.number),
+        layoutProps: PropTypes.object,
+    };
+
+    static contextTypes = {
+        model: PropTypes.oneOfType([
+            PropTypes.string,
+            PropTypes.func,
+        ]),
+        prefix: PropTypes.string,
+        layout: PropTypes.string,
+        layoutProps: PropTypes.object,
     };
 
     static childContextTypes = {
@@ -20,15 +30,18 @@ export default class FieldSet extends React.PureComponent {
         ]),
         prefix: PropTypes.string,
         layout: PropTypes.string,
-        layoutCols: PropTypes.arrayOf(PropTypes.number),
+        layoutProps: PropTypes.object,
     };
 
     getChildContext() {
         return {
             model: this.props.model || this.context.model,
             prefix: (this.context.prefix || '') + (this.props.prefix || ''),
-            layout: this.context.layout || this.props.layout,
-            layoutCols: this.context.layoutCols || this.props.layoutCols,
+            layout: this.props.layout || this.context.layout,
+            layoutProps: {
+                ...this.context.layoutProps,
+                ...this.props.layoutProps,
+            },
         };
     }
 

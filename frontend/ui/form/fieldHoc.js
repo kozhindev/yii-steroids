@@ -134,7 +134,7 @@ class FieldHoc extends React.PureComponent {
     }
 }
 
-export default config => WrappedComponent => class FieldHocWrapper extends React.PureComponent {
+export default config => WrappedComponent => class FieldHocWrapper extends React.Component {
 
     static WrappedComponent = WrappedComponent;
 
@@ -153,7 +153,7 @@ export default config => WrappedComponent => class FieldHocWrapper extends React
         ]),
         prefix: PropTypes.string,
         layout: PropTypes.string,
-        layoutCols: PropTypes.arrayOf(PropTypes.number),
+        layoutProps: PropTypes.object,
     };
 
     render() {
@@ -164,7 +164,10 @@ export default config => WrappedComponent => class FieldHocWrapper extends React
                 model={this.props.model || this.context.model}
                 prefix={this.props.prefix || this.context.prefix}
                 layout={this.props.layout || this.context.layout}
-                layoutCols={this.props.layoutCols || this.context.layoutCols}
+                layoutProps={{
+                    ...this.context.layoutProps,
+                    ...this.props.layoutProps,
+                }}
                 _wrappedComponent={WrappedComponent}
                 _config={{
                     ...defaultConfig,
