@@ -4,6 +4,7 @@ import DayPickerInput from 'react-day-picker/DayPickerInput';
 
 import {html} from 'components';
 const bem = html.bem('DateFieldView');
+import './DateFieldView.scss';
 
 export default class DateFieldView extends React.PureComponent {
 
@@ -22,7 +23,18 @@ export default class DateFieldView extends React.PureComponent {
             <div>
                 <DayPickerInput
                     {...this.props.pickerProps}
-                    className='form-control'
+                    inputProps={{
+                        className: bem(
+                            bem.block({
+                                size: this.props.size,
+                            }),
+                            'form-control',
+                            'form-control-' + this.props.size,
+                            this.props.className,
+                        ),
+                        disabled: this.props.disabled,
+                        required: this.props.required,
+                    }}
                 />
             </div>
         );

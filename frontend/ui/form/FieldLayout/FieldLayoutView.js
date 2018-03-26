@@ -18,7 +18,7 @@ export default class FieldLayoutView extends React.PureComponent {
         ]),
         required: PropTypes.bool,
         layout: PropTypes.oneOf(['default', 'inline', 'horizontal']),
-        layoutCols: PropTypes.arrayOf(PropTypes.number),
+        layoutProps: PropTypes.object,
         className: PropTypes.string,
     };
 
@@ -38,7 +38,7 @@ export default class FieldLayoutView extends React.PureComponent {
                             required: this.props.required
                         }),
                         this.props.layout === 'horizontal' && 'col-form-label text-right',
-                        this.props.layout === 'horizontal' && 'col-' + this.props.layoutCols[0],
+                        this.props.layout === 'horizontal' && 'col-' + this.props.layoutProps.cols[0],
                         this.props.layout === 'inline' && 'sr-only',
                     )}>
                         {this.props.label + ':'}
@@ -46,8 +46,8 @@ export default class FieldLayoutView extends React.PureComponent {
                 )}
                 <div className={bem(
                     bem.element('field'),
-                    this.props.layout === 'horizontal' && 'col-' + this.props.layoutCols[1],
-                    this.props.layout === 'horizontal' && !this.props.label && 'offset-' + this.props.layoutCols[0])
+                    this.props.layout === 'horizontal' && 'col-' + this.props.layoutProps.cols[1],
+                    this.props.layout === 'horizontal' && !this.props.label && 'offset-' + this.props.layoutProps.cols[0])
                 }>
                     {this.props.children}
                 </div>

@@ -35,7 +35,7 @@ export default class Form extends React.PureComponent {
         ]),
         action: PropTypes.string,
         layout: PropTypes.oneOf(['default', 'inline', 'horizontal']),
-        layoutCols: PropTypes.arrayOf(PropTypes.number),
+        layoutProps: PropTypes.object,
         onSubmit: PropTypes.func,
         onAfterSubmit: PropTypes.func,
         onChange: PropTypes.func,
@@ -56,7 +56,7 @@ export default class Form extends React.PureComponent {
             PropTypes.func,
         ]),
         layout: PropTypes.oneOf(['default', 'inline', 'horizontal']),
-        layoutCols: PropTypes.arrayOf(PropTypes.number),
+        layoutProps: PropTypes.object,
     };
 
     constructor() {
@@ -67,11 +67,13 @@ export default class Form extends React.PureComponent {
 
     getChildContext() {
         return {
-            model: this.props.model,
             prefix: this.props.prefix,
             formId: this.props.formId,
+            model: this.props.model,
             layout: this.props.layout,
-            layoutCols: this.props.layoutCols,
+            layoutProps: {
+                ...this.props.layoutProps,
+            },
         };
     }
 

@@ -2,7 +2,7 @@ import React from 'react';
 import {storiesOf} from '@storybook/react';
 import { withInfo } from '@storybook/addon-info';
 import {withReadme} from "storybook-readme";
-import {text, select, array} from '@storybook/addon-knobs/react';
+import {text, select, object} from '@storybook/addon-knobs/react';
 import InputField from '../InputField';
 import FieldLayout from "./FieldLayout";
 import README from './README.md'
@@ -21,7 +21,7 @@ storiesOf('Form', module)
                 <InputField
                     label={text('Label', 'Text')}
                     layout={select('Layout', layouts, FieldLayout.defaultProps.layout)}
-                    layoutCols={array('Layout columns', FieldLayout.defaultProps.layoutCols, ',')}
+                    layoutProps={object('Layout props', FieldLayout.defaultProps.layoutProps)}
                 />
             ))(context)}
 

@@ -16,14 +16,16 @@ export default class FieldLayout extends React.PureComponent {
         ]),
         required: PropTypes.bool,
         layout: PropTypes.oneOf(['default', 'inline', 'horizontal']),
-        layoutCols: PropTypes.arrayOf(PropTypes.number),
+        layoutProps: PropTypes.object,
         className: PropTypes.string,
         view: PropTypes.func,
     };
 
     static defaultProps = {
         layout: 'default',
-        layoutCols: [3, 6],
+        layoutProps: {
+            cols: [3, 6],
+        },
         required: false,
         className: '',
     };
@@ -33,6 +35,10 @@ export default class FieldLayout extends React.PureComponent {
         return (
             <FieldLayoutView
                 {...this.props}
+                layoutProps={{
+                    ...FieldLayout.defaultProps.layoutProps,
+                    ...this.props.layoutProps,
+                }}
             >
                 {this.props.children}
             </FieldLayoutView>

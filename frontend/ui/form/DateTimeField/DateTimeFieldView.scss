@@ -1,5 +1,13 @@
 @import '~react-day-picker/lib/style.css';
 
 .DateTimeFieldView {
+  display: flex;
 
+  &__date {
+    width: 100%;
+    margin: 0 5px 0 0;
+  }
+  &__time {
+    width: 100%;
+  }
 }
