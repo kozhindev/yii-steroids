@@ -35,6 +35,7 @@ export default class DateTimeField extends React.PureComponent {
 
     static defaultProps = {
         disabled: false,
+        required: false,
         size: 'md',
         className: '',
         displayDateFormat: 'DD.MM.YYYY',
