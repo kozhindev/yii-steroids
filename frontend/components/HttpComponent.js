@@ -1,6 +1,6 @@
 import React from 'react';
-import _trimStart from 'lodash/trimStart';
-import _trimEnd from 'lodash/trimEnd';
+import _trimStart from 'lodash-es/trimStart';
+import _trimEnd from 'lodash-es/trimEnd';
 // TODO import {setFlashes} from 'actions/notifications';
 import axios from 'axios';
 

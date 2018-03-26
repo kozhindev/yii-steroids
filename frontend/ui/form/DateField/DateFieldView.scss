@@ -1,5 +1,13 @@
 @import '~react-day-picker/lib/style.css';
 
+.DayPickerInput {
+  display: block;
+}
+
+.DayPickerInput-Overlay {
+  top: 5px;
+}
+
 .DateFieldView {
 
 }

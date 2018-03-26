@@ -13,6 +13,11 @@ const sizes = {
     lg: 'Large',
 };
 
+const types = {
+    input: 'Input',
+    date: 'Date',
+};
+
 storiesOf('Form', module)
     .addDecorator(withReadme(README))
     .add('RangeField', context => (
@@ -26,6 +31,7 @@ storiesOf('Form', module)
                     className={text('Class', RangeField.defaultProps.className)}
                     placeholderFrom={text('Placeholder From', RangeField.defaultProps.placeholderFrom)}
                     placeholderTo={text('Placeholder To', RangeField.defaultProps.placeholderTo)}
+                    type={select('Type', types, RangeField.defaultProps.type)}
                 />
             ))(context)}
             <div className='row mb-4'>
