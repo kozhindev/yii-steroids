@@ -84,7 +84,7 @@ storiesOf('Form', module)
                     <DropDownField
                         label='Search Placeholder'
                         autoComplete
-                        searchPlaceholder='Search..'
+                        searchPlaceholder='Search...'
                         items={items}
                     />
                 </div>
