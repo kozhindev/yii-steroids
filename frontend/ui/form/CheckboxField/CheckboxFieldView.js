@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 
 import {html} from 'components';
 const bem = html.bem('CheckboxFieldView');
+import './CheckboxFieldView.scss';
 
 export default class CheckboxFieldView extends React.PureComponent {
 
@@ -10,7 +11,6 @@ export default class CheckboxFieldView extends React.PureComponent {
         label: PropTypes.string,
         hint: PropTypes.string,
         required: PropTypes.bool,
-        size: PropTypes.oneOf(['sm', 'md', 'lg']),
         disabled: PropTypes.bool,
         inputProps: PropTypes.object,
         className: PropTypes.string,
@@ -18,20 +18,26 @@ export default class CheckboxFieldView extends React.PureComponent {
 
     render() {
         return (
-            <label>
-                <input
-                    className={bem(
-                        bem.block({
-                            size: this.props.size,
-                        }),
-                        'form-control',
-                        'form-control-' + this.props.size,
-                        this.props.className
-                    )}
-                    {...this.props.inputProps}
-                />
-                {this.props.label}
-            </label>
+            <div className={bem(bem.block(), 'form-check')}>
+                <label className={bem(
+                    bem.element('label',{
+                        required: this.props.required
+                    }),
+                    'form-check-label'
+                )}>
+                    <input
+                        className={bem(
+                            bem.element('input'),
+                            'form-check-input',
+                            this.props.className
+                        )}
+                        {...this.props.inputProps}
+                        disabled={this.props.disabled}
+                        required={this.props.required}
+                    />
+                    {this.props.label}
+                </label>
+            </div>
         );
     }
 
