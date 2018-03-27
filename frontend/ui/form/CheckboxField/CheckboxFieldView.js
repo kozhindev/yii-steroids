@@ -18,27 +18,34 @@ export default class CheckboxFieldView extends React.PureComponent {
 
     render() {
         return (
-            <div className={bem(bem.block(), 'form-check')}>
-                <label className={bem(
-                    bem.element('label',{
-                        required: this.props.required
-                    }),
-                    'form-check-label'
-                )}>
-                    <input
-                        className={bem(
-                            bem.element('input'),
-                            'form-check-input',
-                            this.props.className
-                        )}
-                        {...this.props.inputProps}
-                        disabled={this.props.disabled}
-                        required={this.props.required}
-                    />
-                    {this.props.label}
+            <div className={bem(
+                bem.block(),
+                'custom-control',
+                'custom-checkbox'
+            )}>
+                <input
+                    className={bem(
+                        bem.element('input'),
+                        'custom-control-input',
+                        this.props.className
+                    )}
+                    id={this.props.fieldId + '_' + 'checkbox'}
+                    {...this.props.inputProps}
+                    disabled={this.props.disabled}
+                    required={this.props.required}
+                />
+                <label
+                    className={bem(
+                        bem.element('label'),
+                        'custom-control-label'
+                    )}
+                    htmlFor={this.props.fieldId + '_' + 'checkbox'}
+                >
+                    <span className={bem.element('label-text', {required: this.props.required})}>
+                        {this.props.label}
+                    </span>
                 </label>
             </div>
         );
     }
-
 }
