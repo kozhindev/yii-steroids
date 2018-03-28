@@ -56,13 +56,14 @@ export default class DropDownFieldView extends React.PureComponent {
                             {item.label} &nbsp;
                         </span>
                     ))}
-                    {this.props.showReset && !!this.props.selectedItems.length && (
-                        <span
-                            className={bem.element('reset')}
-                            onClick={this.props.onReset}
-                        />
-                    )}
+
                 </div>
+                {this.props.showReset && !!this.props.selectedItems.length && (
+                    <span
+                        className={bem.element('reset')}
+                        onClick={this.props.onReset}
+                    />
+                )}
                 {this.props.isOpened && (
                     <div className={bem.element('drop-down')}>
                         {this.props.autoComplete && (
