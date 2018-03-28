@@ -57,7 +57,10 @@ export default class FieldListView extends React.PureComponent {
                             {this.props.items.map((field, rowIndex) => (
                                 <th
                                     key={rowIndex}
-                                    className={field.headerClassName}
+                                    className={bem(
+                                        bem.element('table-cell-header'),
+                                        field.headerClassName
+                                    )}
                                 >
                                     {field.label}
                                 </th>
@@ -73,21 +76,23 @@ export default class FieldListView extends React.PureComponent {
                                 {this.props.items.map((field, columnIndex) => (
                                     <td
                                         key={`${rowIndex}_${columnIndex}`}
-                                        className={field.className}
+                                        className={bem(
+                                            bem.element('table-cell'),
+                                            field.className
+                                        )}
                                     >
                                         {this.props.renderField(field, prefix)}
                                     </td>
                                 ))}
                                 {this.props.showRemove && (
-                                    <td>
+                                    <td className={bem.element('table-cell', 'remove')}>
                                         {(!this.props.required || rowIndex > 0) && (
-                                            <a
-                                                href='javascript:void(0)'
-                                                className={bem.element('link-remove')}
+                                            <div
+                                                className={bem.element('remove')}
                                                 onClick={() => this.props.onRemove(rowIndex)}
                                             >
                                                 &times;
-                                            </a>
+                                            </div>
                                         )}
                                     </td>
                                 )}
@@ -95,7 +100,7 @@ export default class FieldListView extends React.PureComponent {
                         ))}
                     </tbody>
                 </table>
-                {this.props.showAdd && (
+                {this.props.showAdd && !this.props.disabled && (
                     <a
                         href='javascript:void(0)'
                         className={bem.element('link-add')}
