@@ -48,7 +48,7 @@ export default class DropDownFieldView extends React.PureComponent {
         return (
             <div className={bem.block()}>
                 <div
-                    className={bem.element('selected-items')}
+                    className={bem.element('selected-items', {reset: this.props.showReset})}
                     onClick={this.props.onOpen}
                 >
                     {this.props.selectedItems.map(item => (
@@ -56,6 +56,12 @@ export default class DropDownFieldView extends React.PureComponent {
                             {item.label} &nbsp;
                         </span>
                     ))}
+                    {this.props.showReset && !!this.props.selectedItems.length && (
+                        <span
+                            className={bem.element('reset')}
+                            onClick={this.props.onReset}
+                        />
+                    )}
                 </div>
                 {this.props.isOpened && (
                     <div className={bem.element('drop-down')}>

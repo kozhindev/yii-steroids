@@ -114,7 +114,8 @@ export default class DropDownField extends React.PureComponent {
         this.props.onSearch(e.target.value);
     }
 
-    _onReset() {
+    _onReset(e) {
+        e.stopPropagation();
         this.props.input.onChange(null);
     }
 
