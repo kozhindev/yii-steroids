@@ -2,6 +2,13 @@
 @import '~bootstrap/scss/_variables.scss';
 
 .FieldListView {
+
+  &__table {
+    th, thead th, td {
+      border: none;
+    }
+  }
+
   &__table-cell {
     .form-group {
       margin-bottom: 0;
@@ -13,11 +20,20 @@
   }
 
   &__table-cell-header {
-    border: none;
+    padding-bottom: 0 !important;
   }
 
   &__remove {
     cursor: pointer;
     color: $danger;
+  }
+
+  &__link-add {
+    margin-left: 0.75rem;
+    border-bottom: 1px dashed $link-color;
+
+    &:hover {
+      text-decoration: none;
+    }
   }
 }

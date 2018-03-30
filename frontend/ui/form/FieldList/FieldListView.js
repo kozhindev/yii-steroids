@@ -51,7 +51,7 @@ export default class FieldListView extends React.PureComponent {
     render() {
         return (
             <div className={bem(bem.block(), this.props.className)}>
-                <table className='table'>
+                <table className={bem(bem.element('table'), 'table')}>
                     <thead>
                         <tr>
                             {this.props.items.map((field, rowIndex) => (
