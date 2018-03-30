@@ -1,8 +1,8 @@
 @import '~bootstrap/scss/_functions.scss';
 @import '~bootstrap/scss/_variables.scss';
 
-.FieldLayoutView {
-  &__label {
+.CheckboxFieldView {
+  &__label-text {
     &_required:after {
       display: inline-block;
       content: '*';

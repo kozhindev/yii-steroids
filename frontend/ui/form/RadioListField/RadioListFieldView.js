@@ -38,6 +38,7 @@ export default class RadioListFieldView extends React.PureComponent {
                             {...this.props.inputProps}
                             id={this.props.fieldId + '_' + item.id}
                             className='custom-control-input'
+                            disabled={this.props.disabled}
                             onChange={() => this.props.onItemClick(item)}
                         />
                         <label

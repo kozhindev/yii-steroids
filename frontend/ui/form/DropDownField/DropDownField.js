@@ -64,6 +64,12 @@ export default class DropDownField extends React.PureComponent {
 
     static defaultProps = {
         disabled: false,
+        required: false,
+        className: '',
+        searchPlaceholder: locale.t('Поиск'),
+        autoComplete: false,
+        showReset: false,
+        multiple: false,
     };
 
     constructor() {

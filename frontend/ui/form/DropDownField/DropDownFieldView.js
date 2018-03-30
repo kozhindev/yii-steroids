@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 
 import {html} from 'components';
 const bem = html.bem('DropDownFieldView');
+import './DropDownFieldView.scss'
 
 export default class DropDownFieldView extends React.PureComponent {
 
@@ -45,43 +46,43 @@ export default class DropDownFieldView extends React.PureComponent {
 
     render() {
         return (
-            <div>
+            <div className={bem.block()}>
                 <div
-                    className={bem.element('selected-items')}
+                    className={bem.element('selected-items', {reset: this.props.showReset})}
                     onClick={this.props.onOpen}
-                    style={{
-                        width: 200,
-                        height: 30,
-                        border: 'solid 1px #eee',
-                    }}
                 >
                     {this.props.selectedItems.map(item => (
                         <span key={item.id}>
-                            {item.label}
+                            {item.label} &nbsp;
                         </span>
                     ))}
+
                 </div>
+                {this.props.showReset && !!this.props.selectedItems.length && (
+                    <span
+                        className={bem.element('reset')}
+                        onClick={this.props.onReset}
+                    />
+                )}
                 {this.props.isOpened && (
                     <div className={bem.element('drop-down')}>
                         {this.props.autoComplete && (
-                            <input
-                                {...this.props.searchInputProps}
-                                className={bem(bem.element('search-input'), 'form-control')}
-                            />
+                            <div className={bem.element('search')}>
+                                <input
+                                    {...this.props.searchInputProps}
+                                    className={bem(bem.element('search-input'), 'form-control')}
+                                />
+                            </div>
                         )}
                         <div className={bem.element('drop-down-list')}>
                             {this.props.items.map(item => (
                                 <div
                                     key={item.id}
-                                    className={bem.element('drop-down-item', {hover: item.isHovered})}
+                                    className={bem.element('drop-down-item', {hover: item.isHovered, select: item.isSelected})}
                                     onClick={() => this.props.onItemClick(item)}
                                     onMouseOver={() => this.props.onItemMouseOver(item)}
                                 >
-                                    {this.props.multiple && (
-                                        <span>
-                                            {item.isSelected ? '[x]' : '[ ]'}
-                                        </span>
-                                    )}
+
                                     {item.label}
                                 </div>
                             ))}

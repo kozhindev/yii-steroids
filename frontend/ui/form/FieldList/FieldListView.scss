@@ -1,3 +1,23 @@
-.FieldListView {
+@import '~bootstrap/scss/_functions.scss';
+@import '~bootstrap/scss/_variables.scss';
 
+.FieldListView {
+  &__table-cell {
+    .form-group {
+      margin-bottom: 0;
+    }
+
+    &_remove {
+      vertical-align: middle !important;
+    }
+  }
+
+  &__table-cell-header {
+    border: none;
+  }
+
+  &__remove {
+    cursor: pointer;
+    color: $danger;
+  }
 }

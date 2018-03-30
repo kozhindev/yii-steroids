@@ -4,6 +4,7 @@ import {submit} from 'redux-form';
 
 import {view} from 'components';
 import fieldHoc from '../fieldHoc';
+import './FieldListView.scss';
 
 @fieldHoc({
     list: true,

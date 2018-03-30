@@ -21,7 +21,6 @@ export default class CheckboxField extends React.PureComponent {
             onChange: PropTypes.func,
         }),
         required: PropTypes.bool,
-        size: PropTypes.oneOf(['sm', 'md', 'lg']),
         disabled: PropTypes.bool,
         inputProps: PropTypes.object,
         onChange: PropTypes.func,
@@ -31,7 +30,7 @@ export default class CheckboxField extends React.PureComponent {
 
     static defaultProps = {
         disabled: false,
-        size: 'md',
+        required: false,
         className: '',
     };
 

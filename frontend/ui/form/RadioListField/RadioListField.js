@@ -19,7 +19,6 @@ export default class RadioListField extends React.PureComponent {
             onChange: PropTypes.func,
         }),
         required: PropTypes.bool,
-        size: PropTypes.oneOf(['sm', 'md', 'lg']),
         disabled: PropTypes.bool,
         inputProps: PropTypes.object,
         onChange: PropTypes.func,
@@ -36,7 +35,7 @@ export default class RadioListField extends React.PureComponent {
 
     static defaultProps = {
         disabled: false,
-        size: 'md',
+        required: false,
         className: '',
     };
 
@@ -49,6 +48,7 @@ export default class RadioListField extends React.PureComponent {
                     name: this.props.input.name,
                     type: 'radio',
                     ...this.props.inputProps,
+                    disabled: this.props.disabled,
                 }}
                 items={this.props.items.map(item => ({
                     ...item,
