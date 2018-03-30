@@ -14,5 +14,10 @@
     },
     "autoload": {
         "psr-4": {"steroids\\": "backend"}
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0.x-dev"
+        }
     }
 }
