@@ -180,7 +180,12 @@ module.exports = (config, entry) => {
     // Add hot replace to each bundles
     if (!utils.isProduction()) {
         Object.keys(webpackConfig.entry).map(key => {
-            webpackConfig.entry[key].unshift(`webpack-dev-server/client?http://${config.host}:${config.port}`, 'webpack/hot/dev-server');
+            webpackConfig.entry[key] = []
+                .concat([
+                    `webpack-dev-server/client?http://${config.host}:${config.port}`,
+                    'webpack/hot/dev-server',
+                ])
+                .concat(webpackConfig.entry[key])
         });
     }
 
