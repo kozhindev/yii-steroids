@@ -38,7 +38,7 @@
     "eslint-plugin-react": "^7.7.0",
     "extract-text-webpack-plugin": "^4.0.0-beta.0",
     "fileup-core": "^1.1.2",
-    "fileup-redux": "^1.1.2",
+    "fileup-redux": "^1.1.3",
     "glob-promise": "^3.4.0",
     "html-webpack-plugin": "^3.0.6",
     "intl-messageformat": "^2.2.0",
