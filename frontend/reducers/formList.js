@@ -1,9 +1,9 @@
-import _get from 'lodash/get';
-import _pick from 'lodash/pick';
-import _keyBy from 'lodash/keyBy';
-import _find from 'lodash/find';
-import _filter from 'lodash/filter';
-import _values from 'lodash/values';
+import _get from 'lodash-es/get';
+import _pick from 'lodash-es/pick';
+import _keyBy from 'lodash-es/keyBy';
+import _find from 'lodash-es/find';
+import _filter from 'lodash-es/filter';
+import _values from 'lodash-es/values';
 
 import {
     FORM_LIST_BEFORE_FETCH,

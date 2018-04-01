@@ -1,6 +1,6 @@
-import _filter from 'lodash/filter';
-import _every from 'lodash/every';
-import _extend from 'lodash/extend';
+import _filter from 'lodash-es/filter';
+import _every from 'lodash-es/every';
+import _extend from 'lodash-es/extend';
 
 import {LIST_BEFORE_FETCH, LIST_AFTER_FETCH, LIST_ITEM_UPDATE, LIST_REMOVE, LIST_TOGGLE_ITEM, LIST_TOGGLE_ALL} from '../actions/list';
 

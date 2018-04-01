@@ -22,7 +22,7 @@ class BootstrapTest extends TestCase
         );
         $this->assertEquals(
             ['log', 'frontendState', 'one'],
-            DefaultConfig::getMainConfig([], $appDir, $namespace)['bootstrap']
+            DefaultConfig::getMainConfig(__DIR__, [], $appDir, $namespace)['bootstrap']
         );
     }
 }

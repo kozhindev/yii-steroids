@@ -1,6 +1,6 @@
-import _merge from 'lodash/merge';
+import _merge from 'lodash-es/merge';
 
-import ClientStorageComponent from '/ClientStorageComponent';
+import ClientStorageComponent from './ClientStorageComponent';
 import HtmlComponent from './HtmlComponent';
 import HttpComponent from './HttpComponent';
 import LocaleComponent from './LocaleComponent';

@@ -1,4 +1,4 @@
-import {SHOW_NOTIFICATION, HIDE_NOTIFICATION} from 'actions/notifications';
+import {SHOW_NOTIFICATION, HIDE_NOTIFICATION} from '../actions/notifications';
 
 export default (state = {}, action) => {
     switch (action.type) {

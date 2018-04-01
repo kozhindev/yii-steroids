@@ -3,14 +3,9 @@
 namespace steroids\boot;
 
 use steroids\helpers\DefaultConfig;
+use yii\helpers\ArrayHelper;
 
 require_once __DIR__ . '/../helpers/DefaultConfig.php';
-
-// Get root cwd
-defined('STEROIDS_ROOT_DIR') || define('STEROIDS_ROOT_DIR', getcwd());
-defined('STEROIDS_APP_DIR') || define('STEROIDS_APP_DIR', STEROIDS_ROOT_DIR . '/app');
-defined('STEROIDS_VENDOR_DIR') || define('STEROIDS_VENDOR_DIR', STEROIDS_ROOT_DIR . '/vendor');
-defined('STEROIDS_IS_CLI') || define('STEROIDS_IS_CLI', php_sapi_name() == 'cli');
 
 // Load custom config, if exists
 $config = DefaultConfig::safeLoadConfig(STEROIDS_ROOT_DIR . '/config.php');
@@ -30,10 +25,9 @@ require(STEROIDS_VENDOR_DIR . '/autoload.php');
 $envConfig = DefaultConfig::safeLoadConfig(STEROIDS_APP_DIR . '/config/env/' . YII_ENV . '.php');
 
 // Load main config
-$mainConfig = DefaultConfig::safeLoadConfig(STEROIDS_ROOT_DIR . '/app/config/' . (STEROIDS_IS_CLI ? 'console' : 'web') . '.php');
+$mainConfig = DefaultConfig::safeLoadConfig(STEROIDS_ROOT_DIR . '/app/config/main.php');
 
-return \yii\helpers\ArrayHelper::merge(
-    $mainConfig,
-    $envConfig,
-    $config
-);
+// Load web/console config
+$appConfig = DefaultConfig::safeLoadConfig(STEROIDS_ROOT_DIR . '/app/config/' . (STEROIDS_IS_CLI ? 'console' : 'web') . '.php');
+
+return ArrayHelper::merge($mainConfig, $appConfig, $envConfig, $config);
