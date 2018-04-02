@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {submit} from 'redux-form';
 
 import {view} from 'components';
 import fieldHoc from '../fieldHoc';

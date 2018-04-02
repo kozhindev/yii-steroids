@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
-import MomentLocaleUtils, {formatDate, parseDate} from 'react-day-picker/moment';
+import MomentLocaleUtils from 'react-day-picker/moment';
 
 import {view, locale} from 'components';
 import fieldHoc from '../fieldHoc';

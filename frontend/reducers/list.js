@@ -53,7 +53,7 @@ export default (state = {}, action) => {
             const list2 = state[action.id];
             const items2 = list2 && list2.items || [];
 
-            _filter(items2, action.where).forEach((item, index) => {
+            _filter(items2, action.where).forEach(item => {
                 // Update old object, fix saved it in comet collection (if used)
                 _extend(item, action.item);
 

@@ -28,7 +28,7 @@ export default class RadioListFieldView extends React.PureComponent {
 
     render() {
         return (
-            <div>
+            <div className={bem.block()}>
                 {this.props.items.map(item => (
                     <div
                         key={item.id}

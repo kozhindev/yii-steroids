@@ -95,8 +95,8 @@ export default class RangeField extends React.PureComponent {
 
         switch (this.props.type) {
             case 'date':
-                const valueFromFormat = _get(this.props.fromProps, 'valueFormat', FieldComponentInternal.defaultProps.valueFormat)
-                const valueToFormat = _get(this.props.toProps, 'valueFormat', FieldComponentInternal.defaultProps.valueFormat)
+                const valueFromFormat = _get(this.props.fromProps, 'valueFormat', FieldComponentInternal.defaultProps.valueFormat);
+                const valueToFormat = _get(this.props.toProps, 'valueFormat', FieldComponentInternal.defaultProps.valueFormat);
                 const from = this.props.inputFrom.value ? moment(this.props.inputFrom.value, valueFromFormat).toDate() : undefined;
                 const to = this.props.inputTo.value ? moment(this.props.inputTo.value, valueToFormat).toDate() : undefined;
                 const modifiers = {

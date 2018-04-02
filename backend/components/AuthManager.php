@@ -137,7 +137,7 @@ class AuthManager extends PhpManager
      */
     protected function checkModelAccessInternal($user, $model, $rule)
     {
-        if ($model instanceof BaseObject) {
+        if (is_object($model)) {
             $model = $model::className();
         }
 
@@ -160,7 +160,7 @@ class AuthManager extends PhpManager
      */
     protected function checkAttributeAccessInternal($user, $model, $attribute, $rule)
     {
-        if ($model instanceof BaseObject) {
+        if (is_object($model)) {
             $model = $model::className();
         }
 

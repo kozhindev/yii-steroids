@@ -69,7 +69,7 @@ class FieldHoc extends React.PureComponent {
             };
             this._fieldId = FieldHoc.generateUniqueId();
         } else {
-            this._fieldId = this.props.formId + '_' + FieldHoc.getName(this.props, this.props._config.attributes[0])
+            this._fieldId = this.props.formId + '_' + FieldHoc.getName(this.props, this.props._config.attributes[0]);
         }
     }
 

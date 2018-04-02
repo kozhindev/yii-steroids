@@ -1,6 +1,6 @@
 <?php
 
-namespace steroids;
+namespace steroids\helpers;
 
 class DateHelper
 {

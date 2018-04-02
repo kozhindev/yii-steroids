@@ -2,6 +2,7 @@
 
 namespace steroids\components;
 
+use steroids\helpers\DateHelper;
 use yii\base\Component;
 use yii\helpers\Json;
 use yii\web\View;
@@ -53,7 +54,7 @@ class FrontendState extends Component
     {
         $this->set('config.locale', [
             'language' => \Yii::$app->language,
-            'backendTimeZone' => Utils::parseTimeZone(\Yii::$app->timeZone),
+            'backendTimeZone' => DateHelper::parseTimeZone(\Yii::$app->timeZone),
         ]);
 
         if (\Yii::$app->has('types')) {

@@ -2,10 +2,9 @@
 
 namespace steroids\widgets;
 
+use steroids\base\Model;
 use steroids\components\AuthManager;
 use Yii;
-use alexantr\datetimepicker\DateTimePicker;
-use app\core\base\AppModel;
 use yii\data\ActiveDataProvider;
 use yii\db\ActiveQuery;
 use yii\grid\ActionColumn;
@@ -45,7 +44,7 @@ class GridView extends \yii\grid\GridView
             /** @var ActiveQuery $query */
             $query = $this->dataProvider->query;
 
-            /** @var AppModel $modelClass */
+            /** @var Model $modelClass */
             $modelClass = $query->modelClass;
 
             foreach ($modelClass::meta() as $attribute => $item) {
@@ -102,33 +101,29 @@ class GridView extends \yii\grid\GridView
             }
 
             $this->columns[] = Yii::createObject([
-                'class' => ActionColumn::className(),
+                'class' => ActionColumn::class,
                 'grid' => $this,
                 'template' => '{' . implode('} {', $templateButtons) . '}',
                 'buttons' => $buttons,
-                'urlCreator' => function($action, $model) {
-                    /** @type AppModel $model */
+                'urlCreator' => function($action, Model $model) {
                     $pkParam = $this->pkParam ?: $model::getRequestParamName();
 
                     return Url::to(array_merge([$action, $pkParam => $model->primaryKey], $this->actionParams));
                 },
                 'visibleButtons' => [
-                    'view' => function($model) {
-                        /** @type AppModel $model */
+                    'view' => function(Model $model) {
                         $pkParam = $this->pkParam ?: $model::getRequestParamName();
                         $url = array_merge(['view', $pkParam => $model->primaryKey], $this->actionParams);
 
                         return \Yii::$app->siteMap->isAllowAccess($url) && $model->canView(Yii::$app->user->model);
                     },
-                    'update' => function($model) {
-                        /** @type AppModel $model */
+                    'update' => function(Model $model) {
                         $pkParam = $this->pkParam ?: $model::getRequestParamName();
                         $url = array_merge(['update', $pkParam => $model->primaryKey], $this->actionParams);
 
                         return \Yii::$app->siteMap->isAllowAccess($url) && $model->canUpdate(Yii::$app->user->model);
                     },
-                    'delete' => function($model) {
-                        /** @type AppModel $model */
+                    'delete' => function(Model $model) {
                         $pkParam = $this->pkParam ?: $model::getRequestParamName();
                         $url = array_merge(['delete', $pkParam => $model->primaryKey], $this->actionParams);
 

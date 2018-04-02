@@ -8,9 +8,7 @@ use yii\helpers\ArrayHelper;
 defined('STEROIDS_IS_CLI') || define('STEROIDS_IS_CLI', php_sapi_name() == 'cli');
 defined('STEROIDS_ROOT_DIR') || define(
     'STEROIDS_ROOT_DIR',
-    STEROIDS_IS_CLI
-        ? dirname(realpath($_SERVER['argv'][0]))
-        : dirname(dirname(basename($_SERVER['SCRIPT_FILENAME'], '.php')))
+    STEROIDS_IS_CLI ? dirname(realpath($_SERVER['argv'][0])) : dirname(dirname($_SERVER['SCRIPT_FILENAME']))
 );
 defined('STEROIDS_APP_DIR') || define('STEROIDS_APP_DIR', STEROIDS_ROOT_DIR . '/app');
 defined('STEROIDS_VENDOR_DIR') || define('STEROIDS_VENDOR_DIR', STEROIDS_ROOT_DIR . '/vendor');
@@ -124,6 +122,7 @@ class DefaultConfig
             'timeZone' => $timeZone,
             'bootstrap' => [
                 'log',
+                'siteMap',
                 'frontendState',
             ],
             'components' => [
@@ -229,7 +228,7 @@ class DefaultConfig
             ]);
         }
 
-        return $config;
+        return ArrayHelper::merge($config, $yiiCustom);
     }
 
     /**
@@ -247,7 +246,10 @@ class DefaultConfig
                 require_once $path;
             }
 
-            self::$moduleClasses = static::scanModuleClasses($steroidsConfig['appDir'], $steroidsConfig['namespace']);
+            self::$moduleClasses = array_merge(
+                static::scanModuleClasses($steroidsConfig['appDir'], $steroidsConfig['namespace']),
+                static::scanModuleClasses(dirname(__DIR__) . '/modules', 'steroids\\modules')
+            );
         }
 
         return self::$moduleClasses;

@@ -23,6 +23,8 @@ class AccessMiddleware extends BaseObject
     /**
      * @param ActionEvent $event
      * @throws NotFoundHttpException
+     * @throws \yii\base\InvalidConfigException
+     * @throws \yii\web\ForbiddenHttpException
      */
     public static function checkAccess($event)
     {

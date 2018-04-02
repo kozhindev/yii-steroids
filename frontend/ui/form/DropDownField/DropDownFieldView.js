@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 import {html} from 'components';
 const bem = html.bem('DropDownFieldView');
-import './DropDownFieldView.scss'
+import './DropDownFieldView.scss';
 
 export default class DropDownFieldView extends React.PureComponent {
 

@@ -11,10 +11,10 @@ require_once __DIR__ . '/../helpers/DefaultConfig.php';
 $config = DefaultConfig::safeLoadConfig(STEROIDS_ROOT_DIR . '/config.php');
 
 // Init Yii constants
-defined('YII_DEBUG') || define('YII_DEBUG', false);
 defined('YII_ENV') || define('YII_ENV', isset($config['env']) ? $config['env'] : 'production');
+defined('YII_DEBUG') || define('YII_DEBUG', in_array(YII_ENV, ['dev', 'development', 'preview', 'stage']));
 defined('YII_ENV_PROD') || define('YII_ENV_PROD', in_array(YII_ENV, ['preview', 'stage', 'beta', 'prod', 'production']));
-defined('YII_ENV_PROD') || define('YII_ENV_DEV', in_array(YII_ENV, ['dev', 'development']));
+defined('YII_ENV_DEV') || define('YII_ENV_DEV', in_array(YII_ENV, ['dev', 'development']));
 defined('YII_ENV_TEST') || define('YII_ENV_TEST', YII_ENV === 'test');
 unset($config['env']);
 

@@ -43,7 +43,7 @@ export default class CheckboxField extends React.PureComponent {
                     name: this.props.input.name,
                     type: 'checkbox',
                     checked: !!this.props.input.value,
-                    onChange: e => this.props.input.onChange(!this.props.input.value),
+                    onChange: () => this.props.input.onChange(!this.props.input.value),
                     disabled: this.props.disabled,
                     ...this.props.inputProps,
                 }}

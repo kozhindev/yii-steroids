@@ -19,7 +19,7 @@ export default class LocaleComponent {
         this.translations = {};
 
         // Publish to global
-        window.__ = this.translate.bind(locale);
+        window.__ = this.translate.bind(this);
     }
 
     moment(date, format) {

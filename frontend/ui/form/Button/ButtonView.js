@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import {html} from 'components';
-import './ButtonView.scss'
+import './ButtonView.scss';
 
 const bem = html.bem('ButtonView');
 
@@ -51,7 +51,8 @@ export default class ButtonView extends React.PureComponent {
                             'btn-' + this.props.size,
                             'btn-' + (this.props.outline ? 'outline-' : '') + this.props.color,
                             this.props.block ? 'btn-block' : '',
-                    )}>
+                        )}
+                    >
                         {this.props.icon && (
                             <span
                                 className={bem(
@@ -62,9 +63,11 @@ export default class ButtonView extends React.PureComponent {
                         )}
                         {this.props.children}
                     </button>
-                ) || (
-                    <a className={bem.block({link: true})}
-                       href={this.props.url}
+                ) ||
+                (
+                    <a
+                        className={bem.block({link: true})}
+                        href={this.props.url}
                     >
                         {this.props.children}
                     </a>
