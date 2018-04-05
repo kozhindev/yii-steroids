@@ -23,7 +23,6 @@ class SiteMap extends Component
      */
     private $_items = [];
     private $_requestedRoute;
-    private $isModulesFetched = false;
 
     /**
      * Recursive scan all items and return url rules for `UrlManager` component
@@ -121,6 +120,11 @@ class SiteMap extends Component
         parent::init();
 
         if (Yii::$app && Yii::$app->has('urlManager')) {
+            // Fetch items from modules
+            foreach (Yii::$app->getModules() as $id => $module) {
+                $this->loadModuleSiteMapRecursive($module);
+            }
+
             Yii::$app->urlManager->addRules(static::itemsToRules($this->_items), false);
         }
     }
@@ -140,17 +144,6 @@ class SiteMap extends Component
      */
     public function getItems()
     {
-        if ($this->isModulesFetched === false) {
-            $this->isModulesFetched = true;
-
-            // Fetch items from modules
-            if (Yii::$app) {
-                foreach (Yii::$app->getModules() as $id => $module) {
-                    $this->loadModuleSiteMapRecursive($module);
-                }
-            }
-        }
-
         return $this->_items;
     }
 

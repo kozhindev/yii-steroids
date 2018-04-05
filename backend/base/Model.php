@@ -8,7 +8,6 @@ use steroids\exceptions\ModelDeleteException;
 use steroids\exceptions\ModelSaveException;
 use steroids\traits\MetaTrait;
 use yii\base\InvalidConfigException;
-use yii\base\InvalidParamException;
 use yii\db\ActiveRecord;
 use yii\helpers\ArrayHelper;
 use yii\web\NotFoundHttpException;
@@ -95,6 +94,8 @@ class Model extends ActiveRecord
 
     /**
      * @throws ModelDeleteException
+     * @throws \Throwable
+     * @throws \yii\db\StaleObjectException
      */
     public function deleteOrPanic()
     {
@@ -108,6 +109,8 @@ class Model extends ActiveRecord
      */
     public function load($data, $formName = null)
     {
+        $formName = $formName === null ? $this->formName() : $formName;
+
         // Load relations
         $this->loadRelationData($data, $formName);
         $this->loadRelationIds($data, $formName);
@@ -131,7 +134,7 @@ class Model extends ActiveRecord
         $scenarios = $this->scenarios();
         $scenario = $this->getScenario();
         if (!isset($scenarios[$scenario])) {
-            throw new InvalidParamException("Unknown scenario: $scenario");
+            throw new InvalidConfigException("Unknown scenario: $scenario");
         }
 
         if ($attributeNames === null) {
@@ -190,7 +193,6 @@ class Model extends ActiveRecord
     {
         $errors = parent::getErrors($attribute);
 
-        // TODO
         if ($attribute === null && !empty($this->_listenRelations)) {
             $errors = array_merge($errors, $this->getRelationErrors());
         }

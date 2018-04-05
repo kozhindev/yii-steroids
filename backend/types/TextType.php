@@ -10,14 +10,13 @@ class TextType extends Type
     public $formatter = 'ntext';
 
     /**
-     * @return array
+     * @inheritdoc
      */
-    public function frontendConfig()
+    public function getFieldProps($model, $attribute, $item)
     {
         return [
-            'field' => [
-                'component' => 'TextAreaField',
-            ]
+            'component' => 'TextField',
+            'attribute' => $attribute,
         ];
     }
 

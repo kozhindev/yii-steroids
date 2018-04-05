@@ -18,7 +18,7 @@ export default class HtmlFieldView extends React.PureComponent {
 
     render() {
         return (
-            <div>
+            <div className={bem.block()}>
                 <ReactQuill {...this.props.editorProps} />
             </div>
         );

@@ -8,14 +8,13 @@ use yii\helpers\ArrayHelper;
 class DateTimeType extends DateType
 {
     /**
-     * @return array
+     * @inheritdoc
      */
-    public function frontendConfig()
+    public function getFieldProps($model, $attribute, $item)
     {
         return [
-            'field' => [
-                'component' => 'DateTimeField',
-            ]
+            'component' => 'DateTimeField',
+            'attribute' => $attribute,
         ];
     }
 

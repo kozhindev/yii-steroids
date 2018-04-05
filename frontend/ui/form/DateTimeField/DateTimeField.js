@@ -3,12 +3,14 @@ import PropTypes from 'prop-types';
 import moment from 'moment';
 import _isEqual from 'lodash-es/isEqual';
 
-import {view, locale} from 'components';
+import {ui} from 'components';
 import fieldHoc from '../fieldHoc';
 import DateField from '../DateField';
 import InputField from '../InputField';
 
-@fieldHoc()
+@fieldHoc({
+    componentId: 'form.DateTimeField',
+})
 export default class DateTimeField extends React.PureComponent {
 
     static propTypes = {
@@ -60,7 +62,7 @@ export default class DateTimeField extends React.PureComponent {
         const DateFieldInternal = DateField.WrappedComponent;
         const InputFieldInternal = InputField.WrappedComponent;
 
-        const DateTimeFieldView = this.props.view || view.get('form.DateTimeFieldView');
+        const DateTimeFieldView = this.props.view || ui.getView('form.DateTimeFieldView');
         return (
             <DateTimeFieldView
                 {...this.props}

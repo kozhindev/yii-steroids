@@ -10,7 +10,6 @@ use yii\web\UrlRule;
 
 /**
  * @package steroids\components
- * @property string|string[]|null $roles
  * @property callable|callable[]|null $accessCheck
  * @property bool $active
  * @property-read string $modelLabel
@@ -39,12 +38,6 @@ class SiteMapItem extends BaseObject
      * @var string|array|UrlRule
      */
     public $urlRule;
-
-    /**
-     * Value format is identical to \yii\filters\AccessRule::roles. "?", "@" or string role are supported
-     * @var string|string[]
-     */
-    private $_roles;
 
     /**
      * @var bool
@@ -138,25 +131,6 @@ class SiteMapItem extends BaseObject
     }
 
     /**
-     * @return string|string[]|null
-     */
-    public function getRoles()
-    {
-        if ($this->_roles === null && $this->parent) {
-            return $this->parent->getRoles();
-        }
-        return $this->_roles;
-    }
-
-    /**
-     * @param string|string[]|null $value
-     */
-    public function setRoles($value)
-    {
-        $this->_roles = $value;
-    }
-
-    /**
      * @return bool
      */
     public function getActive()
@@ -212,68 +186,19 @@ class SiteMapItem extends BaseObject
 
     /**
      * @param array $url
-     * @return bool
-     * @throws Exception
+     * @return bool|mixed
      */
     public function checkVisible($url)
     {
-        /** @var AuthManager $authManager */
-        $authManager = Yii::$app && Yii::$app->has('authManager') && Yii::$app->authManager instanceof AuthManager
-            ? Yii::$app->authManager
-            : null;
-
-        $roles = (array) $this->getRoles();
-
-        $rules = [];
-        if ($authManager) {
-            $rules = array_merge($rules, $roles);
-        }
-
         if (is_callable($this->accessCheck)) {
-            $rules[] = $this->accessCheck;
-        } elseif (is_array($this->accessCheck) && count($this->accessCheck) === 2 && call_user_func_array('method_exists', $this->accessCheck)) {
-            $rules[] = $this->accessCheck;
-        } elseif ($this->accessCheck) {
-            $rules = array_merge($rules, (array) $this->accessCheck);
+            return call_user_func($this->accessCheck, $url);
         }
 
-        if (!empty($rules)) {
-            foreach ($rules as $rule) {
-                if (is_callable($rule)) {
-                    $params = call_user_func($rule, $url);
-                    if (is_array($params)) {
-                        $permissionName = ArrayHelper::remove($params, '0');
-                        if ($permissionName && Yii::$app->user->can($permissionName, $params)) {
-                            return true;
-                        }
-                    } elseif (is_bool($params)) {
-                        if ($params) {
-                            return true;
-                        }
-                    }
-                } elseif ($rule === '?') {
-                    if (Yii::$app->user->isGuest) {
-                        return true;
-                    }
-                } elseif ($rule === '@') {
-                    if (!Yii::$app->user->isGuest) {
-                        return true;
-                    }
-                } elseif (Yii::$app->user->can($rule)) {
-                    return true;
-                }
-            }
+        if (Yii::$app && Yii::$app->has('authManager') && Yii::$app->authManager instanceof AuthManager) {
+            return Yii::$app->authManager->checkMenuAccess(Yii::$app->user->identity, $this);
         }
 
-        // Check access by auth manager
-        if ($authManager) {
-            if (!empty($roles)) {
-                throw new Exception('Remove "roles" param in menu item config, because you used "authManager" component for access check. Item ID: ' . implode('.', $this->pathIds));
-            }
-            return $authManager->checkMenuAccess(Yii::$app->user->identity, $this);
-        }
-
-        return true;
+        return false;
     }
 
     public function getNormalizedUrl()
@@ -291,12 +216,12 @@ class SiteMapItem extends BaseObject
 
                     switch ($getter) {
                         case 'user':
-                            $url[$key] = MenuHelper::paramUser($name);
+                            $url[$key] = SiteMap::paramUser($name);
                             break;
 
                         case '':
                         case 'get':
-                            $url[$key] = MenuHelper::paramGet($name);
+                            $url[$key] = SiteMap::paramGet($name);
                             break;
                     }
                 } elseif ($value !== null) {
@@ -309,7 +234,7 @@ class SiteMapItem extends BaseObject
                 preg_match_all('/<([^:>]+)[:>]/', $this->urlRule, $matches);
                 foreach ($matches[1] as $key) {
                     if (!isset($url[$key])) {
-                        $url[$key] = MenuHelper::paramGet($key);
+                        $url[$key] = SiteMap::paramGet($key);
                     }
                 }
             }
@@ -328,7 +253,7 @@ class SiteMapItem extends BaseObject
             $coreModelClassName = '\steroids\base\Model';
             if ($modelClass && class_exists($coreModelClassName) && is_subclass_of($modelClass, $coreModelClassName)) {
                 $pkParam = $modelClass::getRequestParamName();
-                $primaryKey = MenuHelper::paramGet($pkParam);
+                $primaryKey = SiteMap::paramGet($pkParam);
                 if ($primaryKey) {
                     $model = $modelClass::findOne($primaryKey);
                     if ($model) {
@@ -348,7 +273,6 @@ class SiteMapItem extends BaseObject
         return [
             'label' => $this->modelLabel,
             'url' => $this->getNormalizedUrl(),
-            'roles' => $this->getRoles(),
             'visible' => $this->getVisible(),
             'encode' => $this->encode,
             'active' => $this->active,

@@ -17,6 +17,9 @@ export default class LocaleComponent {
         this.language = 'en';
         this.backendTimeZone = null;
         this.translations = {};
+
+        // Publish to global
+        window.__ = this.translate.bind(this);
     }
 
     moment(date, format) {

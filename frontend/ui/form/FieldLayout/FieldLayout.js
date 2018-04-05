@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import {view} from 'components';
+import {ui} from 'components';
 
 export default class FieldLayout extends React.PureComponent {
 
@@ -31,7 +31,7 @@ export default class FieldLayout extends React.PureComponent {
     };
 
     render() {
-        const FieldLayoutView = this.props.view || view.get('form.FieldLayoutView');
+        const FieldLayoutView = this.props.view || ui.getView('form.FieldLayoutView');
         return (
             <FieldLayoutView
                 {...this.props}

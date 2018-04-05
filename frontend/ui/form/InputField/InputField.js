@@ -1,10 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import {view} from 'components';
+import {ui} from 'components';
 import fieldHoc from '../fieldHoc';
 
-@fieldHoc()
+@fieldHoc({
+    componentId: 'form.InputField',
+})
 export default class InputField extends React.PureComponent {
 
     static propTypes = {
@@ -42,7 +44,7 @@ export default class InputField extends React.PureComponent {
             return null;
         }
 
-        const InputFieldView = this.props.view || view.get('form.InputFieldView');
+        const InputFieldView = this.props.view || ui.getView('form.InputFieldView');
         return (
             <InputFieldView
                 {...this.props}

@@ -2,11 +2,13 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import enhanceWithClickOutside from 'react-click-outside';
 
-import {view, locale} from 'components';
+import {ui, locale} from 'components';
 import fieldHoc from '../fieldHoc';
 import dataProviderHoc from '../dataProviderHoc';
 
-@fieldHoc()
+@fieldHoc({
+    componentId: 'form.DropDownField',
+})
 @dataProviderHoc()
 @enhanceWithClickOutside
 export default class DropDownField extends React.PureComponent {
@@ -66,7 +68,6 @@ export default class DropDownField extends React.PureComponent {
         disabled: false,
         required: false,
         className: '',
-        searchPlaceholder: locale.t('Поиск'),
         autoComplete: false,
         showReset: false,
         multiple: false,
@@ -84,7 +85,7 @@ export default class DropDownField extends React.PureComponent {
     }
 
     render() {
-        const DropDownFieldView = this.props.view || view.get('form.DropDownFieldView');
+        const DropDownFieldView = this.props.view || ui.getView('form.DropDownFieldView');
         return (
             <DropDownFieldView
                 {...this.props}

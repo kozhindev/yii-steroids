@@ -3,102 +3,78 @@
 namespace steroids\widgets;
 
 use steroids\base\FormModel;
-use Yii;
 use steroids\base\Model;
 use steroids\base\Widget;
-use yii\bootstrap\Html;
+use yii\base\InvalidConfigException;
 use yii\helpers\ArrayHelper;
-use yii\helpers\Json;
-use yii\web\View;
 
 class ActiveForm extends Widget
 {
+    const FORM_ID_PREFIX = 'ActiveForm_';
+
     /**
      * @var array|string
      */
     public $action = '';
 
     /**
-     * @var string
+     * @var Model|FormModel
      */
-    public $method = 'post';
+    public $model;
 
     /**
      * @var array
      */
-    public $options = [];
+    public $fields;
 
     /**
-     * @var string
+     * @var array
      */
     public $layout = 'horizontal';
 
     /**
-     * @var string
+     * @var array
      */
-    public $layoutCols = [3, 6];
-
-    /**
-     * @var string
-     */
-    public $fieldClass = 'steroids\widgets\ActiveField';
+    public $layoutProps;
 
     /**
      * @var array
      */
-    public $fieldConfig = [];
+    public $submitLabel;
 
-    /**
-     * @var array
-     */
-    public $initialValues = [];
+    public function init()
+    {
+        parent::init();
+
+        // Normalize fields
+        foreach ($this->fields as $key => $field) {
+            if (is_string($field)) {
+                $this->fields[$key] = ['attribute' => $field];
+            }
+        }
+    }
 
     /**
      * @param Model|FormModel $model
      * @param string|null $formName
      * @return array
+     * @throws
      */
     public static function renderAjax($model, $formName = null)
     {
         $result = [];
         if ($model->hasErrors()) {
+            $errors = $model->getErrors();
+
+            // Apply form name
             $formName = $formName !== null ? $formName : $model->formName();
             if ($formName) {
-                $result['errors'][$formName] = $model->getErrors();
-            } else {
-                $result['errors'] = $model->getErrors();
+                $errors = [$formName => $errors];
             }
+
+            return ['errors' => $errors];
         }
         return $result;
-    }
-
-    /**
-     * Initializes the widget.
-     * This renders the form open tag.
-     */
-    public function init()
-    {
-        if (!isset($this->options['id'])) {
-            $this->options['id'] = $this->getId();
-        }
-        ob_start();
-        ob_implicit_flush(false);
-
-        $props = [
-            'formId' => $this->id,
-            'contentId' => $this->id . '-content',
-            'action' => $this->action,
-            'method' => $this->method,
-            'layout' => $this->layout,
-            'layoutCols' => $this->layoutCols,
-        ];
-
-        if (Yii::$app->has('frontendState')) {
-            Yii::$app->frontendState->add('config.types.toRenderForm', [$this->id, $props]);
-        } else {
-            $jsArgs = [Json::encode($this->id), Json::encode($props)];
-            \Yii::$app->view->registerJs('__appTypes.renderForm(' . implode(', ', $jsArgs) . ')', View::POS_END, $this->id . '-form');
-        }
     }
 
     /**
@@ -106,154 +82,69 @@ class ActiveForm extends Widget
      */
     public function run()
     {
-        $content = ob_get_clean();
-        echo Html::tag('span', '', ['id' => $this->id]);
-        echo Html::tag('span', $content, ['id' => $this->id . '-content']);
+        return $this->renderReact([
+            'formId' => self::FORM_ID_PREFIX . $this->id,
+            'action' => $this->action,
+            'layout' => $this->layout,
+            'layoutProps' => $this->layoutProps,
+            'initialValues' => $this->getInitialValues(),
+            'submitLabel' => $this->submitLabel,
+            'fields' => $this->getFieldsConfig(),
+        ], false);
+    }
 
-        if (Yii::$app->has('frontendState')) {
-            Yii::$app->frontendState->set('form.' . $this->id . '.values', $this->initialValues);
-        } else {
-            $state = [
-                'form' => [
-                    $this->id => [
-                        'values' => $this->initialValues,
-                    ],
+    protected function getFieldsConfig()
+    {
+        $model = $this->model;
+        $meta = $model::meta();
+        $config = [];
+
+        foreach ($this->fields as $field) {
+            $attribute = $field['attribute'];
+            $metaItem = ArrayHelper::getValue($meta, $attribute, []);
+            $appType = ArrayHelper::getValue($metaItem, 'appType', 'string');
+            $type = \Yii::$app->types->getType($appType);
+            if (!$type) {
+                throw new InvalidConfigException('Not found app type `' . $appType . '`');
+            }
+
+            $config[] = array_merge(
+                [
+                    'label' => $model->getAttributeLabel($attribute),
+                    'hint' => $model->getAttributeHint($attribute),
+                    'required' => $model->isAttributeRequired($attribute),
                 ],
-            ];
-            \Yii::$app->view->registerJs('window.APP_REDUX_PRELOAD_STATES = [];', View::POS_HEAD);
-            \Yii::$app->view->registerJs('window.APP_REDUX_PRELOAD_STATES.push(' . Json::encode($state) . ')', View::POS_HEAD, $this->id . '-state');
+                $type->getFieldProps($model, $attribute, $metaItem)
+            );
         }
+        return $config;
     }
 
     /**
-     * @param Model|FormModel $model
-     * @param string $attribute
-     * @param array $options
-     * @return ActiveField
+     * @return array|mixed
+     * @throws \yii\base\InvalidConfigException
      */
-    public function field($model, $attribute, $options = [])
+    protected function getInitialValues()
     {
-        $config = $this->fieldConfig;
-        if ($config instanceof \Closure) {
-            $config = call_user_func($config, $model, $attribute);
-        }
-        if (!isset($config['class'])) {
-            $config['class'] = $this->fieldClass;
+        // Load defaults
+        if ($this->model instanceof Model && $this->model->isNewRecord) {
+            $this->model->loadDefaultValues();
         }
 
-        if ($model instanceof Model) {
-            $authManager = Yii::$app->has('authManager') && get_class(Yii::$app->authManager) === 'steroids\components\AuthManager'
-                ? Yii::$app->authManager
-                : null;
-            $ruleName = $model->isNewRecord ? 'create' : 'update';
-            if ($authManager && !$authManager->checkAttributeAccess(Yii::$app->user->model, $model, $attribute, $ruleName)) {
-                $config['visible'] = false;
-            }
+        // Store init values
+        $initialValues = [];
+        foreach ($this->fields as $field) {
+            $attribute = $field['attribute'];
+            $initialValues = $this->model->$attribute;
         }
 
-        return Yii::createObject(ArrayHelper::merge($config, $options, [
-            'model' => $model,
-            'attribute' => $attribute,
-            'form' => $this,
-        ]));
-    }
-
-    /**
-     * @param string $label
-     * @param array $options
-     * @return string
-     */
-    public function submitButton($label = 'Сохранить', $options = [])
-    {
-        $buttonStr = Html::submitButton($label, array_merge($options, ['class' => 'btn btn-primary']));
-        if ($this->layout == 'horizontal') {
-            return "<div class=\"form-group\"><div class=\"col-sm-offset-3 col-sm-6\">$buttonStr</div></div>";
-        } else {
-            return "<div class=\"form-group\">$buttonStr</div>";
-        }
-    }
-
-    /**
-     * @param Model|FormModel $model
-     * @param string[] $attributes
-     * @return string
-     */
-    public function fields($model, $attributes = null)
-    {
-        if ($attributes === null) {
-            $attributes = $model->safeAttributes();
+        // Apply form name
+        $formName = $this->model->formName();
+        if ($formName) {
+            $initialValues = [$formName => $initialValues];
         }
 
-        $html = [];
-        foreach ($attributes as $attribute) {
-            $html[] = $this->field($model, $attribute);
-        }
-        return implode("\n", $html);
-    }
-
-    /**
-     * @param Model $model
-     * @param array $buttons
-     * @return string
-     */
-    public function controls($model, $buttons = [])
-    {
-        $defaultButtons = [
-            'submit' => [
-                'label' => $model->isNewRecord ? 'Добавить' : 'Сохранить',
-                'order' => 0,
-            ],
-            'cancel' => [
-                'label' => 'Назад',
-                'url' => ['index'],
-                'order' => 10,
-            ],
-        ];
-        $buttons = array_merge($defaultButtons, $buttons);
-        ArrayHelper::multisort($buttons, 'order');
-
-        $buttonHtmls = [];
-        foreach ($buttons as $id => $button) {
-            if (!$button) {
-                continue;
-            }
-
-            if (isset($defaultButtons[$id])) {
-                $button = array_merge($defaultButtons[$id], $button);
-            }
-
-            ArrayHelper::remove($button, 'order');
-            $label = ArrayHelper::remove($button, 'label');
-            $url = ArrayHelper::remove($button, 'url');
-
-            if ($id === 'submit') {
-                $buttonHtmls[] = Html::submitButton($label, array_merge(['class' => 'btn btn-primary'], $button));
-            } else {
-                $buttonHtmls[] = Html::a($label, $url, array_merge(['class' => 'btn btn-default'], $button));
-            }
-        }
-
-        $html = implode(' ', $buttonHtmls);
-        if ($this->layout == 'horizontal') {
-            return "<div class=\"form-group\"><div class=\"col-sm-offset-3 col-sm-6\">$html</div></div>";
-        } else {
-            return "<div class=\"form-group\">$html</div>";
-        }
-    }
-
-    public function beginFieldset($title, $options = [])
-    {
-        $optionsStr = '';
-        foreach ($options as $key => $value) {
-            $optionsStr .= " $key=\"$value\"";
-        }
-
-        return "<fieldset $optionsStr><div class=\"form-group\"><div class=\"col-sm-offset-3 col-sm-6\"><b>$title</b></div></div><div style=\"margin-left: 30px\">";
-    }
-
-    public function endFieldset()
-    {
-        return "</div></fieldset>";
+        return $initialValues;
     }
 
 }

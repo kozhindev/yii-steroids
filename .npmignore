@@ -2,6 +2,7 @@
 /docs
 /tests
 /vendor
+/.idea
 /.gitattributes
 /.npmignore
 /.storybook

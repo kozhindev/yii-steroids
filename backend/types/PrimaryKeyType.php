@@ -8,14 +8,14 @@ use yii\db\Schema;
 class PrimaryKeyType extends Type
 {
     /**
-     * @return array
+     * @inheritdoc
      */
-    public function frontendConfig()
+    public function getFieldProps($model, $attribute, $item)
     {
         return [
-            'field' => [
-                'component' => 'HiddenField',
-            ]
+            'component' => 'InputField',
+            'attribute' => $attribute,
+            'type' => 'hidden',
         ];
     }
 

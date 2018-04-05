@@ -4,6 +4,15 @@ namespace steroids\helpers;
 
 use yii\helpers\ArrayHelper;
 
+// Define steroids constants
+defined('STEROIDS_IS_CLI') || define('STEROIDS_IS_CLI', php_sapi_name() == 'cli');
+defined('STEROIDS_ROOT_DIR') || define(
+    'STEROIDS_ROOT_DIR',
+    STEROIDS_IS_CLI ? dirname(realpath($_SERVER['argv'][0])) : dirname(dirname($_SERVER['SCRIPT_FILENAME']))
+);
+defined('STEROIDS_APP_DIR') || define('STEROIDS_APP_DIR', STEROIDS_ROOT_DIR . '/app');
+defined('STEROIDS_VENDOR_DIR') || define('STEROIDS_VENDOR_DIR', STEROIDS_ROOT_DIR . '/vendor');
+
 class DefaultConfig
 {
     /**
@@ -27,15 +36,14 @@ class DefaultConfig
     }
 
     /**
-     * @param array|null $custom
-     * @param string|null $appDir
-     * @param string|null $namespace
+     * @param array $yiiCustom
+     * @param array $steroidsConfig
+     * @return array
      * @return array
      */
-    public static function getWebConfig($custom = [], $appDir = null, $namespace = null)
+    public static function getWebConfig($yiiCustom, $steroidsConfig = [])
     {
         return ArrayHelper::merge(
-            static::getMainConfig([], $appDir, $namespace),
             [
                 'components' => [
                     'request' => [
@@ -45,20 +53,24 @@ class DefaultConfig
                     ],
                 ],
             ],
-            $custom
+            $yiiCustom
         );
     }
 
     /**
-     * @param array|null $custom
-     * @param string|null $appDir
-     * @param string|null $namespace
+     * @param array $yiiCustom
+     * @param array $steroidsConfig
      * @return array
+     * @throws \Exception
+     * @throws \ReflectionException
      */
-    public static function getConsoleConfig($custom = [], $appDir = null, $namespace = null)
+    public static function getConsoleConfig($yiiCustom, $steroidsConfig = [])
     {
+        // Set defaults
+        $steroidsConfig = static::getSteroidsConfig($steroidsConfig);
+
         $namespaces = [];
-        foreach (self::getModuleClasses($appDir, $namespace) as $name => $moduleClass) {
+        foreach (self::getModuleClasses($steroidsConfig) as $name => $moduleClass) {
             $namespace = preg_replace('/[^\\\\]+$/', 'migrations', $moduleClass);
 
             // Set alias for load migrations
@@ -75,7 +87,6 @@ class DefaultConfig
         }
 
         return ArrayHelper::merge(
-            static::getMainConfig([], $appDir, $namespace),
             [
                 'controllerNamespace' => 'app\commands',
                 'controllerMap' => [
@@ -86,25 +97,32 @@ class DefaultConfig
                     ],
                 ],
             ],
-            $custom
+            $yiiCustom
         );
     }
 
-    public static function getMainConfig($custom = [], $appDir = null, $namespace = null)
+    /**
+     * @param array $yiiCustom
+     * @param array $steroidsConfig
+     * @return array
+     * @throws \Exception
+     */
+    public static function getMainConfig($yiiCustom, $steroidsConfig = [])
     {
-        $appDir = $appDir ?? dirname(dirname(__DIR__)) . '/app';
-        $namespace = $namespace ?? 'app';
+        // Set defaults
+        $steroidsConfig = static::getSteroidsConfig($steroidsConfig);
 
-        $moduleClasses = static::getModuleClasses($appDir, $namespace);
-        $timeZone = ArrayHelper::getValue($custom, 'timeZone', 'UTC');
+        $moduleClasses = static::getModuleClasses($steroidsConfig);
+        $timeZone = ArrayHelper::getValue($yiiCustom, 'timeZone', 'UTC');
 
         $config = [
-            'basePath' => $appDir,
-            'vendorPath' => dirname($appDir) . '/vendor',
-            'runtimePath' => dirname($appDir) . '/files/log/runtime',
+            'basePath' => $steroidsConfig['appDir'],
+            'vendorPath' => dirname($steroidsConfig['appDir']) . '/vendor',
+            'runtimePath' => dirname($steroidsConfig['appDir']) . '/files/log/runtime',
             'timeZone' => $timeZone,
             'bootstrap' => [
                 'log',
+                'siteMap',
                 'frontendState',
             ],
             'components' => [
@@ -114,8 +132,16 @@ class DefaultConfig
                 'assetManager' => [
                     'forceCopy' => true,
                     'bundles' => [
-                        // Disables Yii jQuery
+                        // Disables Yii & jQuery
                         'yii\web\JqueryAsset' => [
+                            'sourcePath' => null,
+                            'js' => [],
+                        ],
+                        'yii\web\YiiAsset' => [
+                            'sourcePath' => null,
+                            'js' => [],
+                        ],
+                        'yii\grid\GridViewAsset' => [
                             'sourcePath' => null,
                             'js' => [],
                         ],
@@ -210,21 +236,17 @@ class DefaultConfig
             ]);
         }
 
-        return $config;
+        return ArrayHelper::merge($config, $yiiCustom);
     }
-
 
     /**
      * Recursive scan directory and return all fined module classes
-     * @param string|null $appDir
-     * @param string|null $namespace
+     * @param array $steroidsConfig
      * @return array
+     * @throws \Exception
      */
-    public static function getModuleClasses($appDir = null, $namespace = null)
+    public static function getModuleClasses($steroidsConfig)
     {
-        // Normalize namespace
-        $namespace = trim($namespace, '\\');
-
         if (self::$moduleClasses === null) {
             // Require Module class
             $path = __DIR__ . '/../base/Module.php';
@@ -232,10 +254,24 @@ class DefaultConfig
                 require_once $path;
             }
 
-            self::$moduleClasses = static::scanModuleClasses($appDir, $namespace);
+            self::$moduleClasses = array_merge(
+                static::scanModuleClasses($steroidsConfig['appDir'], $steroidsConfig['namespace']),
+                static::scanModuleClasses(dirname(__DIR__) . '/modules', 'steroids\\modules')
+            );
         }
 
         return self::$moduleClasses;
+    }
+
+    protected static function getSteroidsConfig($params)
+    {
+        return ArrayHelper::merge(
+            [
+                'appDir' => STEROIDS_ROOT_DIR . '/app',
+                'namespace' => 'app',
+            ],
+            $params
+        );
     }
 
     /**
@@ -244,6 +280,7 @@ class DefaultConfig
      * @param string $namespace
      * @param array $parents
      * @return array
+     * @throws \Exception
      */
     protected static function scanModuleClasses($root, $namespace, $parents = [])
     {

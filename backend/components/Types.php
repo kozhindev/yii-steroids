@@ -47,7 +47,6 @@ use yii\helpers\Html;
  * @property-read SizeType $size
  * @property-read StringType $string
  * @property-read TextType $text
- * @property-read array $frontendConfig
  */
 class Types extends Component
 {
@@ -154,24 +153,6 @@ class Types extends Component
         }
 
         return Html::encode($model->$attribute);
-    }
-
-    /**
-     * @return array
-     */
-    public function getFrontendConfig()
-    {
-        $config = [];
-        foreach ($this->getTypes() as $type) {
-            $params = ArrayHelper::merge(
-                ($type->frontendConfig() ?: []),
-                $type->frontendConfig
-            );
-            if (!empty($params)) {
-                $config[$type->name] = $params;
-            }
-        }
-        return $config;
     }
 
     /**

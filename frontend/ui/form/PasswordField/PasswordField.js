@@ -1,10 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import {view} from 'components';
+import {ui} from 'components';
 import fieldHoc from '../fieldHoc';
 
-@fieldHoc()
+@fieldHoc({
+    componentId: 'form.PasswordField',
+})
 export default class PasswordField extends React.PureComponent {
 
     static propTypes = {
@@ -75,7 +77,7 @@ export default class PasswordField extends React.PureComponent {
     }
 
     render() {
-        const PasswordFieldView = this.props.view || view.get('form.PasswordFieldView') || view.get('form.InputFieldView');
+        const PasswordFieldView = this.props.view || ui.getView('form.PasswordFieldView') || ui.getView('form.InputFieldView');
         return (
             <PasswordFieldView
                 {...this.props}

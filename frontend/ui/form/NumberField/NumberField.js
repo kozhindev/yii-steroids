@@ -1,10 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import {view} from 'components';
+import {ui} from 'components';
 import fieldHoc from '../fieldHoc';
 
-@fieldHoc()
+@fieldHoc({
+    componentId: 'form.NumberField',
+})
 export default class NumberField extends React.PureComponent {
 
     static propTypes = {
@@ -41,7 +43,7 @@ export default class NumberField extends React.PureComponent {
     };
 
     render() {
-        const NumberFieldView = this.props.view || view.get('form.NumberFieldView') || view.get('form.InputFieldView');
+        const NumberFieldView = this.props.view || ui.getView('form.NumberFieldView') || ui.getView('form.InputFieldView');
         return (
             <NumberFieldView
                 {...this.props}

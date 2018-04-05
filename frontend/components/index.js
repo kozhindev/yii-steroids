@@ -1,16 +1,29 @@
-import _lowerFirst from 'lodash-es/lowerFirst';
+import _merge from 'lodash-es/merge';
 
-// Load
-const reqComponents = require.context('.', false, /Component.js$/);
-reqComponents.keys().forEach(fileName => {
-    const name = _lowerFirst(fileName.substr(2, fileName.length - 14));
-    const ComponentClass = reqComponents(fileName).default;
-    module.exports[name] = new ComponentClass();
+import ClientStorageComponent from './ClientStorageComponent';
+import HtmlComponent from './HtmlComponent';
+import HttpComponent from './HttpComponent';
+import LocaleComponent from './LocaleComponent';
+import ResourceComponent from './ResourceComponent';
+import StoreComponent from './StoreComponent';
+import UiComponent from './UiComponent';
+import WidgetComponent from './WidgetComponent';
+
+// Create instances
+export const clientStorage = new ClientStorageComponent();
+export const html = new HtmlComponent();
+export const http = new HttpComponent();
+export const locale = new LocaleComponent();
+export const resource = new ResourceComponent();
+export const store = new StoreComponent();
+export const ui = new UiComponent();
+export const widget = new WidgetComponent();
+
+// Apply configuration
+const customConfig = store.getState().config || {};
+Object.keys(exports).forEach(name => {
+    _merge(
+        exports[name],
+        customConfig[name] || {}
+    );
 });
-
-// Configure
-const customConfig = {};//store.getState().config || {};
-Object.keys(module.exports).forEach(name => ({
-    ...module.exports[name],
-    ...customConfig[name],
-}));

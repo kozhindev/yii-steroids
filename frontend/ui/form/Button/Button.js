@@ -3,7 +3,8 @@ import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import {isSubmitting} from 'redux-form';
 
-import {view} from 'components';
+import {ui} from 'components';
+import FieldLayout from '../FieldLayout';
 
 @connect(
     (state, props) => ({
@@ -13,7 +14,7 @@ import {view} from 'components';
 class ButtonInternal extends React.PureComponent {
 
     render() {
-        const ButtonView = this.props.view || view.get('form.ButtonView');
+        const ButtonView = this.props.view || ui.getView('form.ButtonView');
         const disabled = this.props.submitting || this.props.disabled;
         return (
             <ButtonView
@@ -67,14 +68,36 @@ export default class Button extends React.PureComponent {
 
     static contextTypes = {
         formId: PropTypes.string,
+        layout: PropTypes.string,
+        layoutProps: PropTypes.object,
     };
 
     render() {
-        return (
+        const button = (
             <ButtonInternal
                 {...this.props}
                 formId={this.context.formId}
+                layout={this.context.layout}
+                layoutProps={this.context.layoutProps}
             />
         );
+
+        if (this.context.formId) {
+            return (
+                <FieldLayout
+                    {...this.props}
+                    label={null}
+                    layout={this.props.layout || this.context.layout}
+                    layoutProps={{
+                        ...this.context.layoutProps,
+                        ...this.props.layoutProps,
+                    }}
+                >
+                    {button}
+                </FieldLayout>
+            );
+        }
+
+        return button;
     }
 }

@@ -1,5 +1,5 @@
 {
-    "name": "kozhindev/yii2-steroids",
+    "name": "kozhindev/yii-steroids",
     "description": "Collection of useful components for create rich internet applications, such as CRM and ERP systems",
     "type": "yii2-extension",
     "license": "MIT",
@@ -7,10 +7,10 @@
         "php": ">=7.1.0",
         "ext-mbstring": "*",
         "lib-pcre": "*",
-        "yiisoft/yii2": "^2.0.13",
+        "yiisoft/yii2": "~2.0.15",
         "yiisoft/yii2-swiftmailer": "^2.1.0",
         "yiisoft/yii2-debug": "^2.0.13",
-        "phpunit/phpunit": "^4.8"
+        "phpunit/phpunit": "5.7.19"
     },
     "autoload": {
         "psr-4": {"steroids\\": "backend"}

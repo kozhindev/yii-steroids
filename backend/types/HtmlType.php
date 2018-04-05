@@ -10,17 +10,13 @@ class HtmlType extends Type
     public $formatter = 'raw';
 
     /**
-     * @return array
+     * @inheritdoc
      */
-    public function frontendConfig()
+    public function getFieldProps($model, $attribute, $item)
     {
         return [
-            'field' => [
-                'component' => 'HtmlField',
-                'editorConfig' => [
-                    'contentsCss' => \Yii::getAlias('@static/assets/bundle-style.js'),
-                ],
-            ]
+            'component' => 'HtmlField',
+            'attribute' => $attribute,
         ];
     }
 

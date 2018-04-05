@@ -1,0 +1,16 @@
+.FileFieldItemView {
+  width: 200px;
+  font-size: $font-size-sm;
+
+  &__blank-img {
+    font-size: 48px;
+    text-align: center;
+    padding: 25px 0;
+    width: 100%;
+  }
+
+  &__text {
+    max-height: 80px;
+    overflow: hidden;
+  }
+}

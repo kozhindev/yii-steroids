@@ -17,14 +17,13 @@ class EnumType extends Type
     const OPTION_CLASS_NAME = 'enumClassName';
 
     /**
-     * @return array
+     * @inheritdoc
      */
-    public function frontendConfig()
+    public function getFieldProps($model, $attribute, $item)
     {
         return [
-            'field' => [
-                'component' => 'DropDownField',
-            ]
+            'component' => 'DropDownField',
+            'attribute' => $attribute,
         ];
     }
 

@@ -17,6 +17,14 @@ export default class StoreComponent {
         );
     }
 
+    dispatch(action) {
+        return this.store.dispatch(action);
+    }
+
+    getState() {
+        return this.store.getState();
+    }
+
     errorHandler(error) {
         throw error;
     }

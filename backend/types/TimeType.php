@@ -9,14 +9,13 @@ use yii\helpers\ArrayHelper;
 class TimeType extends Type
 {
     /**
-     * @return array
+     * @inheritdoc
      */
-    public function frontendConfig()
+    public function getFieldProps($model, $attribute, $item)
     {
         return [
-            'field' => [
-                'component' => 'StringField',
-            ]
+            'component' => 'InputField',
+            'attribute' => $attribute,
         ];
     }
 

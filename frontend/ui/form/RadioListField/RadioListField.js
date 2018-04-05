@@ -1,11 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import {view} from 'components';
+import {ui} from 'components';
 import fieldHoc from '../fieldHoc';
 import dataProviderHoc from '../dataProviderHoc';
 
-@fieldHoc()
+@fieldHoc({
+    componentId: 'form.RadioListField',
+})
 @dataProviderHoc()
 export default class RadioListField extends React.PureComponent {
 
@@ -40,7 +42,7 @@ export default class RadioListField extends React.PureComponent {
     };
 
     render() {
-        const RadioListFieldView = this.props.view || view.get('form.RadioListFieldView');
+        const RadioListFieldView = this.props.view || ui.getView('form.RadioListFieldView');
         return (
             <RadioListFieldView
                 {...this.props}

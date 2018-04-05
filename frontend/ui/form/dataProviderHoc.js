@@ -8,9 +8,7 @@ import _isObject from 'lodash-es/isObject';
 
 import {http} from 'components';
 
-const defaultConfig = {};
-
-export default (config = defaultConfig) => WrappedComponent => class DataProviderHoc extends React.PureComponent {
+export default () => WrappedComponent => class DataProviderHoc extends React.PureComponent {
 
     static WrappedComponent = WrappedComponent;
 
@@ -52,7 +50,7 @@ export default (config = defaultConfig) => WrappedComponent => class DataProvide
 
     /**
      * Normalize items for save to state. Support enum class or normal items list.
-     * @param items
+     * @param {array|object} items
      * @returns {*}
      */
     static normalizeItems(items) {
@@ -167,8 +165,9 @@ export default (config = defaultConfig) => WrappedComponent => class DataProvide
 
     /**
      * Get items by values
-     * @param items
-     * @param value
+     * @param {array} items
+     * @param {array|string} value
+     * @returns {array}
      * @private
      */
     _findSelectedItems(items, value) {
@@ -219,7 +218,7 @@ export default (config = defaultConfig) => WrappedComponent => class DataProvide
             }
         } else {
             // Client-side search on static items
-            this._searchClientSide(query)
+            this._searchClientSide(query);
         }
     }
 
@@ -333,11 +332,9 @@ export default (config = defaultConfig) => WrappedComponent => class DataProvide
                     if (this.state.hoveredItem) {
                         // Select hovered
                         this._onItemClick(this.state.hoveredItem);
-                    } else {
+                    } else if (this.state.items.length > 0) {
                         // Select first result
-                        if (this.state.items.length > 0) {
-                            this._onItemClick(this.state.items[0]);
-                        }
+                        this._onItemClick(this.state.items[0]);
                     }
                 }
                 break;

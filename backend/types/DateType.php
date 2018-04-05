@@ -11,14 +11,13 @@ class DateType extends Type
     const OPTION_FORMAT = 'format';
 
     /**
-     * @return array
+     * @inheritdoc
      */
-    public function frontendConfig()
+    public function getFieldProps($model, $attribute, $item)
     {
         return [
-            'field' => [
-                'component' => 'DateField',
-            ]
+            'component' => 'DateField',
+            'attribute' => $attribute,
         ];
     }
 

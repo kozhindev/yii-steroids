@@ -25,11 +25,6 @@ abstract class Type extends BaseObject
     public $formatter;
 
     /**
-     * @var array
-     */
-    public $frontendConfig = [];
-
-    /**
      * @param array $item
      * @param Widget $class
      * @param array $config
@@ -53,11 +48,24 @@ abstract class Type extends BaseObject
     }
 
     /**
-     * @return array|null
+     * @param Model|FormModel $model
+     * @param string $attribute
+     * @param array $item
+     * @return array
      */
-    public function frontendConfig()
+    public function getFieldProps($model, $attribute, $item)
     {
-        return null;
+        return [];
+    }
+
+    /**
+     * @param array $item
+     * @param array $params
+     * @return array
+     */
+    public function getFieldData($item, $params)
+    {
+        return [];
     }
 
     /**

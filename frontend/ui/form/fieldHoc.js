@@ -5,9 +5,12 @@ import {Field, FieldArray, formValueSelector, change} from 'redux-form';
 import _get from 'lodash-es/get';
 import _upperFirst from 'lodash-es/upperFirst';
 
+import {ui} from 'components';
 import FieldLayout from './FieldLayout';
+import {getFieldProps} from '../../reducers/fields';
 
 const defaultConfig = {
+    componentId: '',
     attributes: [''],
     layoutProps: null,
     list: false,
@@ -31,18 +34,29 @@ const selectors = {};
         props._config.attributes.map(attribute => {
             values['formValue' + _upperFirst(attribute)] = selector(state, FieldHoc.getName(props, attribute));
         });
-        return values;
+        return {
+            ...values,
+            fieldProps: getFieldProps(state, props.model, FieldHoc.getAttribute(props, props._config.attributes[0])),
+        };
     }
 )
 class FieldHoc extends React.PureComponent {
 
     static propTypes = {
         attribute: PropTypes.string,
+        fieldProps: PropTypes.object,
     };
 
+    static getAttribute(props, attribute) {
+        return attribute ? props['attribute' + _upperFirst(attribute)] : props.attribute;
+    }
+
     static getName(props, attribute) {
-        const name = attribute ? props['attribute' + _upperFirst(attribute)] : props.attribute;
-        return (props.prefix || '') + name;
+        return [props.prefix, FieldHoc.getAttribute(props, attribute)].filter(Boolean).join('.');
+    }
+
+    static getFieldId(props) {
+        return props.formId + '_' + FieldHoc.getName(props, props._config.attributes[0]);;
     }
 
     static ID_COUNTER = 1;
@@ -69,53 +83,61 @@ class FieldHoc extends React.PureComponent {
             };
             this._fieldId = FieldHoc.generateUniqueId();
         } else {
-            this._fieldId = this.props.formId + '_' + FieldHoc.getName(this.props, this.props._config.attributes[0])
+            this._fieldId = FieldHoc.getFieldId(this.props);
         }
     }
 
     render() {
-        const WrappedComponent = this.props._wrappedComponent;
+        let {_wrappedComponent, _config, ...props} = this.props;
+        const WrappedComponent = _wrappedComponent;
 
         const inputProps = {};
-        if (!this.props._config.list) {
-            this.props._config.attributes.forEach(attribute => {
+        if (!_config.list) {
+            _config.attributes.forEach(attribute => {
                 inputProps[`input${_upperFirst(attribute)}`] = {
-                    name: FieldHoc.getName(this.props, attribute),
+                    name: FieldHoc.getName(props, attribute),
                     value: this._getValue(attribute),
                     onChange: value => this._setValue(attribute, value),
                 };
             });
         }
 
+        // Append custom field props from redux state and UiComponent
+        props = {
+            ...ui.getFieldProps(_config.componentId),
+            ...props.fieldProps,
+            ...props,
+        };
+
         // TODO implement values in state for list (instead of redux-form FieldArray)
 
         return (
             <FieldLayout
-                {...this.props}
-                {...this.props._config.layoutProps}
+                {...props}
+                {..._config.layoutProps}
             >
-                {!this.props._config.list && this.props.formId && this.props._config.attributes.map(attribute => (
+                {!_config.list && props.formId && _config.attributes.map(attribute => (
                     <Field
-                        key={this.props.formId + attribute}
-                        name={FieldHoc.getName(this.props, attribute)}
+                        key={props.formId + attribute}
+                        name={FieldHoc.getName(props, attribute)}
                         component='input'
                         type='hidden'
                     />
                 ))}
-                {this.props._config.list && (
+                {_config.list && (
                     <FieldArray
-                        {...this.props}
-                        name={FieldHoc.getName(this.props, '')}
+                        {...props}
+                        name={FieldHoc.getName(props, '')}
                         component={WrappedComponent}
-                        formId={this.props.formId}
+                        formId={props.formId}
                         fieldId={this._fieldId}
                     />
                 ) ||
                 (
                     <WrappedComponent
-                        {...this.props}
+                        {...props}
                         {...inputProps}
-                        formId={this.props.formId}
+                        formId={props.formId}
                         fieldId={this._fieldId}
                     />
                 )}
@@ -186,6 +208,7 @@ export default config => WrappedComponent => class FieldHocWrapper extends React
                 _wrappedComponent={WrappedComponent}
                 _config={{
                     ...defaultConfig,
+                    componentId: 'form.' + (WrappedComponent.displayName || WrappedComponent.name),
                     ...config,
                 }}
             />

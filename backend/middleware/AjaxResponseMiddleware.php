@@ -39,7 +39,7 @@ class AjaxResponseMiddleware extends BaseObject
             $contentType = $rawContentType;
         }
 
-        if ($contentType === 'application/json' && isset($request->parsers[$contentType])) {
+        if (($contentType === 'application/json' && isset($request->parsers[$contentType])) || $response->format === Response::FORMAT_JSON) {
 
             // Detect data provider
             if ($event->result instanceof SearchModel) {
@@ -65,8 +65,11 @@ class AjaxResponseMiddleware extends BaseObject
                 }
             }
 
-            $response->format = Response::FORMAT_JSON;
             $event->result = $data;
+        }
+
+        if (is_array($event->result)) {
+            $response->format = Response::FORMAT_JSON;
         }
     }
 }

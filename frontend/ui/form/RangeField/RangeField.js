@@ -4,12 +4,13 @@ import PropTypes from 'prop-types';
 import moment from 'moment';
 import _get from 'lodash-es/get';
 
-import {view} from 'components';
+import {ui} from 'components';
 import fieldHoc from '../fieldHoc';
 import InputField from '../InputField';
 import DateField from '../DateField';
 
 @fieldHoc({
+    componentId: 'form.RangeField',
     attributes: ['from', 'to'],
 })
 export default class RangeField extends React.PureComponent {
@@ -82,7 +83,7 @@ export default class RangeField extends React.PureComponent {
     }
 
     render() {
-        const RangeFieldView = this.props.view || view.get('form.RangeFieldView');
+        const RangeFieldView = this.props.view || ui.getView('form.RangeFieldView');
         const FieldComponent = this.props.fieldComponent || RangeField.fieldsMap[this.props.type];
         const FieldComponentInternal = FieldComponent.WrappedComponent;
 
@@ -95,8 +96,8 @@ export default class RangeField extends React.PureComponent {
 
         switch (this.props.type) {
             case 'date':
-                const valueFromFormat = _get(this.props.fromProps, 'valueFormat', FieldComponentInternal.defaultProps.valueFormat)
-                const valueToFormat = _get(this.props.toProps, 'valueFormat', FieldComponentInternal.defaultProps.valueFormat)
+                const valueFromFormat = _get(this.props.fromProps, 'valueFormat', FieldComponentInternal.defaultProps.valueFormat);
+                const valueToFormat = _get(this.props.toProps, 'valueFormat', FieldComponentInternal.defaultProps.valueFormat);
                 const from = this.props.inputFrom.value ? moment(this.props.inputFrom.value, valueFromFormat).toDate() : undefined;
                 const to = this.props.inputTo.value ? moment(this.props.inputTo.value, valueToFormat).toDate() : undefined;
                 const modifiers = {

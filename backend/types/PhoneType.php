@@ -9,14 +9,14 @@ use yii\db\Schema;
 class PhoneType extends Type
 {
     /**
-     * @return array
+     * @inheritdoc
      */
-    public function frontendConfig()
+    public function getFieldProps($model, $attribute, $item)
     {
         return [
-            'field' => [
-                'component' => 'PhoneField',
-            ]
+            'component' => 'InputField',
+            'attribute' => $attribute,
+            'type' => 'phone',
         ];
     }
 

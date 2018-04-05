@@ -11,14 +11,14 @@ class EmailType extends Type
     public $formatter = 'email';
 
     /**
-     * @return array
+     * @inheritdoc
      */
-    public function frontendConfig()
+    public function getFieldProps($model, $attribute, $item)
     {
         return [
-            'field' => [
-                'component' => 'EmailField',
-            ]
+            'component' => 'InputField',
+            'attribute' => $attribute,
+            'type' => 'email',
         ];
     }
 
