@@ -12,17 +12,15 @@ class MoneyWithCurrencyType extends CategorizedStringType
     public $currencyEnum;
 
     /**
-     * @return array
+     * @inheritdoc
      */
-    public function frontendConfig()
+    public function getFieldProps($model, $attribute, $item)
     {
         return [
-            'field' => [
-                'component' => 'CategorizedStringField',
-                'refAttributeOptions' => [
-                    self::OPTION_REF_ATTRIBUTE,
-                ],
-            ]
+            'component' => 'CategorizedStringField',
+            //'refAttributeOptions' => [
+            //    self::OPTION_REF_ATTRIBUTE,
+            //],
         ];
     }
 
@@ -40,7 +38,8 @@ class MoneyWithCurrencyType extends CategorizedStringType
     /**
      * @inheritdoc
      */
-    public function getItems($metaItem) {
+    public function getItems($metaItem)
+    {
         if ($metaItem->refAttribute) {
             return [
                 new MetaItem([

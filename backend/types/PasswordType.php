@@ -12,14 +12,13 @@ class PasswordType extends Type
     public $max = 32;
 
     /**
-     * @return array
+     * @inheritdoc
      */
-    public function frontendConfig()
+    public function getFieldProps($model, $attribute, $item)
     {
         return [
-            'field' => [
-                'component' => 'PasswordField',
-            ]
+            'component' => 'PasswordField',
+            'attribute' => $attribute,
         ];
     }
 

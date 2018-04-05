@@ -1,32 +1,46 @@
-import _filter from 'lodash-es/filter';
+import _get from 'lodash-es/get';
+import _isMatch from 'lodash-es/isMatch';
 import _every from 'lodash-es/every';
 import _extend from 'lodash-es/extend';
 
-import {LIST_BEFORE_FETCH, LIST_AFTER_FETCH, LIST_ITEM_UPDATE, LIST_REMOVE, LIST_TOGGLE_ITEM, LIST_TOGGLE_ALL} from '../actions/list';
+import {
+    LIST_INIT,
+    LIST_BEFORE_FETCH,
+    LIST_AFTER_FETCH,
+    LIST_ITEM_UPDATE,
+    LIST_DESTROY,
+    LIST_TOGGLE_ITEM,
+    LIST_TOGGLE_ALL,
+} from '../actions/list';
 
 export default (state = {}, action) => {
     switch (action.type) {
+        case LIST_INIT:
+            return {
+                ...state,
+                [action.listId]: {
+                    meta: {},
+                    selectedIds: {},
+                    total: action.items ? action.items.length : 0,
+                    isFetched: !!action.items,
+                    isLoading: false,
+                    ...action,
+                }
+            };
+
         case LIST_BEFORE_FETCH:
             return {
                 ...state,
-                [action.id]: {
-                    meta: {},
-                    checkedIds: {},
-                    total: action.items ? action.items.length : 0,
-                    hasPagination: false,
-                    ...(state[action.id] || {}),
+                [action.listId]: {
+                    ...state[action.listId],
                     ...action,
-                    items: action.items
-                        ? [].concat(action.items)
-                        : state[action.id] && state[action.id].items || null,
-                    isFetched: !!action.items || !!state[action.id],
-                    isLoading: !action.items,
+                    isLoading: true,
                 }
             };
 
         case LIST_AFTER_FETCH:
-            let items = [];
-            const list = state[action.id];
+            let items;
+            const list = state[action.listId];
 
             if (list && list.items && list.loadMore && list.page > 1) {
                 items = [].concat(list.items);
@@ -40,7 +54,7 @@ export default (state = {}, action) => {
 
             return {
                 ...state,
-                [action.id]: {
+                [action.listId]: {
                     ...list,
                     ...action,
                     items,
@@ -50,60 +64,47 @@ export default (state = {}, action) => {
             };
 
         case LIST_ITEM_UPDATE:
-            const list2 = state[action.id];
-            const items2 = list2 && list2.items || [];
-
-            _filter(items2, action.where).forEach(item => {
-                // Update old object, fix saved it in comet collection (if used)
-                _extend(item, action.item);
-
-                items2[items2.indexOf(item)] = {
-                    ...item,
-                    ...action.item,
-                };
-            });
-
             return {
                 ...state,
-                [action.id]: {
-                    ...list2,
-                    items: [].concat(items2),
+                [action.listId]: {
+                    ...state[action.listId],
+                    items: state[action.listId].map(item => {
+                        if (_isMatch(item, action.condition)) {
+                            _extend(item, action.item);
+                        }
+                        return item;
+                    }),
                 }
             };
 
-        case LIST_REMOVE:
-            delete state[action.id];
+        case LIST_DESTROY:
+            delete state[action.listId];
             return {
-                ...state
+                ...state,
             };
 
         case LIST_TOGGLE_ITEM:
-            const list3 = state[action.id];
-            if (list3) {
-                const checkedIds = list3.checkedIds || {};
-                return {
-                    ...state,
-                    [action.id]: {
-                        ...list3,
-                        checkedIds: {
-                            ...checkedIds,
-                            [action.itemId]: !checkedIds[action.itemId],
-                        },
+            return {
+                ...state,
+                [action.listId]: {
+                    ..._get(state, [action.listId]),
+                    selectedIds: {
+                        ..._get(state, [action.listId, 'selectedIds']),
+                        [action.itemId]: !_get(state, [action.listId, 'selectedIds', action.itemId]),
                     },
-                };
-            }
-            break;
+                },
+            };
 
         case LIST_TOGGLE_ALL:
-            const list4 = state[action.id];
+            const list4 = state[action.listId];
             if (list4) {
                 const ids = list4.items.map(item => item[list4.primaryKey]) || [];
-                const isAll = _every(ids.map(id => list4.checkedIds[id]));
+                const isAll = _every(ids.map(id => list4.selectedIds[id]));
                 return {
                     ...state,
-                    [action.id]: {
+                    [action.listId]: {
                         ...list4,
-                        checkedIds: ids.reduce((obj, id) => {
+                        selectedIds: ids.reduce((obj, id) => {
                             obj[id] = !isAll;
                             return obj;
                         }, {}),
@@ -116,21 +117,17 @@ export default (state = {}, action) => {
     return state;
 };
 
-export const getList = (state, id) => state.list[id] || null;
-export const getEntry = (state, listId, itemId) => {
-    const list = state.list[listId];
-    return list && list.items.find(item => item[list.primaryKey] === itemId) || null;
-};
+export const getList = (state, listId) => state.list[listId] || null;
 export const getIds = (state, listId) => {
     const list = state.list[listId];
     return list && list.items.map(item => item[list.primaryKey]) || [];
 };
 export const getCheckedIds = (state, listId) => {
     const list = state.list[listId];
-    const checkedIds = list && list.checkedIds || {};
-    return Object.keys(checkedIds).filter(id => checkedIds[id]);
+    const selectedIds = list && list.selectedIds || {};
+    return Object.keys(selectedIds).filter(id => selectedIds[id]);
 };
 export const isCheckedAll = (state, listId) => {
     const list = state.list[listId];
-    return _every(getIds(state, listId).map(id => list.checkedIds[id]));
+    return _every(getIds(state, listId).map(id => list.selectedIds[id]));
 };

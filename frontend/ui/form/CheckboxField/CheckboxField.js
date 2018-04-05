@@ -1,10 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import {view} from 'components';
+import {ui} from 'components';
 import fieldHoc from '../fieldHoc';
 
 @fieldHoc({
+    componentId: 'form.CheckboxField',
     layoutProps: {
         label: false,
     }
@@ -35,7 +36,7 @@ export default class CheckboxField extends React.PureComponent {
     };
 
     render() {
-        const CheckboxFieldView = this.props.view || view.get('form.CheckboxFieldView');
+        const CheckboxFieldView = this.props.view || ui.getView('form.CheckboxFieldView');
         return (
             <CheckboxFieldView
                 {...this.props}

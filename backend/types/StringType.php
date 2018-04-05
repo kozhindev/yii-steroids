@@ -18,14 +18,13 @@ class StringType extends Type
     const TYPE_WORDS = 'words';
 
     /**
-     * @return array
+     * @inheritdoc
      */
-    public function frontendConfig()
+    public function getFieldProps($model, $attribute, $item)
     {
         return [
-            'field' => [
-                'component' => 'StringField',
-            ]
+            'component' => 'InputField',
+            'attribute' => $attribute,
         ];
     }
 

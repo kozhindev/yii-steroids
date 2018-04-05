@@ -7,8 +7,10 @@ import _get from 'lodash-es/get';
 import _set from 'lodash-es/set';
 import _isUndefined from 'lodash-es/isUndefined';
 
-import {http, view} from 'components';
+import {http, ui} from 'components';
 import AutoSaveHelper from './AutoSaveHelper';
+import Field from '../Field';
+import Button from '../Button';
 
 let valuesSelector = null;
 
@@ -46,6 +48,16 @@ export default class Form extends React.PureComponent {
         view: PropTypes.func,
         formValues: PropTypes.object,
         formRegisteredFields: PropTypes.object,
+        fields: PropTypes.arrayOf(PropTypes.shape({
+            label: PropTypes.string,
+            hint: PropTypes.string,
+            required: PropTypes.bool,
+            component: PropTypes.oneOfType([
+                PropTypes.string,
+                PropTypes.func,
+            ]),
+        })),
+        submitLabel: PropTypes.string,
     };
 
     static childContextTypes = {
@@ -78,13 +90,25 @@ export default class Form extends React.PureComponent {
     }
 
     render() {
-        const FormView = this.props.view || view.get('form.FormView');
+        const FormView = this.props.view || ui.getView('form.FormView');
         return (
             <FormView
                 {...this.props}
                 onSubmit={this.props.handleSubmit(this._onSubmit)}
             >
                 {this.props.children}
+                {this.props.fields && this.props.fields.map((field, index) => (
+                    <Field
+                        key={index}
+                        {...field}
+                    />
+                ))}
+                {this.props.submitLabel && (
+                    <Button
+                        type='submit'
+                        label={this.props.submitLabel}
+                    />
+                )}
             </FormView>
         );
     }

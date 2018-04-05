@@ -17,15 +17,17 @@ class RelationType extends Type
     const OPTION_LIST_RELATION_NAME = 'listRelationName';
 
     /**
-     * @return array
+     * @inheritdoc
      */
-    public function frontendConfig()
+    public function getFieldProps($model, $attribute, $item)
     {
         return [
-            'field' => [
-                'component' => 'DropDownField',
-                'autoComplete' => new JsExpression('{}'),
-            ]
+            'component' => 'DropDownField',
+            'attribute' => $attribute,
+            'autoComplete' => true,
+            'dataProvider' => [
+                'action' => '', // TODO
+            ],
         ];
     }
 

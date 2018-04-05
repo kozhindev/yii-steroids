@@ -20,16 +20,15 @@ class AddressType extends Type
     const TYPE_LATITUDE = 'latitude';
 
     /**
-     * @return array
+     * @inheritdoc
      */
-    public function frontendConfig()
+    public function getFieldProps($model, $attribute, $item)
     {
         return [
-            'field' => [
-                'component' => 'AddressField',
-                'countryModelClass' => 'app\\address\\models\\Country',
-                'autoCompleteUrl' => '/address/auto-complete/search/',
-            ]
+            'component' => 'AddressField',
+            'attribute' => $attribute,
+            //'countryModelClass' => 'app\\address\\models\\Country',
+            //'autoCompleteUrl' => '/address/auto-complete/search/',
         ];
     }
 

@@ -10,17 +10,15 @@ class CategorizedStringType extends EnumType
     const OPTION_REF_ATTRIBUTE = 'refAttribute';
 
     /**
-     * @return array
+     * @inheritdoc
      */
-    public function frontendConfig()
+    public function getFieldProps($model, $attribute, $item)
     {
         return [
-            'field' => [
-                'component' => 'CategorizedStringField',
-                'refAttributeOptions' => [
-                    self::OPTION_REF_ATTRIBUTE,
-                ],
-            ]
+            'component' => 'CategorizedStringField',
+            //'refAttributeOptions' => [
+//                self::OPTION_REF_ATTRIBUTE,
+//            ],
         ];
     }
 

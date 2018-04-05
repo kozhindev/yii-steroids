@@ -17,17 +17,14 @@ class RangeType extends Type
     public $template = '{start} — {end}';
 
     /**
-     * @return array
+     * @inheritdoc
      */
-    public function frontendConfig()
+    public function getFieldProps($model, $attribute, $item)
     {
         return [
-            'field' => [
-                'component' => 'RangeField',
-                'refAttributeOptions' => [
-                    self::OPTION_REF_ATTRIBUTE,
-                ],
-            ]
+            'component' => 'RangeField',
+            'attributeFrom' => $attribute,
+            'attributeTo' => ArrayHelper::getValue($item, self::OPTION_REF_ATTRIBUTE),
         ];
     }
 
@@ -51,7 +48,8 @@ class RangeType extends Type
     /**
      * @inheritdoc
      */
-    public function getItems($metaItem) {
+    public function getItems($metaItem)
+    {
         if ($metaItem->refAttribute) {
             return [
                 new MetaItem([

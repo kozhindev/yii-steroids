@@ -37,7 +37,9 @@ export default class ButtonView extends React.PureComponent {
             <div>
                 {!this.props.url && (
                     <button
+                        type={this.props.type}
                         disabled={this.props.disabled}
+                        onClick={this.props.onClick}
                         className={bem(
                             bem.block({
                                 color: this.props.color,

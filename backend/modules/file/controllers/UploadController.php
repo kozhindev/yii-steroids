@@ -24,21 +24,21 @@ class UploadController extends Controller
         ]);
 
         if (isset($result['errors'])) {
-            return Json::encode([
+            return [
                 'error' => implode(', ', $result['errors']),
-            ]);
+            ];
         }
 
         $processor = \Yii::$app->request->get('processor');
 
         // Send responses data
-        return Json::encode(array_map(
+        return array_map(
             function ($file) use ($processor) {
                 /** @var \steroids\modules\file\models\File $file */
                 return $file->getExtendedAttributes($processor);
             },
             $result
-        ));
+        );
     }
 
     public function actionEditor($CKEditorFuncNum = null)

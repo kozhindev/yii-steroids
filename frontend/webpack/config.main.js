@@ -10,6 +10,13 @@ module.exports = (config, entry) => {
 
     const webpackVersion = 3;
 
+    // For split chunks
+    if (webpackVersion === 4) {
+        const indexEntry = entry.index;
+        delete entry.index;
+        // TODO
+    }
+
     // Init default webpack config
     let webpackConfig = {
         entry,
@@ -139,6 +146,7 @@ module.exports = (config, entry) => {
             !utils.isProduction() && new webpack.ProgressPlugin(),
             !utils.isProduction() && new webpack.NamedModulesPlugin(),
             !utils.isProduction() && new webpack.HotModuleReplacementPlugin(),
+            webpackVersion === 3 && new webpack.optimize.CommonsChunkPlugin({name: 'index', filename: `${config.staticPath}assets/bundle-index.js`}),
             webpackVersion === 3 && utils.isProduction() && new webpack.optimize.UglifyJsPlugin({compress: {warnings: false}, sourceMap: false})
         ].filter(Boolean),
     };
@@ -149,9 +157,9 @@ module.exports = (config, entry) => {
             optimization: {
                 splitChunks: {
                     cacheGroups: {
-                        vendor: {
-                            test: /node_modules/,
-                            name: 'vendor',
+                        index: {
+                            test: indexEntry,
+                            name: 'index',
                             chunks: 'initial',
                             enforce: true
                         }

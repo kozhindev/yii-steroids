@@ -3,21 +3,45 @@
 namespace steroids\types;
 
 use steroids\base\Type;
-use steroids\file\models\File;
+use steroids\modules\file\models\File;
 use yii\db\Schema;
+use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
+use yii\helpers\Url;
 
 class FileType extends Type
 {
     /**
-     * @return array
+     * @inheritdoc
      */
-    public function frontendConfig()
+    public function getFieldProps($model, $attribute, $item)
     {
         return [
-            'field' => [
-                'component' => 'FileField',
-            ]
+            'component' => 'FileField',
+            'attribute' => $attribute,
+        ];
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getFieldData($item, $params)
+    {
+        $initialFiles = [];
+        $files = File::findAll(['id' => ArrayHelper::getValue($params, 'fileIds', [])]);
+        foreach ($files as $file) {
+            $initialFiles[] = [
+                'uid' => $file->uid,
+                'path' => $file->title,
+                'type' => $file->fileMimeType,
+                'bytesUploaded' => $file->fileSize,
+                'bytesUploadEnd' => $file->fileSize,
+                'bytesTotal' => $file->fileSize,
+                'resultHttpMessage' => $file->getExtendedAttributes(ArrayHelper::getValue($params, 'processor')),
+            ];
+        }
+        return [
+            'initialFiles' => !empty($initialFiles) ? $initialFiles : null,
         ];
     }
 

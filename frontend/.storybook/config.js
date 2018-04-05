@@ -1,7 +1,7 @@
 import React from 'react';
 import {Provider} from 'react-redux';
 import {configure, addDecorator} from '@storybook/react';
-import {view, store} from 'components';
+import {ui, store} from 'components';
 import {setDefaults} from '@storybook/addon-info';
 import {setOptions} from '@storybook/addon-options';
 import 'bootstrap/scss/bootstrap.scss'
@@ -67,7 +67,7 @@ addDecorator(getStory => (
 ));
 
 // Automatically import all views
-view.add(require.context('../ui', true, /View.js$/));
+ui.addViews(require.context('../ui', true, /View.js$/));
 
 // Automatically import all files ending in *.stories.js
 const reqStory = require.context('../ui', true, /.story.js$/);

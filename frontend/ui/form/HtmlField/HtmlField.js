@@ -2,10 +2,12 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import _merge from 'lodash-es/merge';
 
-import {view} from 'components';
+import {ui} from 'components';
 import fieldHoc from '../fieldHoc';
 
-@fieldHoc()
+@fieldHoc({
+    componentId: 'form.HtmlField',
+})
 export default class HtmlField extends React.PureComponent {
 
     static propTypes = {
@@ -58,7 +60,7 @@ export default class HtmlField extends React.PureComponent {
     };
 
     render() {
-        const HtmlFieldView = this.props.view || view.get('form.HtmlFieldView');
+        const HtmlFieldView = this.props.view || ui.getView('form.HtmlFieldView');
         return (
             <HtmlFieldView
                 {...this.props}

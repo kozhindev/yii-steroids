@@ -5,9 +5,13 @@ namespace steroids\widgets;
 use steroids\base\FormModel;
 use steroids\base\Model;
 use steroids\base\Widget;
+use yii\base\InvalidConfigException;
+use yii\helpers\ArrayHelper;
 
 class ActiveForm extends Widget
 {
+    const FORM_ID_PREFIX = 'ActiveForm_';
+
     /**
      * @var array|string
      */
@@ -16,7 +20,7 @@ class ActiveForm extends Widget
     /**
      * @var Model|FormModel
      */
-    public $model = '';
+    public $model;
 
     /**
      * @var array
@@ -26,12 +30,29 @@ class ActiveForm extends Widget
     /**
      * @var array
      */
-    public $submitLabel;
+    public $layout = 'horizontal';
 
     /**
      * @var array
      */
-    public $props = [];
+    public $layoutProps;
+
+    /**
+     * @var array
+     */
+    public $submitLabel;
+
+    public function init()
+    {
+        parent::init();
+
+        // Normalize fields
+        foreach ($this->fields as $key => $field) {
+            if (is_string($field)) {
+                $this->fields[$key] = ['attribute' => $field];
+            }
+        }
+    }
 
     /**
      * @param Model|FormModel $model
@@ -43,24 +64,17 @@ class ActiveForm extends Widget
     {
         $result = [];
         if ($model->hasErrors()) {
+            $errors = $model->getErrors();
+
+            // Apply form name
             $formName = $formName !== null ? $formName : $model->formName();
             if ($formName) {
-                $result['errors'][$formName] = $model->getErrors();
-            } else {
-                $result['errors'] = $model->getErrors();
+                $errors = [$formName => $errors];
             }
+
+            return ['errors' => $errors];
         }
         return $result;
-    }
-
-    /**
-     * Initializes the widget.
-     * This renders the form open tag.
-     */
-    public function init()
-    {
-
-
     }
 
     /**
@@ -68,21 +82,69 @@ class ActiveForm extends Widget
      */
     public function run()
     {
-        //$content = ob_get_clean();
-        //echo Html::tag('span', $content, ['id' => $this->id . '-content']);
+        return $this->renderReact([
+            'formId' => self::FORM_ID_PREFIX . $this->id,
+            'action' => $this->action,
+            'layout' => $this->layout,
+            'layoutProps' => $this->layoutProps,
+            'initialValues' => $this->getInitialValues(),
+            'submitLabel' => $this->submitLabel,
+            'fields' => $this->getFieldsConfig(),
+        ], false);
+    }
 
-        /*if (Yii::$app->has('frontendState')) {
-            Yii::$app->frontendState->add('config.types.toRenderForm', [$this->id, $props]);
-        } else {
-            $jsArgs = [Json::encode($this->id), Json::encode($props)];
-            \Yii::$app->view->registerJs('__appTypes.renderForm(' . implode(', ', $jsArgs) . ')', View::POS_END, $this->id . '-form');
-        }*/
+    protected function getFieldsConfig()
+    {
+        $model = $this->model;
+        $meta = $model::meta();
+        $config = [];
 
+        foreach ($this->fields as $field) {
+            $attribute = $field['attribute'];
+            $metaItem = ArrayHelper::getValue($meta, $attribute, []);
+            $appType = ArrayHelper::getValue($metaItem, 'appType', 'string');
+            $type = \Yii::$app->types->getType($appType);
+            if (!$type) {
+                throw new InvalidConfigException('Not found app type `' . $appType . '`');
+            }
 
-        // TODO
-        // TODO
-        // TODO
-        // TODO
+            $config[] = array_merge(
+                [
+                    'label' => $model->getAttributeLabel($attribute),
+                    'hint' => $model->getAttributeHint($attribute),
+                    'required' => $model->isAttributeRequired($attribute),
+                ],
+                $type->getFieldProps($model, $attribute, $metaItem)
+            );
+        }
+        return $config;
+    }
+
+    /**
+     * @return array|mixed
+     * @throws \yii\base\InvalidConfigException
+     */
+    protected function getInitialValues()
+    {
+        // Load defaults
+        if ($this->model instanceof Model && $this->model->isNewRecord) {
+            $this->model->loadDefaultValues();
+        }
+
+        // Store init values
+        $initialValues = [];
+        foreach ($this->fields as $field) {
+            $attribute = $field['attribute'];
+            $initialValues = $this->model->$attribute;
+        }
+
+        // Apply form name
+        $formName = $this->model->formName();
+        if ($formName) {
+            $initialValues = [$formName => $initialValues];
+        }
+
+        return $initialValues;
     }
 
 }

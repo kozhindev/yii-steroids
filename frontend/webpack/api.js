@@ -101,8 +101,9 @@ module.exports = {
                 .then(result => result.reduce((obj, file) => {
                         const bundleName = file
                             .split('/').slice(0, -1)
-                            .filter(name => name.match(/[a-z0-9_-]+/) && ['app', 'widgets', 'lib', 'vendor'].indexOf(name) === -1)
-                            .join('-');
+                            .filter(name => name.match(/[a-z0-9_-]+/) && ['app', 'modules', 'kozhindev', 'backend', 'widgets', 'lib', 'vendor'].indexOf(name) === -1)
+                            .join('-')
+                            .replace('yii-steroids', 'steroids');
                         obj[bundleName] = file;
                         return obj;
                     }, {})

@@ -1,77 +1,91 @@
+import _get from 'lodash-es/get';
+
 import {http} from 'components';
 
+export const LIST_INIT = 'LIST_INIT';
 export const LIST_BEFORE_FETCH = 'LIST_BEFORE_FETCH';
 export const LIST_AFTER_FETCH = 'LIST_AFTER_FETCH';
 export const LIST_ITEM_UPDATE = 'LIST_ITEM_UPDATE';
-export const LIST_REMOVE = 'LIST_REMOVE';
+export const LIST_DESTROY = 'LIST_DESTROY';
 export const LIST_TOGGLE_ITEM = 'LIST_TOGGLE_ITEM';
 export const LIST_TOGGLE_ALL = 'LIST_TOGGLE_ALL';
 
-export const init = (id, options) => (dispatch, getState) => dispatch({
+export const init = (listId, props) => dispatch => dispatch({
+    action: props.action || null,
     page: 1,
-    pageSize: 50,
-    isLoadMore: true,
-    ...getState().list[id],
-    ...options,
-    id,
-    type: LIST_BEFORE_FETCH,
+    pageSize: props.defaultPageSize,
+    sort: props.defaultSort || null,
+    query: props.query || null,
+    items: props.items || null,
+    loadMore: props.loadMore,
+    primaryKey: props.primaryKey,
+    listId,
+    type: LIST_INIT,
 });
 
-export const fetch = (id, options) => (dispatch, getState) => {
-    const state = {
-        ...getState().list[id],
-        ...options,
-        id,
+export const fetch = (listId, params) => (dispatch, getState) => {
+    const list = {
+        ..._get(getState(), ['list', listId]),
+        ...params,
     };
-
-    const toDispatch = [
-        {
-            ...state,
-            type: LIST_BEFORE_FETCH,
-        },
-    ];
-
-    if (state.method) {
-        toDispatch.push(
-            http.post(state.method, {
-                ...state.query,
-                page: state.page,
-                pageSize: state.pageSize,
-                sort: state.sort,
-            })
-                .then(result => ({
-                    ...state,
-                    ...result,
-                    type: LIST_AFTER_FETCH,
-                    hasPagination: true,
-                }))
-        );
+    if (!list.action) {
+        return;
     }
 
-    return dispatch(toDispatch);
+    return dispatch([
+        {
+            ...params,
+            listId,
+            type: LIST_BEFORE_FETCH,
+        },
+        http.post(list.action, {
+            ...list.query,
+            page: list.page,
+            pageSize: list.pageSize,
+            sort: list.sort,
+        })
+            .then(result => ({
+                ...result,
+                listId,
+                type: LIST_AFTER_FETCH,
+            })),
+    ]);
 };
 
-export const refresh = (id) => fetch(id);
+export const setPage = (listId, page) => fetch(listId, {
+    page,
+});
 
-export const update = (id, where, item) => ({
-    id,
-    where,
+export const setPageSize = (listId, pageSize) => fetch(listId, {
+    page: 1,
+    pageSize,
+});
+
+export const setSort = (listId, sort) => fetch(listId, {
+    sort,
+});
+
+export const refresh = listId => fetch(listId);
+
+export const update = (listId, item, condition) => ({
     item,
+    condition,
+    listId,
     type: LIST_ITEM_UPDATE,
 });
 
-export const remove = (id) => ({
-    id,
-    type: LIST_REMOVE,
+export const destroy = listId => ({
+    listId,
+    type: LIST_DESTROY,
 });
 
-export const toggleItem = (id, itemId) => ({
-    id,
+export const toggleItem = (listId, itemId) => ({
+    listId,
     itemId,
     type: LIST_TOGGLE_ITEM,
 });
 
-export const toggleAll = (id) => ({
-    id,
+export const toggleAll = listId => ({
+    listId,
     type: LIST_TOGGLE_ALL,
 });

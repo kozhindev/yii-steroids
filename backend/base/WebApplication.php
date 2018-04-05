@@ -2,6 +2,7 @@
 
 namespace steroids\base;
 
+use steroids\components\Types;
 use Yii;
 use steroids\components\AuthManager;
 use steroids\components\FrontendState;
@@ -12,6 +13,7 @@ use yii\web\Application;
  * @property-read AuthManager $authManager
  * @property-read FrontendState $frontendState
  * @property-read SiteMap $siteMap
+ * @property-read Types $types
  */
 class WebApplication extends Application
 {

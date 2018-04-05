@@ -58,7 +58,6 @@ trait RelationSaveTrait
 
             $idsProperty = ArrayHelper::getValue($params, 'idsProperty', $relationName . 'Ids');
             $this->$idsProperty = ArrayHelper::getValue($data, array_filter([$formName, $idsProperty]));
-            //var_dump(get_class($this), $this->id, $this->$idsProperty);
         }
     }
 
@@ -79,7 +78,7 @@ trait RelationSaveTrait
             $relation = $this->getRelation($relationName);
 
             // Check set data
-            if (!ArrayHelper::keyExists($relationName, $data)) {
+            if (!$data || !ArrayHelper::keyExists($relationName, $data)) {
                 continue;
             }
 

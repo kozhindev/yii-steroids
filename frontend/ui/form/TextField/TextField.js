@@ -2,10 +2,12 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {submit} from 'redux-form';
 
-import {view} from 'components';
+import {ui} from 'components';
 import fieldHoc from '../fieldHoc';
 
-@fieldHoc()
+@fieldHoc({
+    componentId: 'form.TextField',
+})
 export default class TextField extends React.PureComponent {
 
     static propTypes = {
@@ -44,7 +46,7 @@ export default class TextField extends React.PureComponent {
     }
 
     render() {
-        const TextFieldView = this.props.view || view.get('form.TextFieldView');
+        const TextFieldView = this.props.view || ui.getView('form.TextFieldView');
         return (
             <TextFieldView
                 {...this.props}

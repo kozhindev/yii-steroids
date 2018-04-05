@@ -10,14 +10,13 @@ class BooleanType extends Type
     public $formatter = 'boolean';
 
     /**
-     * @return array
+     * @inheritdoc
      */
-    public function frontendConfig()
+    public function getFieldProps($model, $attribute, $item)
     {
         return [
-            'field' => [
-                'component' => 'CheckboxField',
-            ]
+            'component' => 'CheckboxField',
+            'attribute' => $attribute,
         ];
     }
 

@@ -1,11 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import {view} from 'components';
+import {ui} from 'components';
+import Field from '../Field';
 import fieldHoc from '../fieldHoc';
+
 import './FieldListView.scss';
 
 @fieldHoc({
+    componentId: 'form.FieldList',
     list: true,
 })
 export default class FieldList extends React.PureComponent {
@@ -64,6 +67,35 @@ export default class FieldList extends React.PureComponent {
         initialRowsCount: 1,
     };
 
+    static contextTypes = {
+        model: PropTypes.oneOfType([
+            PropTypes.string,
+            PropTypes.func,
+        ]),
+    };
+
+    static childContextTypes = {
+        model: PropTypes.oneOfType([
+            PropTypes.string,
+            PropTypes.func,
+        ]),
+        prefix: PropTypes.string,
+        layout: PropTypes.string,
+        layoutProps: PropTypes.object,
+    };
+
+    getChildContext() {
+        return {
+            model: this.props.model || this.context.model,
+            prefix: (this.context.prefix || '') + (this.props.prefix || ''),
+            layout: this.props.layout || this.context.layout,
+            layoutProps: {
+                ...this.context.layoutProps,
+                ...this.props.layoutProps,
+            },
+        };
+    }
+
     constructor() {
         super(...arguments);
 
@@ -81,16 +113,19 @@ export default class FieldList extends React.PureComponent {
     }
 
     render() {
-        const FieldListView = this.props.view || view.get('form.FieldListView');
+        const FieldListView = this.props.view || ui.getView('form.FieldListView');
         return (
             <FieldListView
                 {...this.props}
                 rows={this.props.fields.map(prefix => prefix)}
-                items={this.props.items.map(field => ({
-                    ...field,
-                    disabled: field.disabled || this.props.disabled,
-                    size: field.size || this.props.size,
-                }))}
+                items={(this.props.items || [])
+                    .map(field => ({
+                        ...Field.getFieldPropsFromModel(this.props.model || this.context.model, field.attribute),
+                        ...field,
+                        disabled: field.disabled || this.props.disabled,
+                        size: field.size || this.props.size,
+                    }))
+                }
                 renderField={this._renderField}
                 onAdd={this._onAdd}
                 onRemove={this._onRemove}
@@ -99,9 +134,8 @@ export default class FieldList extends React.PureComponent {
     }
 
     _renderField(field, prefix) {
-        const FieldComponent = field.component;
         return (
-            <FieldComponent
+            <Field
                 {...field}
                 layout='inline'
                 prefix={prefix}

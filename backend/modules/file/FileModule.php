@@ -66,6 +66,33 @@ class FileModule extends Module
      */
     public $processors = [];
 
+    public static function siteMap()
+    {
+        return [
+            'file' => [
+                'label' => 'Модуль загрузки и скачивания файла',
+                'visible' => false,
+                'accessCheck' => function() {
+                    return true;
+                },
+                'items' => [
+                    'upload' => [
+                        'url' => ['/file/upload/index'],
+                        'urlRule' => 'file/upload',
+                    ],
+                    'upload-editor' => [
+                        'url' => ['/file/upload/editor'],
+                        'urlRule' => 'file/upload/editor',
+                    ],
+                    'download' => [
+                        'url' => ['/file/download/index'],
+                        'urlRule' => 'file/<uid:[a-z0-9-]{36}>/<name>',
+                    ],
+                ]
+            ]
+        ];
+    }
+
     public function init()
     {
         parent::init();
@@ -76,12 +103,12 @@ class FileModule extends Module
                 self::PROCESSOR_NAME_ORIGINAL => [
                     'class' => '\steroids\modules\file\processors\ImageResize',
                     'width' => 1920,
-                    'height' => 1200
+                    'height' => 1200,
                 ],
                 self::PROCESSOR_NAME_DEFAULT => [
                     'class' => '\steroids\modules\file\processors\ImageResize',
-                    'width' => 100,
-                    'height' => 100
+                    'width' => 200,
+                    'height' => 200,
                 ]
             ],
             $this->processors
@@ -155,29 +182,5 @@ class FileModule extends Module
         }
 
         return $files;
-    }
-
-    public function coreMenu()
-    {
-        return [
-            'file' => [
-                'label' => 'Модуль загрузки и скачивания файла',
-                'visible' => false,
-                'items' => [
-                    'upload' => [
-                        'url' => ["/$this->id/upload/index"],
-                        'urlRule' => "$this->id/upload",
-                    ],
-                    'upload-editor' => [
-                        'url' => ["/file/upload/editor"],
-                        'urlRule' => "$this->id/upload/editor",
-                    ],
-                    'download' => [
-                        'url' => ["/file/download/index"],
-                        'urlRule' => "$this->id/<uid:[a-z0-9-]{36}>/<name>",
-                    ],
-                ]
-            ]
-        ];
     }
 }

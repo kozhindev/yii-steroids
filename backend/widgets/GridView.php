@@ -10,12 +10,14 @@ use yii\db\ActiveQuery;
 use yii\grid\ActionColumn;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Url;
+use yii\widgets\BaseListView;
 
 class GridView extends \yii\grid\GridView
 {
-    public $dataColumnClass = '\app\core\widgets\AppDataColumn';
+    public $dataColumnClass = 'steroids\widgets\DataColumn';
+    public $actionColumnClass = 'steroids\widgets\ActionColumn';
     public $tableOptions = ['class' => 'table table-hover'];
-    public $layout = "<div class='table-responsive'>{items}</div>\n{pager}";
+    public $layout = "<div class='table table-responsive'>{items}</div>\n{pager}";
 
     /**
      * @var array
@@ -36,6 +38,14 @@ class GridView extends \yii\grid\GridView
      * @var array
      */
     public $controllerMeta;
+
+    /**
+     * @inheritdoc
+     */
+    public function run()
+    {
+        return BaseListView::run();
+    }
 
     protected function guessColumns()
     {
@@ -101,7 +111,7 @@ class GridView extends \yii\grid\GridView
             }
 
             $this->columns[] = Yii::createObject([
-                'class' => ActionColumn::class,
+                'class' => $this->actionColumnClass,
                 'grid' => $this,
                 'template' => '{' . implode('} {', $templateButtons) . '}',
                 'buttons' => $buttons,

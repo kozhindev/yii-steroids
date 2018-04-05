@@ -5,13 +5,17 @@ import domready from 'domready';
 import loadJs from 'load-js';
 import _trimStart from 'lodash-es/trimStart';
 
+import Form from '../ui/form/Form';
+
 export default class WidgetComponent {
 
     constructor() {
         this.scripts = [];
         this.toRender = [];
 
-        this._widgets = {};
+        this._widgets = {
+            'steroids\\widgets\\ActiveForm': Form,
+        };
 
         setTimeout(() => {
             const scripts = this.scripts.map(url => ({

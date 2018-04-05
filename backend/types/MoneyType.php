@@ -12,14 +12,13 @@ class MoneyType extends Type
     public $formatter = 'currency';
 
     /**
-     * @return array
+     * @inheritdoc
      */
-    public function frontendConfig()
+    public function getFieldProps($model, $attribute, $item)
     {
         return [
-            'field' => [
-                'component' => 'MoneyField',
-            ]
+            'component' => 'NumberField',
+            'attribute' => $attribute,
         ];
     }
 

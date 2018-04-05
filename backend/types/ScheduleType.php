@@ -10,18 +10,17 @@ class ScheduleType extends Type
     const OPTION_TILL_TIME_ATTRIBUTE = 'tillTimeAttribute';
 
     /**
-     * @return array
+     * @inheritdoc
      */
-    public function frontendConfig()
+    public function getFieldProps($model, $attribute, $item)
     {
         return [
-            'field' => [
-                'component' => 'ScheduleField',
-                'refAttributeOptions' => [
-                    self::OPTION_SINCE_TIME_ATTRIBUTE,
-                    self::OPTION_TILL_TIME_ATTRIBUTE,
-                ],
-            ]
+            'component' => 'ScheduleField',
+            'attribute' => $attribute,
+            //'refAttributeOptions' => [
+            //    self::OPTION_SINCE_TIME_ATTRIBUTE,
+            //    self::OPTION_TILL_TIME_ATTRIBUTE,
+            //],
         ];
     }
 

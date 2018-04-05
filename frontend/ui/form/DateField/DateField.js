@@ -3,10 +3,12 @@ import PropTypes from 'prop-types';
 import moment from 'moment';
 import MomentLocaleUtils from 'react-day-picker/moment';
 
-import {view, locale} from 'components';
+import {ui, locale} from 'components';
 import fieldHoc from '../fieldHoc';
 
-@fieldHoc()
+@fieldHoc({
+    componentId: 'form.DateField',
+})
 export default class DateField extends React.PureComponent {
 
     static propTypes = {
@@ -48,7 +50,7 @@ export default class DateField extends React.PureComponent {
     render() {
         // TODO Add months switcher http://react-day-picker.js.org/examples/elements-year-navigation
 
-        const DateFieldView = this.props.view || view.get('form.DateFieldView');
+        const DateFieldView = this.props.view || ui.getView('form.DateFieldView');
         return (
             <DateFieldView
                 {...this.props}

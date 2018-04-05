@@ -7,15 +7,14 @@ use steroids\base\Enum;
 class EnumListType extends EnumType
 {
     /**
-     * @return array
+     * @inheritdoc
      */
-    public function frontendConfig()
+    public function getFieldProps($model, $attribute, $item)
     {
         return [
-            'field' => [
-                'component' => 'DropDownField',
-                'multiple' => true,
-            ]
+            'component' => 'DropDownField',
+            'attribute' => $attribute,
+            'multiple' => true,
         ];
     }
 

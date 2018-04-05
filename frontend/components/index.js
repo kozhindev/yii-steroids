@@ -6,7 +6,7 @@ import HttpComponent from './HttpComponent';
 import LocaleComponent from './LocaleComponent';
 import ResourceComponent from './ResourceComponent';
 import StoreComponent from './StoreComponent';
-import ViewComponent from './ViewComponent';
+import UiComponent from './UiComponent';
 import WidgetComponent from './WidgetComponent';
 
 // Create instances
@@ -16,7 +16,7 @@ export const http = new HttpComponent();
 export const locale = new LocaleComponent();
 export const resource = new ResourceComponent();
 export const store = new StoreComponent();
-export const view = new ViewComponent();
+export const ui = new UiComponent();
 export const widget = new WidgetComponent();
 
 // Apply configuration

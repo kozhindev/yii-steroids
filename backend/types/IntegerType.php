@@ -10,14 +10,13 @@ class IntegerType extends Type
     public $formatter = 'integer';
 
     /**
-     * @return array
+     * @inheritdoc
      */
-    public function frontendConfig()
+    public function getFieldProps($model, $attribute, $item)
     {
         return [
-            'field' => [
-                'component' => 'NumberField',
-            ]
+            'component' => 'NumberField',
+            'attribute' => $attribute,
         ];
     }
 
