@@ -3,7 +3,7 @@
 namespace steroids\types;
 
 use steroids\base\Type;
-use steroids\gii\models\MetaItem;
+use steroids\modules\gii\models\MetaItem;
 use yii\db\Schema;
 
 class PasswordType extends Type

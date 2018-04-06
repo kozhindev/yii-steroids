@@ -12,7 +12,7 @@ use yii\bootstrap\Nav;
 
 <?= Nav::widget([
     'options' => ['class' => 'nav-tabs'],
-    'items' => \Yii::$app->siteMap->getMenu('admin.access', 1),
+    'items' => \Yii::$app->siteMap->getNavItems('admin.access', 1),
 ]); ?>
 <br />
 

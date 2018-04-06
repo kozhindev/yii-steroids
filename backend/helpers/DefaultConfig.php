@@ -2,6 +2,7 @@
 
 namespace steroids\helpers;
 
+use Yii;
 use yii\helpers\ArrayHelper;
 
 // Define steroids constants
@@ -69,33 +70,18 @@ class DefaultConfig
         // Set defaults
         $steroidsConfig = static::getSteroidsConfig($steroidsConfig);
 
-        $namespaces = [];
-        foreach (self::getModuleClasses($steroidsConfig) as $name => $moduleClass) {
-            $namespace = preg_replace('/[^\\\\]+$/', 'migrations', $moduleClass);
-
-            // Set alias for load migrations
-            if (!preg_match('/^\\\\?app\\\\/', $moduleClass)) {
-                $moduleDir = dirname((new \ReflectionClass($moduleClass))->getFileName());
-
-                \Yii::setAlias(
-                    '@' . str_replace('\\', '/', $namespace),
-                    $moduleDir . '/migrations'
-                );
-            }
-
-            $namespaces[] = $namespace;
-        }
-
         return ArrayHelper::merge(
             [
                 'controllerNamespace' => 'app\commands',
                 'controllerMap' => [
                     'migrate' => [
-                        'class' => '\yii\console\controllers\MigrateController',
-                        'migrationPath' => null,
-                        'migrationNamespaces' => $namespaces,
+                        'class' => '\steroids\commands\MigrateCommand',
                     ],
                 ],
+                'on beforeAction' => function() use ($steroidsConfig) {
+                    Yii::setAlias('@tests', STEROIDS_ROOT_DIR . '/tests');
+                    Yii::setAlias('@webroot', STEROIDS_ROOT_DIR . '/public');
+                }
             ],
             $yiiCustom
         );

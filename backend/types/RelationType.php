@@ -4,7 +4,7 @@ namespace steroids\types;
 
 use steroids\base\Model;
 use steroids\base\Type;
-use steroids\gii\models\ModelMetaClass;
+use steroids\modules\gii\models\ModelMetaClass;
 use yii\db\Schema;
 use yii\helpers\ArrayHelper;
 use arogachev\ManyToMany\behaviors\ManyToManyBehavior;

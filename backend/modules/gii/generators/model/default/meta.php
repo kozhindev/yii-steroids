@@ -27,7 +27,7 @@ echo "<?php\n";
 
 namespace <?= $modelClass->metaClass->namespace ?>;
 
-use app\core\base\AppModel;
+use steroids\base\Model;
 <?php foreach (array_unique($useClasses) as $relationClassName) { ?>
 use <?= $relationClassName ?>;
 <?php } ?>
@@ -40,7 +40,7 @@ use <?= $relationClassName ?>;
  * @property-read <?= $relation->relationClass->name ?><?= !$relation->isHasOne ? '[]' : '' ?> <?= "\${$relation->name}\n" ?>
 <?php } ?>
  */
-abstract class <?= $modelClass->metaClass->name ?> extends AppModel
+abstract class <?= $modelClass->metaClass->name ?> extends Model
 {
 <?php if (count($modelClass->metaClass->properties) > 0) { ?>
 <?php foreach ($modelClass->metaClass->properties as $key => $value) { ?>

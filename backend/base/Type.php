@@ -2,7 +2,7 @@
 
 namespace steroids\base;
 
-use steroids\gii\models\MetaItem;
+use steroids\modules\gii\models\MetaItem;
 use yii\base\BaseObject;
 use yii\db\Schema;
 use yii\base\Widget;

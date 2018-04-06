@@ -85,6 +85,11 @@
     color: #495057;
   }
 
+  &__drop-down-list {
+    max-height: 273px;
+    overflow: auto;
+  }
+
   &__search {
     padding: 0.6rem 0.75rem;
   }

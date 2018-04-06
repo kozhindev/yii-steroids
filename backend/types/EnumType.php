@@ -4,8 +4,8 @@ namespace steroids\types;
 
 use steroids\base\Enum;
 use steroids\base\Type;
-use steroids\gii\models\EnumClass;
-use steroids\gii\models\ValueExpression;
+use steroids\modules\gii\models\EnumClass;
+use steroids\modules\gii\models\ValueExpression;
 use yii\db\Schema;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;

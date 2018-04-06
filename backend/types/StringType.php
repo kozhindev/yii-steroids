@@ -3,8 +3,8 @@
 namespace steroids\types;
 
 use steroids\base\Type;
-use steroids\gii\models\MetaItem;
-use steroids\gii\models\ValueExpression;
+use steroids\modules\gii\models\MetaItem;
+use steroids\modules\gii\models\ValueExpression;
 use steroids\validators\WordsValidator;
 use yii\db\Schema;
 use yii\helpers\StringHelper;

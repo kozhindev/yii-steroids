@@ -14,6 +14,7 @@ use yii\web\Request;
  * @package steroids\components
  * @property array $items
  * @property array $requestedRoute
+ * @property-read string $title
  * @property-read array $activeItem
  */
 class SiteMap extends Component

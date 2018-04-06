@@ -2,8 +2,8 @@
 
 namespace steroids\types;
 
-use steroids\gii\models\EnumClass;
-use steroids\gii\models\MetaItem;
+use steroids\modules\gii\models\EnumClass;
+use steroids\modules\gii\models\MetaItem;
 use yii\db\Schema;
 use yii\helpers\ArrayHelper;
 

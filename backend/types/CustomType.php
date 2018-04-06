@@ -3,7 +3,7 @@
 namespace steroids\types;
 
 use steroids\base\Type;
-use steroids\gii\helpers\GiiHelper;
+use steroids\modules\gii\helpers\GiiHelper;
 
 class CustomType extends Type
 {

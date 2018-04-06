@@ -3,7 +3,7 @@
 namespace steroids\types;
 
 use steroids\base\Type;
-use steroids\gii\models\MetaItem;
+use steroids\modules\gii\models\MetaItem;
 use yii\helpers\ArrayHelper;
 
 class RangeType extends Type
