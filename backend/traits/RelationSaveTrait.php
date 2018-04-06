@@ -229,7 +229,7 @@ trait RelationSaveTrait
 
             $relatedAttribute = reset($relation->link);
             $prevIds = $this->getRelationIds($relationName);
-            $nextIds = $this->$idsProperty;
+            $nextIds = (array)$this->$idsProperty;
 
             if (!$this->isNewRecord) {
                 // Delete
