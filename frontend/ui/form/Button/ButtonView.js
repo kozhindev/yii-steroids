@@ -39,7 +39,7 @@ export default class ButtonView extends React.PureComponent {
     renderLink() {
         return (
             <a
-                className={bem.block({link: true})}
+                className={this._getClassName({link: true})}
                 href={this.props.url}
             >
                 {this.props.children}
@@ -53,20 +53,7 @@ export default class ButtonView extends React.PureComponent {
                 type={this.props.type}
                 disabled={this.props.disabled}
                 onClick={this.props.onClick}
-                className={bem(
-                    bem.block({
-                        color: this.props.color,
-                        outline: this.props.outline,
-                        size: this.props.size,
-                        disabled: this.props.disabled,
-                        submitting: this.props.submitting,
-                    }),
-                    this.props.className,
-                    'btn',
-                    'btn-' + this.props.size,
-                    'btn-' + (this.props.outline ? 'outline-' : '') + this.props.color,
-                    this.props.block ? 'btn-block' : '',
-                )}
+                className={this._getClassName()}
             >
                 {this.props.icon && (
                     <span
@@ -78,6 +65,24 @@ export default class ButtonView extends React.PureComponent {
                 )}
                 {this.props.children}
             </button>
+        );
+    }
+    
+    _getClassName(modifiers) {
+        return bem(
+            bem.block({
+                color: this.props.color,
+                outline: this.props.outline,
+                size: this.props.size,
+                disabled: this.props.disabled,
+                submitting: this.props.submitting,
+                ...modifiers,
+            }),
+            this.props.className,
+            'btn',
+            'btn-' + this.props.size,
+            'btn-' + (this.props.outline ? 'outline-' : '') + this.props.color,
+            this.props.block ? 'btn-block' : '',
         );
     }
 }
