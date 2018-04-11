@@ -11,13 +11,16 @@ class FilesType extends RelationType
     /**
      * @inheritdoc
      */
-    public function getFieldProps($model, $attribute, $item)
+    public function prepareFieldProps($model, $attribute, &$props)
     {
-        return [
-            'component' => 'FileField',
-            'attribute' => $attribute,
-            'multiple' => true,
-        ];
+        $props = array_merge(
+            [
+                'component' => 'FileField',
+                'attribute' => $attribute,
+                'multiple' => true,
+            ],
+            $props
+        );
     }
 
     /**

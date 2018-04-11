@@ -274,11 +274,16 @@ class DefaultConfig
 
         foreach (scandir($root) as $dir) {
             // Skip dot folders
-            if (substr($dir, 0, 1) === '.') {
+            if (!is_dir("$root/$dir") || substr($dir, 0, 1) === '.') {
                 continue;
             }
 
-            $shortClassName = ucfirst($dir) . 'Module';
+            // Generate class name
+            $shortClassName = '';
+            foreach ($parents as $parent) {
+                $shortClassName .= ucfirst($parent);
+            }
+            $shortClassName .= ucfirst($dir) . 'Module';
             $classPath = "$root/$dir/$shortClassName.php";
 
             // Check module class exists

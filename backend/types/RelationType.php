@@ -19,16 +19,19 @@ class RelationType extends Type
     /**
      * @inheritdoc
      */
-    public function getFieldProps($model, $attribute, $item)
+    public function prepareFieldProps($model, $attribute, &$props)
     {
-        return [
-            'component' => 'DropDownField',
-            'attribute' => $attribute,
-            'autoComplete' => true,
-            'dataProvider' => [
-                'action' => '', // TODO
+        $props = array_merge(
+            [
+                'component' => 'DropDownField',
+                'attribute' => $attribute,
+                'autoComplete' => true,
+                'dataProvider' => [
+                    'action' => '', // TODO
+                ],
             ],
-        ];
+            $props
+        );
     }
 
     /**

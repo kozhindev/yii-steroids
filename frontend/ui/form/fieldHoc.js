@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
-import {Field, FieldArray, formValueSelector, change} from 'redux-form';
+import {Field, FieldArray, formValueSelector, getFormSubmitErrors, change} from 'redux-form';
 import _get from 'lodash-es/get';
 import _upperFirst from 'lodash-es/upperFirst';
 
@@ -15,7 +15,8 @@ const defaultConfig = {
     layoutProps: null,
     list: false,
 };
-const selectors = {};
+const valueSelectors = {};
+const errorSelectors = {};
 
 @connect(
     (state, props) => {
@@ -23,19 +24,27 @@ const selectors = {};
             return {};
         }
 
-        // Lazy create selector
-        if (!selectors[props.formId]) {
-            selectors[props.formId] = formValueSelector(props.formId);
+        // Lazy create value selector
+        if (!valueSelectors[props.formId]) {
+            valueSelectors[props.formId] = formValueSelector(props.formId);
         }
-        const selector = selectors[props.formId];
+        const valueSelector = valueSelectors[props.formId];
 
         // Fetch values
         const values = {};
         props._config.attributes.map(attribute => {
-            values['formValue' + _upperFirst(attribute)] = selector(state, FieldHoc.getName(props, attribute));
+            values['formValue' + _upperFirst(attribute)] = valueSelector(state, FieldHoc.getName(props, attribute));
         });
+
+        // Lazy create error selector
+        if (!errorSelectors[props.formId]) {
+            errorSelectors[props.formId] = getFormSubmitErrors(props.formId);
+        }
+        const errorSelector = errorSelectors[props.formId];
+
         return {
             ...values,
+            formErrors: errorSelector(state),
             fieldProps: getFieldProps(state, props.model, FieldHoc.getAttribute(props, props._config.attributes[0])),
         };
     }
@@ -45,6 +54,7 @@ class FieldHoc extends React.PureComponent {
     static propTypes = {
         attribute: PropTypes.string,
         fieldProps: PropTypes.object,
+        formErrors: PropTypes.object,
     };
 
     static getAttribute(props, attribute) {
@@ -109,10 +119,21 @@ class FieldHoc extends React.PureComponent {
             ...props,
         };
 
+        // Get errors
+        const names = Object.keys(inputProps).map(key => inputProps[key].name);
+        let errors = null;
+        Object.keys(this.props.formErrors || {}).forEach(key => {
+            if (names.indexOf(key) !== -1) {
+                errors = (errors || []).concat(this.props.formErrors[key]);
+            }
+        });
+
         // TODO implement values in state for list (instead of redux-form FieldArray)
 
         return (
             <FieldLayout
+                errors={errors}
+                isInvalid={!!errors}
                 {...props}
                 {..._config.layoutProps}
             >
@@ -137,6 +158,7 @@ class FieldHoc extends React.PureComponent {
                     <WrappedComponent
                         {...props}
                         {...inputProps}
+                        isInvalid={!!errors}
                         formId={props.formId}
                         fieldId={this._fieldId}
                     />

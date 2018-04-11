@@ -14,6 +14,7 @@ export default class InputFieldView extends React.PureComponent {
         size: PropTypes.oneOf(['sm', 'md', 'lg']),
         type: PropTypes.oneOf(['text', 'email', 'hidden', 'phone', 'password']),
         placeholder: PropTypes.string,
+        isInvalid: PropTypes.bool,
         disabled: PropTypes.bool,
         inputProps: PropTypes.object,
         className: PropTypes.string,
@@ -28,6 +29,7 @@ export default class InputFieldView extends React.PureComponent {
                     }),
                     'form-control',
                     'form-control-' + this.props.size,
+                    this.props.isInvalid && 'is-invalid',
                     this.props.className
                 )}
                 {...this.props.inputProps}

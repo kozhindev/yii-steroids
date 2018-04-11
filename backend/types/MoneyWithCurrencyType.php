@@ -14,14 +14,15 @@ class MoneyWithCurrencyType extends CategorizedStringType
     /**
      * @inheritdoc
      */
-    public function getFieldProps($model, $attribute, $item)
+    public function prepareFieldProps($model, $attribute, &$props)
     {
-        return [
-            'component' => 'CategorizedStringField',
-            //'refAttributeOptions' => [
-            //    self::OPTION_REF_ATTRIBUTE,
-            //],
-        ];
+        $props = array_merge(
+            [
+                'component' => 'CategorizedStringField',
+                'attribute' => $attribute,
+            ],
+            $props
+        );
     }
 
     /**

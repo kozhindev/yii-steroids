@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import _isString from 'lodash-es/isString';
 
 import {html} from 'components';
 import './ButtonView.scss';
@@ -22,6 +23,7 @@ export default class ButtonView extends React.PureComponent {
             'light',
             'dark',
         ]),
+        link: PropTypes.bool,
         outline: PropTypes.bool,
         url: PropTypes.string,
         onClick: PropTypes.func,
@@ -33,7 +35,7 @@ export default class ButtonView extends React.PureComponent {
     };
 
     render() {
-        return this.props.url ? this.renderLink() : this.renderButton();
+        return this.props.link || this.props.url ? this.renderLink() : this.renderButton();
     }
 
     renderLink() {
@@ -42,7 +44,7 @@ export default class ButtonView extends React.PureComponent {
                 className={this._getClassName({link: true})}
                 href={this.props.url}
             >
-                {this.props.children}
+                {this.renderLabel()}
             </a>
         );
     }
@@ -55,16 +57,24 @@ export default class ButtonView extends React.PureComponent {
                 onClick={this.props.onClick}
                 className={this._getClassName()}
             >
+                {this.renderLabel()}
+            </button>
+        );
+    }
+
+    renderLabel() {
+        return (
+            <span>
                 {this.props.icon && (
                     <span
-                        className={bem(
-                            bem.element('icon'),
-                            this.props.icon,
-                        )}
-                    />
+                        className={bem(bem.element('icon'), 'material-icons')}
+                        title={_isString(this.props.label) ? this.props.label : null}
+                    >
+                        {this.props.icon}
+                    </span>
                 )}
                 {this.props.children}
-            </button>
+            </span>
         );
     }
     
@@ -79,10 +89,11 @@ export default class ButtonView extends React.PureComponent {
                 ...modifiers,
             }),
             this.props.className,
-            'btn',
+            !this.props.link && 'btn',
             'btn-' + this.props.size,
-            'btn-' + (this.props.outline ? 'outline-' : '') + this.props.color,
-            this.props.block ? 'btn-block' : '',
+            !this.props.link && 'btn-' + (this.props.outline ? 'outline-' : '') + this.props.color,
+            this.props.block && 'btn-block',
+            this.props.link && 'btn-link',
         );
     }
 }

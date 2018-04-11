@@ -3,26 +3,13 @@
 namespace steroids\widgets;
 
 use steroids\base\Model;
-use steroids\components\AuthManager;
-use Yii;
+use steroids\base\Widget;
 use yii\data\ActiveDataProvider;
-use yii\db\ActiveQuery;
-use yii\grid\ActionColumn;
 use yii\helpers\ArrayHelper;
-use yii\helpers\Url;
-use yii\widgets\BaseListView;
 
-class GridView extends \yii\grid\GridView
+class GridView extends Widget
 {
-    public $dataColumnClass = 'steroids\widgets\DataColumn';
-    public $actionColumnClass = 'steroids\widgets\ActionColumn';
-    public $tableOptions = ['class' => 'table table-hover'];
-    public $layout = "<div class='table table-responsive'>{items}</div>\n{pager}";
-
-    /**
-     * @var array
-     */
-    public $actions = [];
+    const LIST_ID_PREFIX = 'GridView_';
 
     /**
      * @var array
@@ -30,117 +17,148 @@ class GridView extends \yii\grid\GridView
     public $actionParams = [];
 
     /**
-     * @var string
+     * @var array
      */
-    public $pkParam;
+    public $columns;
 
     /**
      * @var array
      */
-    public $controllerMeta;
+    public $actions = [];
 
     /**
-     * @inheritdoc
+     * @var ActiveDataProvider
+     */
+    public $dataProvider;
+
+    /*public function renderQuery()
+    {
+        $dataProvider = new ActiveDataProvider([
+            'query' => $this->query,
+            'pagination' => [
+                'pageParam' => 'page',
+                'pageSizeParam' => 'pageSize',
+                'params' => \Yii::$app->request->post(),
+            ],
+        ]);
+
+        $items = [];
+        $fields = array_filter(ArrayHelper::getColumn($this->columns, 'attribute'));
+        foreach ($dataProvider->models as $model) {
+            $item = $model->toFrontend($fields);
+
+            // Append auth info
+            foreach ($this->getActionsConfig() as $action) {
+                $rule = ArrayHelper::getValue($action, 'rule');
+                if ($rule) {
+                    $item['can' . ucfirst($rule)] = \Yii::$app->authManager->checkModelAccess(\Yii::$app->user->model, $model, $rule);
+                }
+            }
+
+            $items[] = $item;
+        }
+        return [
+            'meta' => null,
+            'items' => $items,
+            'total' => $dataProvider->totalCount,
+        ];
+    }*/
+
+    public function init()
+    {
+        parent::init();
+
+        // Normalize columns
+        foreach ($this->columns as $key => $field) {
+            if (is_string($field)) {
+                $this->columns[$key] = ['attribute' => $field];
+            }
+            if (!isset($field['attribute']) && is_string($key)) {
+                $this->columns[$key]['attribute'] = $key;
+            }
+        }
+    }
+
+    /**
+     * Runs the widget.
      */
     public function run()
     {
-        return BaseListView::run();
+        return $this->renderReact([
+            'listId' => self::LIST_ID_PREFIX . $this->id,
+            'columns' => $this->getColumnsConfig(),
+            'actions' => $this->getActionsConfig(),
+            'items' => $this->getItems(),
+        ], false);
     }
 
-    protected function guessColumns()
+    protected function getColumnsConfig()
     {
-        if ($this->dataProvider instanceof ActiveDataProvider
-            && $this->dataProvider->query instanceof ActiveQuery) {
-            /** @var ActiveQuery $query */
-            $query = $this->dataProvider->query;
+        $config = [];
+        foreach ($this->columns as $column) {
+            $attribute = ArrayHelper::getValue($column, 'attribute');
+            if ($attribute && $this->dataProvider instanceof ActiveDataProvider) {
+                $modelClass = $this->dataProvider->query->modelClass;
 
-            /** @var Model $modelClass */
-            $modelClass = $query->modelClass;
+                /** @var Model $model */
+                $model = new $modelClass();
+                $column = array_merge(
+                    [
+                        'label' => $model->getAttributeLabel($attribute),
+                        'hint' => $model->getAttributeHint($attribute),
+                    ],
+                    $column
+                );
 
-            foreach ($modelClass::meta() as $attribute => $item) {
-                if (ArrayHelper::getValue($this->controllerMeta, 'modelAttributes.' . $attribute . '.showInTable')) {
-                    $this->columns[] = [
-                        'controllerMeta' => $this->controllerMeta,
-                        'attribute' => $attribute,
-                        'label' => $item['label'],
-                        'format' => !empty($item['formatter']) ? $item['formatter'] : 'text',
-                    ];
-                }
+                // Prepare column props by type
+                $type = \Yii::$app->types->getTypeByModel($modelClass, $attribute);
+                $type->prepareViewProps($model, $attribute, $column);
             }
-        } else {
-            parent::guessColumns();
+
+            $config[] = $column;
         }
+        return $config;
     }
 
-    protected function initColumns()
+    protected function getActionsConfig()
     {
-        parent::initColumns();
-
-        // Column access
-        if ($this->dataProvider instanceof ActiveDataProvider) {
-            $authManager = Yii::$app->has('authManager') && Yii::$app->authManager instanceof AuthManager
-                ? Yii::$app->authManager
-                : null;
-            if ($authManager) {
-                /** @var ActiveQuery $query */
-                $query = $this->dataProvider->query;
-
-                foreach ($this->columns as $i => $column) {
-                    /** @type DataColumn $column */
-                    if (!$column->attribute) {
-                        continue;
-                    }
-                    if ($column->attribute && !$authManager->checkAttributeAccess(Yii::$app->user->model, $query->modelClass, $column->attribute, AuthManager::RULE_MODEL_VIEW)) {
-                        unset($this->columns[$i]);
-                    }
-                }
-            }
-        }
-
-        if (!empty($this->actions)) {
-            $buttons = [];
-            $templateButtons = [];
-
-            foreach ($this->actions as $name => $action) {
-                if (is_string($action)) {
-                    $templateButtons[] = $action;
-                } else {
-                    $templateButtons[] = $name;
-                    $buttons[$name] = $action;
-                }
+        $config = [];
+        foreach ($this->actions as $action) {
+            if (is_string($action)) {
+                $action = ['id' => $action];
             }
 
-            $this->columns[] = Yii::createObject([
-                'class' => $this->actionColumnClass,
-                'grid' => $this,
-                'template' => '{' . implode('} {', $templateButtons) . '}',
-                'buttons' => $buttons,
-                'urlCreator' => function($action, Model $model) {
-                    $pkParam = $this->pkParam ?: $model::getRequestParamName();
-
-                    return Url::to(array_merge([$action, $pkParam => $model->primaryKey], $this->actionParams));
-                },
-                'visibleButtons' => [
-                    'view' => function(Model $model) {
-                        $pkParam = $this->pkParam ?: $model::getRequestParamName();
-                        $url = array_merge(['view', $pkParam => $model->primaryKey], $this->actionParams);
-
-                        return \Yii::$app->siteMap->isAllowAccess($url) && $model->canView(Yii::$app->user->model);
-                    },
-                    'update' => function(Model $model) {
-                        $pkParam = $this->pkParam ?: $model::getRequestParamName();
-                        $url = array_merge(['update', $pkParam => $model->primaryKey], $this->actionParams);
-
-                        return \Yii::$app->siteMap->isAllowAccess($url) && $model->canUpdate(Yii::$app->user->model);
-                    },
-                    'delete' => function(Model $model) {
-                        $pkParam = $this->pkParam ?: $model::getRequestParamName();
-                        $url = array_merge(['delete', $pkParam => $model->primaryKey], $this->actionParams);
-
-                        return \Yii::$app->siteMap->isAllowAccess($url) && $model->canDelete(Yii::$app->user->model);
-                    },
-                ],
-            ]);
+            // TODO
+            /*if (!isset($action['visible']) || $action['visible'] === true) {
+                $siteMapItem = \Yii::$app->siteMap->getItem($action['url']);
+                $action['visible'] = $siteMapItem && \Yii::$app->authManager->checkMenuAccess(\Yii::$app->user->model, $siteMapItem);
+            }*/
+            $config[] = $action;
         }
+        return $config;
     }
+
+    protected function getItems()
+    {
+        $items = [];
+        foreach ($this->dataProvider->getModels() as $index => $model) {
+            $row = [];
+            foreach ($this->columns as $column) {
+                $attribute = ArrayHelper::getValue($column, 'attribute');
+
+                // Check direct value render
+                $valueCallback = ArrayHelper::getValue($column, 'value');
+                if ($valueCallback && is_callable($valueCallback)) {
+                    $row[$attribute] = call_user_func($valueCallback, $model, $attribute, $index, $this);
+                }
+
+                // Prepare values by type
+                $type = \Yii::$app->types->getTypeByModel($model, $attribute);
+                $type->prepareViewValue($model, $attribute, $row);
+            }
+            $items[] = $row;
+        }
+        return $items;
+    }
+
 }

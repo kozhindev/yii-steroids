@@ -19,12 +19,35 @@ class EnumType extends Type
     /**
      * @inheritdoc
      */
-    public function getFieldProps($model, $attribute, $item)
+    public function prepareFieldProps($model, $attribute, &$props)
     {
-        return [
-            'component' => 'DropDownField',
-            'attribute' => $attribute,
-        ];
+        /** @var Enum $enumClass */
+        $enumClass = ArrayHelper::getValue($this->getOptions($model, $attribute), self::OPTION_CLASS_NAME);
+        $props = array_merge(
+            [
+                'component' => 'DropDownField',
+                'attribute' => $attribute,
+                'items' => $enumClass ? $enumClass::toFrontend() : null,
+            ],
+            $props
+        );
+    }
+    
+    public function prepareViewProps($model, $attribute, &$props)
+    {
+        /** @var Enum $enumClass */
+        $enumClass = ArrayHelper::getValue($this->getOptions($model, $attribute), self::OPTION_CLASS_NAME);
+        $props = array_merge(
+            [
+                'format' => [
+                    'component' => 'EnumFormatter',
+                    'attribute' => $attribute,
+                    'items' => $enumClass ? $enumClass::toFrontend() : null,
+                ],
+            ],
+            $props
+        );
+
     }
 
     /**

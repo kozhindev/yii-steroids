@@ -63,6 +63,9 @@ storiesOf('Form', module)
                 <div className='col'>
                     <InputField label='Placeholder' placeholder='Your text...'/>
                 </div>
+                <div className='col'>
+                    <InputField label='Errors' errors='Error text...'/>
+                </div>
             </div>
         </div>
 ));

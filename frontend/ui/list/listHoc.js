@@ -98,6 +98,7 @@ const getFormId = props => _get(props, 'searchForm.formId', props.listId);
 
     static defaultProps = {
         ...WrappedComponent.defaultProps,
+        paginationSizeView: false,
         primaryKey: 'id',
         defaultPageSize: 20,
         loadMore: true,

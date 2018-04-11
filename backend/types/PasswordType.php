@@ -14,12 +14,15 @@ class PasswordType extends Type
     /**
      * @inheritdoc
      */
-    public function getFieldProps($model, $attribute, $item)
+    public function prepareFieldProps($model, $attribute, &$props)
     {
-        return [
-            'component' => 'PasswordField',
-            'attribute' => $attribute,
-        ];
+        $props = array_merge(
+            [
+                'component' => 'PasswordField',
+                'attribute' => $attribute,
+            ],
+            $props
+        );
     }
 
     /**

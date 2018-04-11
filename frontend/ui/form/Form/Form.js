@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
-import {reduxForm, SubmissionError, getFormValues} from 'redux-form';
+import {reduxForm, SubmissionError, getFormValues, isInvalid} from 'redux-form';
 import _isEqual from 'lodash-es/isEqual';
 import _get from 'lodash-es/get';
 import _set from 'lodash-es/set';
@@ -13,14 +13,17 @@ import Field from '../Field';
 import Button from '../Button';
 
 let valuesSelector = null;
+let invalidSelector = null;
 
 @connect(
     (state, props) => {
         valuesSelector = valuesSelector || getFormValues(props.formId);
+        invalidSelector = invalidSelector || isInvalid(props.formId);
 
         return {
             form: props.formId,
             formValues: valuesSelector(state),
+            isInvalid: invalidSelector(state),
             formRegisteredFields: _get(state, `form.${props.formId}.registeredFields`),
         };
     }
@@ -47,6 +50,7 @@ export default class Form extends React.PureComponent {
         className: PropTypes.string,
         view: PropTypes.func,
         formValues: PropTypes.object,
+        isInvalid: PropTypes.bool,
         formRegisteredFields: PropTypes.object,
         fields: PropTypes.arrayOf(PropTypes.shape({
             label: PropTypes.string,

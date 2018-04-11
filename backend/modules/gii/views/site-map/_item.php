@@ -36,7 +36,7 @@ use steroids\modules\gii\helpers\GiiHelper;
     <td>
         <?php
         $access = [];
-        foreach (array_merge((array) $siteMapItem->roles, (array) $siteMapItem->accessCheck) as $accessItem) {
+        foreach ((array) $siteMapItem->accessCheck as $accessItem) {
             foreach ((array)$accessItem as $accessSubItem) {
                 $access[] = is_callable($accessSubItem) ? 'func()' : (string) $accessSubItem;
             }

@@ -16,6 +16,7 @@ export default class PasswordFieldView extends React.PureComponent {
         security: PropTypes.bool,
         placeholder: PropTypes.string,
         disabled: PropTypes.bool,
+        isInvalid: PropTypes.bool,
         inputProps: PropTypes.object,
         className: PropTypes.string,
         securityLevel: PropTypes.string,
@@ -34,6 +35,7 @@ export default class PasswordFieldView extends React.PureComponent {
                             }),
                             'form-control',
                             'form-control-' + this.props.size,
+                            this.props.isInvalid && 'is-invalid',
                             this.props.className
                         )}
                         {...this.props.inputProps}

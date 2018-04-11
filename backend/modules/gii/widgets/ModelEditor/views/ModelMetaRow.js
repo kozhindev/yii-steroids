@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import {Field, formValueSelector, arrayPush} from 'redux-form';
-import _isEqual from 'lodash/isEqual';
 
 import {html} from 'components';
 
@@ -24,12 +23,6 @@ class ModelMetaRow extends React.Component {
         onRemove: PropTypes.func,
         isAR: PropTypes.bool,
     };
-
-    shouldComponentUpdate(nextProps) {
-        return !!['name', 'appType', 'isShowButtonAddRelation'].find(name => {
-            return !_isEqual(this.props[name], nextProps[name]);
-        });
-    }
 
     render() {
         const {attribute, index, isAR} = this.props;

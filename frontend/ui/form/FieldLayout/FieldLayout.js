@@ -17,6 +17,10 @@ export default class FieldLayout extends React.PureComponent {
         required: PropTypes.bool,
         layout: PropTypes.oneOf(['default', 'inline', 'horizontal']),
         layoutProps: PropTypes.object,
+        errors: PropTypes.oneOfType([
+            PropTypes.string,
+            PropTypes.arrayOf(PropTypes.string),
+        ]),
         className: PropTypes.string,
         view: PropTypes.func,
     };

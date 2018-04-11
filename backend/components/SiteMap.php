@@ -5,6 +5,7 @@ namespace steroids\components;
 use steroids\base\Module;
 use Yii;
 use yii\base\Component;
+use yii\base\Exception;
 use yii\base\InvalidConfigException;
 use yii\base\InvalidParamException;
 use yii\helpers\ArrayHelper;
@@ -516,6 +517,8 @@ class SiteMap extends Component
 
     /**
      * @param Module|array|string $module
+     * @throws Exception
+     * @throws \ReflectionException
      */
     protected function loadModuleSiteMapRecursive($module)
     {
@@ -535,6 +538,30 @@ class SiteMap extends Component
         // Append site map
         if (method_exists($moduleClass, 'siteMap')) {
             $this->addItems($moduleClass::siteMap(), true);
+        }
+        //var_dump($moduleClass, $children);
+        
+        // Load controllers
+        $info = new \ReflectionClass($moduleClass);
+        $controllersPath = dirname($info->getFileName()) . '/controllers';
+        if (is_dir($controllersPath)) {
+            $namespace = $info->getNamespaceName() . '\\controllers';
+
+            foreach (scandir($controllersPath) as $file) {
+                // Skip dot folders
+                if (substr($file, 0, 1) === '.') {
+                    continue;
+                }
+
+                $controllerClass = $namespace . '\\' . basename($file, '.php');
+                if (!class_exists($controllerClass)) {
+                    throw new Exception('Not found class "' . $controllerClass . '" on scan site map.');
+                }
+
+                if (method_exists($controllerClass, 'siteMap')) {
+                    $this->addItems($controllerClass::siteMap(), true);
+                }
+            }
         }
 
         // Load sub modules

@@ -11,7 +11,7 @@ export const LIST_TOGGLE_ITEM = 'LIST_TOGGLE_ITEM';
 export const LIST_TOGGLE_ALL = 'LIST_TOGGLE_ALL';
 
 export const init = (listId, props) => dispatch => dispatch({
-    action: props.action || null,
+    action: props.action || props.action === '' ? props.action : null,
     page: 1,
     pageSize: props.defaultPageSize,
     sort: props.defaultSort || null,
@@ -28,7 +28,7 @@ export const fetch = (listId, params) => (dispatch, getState) => {
         ..._get(getState(), ['list', listId]),
         ...params,
     };
-    if (!list.action) {
+    if (!list.action && list.action !== '') {
         return;
     }
 
@@ -38,7 +38,7 @@ export const fetch = (listId, params) => (dispatch, getState) => {
             listId,
             type: LIST_BEFORE_FETCH,
         },
-        http.post(list.action, {
+        http.post(list.action || location.pathname, {
             ...list.query,
             page: list.page,
             pageSize: list.pageSize,

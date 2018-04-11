@@ -10,12 +10,15 @@ class DateTimeType extends DateType
     /**
      * @inheritdoc
      */
-    public function getFieldProps($model, $attribute, $item)
+    public function prepareFieldProps($model, $attribute, &$props)
     {
-        return [
-            'component' => 'DateTimeField',
-            'attribute' => $attribute,
-        ];
+        $props = array_merge(
+            [
+                'component' => 'DateTimeField',
+                'attribute' => $attribute,
+            ],
+            $props
+        );
     }
 
     /**

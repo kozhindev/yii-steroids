@@ -11,13 +11,16 @@ class PhoneType extends Type
     /**
      * @inheritdoc
      */
-    public function getFieldProps($model, $attribute, $item)
+    public function prepareFieldProps($model, $attribute, &$props)
     {
-        return [
-            'component' => 'InputField',
-            'attribute' => $attribute,
-            'type' => 'phone',
-        ];
+        $props = array_merge(
+            [
+                'component' => 'InputField',
+                'attribute' => $attribute,
+                'type' => 'phone',
+            ],
+            $props
+        );
     }
 
     /**

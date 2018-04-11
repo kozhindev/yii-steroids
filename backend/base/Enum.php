@@ -60,6 +60,18 @@ abstract class Enum extends BaseObject
         return isset($idLabelMap[$id]) ? $prefix . $idLabelMap[$id] : '';
     }
 
+    public static function toFrontend()
+    {
+        $items = [];
+        foreach (static::getLabels() as $id => $label) {
+            $items[] = [
+                'id' => $id,
+                'label' => $label,
+            ];
+        }
+        return $items;
+    }
+
     /**
      * @param string|null $default
      * @return string

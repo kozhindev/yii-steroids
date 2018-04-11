@@ -14,12 +14,15 @@ class FileType extends Type
     /**
      * @inheritdoc
      */
-    public function getFieldProps($model, $attribute, $item)
+    public function prepareFieldProps($model, $attribute, &$props)
     {
-        return [
-            'component' => 'FileField',
-            'attribute' => $attribute,
-        ];
+        $props = array_merge(
+            [
+                'component' => 'FileField',
+                'attribute' => $attribute,
+            ],
+            $props
+        );
     }
 
     /**
