@@ -51,19 +51,20 @@ export default class PermissionCheckbox extends React.PureComponent {
             </label>
         );
 
+        const tooltipId = 'tooltip_' + this.props.permission.name.replace(/[^0-9a-z]+/g, '_');
         return (
             <div
                 key={this.props.permission.name}
                 className={bem.element('checkbox')}
             >
-                <div id={'tooltip_' + this.props.permission.name}>
+                <div id={tooltipId}>
                     {label}
                 </div>
                 {this.props.showTooltip && (
                     <Tooltip
                         placement='top'
                         isOpen={this.state.isTooltipOpen}
-                        target={'tooltip_' + this.props.permission.name}
+                        target={tooltipId}
                         toggle={() => this.setState({isTooltipOpen: !this.state.isTooltipOpen})}
                     >
                         {this.props.permission.description}

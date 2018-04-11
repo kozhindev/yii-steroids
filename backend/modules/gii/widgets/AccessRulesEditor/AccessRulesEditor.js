@@ -27,10 +27,6 @@ export default class AccessRulesEditor extends React.PureComponent {
         enableInlineMode: PropTypes.bool,
     };
 
-    shouldComponentUpdate() {
-        return false;
-    }
-
     render() {
         return (
             <form

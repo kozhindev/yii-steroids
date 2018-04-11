@@ -16,6 +16,10 @@ export default class FieldLayoutView extends React.PureComponent {
             PropTypes.string,
             PropTypes.bool,
         ]),
+        errors: PropTypes.oneOfType([
+            PropTypes.string,
+            PropTypes.arrayOf(PropTypes.string),
+        ]),
         required: PropTypes.bool,
         layout: PropTypes.oneOf(['default', 'inline', 'horizontal']),
         layoutProps: PropTypes.object,
@@ -50,6 +54,15 @@ export default class FieldLayoutView extends React.PureComponent {
                     this.props.layout === 'horizontal' && !this.props.label && 'offset-' + this.props.layoutProps.cols[0])
                 }>
                     {this.props.children}
+                    {this.props.errors && (
+                        <div className={bem(bem.element('invalid-feedback'), 'invalid-feedback')}>
+                            {this.props.errors.map((error, index) => (
+                                <div key={index}>
+                                    {error}
+                                </div>
+                            ))}
+                        </div>
+                    )}
                 </div>
             </div>
         );

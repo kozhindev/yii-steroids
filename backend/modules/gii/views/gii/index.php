@@ -5,8 +5,8 @@ namespace steroids\views;
 use steroids\modules\gii\models\EnumClass;
 use steroids\modules\gii\models\FormModelClass;
 use steroids\modules\gii\models\ModelClass;
-use steroids\widgets\GridView;
 use yii\data\ArrayDataProvider;
+use yii\grid\GridView;
 use yii\helpers\Html;
 
 /* @var $this \yii\web\View */

@@ -32,6 +32,8 @@ class ModuleClass extends BaseClass
                 ]);
 
                 foreach ($module->modules as $subId => $subModule) {
+                    $subModule = $module->getModule($subId);
+
                     /** @type Module $subModule */
                     self::$_modules[] = new static([
                         'className' => $subModule::className(),

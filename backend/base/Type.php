@@ -2,10 +2,10 @@
 
 namespace steroids\base;
 
-use steroids\gii\models\MetaItem;
+use steroids\modules\gii\models\MetaItem;
 use yii\base\BaseObject;
 use yii\db\Schema;
-use yii\base\Widget;
+use yii\helpers\ArrayHelper;
 
 abstract class Type extends BaseObject
 {
@@ -13,27 +13,7 @@ abstract class Type extends BaseObject
      * @var string
      */
     public $name;
-
-    /**
-     * @var string|array
-     */
-    public $inputWidget;
-
-    /**
-     * @var string|array|callable
-     */
     public $formatter;
-
-    /**
-     * @param array $item
-     * @param Widget $class
-     * @param array $config
-     * @return string
-     */
-    public function renderInputWidget($item, $class, $config)
-    {
-        return null;
-    }
 
     /**
      * @param Model $model
@@ -47,15 +27,14 @@ abstract class Type extends BaseObject
         return null;
     }
 
+
     /**
      * @param Model|FormModel $model
      * @param string $attribute
-     * @param array $item
-     * @return array
+     * @param array $props
      */
-    public function getFieldProps($model, $attribute, $item)
+    public function prepareFieldProps($model, $attribute, &$props)
     {
-        return [];
     }
 
     /**
@@ -67,6 +46,26 @@ abstract class Type extends BaseObject
     {
         return [];
     }
+
+    /**
+     * @param Model|FormModel $model
+     * @param string $attribute
+     * @param array $props
+     */
+    public function prepareViewProps($model, $attribute, &$props)
+    {
+    }
+
+    /**
+     * @param Model $model
+     * @param string $attribute
+     * @param array $values
+     */
+    public function prepareViewValue($model, $attribute, &$values)
+    {
+        $values[$attribute] = $model->$attribute;
+    }
+
 
     /**
      * @param MetaItem $metaItem
@@ -123,5 +122,19 @@ abstract class Type extends BaseObject
     public function giiOptions()
     {
         return [];
+    }
+
+    /**
+     * @param Model|FormModel|string $modelClass
+     * @param string $attribute
+     * @return array
+     */
+    protected function getOptions($modelClass, $attribute)
+    {
+        if (is_object($modelClass)) {
+            $modelClass = get_class($modelClass);
+        }
+
+        return ArrayHelper::getValue($modelClass::meta(), $attribute, []);
     }
 }

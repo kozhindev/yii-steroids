@@ -14,12 +14,15 @@ class MoneyType extends Type
     /**
      * @inheritdoc
      */
-    public function getFieldProps($model, $attribute, $item)
+    public function prepareFieldProps($model, $attribute, &$props)
     {
-        return [
-            'component' => 'NumberField',
-            'attribute' => $attribute,
-        ];
+        $props = array_merge(
+            [
+                'component' => 'NumberField',
+                'attribute' => $attribute,
+            ],
+            $props
+        );
     }
 
     /**

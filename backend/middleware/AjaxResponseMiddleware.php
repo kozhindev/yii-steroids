@@ -5,6 +5,7 @@ namespace steroids\middleware;
 use steroids\base\SearchModel;
 use yii\base\ActionEvent;
 use yii\base\BaseObject;
+use yii\data\BaseDataProvider;
 use yii\web\Application;
 use yii\web\Controller;
 use yii\web\ForbiddenHttpException;
@@ -44,6 +45,12 @@ class AjaxResponseMiddleware extends BaseObject
             // Detect data provider
             if ($event->result instanceof SearchModel) {
                 $data = $event->result->toFrontend();
+            } elseif ($event->result instanceof BaseDataProvider) {
+                $data = [
+                    'meta' => null,
+                    'items' => $event->result->models,
+                    'total' => $event->result->totalCount,
+                ];
             } else {
                 $data = is_array($event->result) ? $event->result : [];
             }

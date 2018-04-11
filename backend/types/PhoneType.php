@@ -3,7 +3,7 @@
 namespace steroids\types;
 
 use steroids\base\Type;
-use steroids\gii\models\MetaItem;
+use steroids\modules\gii\models\MetaItem;
 use yii\db\Schema;
 
 class PhoneType extends Type
@@ -11,13 +11,16 @@ class PhoneType extends Type
     /**
      * @inheritdoc
      */
-    public function getFieldProps($model, $attribute, $item)
+    public function prepareFieldProps($model, $attribute, &$props)
     {
-        return [
-            'component' => 'InputField',
-            'attribute' => $attribute,
-            'type' => 'phone',
-        ];
+        $props = array_merge(
+            [
+                'component' => 'InputField',
+                'attribute' => $attribute,
+                'type' => 'phone',
+            ],
+            $props
+        );
     }
 
     /**

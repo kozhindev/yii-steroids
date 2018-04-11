@@ -22,7 +22,6 @@ use steroids\types\RelationType;
 use steroids\types\SizeType;
 use steroids\types\StringType;
 use steroids\types\TextType;
-use steroids\widgets\FrontendField;
 use yii\base\Component;
 use yii\base\Exception;
 use yii\helpers\ArrayHelper;
@@ -88,44 +87,19 @@ class Types extends Component
     }
 
     /**
-     * @param Model $model
+     * @param Model|string $modelClass
      * @param string $attribute
-     * @param array|null $field
-     * @param array $options
-     * @return object|string
+     * @return null|Type
      */
-    public function renderField($model, $attribute, $field = null, $options = [])
+    public function getTypeByModel($modelClass, $attribute)
     {
-        $item = $this->getMetaItem($model, $attribute) ?: [];
-
-        $type = $this->getTypeByItem($item);
-        $config = [
-            'class' => FrontendField::className(),
-            'model' => $model,
-            'attribute' => $attribute,
-            'field' => $field,
-            'options' => $options,
-        ];
-        if (is_string($type->inputWidget)) {
-            $config['class'] = $type->inputWidget;
-        } elseif (is_array($type->inputWidget)) {
-            $config = array_merge($config, $type->inputWidget);
+        if (is_object($modelClass)) {
+            $modelClass = get_class($modelClass);
         }
 
-        if (property_exists($config['class'], 'metaItem')) {
-            $config['metaItem'] = $item;
-        }
-
-        /** @var \yii\base\Widget $class */
-        $class = $config['class'];
-        unset($config['class']);
-
-        $value = $type->renderInputWidget($item, $class, $config);
-        if ($value !== null) {
-            return $value;
-        }
-
-        return $class::widget($config);
+        $metaItem = ArrayHelper::getValue($modelClass::meta(), $attribute, []);
+        $appType = ArrayHelper::getValue($metaItem, 'appType', 'string');
+        return $this->getType($appType);
     }
 
     /**

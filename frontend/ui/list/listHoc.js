@@ -7,7 +7,7 @@ import _isEqual from 'lodash-es/isEqual';
 import _merge from 'lodash-es/merge';
 
 import {locale} from 'components';
-import {init, fetch, destroy} from '../../actions/list';
+import {init, fetch, refresh, destroy} from '../../actions/list';
 import {getList} from '../../reducers/list';
 import Empty from './Empty';
 import Pagination from './Pagination';
@@ -98,6 +98,7 @@ const getFormId = props => _get(props, 'searchForm.formId', props.listId);
 
     static defaultProps = {
         ...WrappedComponent.defaultProps,
+        paginationSizeView: false,
         primaryKey: 'id',
         defaultPageSize: 20,
         loadMore: true,
@@ -210,6 +211,7 @@ const getFormId = props => _get(props, 'searchForm.formId', props.listId);
                 submitLabel={locale.t('Найти')}
                 {...this.props.searchForm}
                 formId={getFormId(this.props)}
+                onSubmit={() => this.props.dispatch(refresh())}
             />
         );
     }

@@ -82,40 +82,43 @@ class ActiveForm extends Widget
      */
     public function run()
     {
+        $submitLabel = $this->submitLabel;
+        if (!$submitLabel) {
+            $submitLabel = $this->model->isNewRecord
+                ? \Yii::t('app', 'Добавить')
+                : \Yii::t('app', 'Сохранить');
+        }
+
         return $this->renderReact([
             'formId' => self::FORM_ID_PREFIX . $this->id,
             'action' => $this->action,
+            'prefix' => $this->model->formName(),
             'layout' => $this->layout,
             'layoutProps' => $this->layoutProps,
             'initialValues' => $this->getInitialValues(),
-            'submitLabel' => $this->submitLabel,
+            'submitLabel' => $submitLabel,
             'fields' => $this->getFieldsConfig(),
         ], false);
     }
 
     protected function getFieldsConfig()
     {
-        $model = $this->model;
-        $meta = $model::meta();
         $config = [];
-
         foreach ($this->fields as $field) {
             $attribute = $field['attribute'];
-            $metaItem = ArrayHelper::getValue($meta, $attribute, []);
-            $appType = ArrayHelper::getValue($metaItem, 'appType', 'string');
-            $type = \Yii::$app->types->getType($appType);
-            if (!$type) {
-                throw new InvalidConfigException('Not found app type `' . $appType . '`');
-            }
-
-            $config[] = array_merge(
+            $field = array_merge(
                 [
-                    'label' => $model->getAttributeLabel($attribute),
-                    'hint' => $model->getAttributeHint($attribute),
-                    'required' => $model->isAttributeRequired($attribute),
+                    'label' => $this->model->getAttributeLabel($attribute),
+                    'hint' => $this->model->getAttributeHint($attribute),
+                    'required' => $this->model->isAttributeRequired($attribute),
                 ],
-                $type->getFieldProps($model, $attribute, $metaItem)
+                $field
             );
+
+            $type = \Yii::$app->types->getTypeByModel($this->model, $attribute);
+            $type->prepareFieldProps($this->model, $attribute, $field);
+
+            $config[] = $field;
         }
         return $config;
     }
@@ -135,7 +138,7 @@ class ActiveForm extends Widget
         $initialValues = [];
         foreach ($this->fields as $field) {
             $attribute = $field['attribute'];
-            $initialValues = $this->model->$attribute;
+            $initialValues[$attribute] = $this->model->$attribute;
         }
 
         // Apply form name

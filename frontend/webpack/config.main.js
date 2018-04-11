@@ -54,7 +54,7 @@ module.exports = (config, entry) => {
                                 presets: [
                                     'env',
                                     'react',
-                                    utils.isProduction() && 'minify'
+                                    webpackVersion === 4 && utils.isProduction() && 'minify'
                                 ].filter(Boolean),
                             }
                         },

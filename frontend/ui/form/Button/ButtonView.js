@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import _isString from 'lodash-es/isString';
 
 import {html} from 'components';
 import './ButtonView.scss';
@@ -22,6 +23,7 @@ export default class ButtonView extends React.PureComponent {
             'light',
             'dark',
         ]),
+        link: PropTypes.bool,
         outline: PropTypes.bool,
         url: PropTypes.string,
         onClick: PropTypes.func,
@@ -33,48 +35,65 @@ export default class ButtonView extends React.PureComponent {
     };
 
     render() {
+        return this.props.link || this.props.url ? this.renderLink() : this.renderButton();
+    }
+
+    renderLink() {
         return (
-            <div>
-                {!this.props.url && (
-                    <button
-                        type={this.props.type}
-                        disabled={this.props.disabled}
-                        onClick={this.props.onClick}
-                        className={bem(
-                            bem.block({
-                                color: this.props.color,
-                                outline: this.props.outline,
-                                size: this.props.size,
-                                disabled: this.props.disabled,
-                                submitting: this.props.submitting,
-                            }),
-                            this.props.className,
-                            'btn',
-                            'btn-' + this.props.size,
-                            'btn-' + (this.props.outline ? 'outline-' : '') + this.props.color,
-                            this.props.block ? 'btn-block' : '',
-                        )}
+            <a
+                className={this._getClassName({link: true})}
+                href={this.props.url}
+            >
+                {this.renderLabel()}
+            </a>
+        );
+    }
+
+    renderButton() {
+        return (
+            <button
+                type={this.props.type}
+                disabled={this.props.disabled}
+                onClick={this.props.onClick}
+                className={this._getClassName()}
+            >
+                {this.renderLabel()}
+            </button>
+        );
+    }
+
+    renderLabel() {
+        return (
+            <span>
+                {this.props.icon && (
+                    <span
+                        className={bem(bem.element('icon'), 'material-icons')}
+                        title={_isString(this.props.label) ? this.props.label : null}
                     >
-                        {this.props.icon && (
-                            <span
-                                className={bem(
-                                    bem.element('icon'),
-                                    this.props.icon,
-                                )}
-                            />
-                        )}
-                        {this.props.children}
-                    </button>
-                ) ||
-                (
-                    <a
-                        className={bem.block({link: true})}
-                        href={this.props.url}
-                    >
-                        {this.props.children}
-                    </a>
+                        {this.props.icon}
+                    </span>
                 )}
-            </div>
+                {this.props.children}
+            </span>
+        );
+    }
+    
+    _getClassName(modifiers) {
+        return bem(
+            bem.block({
+                color: this.props.color,
+                outline: this.props.outline,
+                size: this.props.size,
+                disabled: this.props.disabled,
+                submitting: this.props.submitting,
+                ...modifiers,
+            }),
+            this.props.className,
+            !this.props.link && 'btn',
+            'btn-' + this.props.size,
+            !this.props.link && 'btn-' + (this.props.outline ? 'outline-' : '') + this.props.color,
+            this.props.block && 'btn-block',
+            this.props.link && 'btn-link',
         );
     }
 }

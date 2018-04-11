@@ -5,6 +5,7 @@ export default class UiComponent {
 
     constructor() {
         this.fields = {};
+        this.formatters = {};
 
         this._components = {};
     }
@@ -27,6 +28,18 @@ export default class UiComponent {
 
     getFieldProps(path) {
         return this._getPropsConfig('fields', path);
+    }
+
+    addFormatters(components) {
+        this._add('formatters', components);
+    }
+
+    getFormatter(path) {
+        return this._getComponent('formatters', path);
+    }
+
+    getFormatterProps(path) {
+        return this._getPropsConfig('formatters', path);
     }
 
     _add(group, items) {

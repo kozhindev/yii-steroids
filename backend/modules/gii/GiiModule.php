@@ -33,7 +33,7 @@ class GiiModule extends Module
     public static function siteMap()
     {
         return [
-            'admin' => [
+            'gii' => [
                 'items' => array_merge(
                     GiiController::coreMenuItems(),
                     SiteMapController::coreMenuItems(),

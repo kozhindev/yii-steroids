@@ -22,14 +22,15 @@ class AddressType extends Type
     /**
      * @inheritdoc
      */
-    public function getFieldProps($model, $attribute, $item)
+    public function prepareFieldProps($model, $attribute, &$props)
     {
-        return [
-            'component' => 'AddressField',
-            'attribute' => $attribute,
-            //'countryModelClass' => 'app\\address\\models\\Country',
-            //'autoCompleteUrl' => '/address/auto-complete/search/',
-        ];
+        $props = array_merge(
+            [
+                'component' => 'AddressField',
+                'attribute' => $attribute,
+            ],
+            $props
+        );
     }
 
     /**

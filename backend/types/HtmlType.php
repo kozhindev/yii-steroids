@@ -12,12 +12,15 @@ class HtmlType extends Type
     /**
      * @inheritdoc
      */
-    public function getFieldProps($model, $attribute, $item)
+    public function prepareFieldProps($model, $attribute, &$props)
     {
-        return [
-            'component' => 'HtmlField',
-            'attribute' => $attribute,
-        ];
+        $props = array_merge(
+            [
+                'component' => 'HtmlField',
+                'attribute' => $attribute,
+            ],
+            $props
+        );
     }
 
     /**

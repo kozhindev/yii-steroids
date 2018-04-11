@@ -45,6 +45,7 @@ export default class Button extends React.PureComponent {
             'light',
             'dark',
         ]),
+        link: PropTypes.bool,
         outline: PropTypes.bool,
         url: PropTypes.string,
         onClick: PropTypes.func,

@@ -4,8 +4,8 @@ namespace steroids\types;
 
 use steroids\base\Enum;
 use steroids\base\Type;
-use steroids\gii\models\EnumClass;
-use steroids\gii\models\ValueExpression;
+use steroids\modules\gii\models\EnumClass;
+use steroids\modules\gii\models\ValueExpression;
 use yii\db\Schema;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
@@ -19,12 +19,35 @@ class EnumType extends Type
     /**
      * @inheritdoc
      */
-    public function getFieldProps($model, $attribute, $item)
+    public function prepareFieldProps($model, $attribute, &$props)
     {
-        return [
-            'component' => 'DropDownField',
-            'attribute' => $attribute,
-        ];
+        /** @var Enum $enumClass */
+        $enumClass = ArrayHelper::getValue($this->getOptions($model, $attribute), self::OPTION_CLASS_NAME);
+        $props = array_merge(
+            [
+                'component' => 'DropDownField',
+                'attribute' => $attribute,
+                'items' => $enumClass ? $enumClass::toFrontend() : null,
+            ],
+            $props
+        );
+    }
+    
+    public function prepareViewProps($model, $attribute, &$props)
+    {
+        /** @var Enum $enumClass */
+        $enumClass = ArrayHelper::getValue($this->getOptions($model, $attribute), self::OPTION_CLASS_NAME);
+        $props = array_merge(
+            [
+                'format' => [
+                    'component' => 'EnumFormatter',
+                    'attribute' => $attribute,
+                    'items' => $enumClass ? $enumClass::toFrontend() : null,
+                ],
+            ],
+            $props
+        );
+
     }
 
     /**

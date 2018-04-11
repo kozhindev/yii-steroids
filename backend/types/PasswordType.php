@@ -3,7 +3,7 @@
 namespace steroids\types;
 
 use steroids\base\Type;
-use steroids\gii\models\MetaItem;
+use steroids\modules\gii\models\MetaItem;
 use yii\db\Schema;
 
 class PasswordType extends Type
@@ -14,12 +14,15 @@ class PasswordType extends Type
     /**
      * @inheritdoc
      */
-    public function getFieldProps($model, $attribute, $item)
+    public function prepareFieldProps($model, $attribute, &$props)
     {
-        return [
-            'component' => 'PasswordField',
-            'attribute' => $attribute,
-        ];
+        $props = array_merge(
+            [
+                'component' => 'PasswordField',
+                'attribute' => $attribute,
+            ],
+            $props
+        );
     }
 
     /**

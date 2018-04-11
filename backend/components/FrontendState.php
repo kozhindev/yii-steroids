@@ -34,10 +34,6 @@ class FrontendState extends Component
 
         if (isset($state[$name]) && is_array($state[$name]) && is_array($value)) {
             $state[$name] = array_merge($state[$name], $value);
-
-            if (!ArrayHelper::isAssociative($state[$name])) {
-                $state[$name] = array_unique($state[$name]);
-            }
         } else {
             $state[$name] = $value;
         }

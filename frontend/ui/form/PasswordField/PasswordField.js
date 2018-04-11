@@ -23,6 +23,7 @@ export default class PasswordField extends React.PureComponent {
         security: PropTypes.bool,
         placeholder: PropTypes.string,
         disabled: PropTypes.bool,
+        isInvalid: PropTypes.bool,
         inputProps: PropTypes.object,
         onChange: PropTypes.func,
         className: PropTypes.string,
@@ -91,7 +92,7 @@ export default class PasswordField extends React.PureComponent {
                     ...this.props.inputProps,
                 }}
                 security={this.props.security}
-                securityLevel={this.props.security && PasswordField.checkPassword(this.props.input.value)}
+                securityLevel={this.props.security ? PasswordField.checkPassword(this.props.input.value) : null}
                 onShowPassword={() => this.setState({type: 'text'})}
                 onHidePassword={() => this.setState({type: 'password'})}
             />

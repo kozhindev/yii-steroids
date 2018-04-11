@@ -9,13 +9,16 @@ class EnumListType extends EnumType
     /**
      * @inheritdoc
      */
-    public function getFieldProps($model, $attribute, $item)
+    public function prepareFieldProps($model, $attribute, &$props)
     {
-        return [
-            'component' => 'DropDownField',
-            'attribute' => $attribute,
-            'multiple' => true,
-        ];
+        $props = array_merge(
+            [
+                'component' => 'DropDownField',
+                'attribute' => $attribute,
+                'multiple' => true,
+            ],
+            $props
+        );
     }
 
     /**

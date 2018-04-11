@@ -3,8 +3,8 @@
 namespace steroids\types;
 
 use steroids\base\Type;
-use steroids\gii\models\MetaItem;
-use steroids\gii\models\ValueExpression;
+use steroids\modules\gii\models\MetaItem;
+use steroids\modules\gii\models\ValueExpression;
 use steroids\validators\WordsValidator;
 use yii\db\Schema;
 use yii\helpers\StringHelper;
@@ -20,12 +20,15 @@ class StringType extends Type
     /**
      * @inheritdoc
      */
-    public function getFieldProps($model, $attribute, $item)
+    public function prepareFieldProps($model, $attribute, &$props)
     {
-        return [
-            'component' => 'InputField',
-            'attribute' => $attribute,
-        ];
+        $props = array_merge(
+            [
+                'component' => 'InputField',
+                'attribute' => $attribute,
+            ],
+            $props
+        );
     }
 
     /**

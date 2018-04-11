@@ -3,7 +3,7 @@
 namespace steroids\types;
 
 use steroids\base\Type;
-use steroids\gii\models\MetaItem;
+use steroids\modules\gii\models\MetaItem;
 use yii\helpers\ArrayHelper;
 
 class RangeType extends Type
@@ -19,13 +19,17 @@ class RangeType extends Type
     /**
      * @inheritdoc
      */
-    public function getFieldProps($model, $attribute, $item)
+    public function prepareFieldProps($model, $attribute, &$props)
     {
-        return [
-            'component' => 'RangeField',
-            'attributeFrom' => $attribute,
-            'attributeTo' => ArrayHelper::getValue($item, self::OPTION_REF_ATTRIBUTE),
-        ];
+        $options = $this->getOptions($model, $attribute);
+        $props = array_merge(
+            [
+                'component' => 'RangeField',
+                'attributeFrom' => $attribute,
+                'attributeTo' => ArrayHelper::getValue($options, self::OPTION_REF_ATTRIBUTE),
+            ],
+            $props
+        );
     }
 
     /**

@@ -10,13 +10,16 @@ class PrimaryKeyType extends Type
     /**
      * @inheritdoc
      */
-    public function getFieldProps($model, $attribute, $item)
+    public function prepareFieldProps($model, $attribute, &$props)
     {
-        return [
-            'component' => 'InputField',
-            'attribute' => $attribute,
-            'type' => 'hidden',
-        ];
+        $props = array_merge(
+            [
+                'component' => 'InputField',
+                'attribute' => $attribute,
+                'type' => 'hidden',
+            ],
+            $props
+        );
     }
 
     /**
