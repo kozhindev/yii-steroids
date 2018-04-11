@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import _get from 'lodash-es/get';
-import _has from 'lodash-es/has';
 import _upperFirst from 'lodash-es/upperFirst';
 
 import {locale} from 'components';
