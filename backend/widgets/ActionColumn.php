@@ -3,9 +3,6 @@
 namespace steroids\widgets;
 
 use Yii;
-use steroids\base\FormModel;
-use steroids\base\Model;
-use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 
 class ActionColumn extends \yii\grid\ActionColumn

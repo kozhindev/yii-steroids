@@ -14,6 +14,7 @@ export default class Nav extends React.PureComponent {
             onClick: PropTypes.func,
             className: PropTypes.string,
             view: PropTypes.func,
+            visible: PropTypes.bool,
         })),
         className: PropTypes.string,
         view: PropTypes.func,
@@ -33,6 +34,7 @@ export default class Nav extends React.PureComponent {
         return (
             <NavView
                 {...this.props}
+                items={this.props.items.filter(item => item.visible !== false)}
             />
         );
     }

@@ -51,6 +51,9 @@ class ActiveForm extends Widget
             if (is_string($field)) {
                 $this->fields[$key] = ['attribute' => $field];
             }
+            if (!isset($field['attribute']) && is_string($key)) {
+                $this->fields[$key]['attribute'] = $key;
+            }
         }
     }
 

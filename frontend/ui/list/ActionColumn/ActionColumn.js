@@ -1,6 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import _get from 'lodash-es/get';
+import _has from 'lodash-es/has';
+import _upperFirst from 'lodash-es/upperFirst';
 
 import {locale} from 'components';
 import Nav from '../../Nav';
@@ -43,6 +45,7 @@ export default class ActionColumn extends React.PureComponent {
                 items={this.props.actions.map(action => ({
                     ...defaultActions[action.id],
                     ...action,
+                    visible: !!this.props.item['can' + _upperFirst(action.id)],
                 }))}
             />
         );

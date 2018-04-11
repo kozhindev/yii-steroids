@@ -155,6 +155,15 @@ class GridView extends Widget
                 // Prepare values by type
                 $type = \Yii::$app->types->getTypeByModel($model, $attribute);
                 $type->prepareViewValue($model, $attribute, $row);
+
+                // Add can* params
+                foreach ($this->actions as $action) {
+                    $actionId = is_string($action) ? $action : $action['id'];
+                    $key = 'can' . ucfirst($actionId);
+                    if (method_exists($model, $key)) {
+                        $row[$key] = $model->$key(\Yii::$app->user->model);
+                    }
+                }
             }
             $items[] = $row;
         }

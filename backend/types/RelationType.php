@@ -7,7 +7,6 @@ use steroids\base\Type;
 use steroids\modules\gii\models\ModelMetaClass;
 use yii\db\Schema;
 use yii\helpers\ArrayHelper;
-use arogachev\ManyToMany\behaviors\ManyToManyBehavior;
 use yii\helpers\Html;
 use yii\web\JsExpression;
 
@@ -105,21 +104,6 @@ class RelationType extends Type
      */
     public function giiBehaviors($metaItem)
     {
-        if ($metaItem->relationName && !$this->giiDbType($metaItem)) {
-            return [
-                [
-                    'class' => ManyToManyBehavior::className(),
-                    'relations' => [
-                        [
-                            'name' => $metaItem->relationName,
-                            'editableAttribute' => $metaItem->name,
-                            'autoFill' => false,
-                        ]
-                    ]
-                ],
-            ];
-        }
-
         return [];
     }
 
