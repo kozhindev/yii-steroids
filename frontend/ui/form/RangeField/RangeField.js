@@ -42,6 +42,7 @@ export default class RangeField extends React.PureComponent {
         onChange: PropTypes.func,
         className: PropTypes.string,
         view: PropTypes.func,
+        isInvalid: PropTypes.bool,
     };
 
     static defaultProps = {
@@ -52,6 +53,7 @@ export default class RangeField extends React.PureComponent {
         className: '',
         placeholderFrom: '',
         placeholderTo: '',
+        errors: [], //for storybook
     };
 
     static fieldsMap = {
@@ -142,6 +144,7 @@ export default class RangeField extends React.PureComponent {
                         {...fieldProps}
                         {...fieldFromProps}
                         {...this.props.fromProps}
+                        isInvalid={this.props.isInvalid}
                     />
                 )}
                 toField={(
@@ -152,6 +155,7 @@ export default class RangeField extends React.PureComponent {
                         {...fieldProps}
                         {...fieldToProps}
                         {...this.props.toProps}
+                        isInvalid={this.props.isInvalid}
                     />
                 )}
             />

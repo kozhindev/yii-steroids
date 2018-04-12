@@ -2,7 +2,7 @@ import React from 'react';
 import {storiesOf} from '@storybook/react';
 import { withInfo } from '@storybook/addon-info';
 import { withReadme } from 'storybook-readme';
-import {text, boolean, select } from '@storybook/addon-knobs/react';
+import {text, boolean, select, array} from '@storybook/addon-knobs/react';
 
 import InputField from "./InputField";
 import README from './README.md'
@@ -34,6 +34,7 @@ storiesOf('Form', module)
                     size={select('Size', sizes, InputField.defaultProps.size)}
                     type={select('Type', types, InputField.defaultProps.type)}
                     placeholder={text('Placeholder', InputField.defaultProps.placeholder)}
+                    errors={array('Errors', InputField.defaultProps.errors)}
                 />
             ))(context)}
 
@@ -64,7 +65,7 @@ storiesOf('Form', module)
                     <InputField label='Placeholder' placeholder='Your text...'/>
                 </div>
                 <div className='col'>
-                    <InputField label='Errors' errors='Error text...'/>
+                    <InputField label='Errors' errors={['Error 1 text', 'Error 2 text']}/>
                 </div>
             </div>
         </div>

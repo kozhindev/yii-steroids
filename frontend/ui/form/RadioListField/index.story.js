@@ -2,7 +2,7 @@ import React from 'react';
 import {storiesOf} from '@storybook/react';
 import { withInfo } from '@storybook/addon-info';
 import { withReadme } from 'storybook-readme';
-import {text, boolean, object} from '@storybook/addon-knobs/react';
+import {text, boolean, object, array} from '@storybook/addon-knobs/react';
 
 import RadioListField from './RadioListField';
 import README from './README.md'
@@ -37,6 +37,7 @@ storiesOf('Form', module)
                     required={boolean('Required', RadioListField.defaultProps.required)}
                     className={text('Class', RadioListField.defaultProps.className)}
                     items={object('Items', items)}
+                    errors={array('Errors', RadioListField.defaultProps.errors)}
                 />
             ))(context)}
 
@@ -52,6 +53,13 @@ storiesOf('Form', module)
                     <RadioListField
                         label='Required'
                         required
+                        items={items}
+                    />
+                </div>
+                <div className='col-2'>
+                    <RadioListField
+                        label='Errors'
+                        errors={['Error 1 text', 'Error 2 text']}
                         items={items}
                     />
                 </div>

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import {storiesOf} from '@storybook/react';
 import {withInfo} from '@storybook/addon-info';
 import {withReadme} from "storybook-readme";
-import {text, boolean, select} from '@storybook/addon-knobs/react';
+import {text, boolean, select, array} from '@storybook/addon-knobs/react';
 
 import TextField from './TextField';
 import README from './README.md'
@@ -50,6 +50,7 @@ storiesOf('Form', module)
                     placeholder={text('Placeholder', TextField.defaultProps.placeholder)}
                     size={select('Size', sizes, TextField.defaultProps.size)}
                     submitOnEnter={boolean('SubmitOnEnter', TextField.defaultProps.submitOnEnter)}
+                    errors={array('Errors', TextField.defaultProps.errors)}
                 />
             ))(context)}
 
@@ -72,6 +73,9 @@ storiesOf('Form', module)
                 </div>
                 <div className='col'>
                     <TextField label='Submit On Enter' submitOnEnter/>
+                </div>
+                <div className='col'>
+                    <TextField label='Errors' errors={['Error 1 text', 'Error 2 text']}/>
                 </div>
             </div>
         </div>

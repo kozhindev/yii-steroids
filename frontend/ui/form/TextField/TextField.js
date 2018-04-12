@@ -22,6 +22,7 @@ export default class TextField extends React.PureComponent {
         required: PropTypes.bool,
         size: PropTypes.oneOf(['sm', 'md', 'lg']),
         placeholder: PropTypes.string,
+        isInvalid: PropTypes.bool,
         disabled: PropTypes.bool,
         submitOnEnter: PropTypes.bool,
         inputProps: PropTypes.object,
@@ -37,6 +38,7 @@ export default class TextField extends React.PureComponent {
         className: '',
         placeholder: '',
         submitOnEnter: false,
+        errors: [], //for storybook
     };
 
     constructor() {

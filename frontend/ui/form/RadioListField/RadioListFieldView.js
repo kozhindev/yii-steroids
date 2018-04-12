@@ -12,6 +12,7 @@ export default class RadioListFieldView extends React.PureComponent {
         label: PropTypes.string,
         hint: PropTypes.string,
         required: PropTypes.bool,
+        isInvalid: PropTypes.bool,
         size: PropTypes.oneOf(['sm', 'md', 'lg']),
         disabled: PropTypes.bool,
         inputProps: PropTypes.object,
@@ -28,7 +29,7 @@ export default class RadioListFieldView extends React.PureComponent {
 
     render() {
         return (
-            <div className={bem.block()}>
+            <div className={bem.block({'is-invalid': this.props.isInvalid})}>
                 {this.props.items.map(item => (
                     <div
                         key={item.id}

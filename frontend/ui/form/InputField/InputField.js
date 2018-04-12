@@ -37,6 +37,7 @@ export default class InputField extends React.PureComponent {
         required: false,
         className: '',
         placeholder: '',
+        errors: [], //for storybook
     };
 
     render() {

@@ -2,7 +2,7 @@ import React from 'react';
 import {storiesOf} from '@storybook/react';
 import { withInfo } from '@storybook/addon-info';
 import { withReadme } from 'storybook-readme';
-import {text, boolean, select } from '@storybook/addon-knobs/react';
+import {text, boolean, select, array} from '@storybook/addon-knobs/react';
 
 import DateTimeField from './DateTimeField';
 import README from './README.md'
@@ -24,6 +24,7 @@ storiesOf('Form', module)
                     required={boolean('Required', DateTimeField.defaultProps.required)}
                     className={text('Class', DateTimeField.defaultProps.className)}
                     size={select('Size', sizes, DateTimeField.defaultProps.size)}
+                    errors={array('Errors', DateTimeField.defaultProps.errors)}
                 />
             ))(context)}
 
@@ -40,6 +41,9 @@ storiesOf('Form', module)
                 </div>
                 <div className='col'>
                     <DateTimeField label='Required' required/>
+                </div>
+                <div className='col'>
+                    <DateTimeField label='Errors' errors={['Error 1 text', 'Error 2 text']}/>
                 </div>
             </div>
         </div>
