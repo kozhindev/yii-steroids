@@ -29,6 +29,7 @@ export default class FileField extends React.PureComponent {
         backendUrl: PropTypes.string,
         showRemove: PropTypes.bool,
         imagesOnly: PropTypes.bool,
+        multiple: PropTypes.bool,
         imagesProcessor: PropTypes.string,
         imagesExactSize: PropTypes.arrayOf(PropTypes.number),
         mimeTypes: PropTypes.arrayOf(PropTypes.string),
