@@ -44,11 +44,15 @@ export default class FileFieldView extends React.PureComponent {
                         {...this.props.buttonProps}
                         label={null}
                     >
-                        <span className='material-icons'>
+                        <span className={bem(
+                            bem.element('button-icon'),
+                            'material-icons'
+                        )}>
                             {this.props.imagesOnly ? 'insert_photo' : 'insert_drive_file'}
                         </span>
-                        &nbsp;
-                        {this.props.buttonProps.label}
+                        <span className={bem.element('button-label')}>
+                            {this.props.buttonProps.label}
+                        </span>
                     </ButtonComponent>
                 </div>
             </div>

@@ -36,6 +36,7 @@ export default class DateTimeField extends React.PureComponent {
         onChange: PropTypes.func,
         className: PropTypes.string,
         view: PropTypes.func,
+        isInvalid: PropTypes.bool,
     };
 
     static defaultProps = {
@@ -46,6 +47,7 @@ export default class DateTimeField extends React.PureComponent {
         displayDateFormat: 'DD.MM.YYYY',
         valueDateFormat: 'YYYY-MM-DD',
         timeFormat: 'HH:mm',
+        errors: [], //for storybook
     };
 
     constructor() {
@@ -71,6 +73,7 @@ export default class DateTimeField extends React.PureComponent {
                 {...this.props}
                 dateField={(
                     <DateFieldInternal
+                        isInvalid={this.props.isInvalid}
                         size={this.props.size}
                         required={this.props.required}
                         disabled={this.props.disabled}
@@ -86,6 +89,7 @@ export default class DateTimeField extends React.PureComponent {
                 )}
                 timeField={(
                     <InputFieldInternal
+                        isInvalid={this.props.isInvalid}
                         size={this.props.size}
                         required={this.props.required}
                         disabled={this.props.disabled}

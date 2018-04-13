@@ -18,6 +18,7 @@ export default class NumberFieldView extends React.PureComponent {
         max: PropTypes.number,
         step: PropTypes.number,
         placeholder: PropTypes.string,
+        isInvalid: PropTypes.bool,
         disabled: PropTypes.bool,
         inputProps: PropTypes.object,
         className: PropTypes.string,
@@ -32,6 +33,7 @@ export default class NumberFieldView extends React.PureComponent {
                     }),
                     'form-control',
                     'form-control-' + this.props.size,
+                    this.props.isInvalid && 'is-invalid',
                     this.props.className
                 )}
                 {...this.props.inputProps}

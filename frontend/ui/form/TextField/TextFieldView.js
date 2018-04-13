@@ -15,6 +15,7 @@ export default class TextFieldView extends React.PureComponent {
         required: PropTypes.bool,
         size: PropTypes.oneOf(['sm', 'md', 'lg']),
         placeholder: PropTypes.string,
+        isInvalid: PropTypes.bool,
         disabled: PropTypes.bool,
         inputProps: PropTypes.object,
         className: PropTypes.string,
@@ -29,6 +30,7 @@ export default class TextFieldView extends React.PureComponent {
                     }),
                     'form-control',
                     'form-control-' + this.props.size,
+                    this.props.isInvalid && 'is-invalid',
                     this.props.className
                 )}
                 {...this.props.inputProps}

@@ -2,7 +2,7 @@ import React from 'react';
 import {storiesOf} from '@storybook/react';
 import { withInfo } from '@storybook/addon-info';
 import {withReadme} from "storybook-readme";
-import {text, boolean, select} from '@storybook/addon-knobs/react';
+import {text, boolean, select, array} from '@storybook/addon-knobs/react';
 
 import PasswordField from './PasswordField';
 import README from './README.md'
@@ -26,6 +26,7 @@ storiesOf('Form', module)
                     placeholder={text('Placeholder', PasswordField.defaultProps.placeholder)}
                     size={select('Size', sizes, PasswordField.defaultProps.size)}
                     security={boolean('Security', PasswordField.defaultProps.security)}
+                    errors={array('Errors', PasswordField.defaultProps.errors)}
                 />
             ))(context)}
 
@@ -48,6 +49,9 @@ storiesOf('Form', module)
                 </div>
                 <div className='col'>
                     <PasswordField label='Security' security/>
+                </div>
+                <div className='col'>
+                    <PasswordField label='Errors' errors={['Error 1 text', 'Error 2 text']}/>
                 </div>
             </div>
         </div>

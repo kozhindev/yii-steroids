@@ -56,11 +56,19 @@ export default class FieldLayoutView extends React.PureComponent {
                     {this.props.children}
                     {this.props.errors && (
                         <div className={bem(bem.element('invalid-feedback'), 'invalid-feedback')}>
-                            {this.props.errors.map((error, index) => (
-                                <div key={index}>
-                                    {error}
+                            {typeof this.props.errors === 'object' && (
+                                this.props.errors.map((error, index) => {
+                                    return (
+                                        <div key={index}>
+                                            {error}
+                                        </div>
+                                    )
+                                })
+                            ) ||
+                                <div>
+                                    {this.props.errors}
                                 </div>
-                            ))}
+                            }
                         </div>
                     )}
                 </div>

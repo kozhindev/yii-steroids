@@ -2,7 +2,7 @@ import React from 'react';
 import {storiesOf} from '@storybook/react';
 import { withInfo } from '@storybook/addon-info';
 import {withReadme} from "storybook-readme";
-import {text, boolean, number, select} from '@storybook/addon-knobs/react';
+import {text, boolean, number, select, array} from '@storybook/addon-knobs/react';
 
 import NumberField from './NumberField';
 import README from './README.md'
@@ -28,6 +28,7 @@ storiesOf('Form', module)
                     step={number('Step', NumberField.defaultProps.step)}
                     min={number('min', NumberField.defaultProps.min)}
                     max={number('max', NumberField.defaultProps.max)}
+                    errors={array('Errors', NumberField.defaultProps.errors)}
                 />
             ))(context)}
 
@@ -47,6 +48,9 @@ storiesOf('Form', module)
                 </div>
                 <div className='col'>
                     <NumberField label='Placeholder' placeholder='Your number...'/>
+                </div>
+                <div className='col'>
+                    <NumberField label='Errors' errors={['Error 1 text', 'Error 2 text']}/>
                 </div>
             </div>
         </div>

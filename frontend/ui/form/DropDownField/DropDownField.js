@@ -27,6 +27,7 @@ export default class DropDownField extends React.PureComponent {
         }),
         required: PropTypes.bool,
         placeholder: PropTypes.string,
+        isInvalid: PropTypes.bool,
         searchPlaceholder: PropTypes.string,
         disabled: PropTypes.bool,
         inputProps: PropTypes.object,
@@ -74,6 +75,7 @@ export default class DropDownField extends React.PureComponent {
         autoComplete: false,
         showReset: false,
         multiple: false,
+        errors: [], //for storybook
     };
 
     constructor() {

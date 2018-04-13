@@ -2,7 +2,7 @@ import React from 'react';
 import {withInfo} from '@storybook/addon-info';
 import {storiesOf} from '@storybook/react';
 import {withReadme} from "storybook-readme";
-import {text, boolean, select} from '@storybook/addon-knobs/react';
+import {text, boolean, select, array} from '@storybook/addon-knobs/react';
 
 import RangeField from './RangeField';
 import README from './README.md'
@@ -32,6 +32,7 @@ storiesOf('Form', module)
                     placeholderFrom={text('Placeholder From', RangeField.defaultProps.placeholderFrom)}
                     placeholderTo={text('Placeholder To', RangeField.defaultProps.placeholderTo)}
                     type={select('Type', types, RangeField.defaultProps.type)}
+                    errors={array('Errors', RangeField.defaultProps.errors)}
                 />
             ))(context)}
             <div className='row mb-4'>
@@ -56,9 +57,18 @@ storiesOf('Form', module)
                     />
                 </div>
             </div>
-            <RangeField
-                type='date'
-                label='Date period'
-            />
+            <div className='col'>
+                <RangeField
+                    type='date'
+                    label='Date period'
+                />
+            </div>
+            <div className='col'>
+                <RangeField
+                    label='Errors'
+                    errors={['Error 1 text', 'Error 2 text']}
+                />
+            </div>
+
         </div>
     ));

@@ -19,6 +19,7 @@ export default class DateFieldView extends React.PureComponent {
         disabled: PropTypes.bool,
         pickerProps: PropTypes.object,
         className: PropTypes.string,
+        isInvalid: PropTypes.bool,
     };
 
     render() {
@@ -33,6 +34,7 @@ export default class DateFieldView extends React.PureComponent {
                             }),
                             'form-control',
                             'form-control-' + this.props.size,
+                            this.props.isInvalid && 'is-invalid',
                             this.props.className,
                         ),
                         disabled: this.props.disabled,

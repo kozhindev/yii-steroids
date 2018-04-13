@@ -25,6 +25,7 @@ export default class CheckboxField extends React.PureComponent {
             onChange: PropTypes.func,
         }),
         required: PropTypes.bool,
+        isInvalid: PropTypes.bool,
         disabled: PropTypes.bool,
         inputProps: PropTypes.object,
         onChange: PropTypes.func,
@@ -36,6 +37,7 @@ export default class CheckboxField extends React.PureComponent {
         disabled: false,
         required: false,
         className: '',
+        errors: [], //for storybook
     };
 
     render() {

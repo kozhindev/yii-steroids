@@ -18,6 +18,7 @@ export default class DateTimeFieldView extends React.PureComponent {
         dateField: PropTypes.node,
         timeField: PropTypes.node,
         className: PropTypes.string,
+        isInvalid: PropTypes.bool,
     };
 
     render() {

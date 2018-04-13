@@ -27,6 +27,7 @@ export default class NumberField extends React.PureComponent {
         max: PropTypes.number,
         step: PropTypes.number,
         placeholder: PropTypes.string,
+        isInvalid: PropTypes.bool,
         disabled: PropTypes.bool,
         inputProps: PropTypes.object,
         onChange: PropTypes.func,
@@ -43,6 +44,7 @@ export default class NumberField extends React.PureComponent {
         min: null,
         max: null,
         step: null,
+        errors: [], //for storybook
     };
 
     render() {

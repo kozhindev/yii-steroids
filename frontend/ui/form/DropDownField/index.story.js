@@ -2,7 +2,7 @@ import React from 'react';
 import {storiesOf} from '@storybook/react';
 import { withInfo } from '@storybook/addon-info';
 import { withReadme } from 'storybook-readme';
-import {text, boolean, object, number } from '@storybook/addon-knobs/react';
+import {text, boolean, object, array} from '@storybook/addon-knobs/react';
 
 import DropDownField from './DropDownField';
 import README from './README.md'
@@ -26,7 +26,6 @@ const items = [
     },
 ];
 
-
 storiesOf('Form', module)
     .addDecorator(withReadme(README))
     .add('DropDownField', context => (
@@ -44,6 +43,7 @@ storiesOf('Form', module)
                     searchPlaceholder={text('Search Placeholder', DropDownField.defaultProps.searchPlaceholder)}
                     multiple={boolean('Multiple', DropDownField.defaultProps.multiple)}
                     items={object('Items', items)}
+                    errors={array('Errors', [])}
                 />
             ))(context)}
 
@@ -92,6 +92,13 @@ storiesOf('Form', module)
                     <DropDownField
                         label='Multiple'
                         multiple
+                        items={items}
+                    />
+                </div>
+                <div className='col'>
+                    <DropDownField
+                        label='Errors'
+                        errors={['Error 1 text', 'Error 2 text']}
                         items={items}
                     />
                 </div>

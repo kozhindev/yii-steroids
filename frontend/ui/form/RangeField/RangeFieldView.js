@@ -18,6 +18,7 @@ export default class RangeFieldView extends React.PureComponent {
         toField: PropTypes.node,
         disabled: PropTypes.bool,
         className: PropTypes.string,
+        isInvalid: PropTypes.bool,
     };
 
     render() {

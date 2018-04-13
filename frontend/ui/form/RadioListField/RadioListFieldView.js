@@ -15,6 +15,7 @@ export default class RadioListFieldView extends React.PureComponent {
         ]),
         hint: PropTypes.string,
         required: PropTypes.bool,
+        isInvalid: PropTypes.bool,
         size: PropTypes.oneOf(['sm', 'md', 'lg']),
         disabled: PropTypes.bool,
         inputProps: PropTypes.object,
@@ -40,7 +41,11 @@ export default class RadioListFieldView extends React.PureComponent {
                         <input
                             {...this.props.inputProps}
                             id={this.props.fieldId + '_' + item.id}
-                            className='custom-control-input'
+                            className={bem(
+                                bem.element('input'),
+                                'custom-control-input',
+                                this.props.isInvalid && 'is-invalid',
+                            )}
                             disabled={this.props.disabled}
                             onChange={() => this.props.onItemClick(item)}
                         />

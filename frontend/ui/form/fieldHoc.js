@@ -121,7 +121,7 @@ class FieldHoc extends React.PureComponent {
 
         // Get errors
         const names = Object.keys(inputProps).map(key => inputProps[key].name);
-        let errors = null;
+        let errors = this.props.errors;
         Object.keys(this.props.formErrors || {}).forEach(key => {
             if (names.indexOf(key) !== -1) {
                 errors = (errors || []).concat(this.props.formErrors[key]);
@@ -133,7 +133,7 @@ class FieldHoc extends React.PureComponent {
         return (
             <FieldLayout
                 errors={errors}
-                isInvalid={!!errors}
+                isInvalid={errors && errors.length > 0}
                 {...props}
                 {..._config.layoutProps}
             >
@@ -158,7 +158,7 @@ class FieldHoc extends React.PureComponent {
                     <WrappedComponent
                         {...props}
                         {...inputProps}
-                        isInvalid={!!errors}
+                        isInvalid={errors && errors.length > 0}
                         formId={props.formId}
                         fieldId={this._fieldId}
                     />

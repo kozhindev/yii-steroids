@@ -1,3 +1,4 @@
+import {combineReducers} from 'redux';
 import {reducer as form} from 'redux-form';
 import fields from './fields';
 import list from './list';
@@ -11,3 +12,5 @@ export {
     config,
     notifications,
 };
+
+export default combineReducers(module.exports);

@@ -14,6 +14,7 @@ export default class CheckboxFieldView extends React.PureComponent {
         ]),
         hint: PropTypes.string,
         required: PropTypes.bool,
+        isInvalid: PropTypes.bool,
         disabled: PropTypes.bool,
         inputProps: PropTypes.object,
         className: PropTypes.string,
@@ -30,6 +31,7 @@ export default class CheckboxFieldView extends React.PureComponent {
                     className={bem(
                         bem.element('input'),
                         'custom-control-input',
+                        this.props.isInvalid && 'is-invalid',
                         this.props.className
                     )}
                     id={this.props.fieldId + '_' + 'checkbox'}

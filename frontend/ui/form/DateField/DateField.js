@@ -32,6 +32,7 @@ export default class DateField extends React.PureComponent {
         valueFormat: PropTypes.string,
         className: PropTypes.string,
         view: PropTypes.func,
+        isInvalid: PropTypes.bool,
     };
 
     static defaultProps = {
@@ -41,6 +42,7 @@ export default class DateField extends React.PureComponent {
         className: '',
         displayFormat: 'DD.MM.YYYY',
         valueFormat: 'YYYY-MM-DD',
+        errors: [], //for storybook
     };
 
     constructor() {
