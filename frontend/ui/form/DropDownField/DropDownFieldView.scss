@@ -15,6 +15,9 @@
     line-height: 1.5;
     font-size: 1rem;
     color: $gray-700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 
     &::after {
       content: '';
