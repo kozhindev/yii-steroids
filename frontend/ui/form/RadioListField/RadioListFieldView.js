@@ -29,7 +29,7 @@ export default class RadioListFieldView extends React.PureComponent {
 
     render() {
         return (
-            <div className={bem.block({'is-invalid': this.props.isInvalid})}>
+            <div className={bem.block()}>
                 {this.props.items.map(item => (
                     <div
                         key={item.id}
@@ -38,7 +38,11 @@ export default class RadioListFieldView extends React.PureComponent {
                         <input
                             {...this.props.inputProps}
                             id={this.props.fieldId + '_' + item.id}
-                            className='custom-control-input'
+                            className={bem(
+                                bem.element('input'),
+                                'custom-control-input',
+                                this.props.isInvalid && 'is-invalid',
+                            )}
                             disabled={this.props.disabled}
                             onChange={() => this.props.onItemClick(item)}
                         />
