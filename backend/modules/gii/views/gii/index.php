@@ -34,6 +34,7 @@ foreach ($modules as $moduleId => $items) {
                     ) ?>
                     <?= GridView::widget([
                         'dataProvider' => new ArrayDataProvider(['allModels' => !empty($items['models']) ? $items['models'] : []]),
+                        'layout' => '{items}',
                         'emptyText' => '',
                         'columns' => [
                             [
@@ -77,6 +78,7 @@ foreach ($modules as $moduleId => $items) {
                     ) ?>
                     <?= GridView::widget([
                         'dataProvider' => new ArrayDataProvider(['allModels' => !empty($items['cruds']) ? $items['cruds'] : []]),
+                        'layout' => '{items}',
                         'emptyText' => '',
                         'columns' => [
                             [
@@ -119,6 +121,7 @@ foreach ($modules as $moduleId => $items) {
                     ) ?>
                     <?= GridView::widget([
                         'dataProvider' => new ArrayDataProvider(['allModels' => !empty($items['formModels']) ? $items['formModels'] : []]),
+                        'layout' => '{items}',
                         'emptyText' => '',
                         'columns' => [
                             [
@@ -161,6 +164,7 @@ foreach ($modules as $moduleId => $items) {
                     ) ?>
                     <?= GridView::widget([
                         'dataProvider' => new ArrayDataProvider(['allModels' => !empty($items['enums']) ? $items['enums'] : []]),
+                        'layout' => '{items}',
                         'emptyText' => '',
                         'columns' => [
                             [

@@ -9,6 +9,7 @@ import _isUndefined from 'lodash-es/isUndefined';
 
 import {http, ui} from 'components';
 import AutoSaveHelper from './AutoSaveHelper';
+import SyncAddressBarHelper from './SyncAddressBarHelper';
 import Field from '../Field';
 import Button from '../Button';
 
@@ -62,6 +63,7 @@ export default class Form extends React.PureComponent {
             ]),
         })),
         submitLabel: PropTypes.string,
+        syncWithAddressBar: PropTypes.bool,
     };
 
     static childContextTypes = {
@@ -122,16 +124,24 @@ export default class Form extends React.PureComponent {
         if (this.props.autoSave) {
             AutoSaveHelper.restore(this.props.formId, this.props.initialValues);
         }
+
+        // Restore values from address bar
+        if (this.props.syncWithAddressBar) {
+            SyncAddressBarHelper.restore(this.props.formId, this.props.initialValues);
+        }
     }
 
     componentWillReceiveProps(nextProps) {
         // Check update values for trigger event
-        if ((this.props.onChange || this.props.autoSave) && !_isEqual(this.props.formValues, nextProps.formValues)) {
+        if ((this.props.onChange || this.props.autoSave || this.props.syncWithAddressBar) && !_isEqual(this.props.formValues, nextProps.formValues)) {
             if (this.props.onChange) {
                 this.props.onChange(nextProps.formValues);
             }
             if (this.props.autoSave) {
                 AutoSaveHelper.save(this.props.formId, nextProps.formValues);
+            }
+            if (this.props.syncWithAddressBar) {
+                SyncAddressBarHelper.save(nextProps.formValues);
             }
         }
     }

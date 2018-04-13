@@ -31,39 +31,6 @@ class GridView extends Widget
      */
     public $dataProvider;
 
-    /*public function renderQuery()
-    {
-        $dataProvider = new ActiveDataProvider([
-            'query' => $this->query,
-            'pagination' => [
-                'pageParam' => 'page',
-                'pageSizeParam' => 'pageSize',
-                'params' => \Yii::$app->request->post(),
-            ],
-        ]);
-
-        $items = [];
-        $fields = array_filter(ArrayHelper::getColumn($this->columns, 'attribute'));
-        foreach ($dataProvider->models as $model) {
-            $item = $model->toFrontend($fields);
-
-            // Append auth info
-            foreach ($this->getActionsConfig() as $action) {
-                $rule = ArrayHelper::getValue($action, 'rule');
-                if ($rule) {
-                    $item['can' . ucfirst($rule)] = \Yii::$app->authManager->checkModelAccess(\Yii::$app->user->model, $model, $rule);
-                }
-            }
-
-            $items[] = $item;
-        }
-        return [
-            'meta' => null,
-            'items' => $items,
-            'total' => $dataProvider->totalCount,
-        ];
-    }*/
-
     public function init()
     {
         parent::init();
@@ -89,6 +56,11 @@ class GridView extends Widget
             'columns' => $this->getColumnsConfig(),
             'actions' => $this->getActionsConfig(),
             'items' => $this->getItems(),
+            'loadMore' => false,
+            'defaultPageSize' => ArrayHelper::getValue($this->dataProvider, 'pagination.pageSize'),
+            'paginationProps' => [
+                'pageParam' => ArrayHelper::getValue($this->dataProvider, 'pagination.pageParam'),
+            ],
         ], false);
     }
 

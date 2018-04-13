@@ -10,6 +10,8 @@ export const LIST_DESTROY = 'LIST_DESTROY';
 export const LIST_TOGGLE_ITEM = 'LIST_TOGGLE_ITEM';
 export const LIST_TOGGLE_ALL = 'LIST_TOGGLE_ALL';
 
+const lazyTimers = {};
+
 export const init = (listId, props) => dispatch => dispatch({
     action: props.action || props.action === '' ? props.action : null,
     page: 1,
@@ -50,6 +52,13 @@ export const fetch = (listId, params) => (dispatch, getState) => {
                 type: LIST_AFTER_FETCH,
             })),
     ]);
+};
+
+export const lazyFetch = (listId, params) => dispatch => {
+    if (lazyTimers[listId]) {
+        clearTimeout(lazyTimers[listId]);
+    }
+    lazyTimers[listId] = setTimeout(() => dispatch(fetch(listId, params)));
 };
 
 export const setPage = (listId, page) => fetch(listId, {

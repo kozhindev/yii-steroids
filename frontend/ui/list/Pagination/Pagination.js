@@ -20,6 +20,7 @@ export default class Pagination extends React.PureComponent {
         }),
         className: PropTypes.string,
         view: PropTypes.func,
+        pageParam: PropTypes.string,
     };
 
     static defaultProps = {
@@ -85,12 +86,17 @@ export default class Pagination extends React.PureComponent {
 
     _onSelect(page) {
         if (page) {
-            this.props.dispatch(setPage(this.props.listId, page));
+            if (this.props.pageParam) {
+                // TODO
+                location.href = location.pathname + '?' + this.props.pageParam + '=' + page;
+            } else {
+                this.props.dispatch(setPage(this.props.listId, page));
+            }
         }
     }
 
     _onSelectNext() {
-        this.props.dispatch(setPage(this.props.listId, this.props.list.page + 1));
+        this._onSelect(this.props.list.page + 1);
     }
 
 }

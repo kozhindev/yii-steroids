@@ -7,7 +7,7 @@ import _isEqual from 'lodash-es/isEqual';
 import _merge from 'lodash-es/merge';
 
 import {locale} from 'components';
-import {init, fetch, refresh, destroy} from '../../actions/list';
+import {init, lazyFetch, refresh, destroy} from '../../actions/list';
 import {getList} from '../../reducers/list';
 import Empty from './Empty';
 import Pagination from './Pagination';
@@ -114,7 +114,7 @@ const getFormId = props => _get(props, 'searchForm.formId', props.listId);
         const prevQuery = _merge({}, _get(this.props, 'list.query'), _get(this.props, 'formValues'));
         const nextQuery = _merge({}, _get(nextProps, 'list.query'), _get(nextProps, 'formValues'));
         if (!_isEqual(prevQuery, nextQuery) || (!this.props.list && nextProps.list)) {
-            this.props.dispatch(fetch(this.props.listId, {
+            this.props.dispatch(lazyFetch(this.props.listId, {
                 page: 1,
                 query: nextQuery,
             }));
