@@ -11,7 +11,10 @@ import README from './README.md'
 import './TextFieldView.scss';
 
 TextField.propTypes = {
-    label: PropTypes.string,
+    label: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.bool,
+    ]),
     hint: PropTypes.string,
     attribute: PropTypes.string,
     input: PropTypes.shape({

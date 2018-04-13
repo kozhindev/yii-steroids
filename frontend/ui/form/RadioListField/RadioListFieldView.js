@@ -9,7 +9,10 @@ export default class RadioListFieldView extends React.PureComponent {
 
     static propTypes = {
         fieldId: PropTypes.string,
-        label: PropTypes.string,
+        label: PropTypes.oneOfType([
+            PropTypes.string,
+            PropTypes.bool,
+        ]),
         hint: PropTypes.string,
         required: PropTypes.bool,
         size: PropTypes.oneOf(['sm', 'md', 'lg']),

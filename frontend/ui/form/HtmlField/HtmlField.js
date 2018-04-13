@@ -11,7 +11,10 @@ import fieldHoc from '../fieldHoc';
 export default class HtmlField extends React.PureComponent {
 
     static propTypes = {
-        label: PropTypes.string,
+        label: PropTypes.oneOfType([
+            PropTypes.string,
+            PropTypes.bool,
+        ]),
         hint: PropTypes.string,
         attribute: PropTypes.string,
         input: PropTypes.shape({

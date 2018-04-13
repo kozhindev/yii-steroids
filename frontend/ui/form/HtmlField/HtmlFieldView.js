@@ -8,7 +8,10 @@ const bem = html.bem('HtmlFieldView');
 export default class HtmlFieldView extends React.PureComponent {
 
     static propTypes = {
-        label: PropTypes.string,
+        label: PropTypes.oneOfType([
+            PropTypes.string,
+            PropTypes.bool,
+        ]),
         hint: PropTypes.string,
         required: PropTypes.bool,
         disabled: PropTypes.bool,

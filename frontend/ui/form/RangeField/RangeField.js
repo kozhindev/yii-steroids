@@ -16,7 +16,10 @@ import DateField from '../DateField';
 export default class RangeField extends React.PureComponent {
 
     static propTypes = {
-        label: PropTypes.string,
+        label: PropTypes.oneOfType([
+            PropTypes.string,
+            PropTypes.bool,
+        ]),
         hint: PropTypes.string,
         attributeFrom: PropTypes.string,
         attributeTo: PropTypes.string,

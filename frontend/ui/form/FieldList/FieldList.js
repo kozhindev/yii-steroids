@@ -14,7 +14,10 @@ import './FieldListView.scss';
 export default class FieldList extends React.PureComponent {
 
     static propTypes = {
-        label: PropTypes.string,
+        label: PropTypes.oneOfType([
+            PropTypes.string,
+            PropTypes.bool,
+        ]),
         hint: PropTypes.string,
         attribute: PropTypes.string,
         items: PropTypes.arrayOf(PropTypes.shape({

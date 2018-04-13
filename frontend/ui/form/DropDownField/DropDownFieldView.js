@@ -8,7 +8,10 @@ import './DropDownFieldView.scss';
 export default class DropDownFieldView extends React.PureComponent {
 
     static propTypes = {
-        label: PropTypes.string,
+        label: PropTypes.oneOfType([
+            PropTypes.string,
+            PropTypes.bool,
+        ]),
         hint: PropTypes.string,
         required: PropTypes.bool,
         placeholder: PropTypes.string,

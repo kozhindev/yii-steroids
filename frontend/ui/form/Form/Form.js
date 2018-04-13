@@ -54,7 +54,10 @@ export default class Form extends React.PureComponent {
         isInvalid: PropTypes.bool,
         formRegisteredFields: PropTypes.object,
         fields: PropTypes.arrayOf(PropTypes.shape({
-            label: PropTypes.string,
+            label: PropTypes.oneOfType([
+                PropTypes.string,
+                PropTypes.bool,
+            ]),
             hint: PropTypes.string,
             required: PropTypes.bool,
             component: PropTypes.oneOfType([

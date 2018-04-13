@@ -8,7 +8,10 @@ import './InputFieldView.scss';
 export default class InputFieldView extends React.PureComponent {
 
     static propTypes = {
-        label: PropTypes.string,
+        label: PropTypes.oneOfType([
+            PropTypes.string,
+            PropTypes.bool,
+        ]),
         hint: PropTypes.string,
         required: PropTypes.bool,
         size: PropTypes.oneOf(['sm', 'md', 'lg']),

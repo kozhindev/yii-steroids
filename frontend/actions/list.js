@@ -17,6 +17,7 @@ export const init = (listId, props) => dispatch => dispatch({
     page: 1,
     pageSize: props.defaultPageSize,
     sort: props.defaultSort || null,
+    total: props.total || null,
     query: props.query || null,
     items: props.items || null,
     loadMore: props.loadMore,
@@ -58,7 +59,7 @@ export const lazyFetch = (listId, params) => dispatch => {
     if (lazyTimers[listId]) {
         clearTimeout(lazyTimers[listId]);
     }
-    lazyTimers[listId] = setTimeout(() => dispatch(fetch(listId, params)));
+    lazyTimers[listId] = setTimeout(() => dispatch(fetch(listId, params)), 200);
 };
 
 export const setPage = (listId, page) => fetch(listId, {

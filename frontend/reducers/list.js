@@ -21,7 +21,7 @@ export default (state = {}, action) => {
                 [action.listId]: {
                     meta: {},
                     selectedIds: {},
-                    total: action.items ? action.items.length : 0,
+                    total: action.total || (action.items ? action.items.length : 0),
                     isFetched: !!action.items,
                     isLoading: false,
                     ...action,

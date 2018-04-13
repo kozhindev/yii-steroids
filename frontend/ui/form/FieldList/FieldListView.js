@@ -8,7 +8,10 @@ const bem = html.bem('FieldListView');
 export default class FieldListView extends React.PureComponent {
 
     static propTypes = {
-        label: PropTypes.string,
+        label: PropTypes.oneOfType([
+            PropTypes.string,
+            PropTypes.bool,
+        ]),
         hint: PropTypes.string,
         required: PropTypes.bool,
         rows: PropTypes.arrayOf(PropTypes.string),

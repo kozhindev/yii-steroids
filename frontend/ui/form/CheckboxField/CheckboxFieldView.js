@@ -8,7 +8,10 @@ import './CheckboxFieldView.scss';
 export default class CheckboxFieldView extends React.PureComponent {
 
     static propTypes = {
-        label: PropTypes.string,
+        label: PropTypes.oneOfType([
+            PropTypes.string,
+            PropTypes.bool,
+        ]),
         hint: PropTypes.string,
         required: PropTypes.bool,
         disabled: PropTypes.bool,

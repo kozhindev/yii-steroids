@@ -8,7 +8,10 @@ import {ui} from 'components';
 export default class Field extends React.Component {
 
     static propTypes = {
-        label: PropTypes.string,
+        label: PropTypes.oneOfType([
+            PropTypes.string,
+            PropTypes.bool,
+        ]),
         attribute: PropTypes.string,
         model: PropTypes.oneOfType([
             PropTypes.string,

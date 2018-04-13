@@ -56,6 +56,7 @@ class GridView extends Widget
             'columns' => $this->getColumnsConfig(),
             'actions' => $this->getActionsConfig(),
             'items' => $this->getItems(),
+            'total' => $this->dataProvider->totalCount,
             'loadMore' => false,
             'defaultPageSize' => ArrayHelper::getValue($this->dataProvider, 'pagination.pageSize'),
             'paginationProps' => [

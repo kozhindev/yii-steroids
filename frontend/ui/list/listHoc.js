@@ -49,6 +49,7 @@ const getFormId = props => _get(props, 'searchForm.formId', props.listId);
         defaultSort: PropTypes.object,
         query: PropTypes.object,
         items: PropTypes.array,
+        total: PropTypes.number,
         reverse: PropTypes.bool,
         searchForm: PropTypes.shape({
             formId: PropTypes.string,
@@ -202,7 +203,7 @@ const getFormId = props => _get(props, 'searchForm.formId', props.listId);
     }
 
     renderSearchForm() {
-        if (!this.props.searchForm) {
+        if (!this.props.searchForm || !this.props.searchForm.fields) {
             return null;
         }
 
