@@ -9,6 +9,7 @@ use yii\base\Exception;
 use yii\base\InvalidConfigException;
 use yii\base\InvalidParamException;
 use yii\helpers\ArrayHelper;
+use yii\helpers\Inflector;
 use yii\web\Request;
 
 /**
@@ -124,7 +125,7 @@ class SiteMap extends Component
         if (Yii::$app && Yii::$app->has('urlManager')) {
             // Fetch items from modules
             foreach (Yii::$app->getModules() as $id => $module) {
-                $this->loadModuleSiteMapRecursive($module);
+                $this->loadModuleSiteMapRecursive($module, $id);
             }
 
             Yii::$app->urlManager->addRules(static::itemsToRules($this->_items), false);
@@ -152,11 +153,12 @@ class SiteMap extends Component
     /**
      * Add tree site map items
      * @param array $items
+     * @param string $controllerRoute
      * @param bool|true $append
      */
-    public function addItems(array $items, $append = true)
+    public function addItems(array $items, $append = true, $controllerRoute = null)
     {
-        $this->_items = $this->mergeItems($this->_items, $items, $append);
+        $this->_items = $this->mergeItems($this->_items, $items, $append, $controllerRoute);
     }
 
     /**
@@ -463,14 +465,28 @@ class SiteMap extends Component
         return null;
     }
 
-    protected function mergeItems($baseItems, $items, $append, $parentItem = null)
+    protected function mergeItems($baseItems, $items, $append, $controllerRoute = null, $parentItem = null)
     {
         foreach ($items as $id => $item) {
+            // Keys path as id
+            if (is_string($id) && strpos($id, '.') !== false) {
+                $newItem = [];
+                $path = explode('.', str_replace('.', '.items.', $id));
+                $id = array_shift($path);
+                ArrayHelper::setValue($newItem, $path, $item);
+                $item = $newItem;
+            }
+
+            // String item as item url
+            if (is_string($item)) {
+                $item = ['urlRule' => $item];
+            }
+
             // Merge item with group (as key)
             if (is_string($id) && isset($baseItems[$id])) {
                 foreach ($item as $key => $value) {
                     if ($key === 'items') {
-                        $baseItems[$id]->$key = $this->mergeItems($baseItems[$id]->$key, $value, $append, $baseItems[$id]);
+                        $baseItems[$id]->$key = $this->mergeItems($baseItems[$id]->$key, $value, $append, $controllerRoute, $baseItems[$id]);
                     } elseif (is_array($baseItems[$id]) && is_array($value)) {
                         $baseItems[$id]->$key = $append ?
                             ArrayHelper::merge($baseItems[$id]->$key, $value) :
@@ -482,6 +498,20 @@ class SiteMap extends Component
             } else {
                 // Create instance
                 if (!($item instanceof SiteMapItem)) {
+                    // Key as action id
+                    if (!ArrayHelper::keyExists('url', $item)
+                        && ArrayHelper::keyExists('urlRule', $item)
+                        && is_string($id)
+                    ) {
+                        $item['url'] = [$controllerRoute . '/' . $id];
+                    }
+
+                    // Normalize route
+                    $route = ArrayHelper::getValue($item, 'url.0');
+                    if ($route && strpos($route, '/') === false) {
+                        $item['url'][0] = $controllerRoute . '/' . $route;
+                    }
+
                     $item = new SiteMapItem(array_merge(
                         $item,
                         [
@@ -490,7 +520,7 @@ class SiteMap extends Component
                             'parent' => $parentItem,
                         ]
                     ));
-                    $item->items = $this->mergeItems([], $item->items, true, $item);
+                    $item->items = $this->mergeItems([], $item->items, true, $controllerRoute, $item);
                 }
 
                 // Append or prepend item
@@ -517,10 +547,12 @@ class SiteMap extends Component
 
     /**
      * @param Module|array|string $module
+     * @param string $moduleId
+     * @param string $parentModule
      * @throws Exception
      * @throws \ReflectionException
      */
-    protected function loadModuleSiteMapRecursive($module)
+    protected function loadModuleSiteMapRecursive($module, $moduleId)
     {
         /** @var Module|string $moduleClass */
         $moduleClass = null;
@@ -539,13 +571,15 @@ class SiteMap extends Component
         if (method_exists($moduleClass, 'siteMap')) {
             $this->addItems($moduleClass::siteMap(), true);
         }
-        //var_dump($moduleClass, $children);
-        
+        if (method_exists($moduleClass, 'apiMap')) {
+            $this->addItems(['api' => ['items' => $moduleClass::apiMap()]], true);
+        }
+
         // Load controllers
-        $info = new \ReflectionClass($moduleClass);
-        $controllersPath = dirname($info->getFileName()) . '/controllers';
+        $moduleInfo = new \ReflectionClass($moduleClass);
+        $controllersPath = dirname($moduleInfo->getFileName()) . '/controllers';
         if (is_dir($controllersPath)) {
-            $namespace = $info->getNamespaceName() . '\\controllers';
+            $namespace = $moduleInfo->getNamespaceName() . '\\controllers';
 
             foreach (scandir($controllersPath) as $file) {
                 // Skip dot folders
@@ -558,15 +592,24 @@ class SiteMap extends Component
                     throw new Exception('Not found class "' . $controllerClass . '" on scan site map.');
                 }
 
+                // Get route
+                $controllerInfo = new \ReflectionClass($controllerClass);
+                $controllerId = Inflector::camel2id(preg_replace('/Controller$/', '', $controllerInfo->getShortName()));
+                $controllerRoute = '/' . str_replace('.', '/', $moduleId) . '/' . $controllerId;
+
                 if (method_exists($controllerClass, 'siteMap')) {
-                    $this->addItems($controllerClass::siteMap(), true);
+                    $this->addItems($controllerClass::siteMap(), true, $controllerRoute);
+                }
+                if (method_exists($controllerClass, 'apiMap')) {
+                    $this->addItems(['api' => ['items' => $controllerClass::apiMap()]], true, $controllerRoute);
                 }
             }
         }
 
         // Load sub modules
-        foreach ($children as $subModule) {
-            $this->loadModuleSiteMapRecursive($subModule);
+        foreach ($children as $subId => $subModule) {
+            $nextModuleId = implode('.', [$moduleId, $subId]);
+            $this->loadModuleSiteMapRecursive($subModule, $nextModuleId);
         }
     }
 }

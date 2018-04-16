@@ -4,8 +4,11 @@ namespace steroids\middleware;
 
 use yii\base\ActionEvent;
 use yii\base\BaseObject;
+use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\web\Application;
 use yii\web\Controller;
+use yii\web\ForbiddenHttpException;
 use yii\web\NotFoundHttpException;
 
 class AccessMiddleware extends BaseObject
@@ -45,6 +48,13 @@ class AccessMiddleware extends BaseObject
         if (!$item->checkVisible($item->normalizedUrl)) {
             if (\Yii::$app->user->isGuest) {
                 \Yii::$app->user->loginRequired();
+            } else {
+                $messages = \Yii::t('app', 'Нет доступа');
+                if (YII_ENV_DEV) {
+                    $messages .= '. ' . \Yii::t('app', 'Возможно не заданы права доступа?');
+                    $messages .= ' - ' . Url::to(['/gii/access/actions'], true);
+                }
+                throw new ForbiddenHttpException($messages);
             }
             // TODO Show 403?
             //\Yii::$app->response->redirect(\Yii::$app->homeUrl);
