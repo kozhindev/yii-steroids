@@ -70,7 +70,9 @@
     "stylelint-webpack-plugin": "^0.10.3",
     "webpack": "^3.11.0",
     "webpack-cli": "=2.0.9",
-    "webpack-dev-server": "^2.11.2"
+    "webpack-dev-server": "^2.11.2",
+    "react-grid-gallery": "^0.4.8",
+    "react-transition-group": "=1.2.1"
   },
   "devDependencies": {
     "@storybook/addon-actions": "^3.3.15",

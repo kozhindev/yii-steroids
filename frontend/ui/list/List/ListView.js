@@ -18,25 +18,27 @@ export default class ListView extends React.Component {
     };
 
     render() {
-        return (
-            <div className={bem(bem.block(), this.props.className)}>
-                {this.props.searchForm}
-                {this.props.paginationSize}
-                {this.props.reverse && (
-                    <div>
-                        {this.props.pagination}
-                        {this.props.content}
-                    </div>
-                ) ||
-                (
-                    <div>
-                        {this.props.content}
-                        {this.props.pagination}
-                    </div>
-                )}
-                {this.props.empty}
-            </div>
-        );
+        if (this.props.reverse) {
+            return (
+                <div className={bem(bem.block(), this.props.className)}>
+                    {this.props.searchForm}
+                    {this.props.paginationSize}
+                    {this.props.pagination}
+                    {this.props.content}
+                    {this.props.empty}
+                </div>
+            );
+        } else {
+            return (
+                <div className={bem(bem.block(), this.props.className)}>
+                    {this.props.searchForm}
+                    {this.props.paginationSize}
+                    {this.props.content}
+                    {this.props.pagination}
+                    {this.props.empty}
+                </div>
+            );
+        }
     }
 
 }
