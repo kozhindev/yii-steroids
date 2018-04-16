@@ -2,7 +2,6 @@
 /.gitignore         export-ignore
 /.gitattributes     export-ignore
 /.storybook         export-ignore
-/frontend           export-ignore
 /stories            export-ignore
 /package.json       export-ignore
 /package-lock.json  export-ignore

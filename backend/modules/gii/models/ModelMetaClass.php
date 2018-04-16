@@ -180,8 +180,8 @@ class ModelMetaClass extends ModelClass
                                 'relationKey' => array_keys($activeQuery->link)[0],
                                 'selfKey' => array_values($activeQuery->via->link)[0],
                                 'viaTable' => $activeQuery->via->from[0],
-                                'viaRelationKey' => array_keys($activeQuery->via->link)[0],
-                                'viaSelfKey' => array_values($activeQuery->link)[0],
+                                'viaRelationKey' => array_values($activeQuery->link)[0],
+                                'viaSelfKey' => array_keys($activeQuery->via->link)[0],
                             ]);
                         } else {
                             $this->_relations[] = new Relation([
