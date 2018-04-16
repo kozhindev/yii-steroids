@@ -45,7 +45,7 @@ const errorSelectors = {};
         return {
             ...values,
             formErrors: errorSelector(state),
-            fieldProps: getFieldProps(state, props.model, FieldHoc.getAttribute(props, props._config.attributes[0])),
+            fieldProps: getFieldProps(state, FieldHoc.getFieldId(props)),
         };
     }
 )
@@ -66,7 +66,7 @@ class FieldHoc extends React.PureComponent {
     }
 
     static getFieldId(props) {
-        return props.formId + '_' + FieldHoc.getName(props, props._config.attributes[0]);;
+        return props.formId + '_' + FieldHoc.getName(props, props._config.attributes[0]);
     }
 
     static ID_COUNTER = 1;

@@ -106,6 +106,7 @@ export default () => WrappedComponent => class FileHoc extends React.PureCompone
         const fileIds = [].concat(this.props.input.value || []);
         if (this.props.model && this.props.attribute && fileIds.length > 0 && !this.props.initialFiles) {
             store.dispatch(fetch(
+                this.props.fieldId,
                 this.props.model,
                 this.props.attribute,
                 {

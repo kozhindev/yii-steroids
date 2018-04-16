@@ -14,9 +14,10 @@ class SteroidsFieldsController extends Controller
         $fields = \Yii::$app->request->post('fields', []);
         foreach ($fields as $field) {
             // Get model and attribute properties
+            $fieldId = ArrayHelper::getValue($field, 'fieldId');
             $model = ArrayHelper::getValue($field, 'model');
             $attribute = ArrayHelper::getValue($field, 'attribute');
-            if (!$model || !$attribute) {
+            if (!$fieldId || !$model || !$attribute) {
                 continue;
             }
 
@@ -35,6 +36,7 @@ class SteroidsFieldsController extends Controller
 
             $props = $type->getFieldData($metaItem, ArrayHelper::getValue($field, 'params', []));
             $result[] = [
+                'fieldId' => $fieldId,
                 'model' => $model,
                 'attribute' => $attribute,
                 'props' => !empty($props) ? $props : null,

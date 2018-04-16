@@ -8,19 +8,19 @@ export const FIELDS_AFTER_FETCH = 'FIELDS_AFTER_FETCH';
 let timer = null;
 let queue = [];
 
-export const fetch = (model, attribute, params = {}) => dispatch => {
+export const fetch = (fieldId, model, attribute, params = {}) => dispatch => {
     model = _get(model, 'className', String(model));
 
     // Mark loading
     dispatch({
         type: FIELDS_BEFORE_FETCH,
+        fieldId,
         model,
         attribute,
     });
 
-
     // Add to queue
-    queue.push({model, attribute, params});
+    queue.push({fieldId, model, attribute, params});
 
     // Lazy send request
     if (timer) {
