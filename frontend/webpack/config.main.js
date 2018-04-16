@@ -2,6 +2,8 @@ const webpack = require('webpack');
 const path = require('path');
 const fs = require('fs');
 const _ = require('lodash');
+const ExtractTextPlugin = require("extract-text-webpack-plugin");
+
 const utils = require('./utils');
 const getConfigDefault = require('./config.default');
 
@@ -75,31 +77,17 @@ module.exports = (config, entry) => {
                 },
                 less: {
                     test: /\.less$/,
-                    use: {
-                        style: {
-                            loader: 'style-loader',
-                        },
-                        css: {
-                            loader: 'css-loader',
-                        },
-                        less: {
-                            loader: 'less-loader',
-                        },
-                    },
+                    use: ExtractTextPlugin.extract({
+                        fallback: 'style-loader',
+                        use: ['css-loader', 'less-loader']
+                    }),
                 },
                 sass: {
                     test: /\.scss$/,
-                    use: {
-                        style: {
-                            loader: 'style-loader',
-                        },
-                        css: {
-                            loader: 'css-loader',
-                        },
-                        sass: {
-                            loader: 'sass-loader',
-                        },
-                    }
+                    use: ExtractTextPlugin.extract({
+                        fallback: 'style-loader',
+                        use: ['css-loader', 'sass-loader']
+                    }),
                 },
                 font: {
                     test: /(\/|\\)fonts(\/|\\).*\.(ttf|otf|eot|svg|woff(2)?)(\?[a-z0-9]+)?$/,
@@ -141,6 +129,13 @@ module.exports = (config, entry) => {
                 'process.env': {
                     NODE_ENV: '"production"'
                 }
+            }),
+            new ExtractTextPlugin({
+                //filename: `${config.staticPath}assets/bundle-style.css`,
+                filename:  (getPath) => {
+                    return `${config.staticPath}assets/bundle-` + getPath('[name].css');
+                },
+                allChunks: true
             }),
             utils.isProduction() && new webpack.optimize.OccurrenceOrderPlugin(),
             !utils.isProduction() && new webpack.ProgressPlugin(),

@@ -5,6 +5,7 @@ namespace steroids\base;
 use yii\base\Widget as BaseWidget;
 use yii\helpers\Html;
 use yii\web\JsExpression;
+use yii\web\View;
 
 class Widget extends BaseWidget
 {
@@ -24,6 +25,7 @@ class Widget extends BaseWidget
         // Add to scripts load queue
         if ($loadScript) {
             \Yii::$app->frontendState->add('config.widget.scripts', \Yii::getAlias('@static/assets/bundle-' . $this->getBundleName() . '.js'));
+            $this->view->registerCssFile(\Yii::getAlias('@static/assets/bundle-' . $this->getBundleName() . '.css'), ['position' => View::POS_END]);
         }
 
         return Html::tag('span', '', ['id' => $this->id]);
