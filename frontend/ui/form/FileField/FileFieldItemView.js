@@ -47,6 +47,16 @@ export default class FileFieldItemView extends React.PureComponent {
                         </span>
                     </div>
                 )}
+                {this.props.showRemove && (
+                    <div
+                        className={bem.element('remove')}
+                        onClick={this.props.onRemove}
+                    >
+                        <span className='material-icons'>
+                            close
+                        </span>
+                    </div>
+                )}
                 <div className='card-body'>
                     <p
                         className={bem(bem.element('text'), 'card-text text-center')}
