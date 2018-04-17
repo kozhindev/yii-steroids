@@ -20,10 +20,12 @@ export default class NavIconView extends React.Component {
                     <Button
                         key={index}
                         link
+                        onClick={() => this.props.onClick(item, index)}
                         {...item}
                         label={null}
                     />
                 ))}
+                {this.props.children}
             </div>
         );
     }

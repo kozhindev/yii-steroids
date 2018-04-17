@@ -43,6 +43,7 @@ export default class ButtonView extends React.PureComponent {
             <a
                 className={this._getClassName({link: true})}
                 href={this.props.url}
+                onClick={this.props.onClick}
             >
                 {this.renderLabel()}
             </a>

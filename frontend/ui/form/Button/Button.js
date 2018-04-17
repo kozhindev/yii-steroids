@@ -77,6 +77,7 @@ export default class Button extends React.PureComponent {
         const button = (
             <ButtonInternal
                 {...this.props}
+                url={this.props.link && !this.props.url ? 'javascript:void(0)' : this.props.url}
                 formId={this.context.formId}
                 layout={this.context.layout}
                 layoutProps={this.context.layoutProps}

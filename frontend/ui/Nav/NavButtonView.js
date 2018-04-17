@@ -20,9 +20,11 @@ export default class NavButtonView extends React.Component {
                     <Button
                         key={index}
                         color='secondary'
+                        onClick={() => this.props.onClick(item, index)}
                         {...item}
                     />
                 ))}
+                {this.props.children}
             </div>
         );
     }

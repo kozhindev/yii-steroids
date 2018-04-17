@@ -155,7 +155,7 @@ const getFormId = props => _get(props, 'searchForm.formId', props.listId);
         if (this.props.list.isLoading) {
             return null;
         }
-        if (!this.props.list.items || this.props.list.items.length === 0) {
+        if (!this.props.list.items || this.props.list.items.length > 0) {
             return null;
         }
 
