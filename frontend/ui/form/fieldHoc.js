@@ -120,11 +120,12 @@ class FieldHoc extends React.PureComponent {
         };
 
         // Get errors
-        const names = Object.keys(inputProps).map(key => inputProps[key].name);
         let errors = this.props.errors;
-        Object.keys(this.props.formErrors || {}).forEach(key => {
-            if (names.indexOf(key) !== -1) {
-                errors = (errors || []).concat(this.props.formErrors[key]);
+        Object.keys(inputProps).map(key => {
+            const name = inputProps[key].name;
+            const error = _get(this.props.formErrors, name);
+            if (error) {
+                errors = (errors || []).concat(error);
             }
         });
 
