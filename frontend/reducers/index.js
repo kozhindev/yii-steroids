@@ -4,6 +4,7 @@ import fields from './fields';
 import list from './list';
 import config from './config';
 import notifications from './notifications';
+import modal from './modal';
 
 export {
     form,
@@ -11,6 +12,7 @@ export {
     list,
     config,
     notifications,
+    modal,
 };
 
 export default combineReducers(module.exports);

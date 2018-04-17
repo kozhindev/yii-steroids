@@ -7,6 +7,7 @@ import _trimStart from 'lodash-es/trimStart';
 
 import Form from '../ui/form/Form';
 import Grid from '../ui/list/Grid';
+import ModalWrapper from '../ui/modal/ModalWrapper';
 
 export default class WidgetComponent {
 
@@ -17,6 +18,7 @@ export default class WidgetComponent {
         this._widgets = {
             'steroids\\widgets\\ActiveForm': Form,
             'steroids\\widgets\\GridView': Grid,
+            'steroids\\widgets\\ModalWrapper': ModalWrapper,
         };
 
         setTimeout(() => {

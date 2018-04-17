@@ -24,8 +24,11 @@ class Widget extends BaseWidget
 
         // Add to scripts load queue
         if ($loadScript) {
-            \Yii::$app->frontendState->add('config.widget.scripts', \Yii::getAlias('@static/assets/bundle-' . $this->getBundleName() . '.js'));
-            $this->view->registerCssFile(\Yii::getAlias('@static/assets/bundle-' . $this->getBundleName() . '.css'), ['position' => View::POS_END]);
+            $bundleName = $this->getBundleName();
+            \Yii::$app->frontendState->add('config.widget.scripts', \Yii::getAlias('@static/assets/bundle-' . $bundleName . '.js'));
+            if ($bundleName !== 'steroids') {
+                $this->view->registerCssFile(\Yii::getAlias('@static/assets/bundle-' . $bundleName . '.css'), ['position' => View::POS_END]);
+            }
         }
 
         return Html::tag('span', '', ['id' => $this->id]);
