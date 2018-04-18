@@ -29,13 +29,13 @@ export default class Modal extends React.PureComponent {
                         {this.props.title}
                     </h5>
                     <button
-                        type="button"
-                        className="close"
-                        data-dismiss="modal"
-                        aria-label="Close"
+                        type='button'
+                        className='close'
+                        data-dismiss='modal'
+                        aria-label='Close'
                         onClick={this.props.onClose}
                     >
-                        <span aria-hidden="true">&times;</span>
+                        <span aria-hidden='true'>&times;</span>
                     </button>
                 </div>
                 <div className={bem(bem.element('body'),
@@ -46,5 +46,4 @@ export default class Modal extends React.PureComponent {
             </div>
         );
     }
-
 }

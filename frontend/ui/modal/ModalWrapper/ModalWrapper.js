@@ -55,7 +55,7 @@ export default class ModalWrapper extends React.PureComponent {
                 >
                     <Body
                         {...item.props}
-                        closeModal={() => this.closeModal(item)}
+                        onClose={() => this.closeModal(item)}
                     />
                 </ModalView>
             </Modal>
