@@ -21,6 +21,7 @@ export default class PaginationSize extends React.PureComponent {
 
     static defaultProps = {
         sizes: [30, 50, 100],
+        className: '',
     };
 
     constructor() {

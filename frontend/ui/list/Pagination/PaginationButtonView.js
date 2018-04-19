@@ -24,11 +24,15 @@ export default class PaginationButtonView extends React.Component {
                         key={index}
                         className={bem(
                             bem.element('page', {hidden: !item.page}),
+                            'page-item',
                             item.isActive ? 'active' : ''
                         )}
                     >
                         <a
-                            className={bem.element('page-link', {hidden: !item.page})}
+                            className={bem(
+                                bem.element('page-link', {hidden: !item.page}),
+                                'page-link'
+                            )}
                             href='javascript:void(0)'
                             onClick={() => this.props.onSelect(item.page)}
                         >

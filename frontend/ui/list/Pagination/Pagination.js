@@ -38,6 +38,8 @@ export default class Pagination extends React.PureComponent {
         const page = _get(this.props, 'list.page', 1);
         const totalPages = Math.ceil(_get(this.props, 'list.total', 0) / _get(this.props, 'list.pageSize', 0));
 
+        console.log(234, page, totalPages);
+
         // Do not show in last page in 'loadMore' mode
         if (this.props.loadMore && page >= totalPages) {
             return null;
