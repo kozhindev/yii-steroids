@@ -16,6 +16,7 @@ export default class PaginationSizeView extends React.Component {
         })),
         onSelect: PropTypes.func,
         className: PropTypes.string,
+        size: PropTypes.oneOf(['sm', 'md', 'lg']),
     };
 
     render() {
@@ -24,7 +25,11 @@ export default class PaginationSizeView extends React.Component {
                 <div className={bem.element('label')}>
                     {locale.t('Выводить по')}:
                 </div>
-                <ul className={bem(bem.element('sizes'), 'pagination pagination-sm')}>
+                <ul className={bem(
+                    bem.element('sizes'),
+                    'pagination',
+                    `pagination-${this.props.size}`
+                )}>
                     {this.props.sizes.map((item, index) => (
                         <li
                             key={index}

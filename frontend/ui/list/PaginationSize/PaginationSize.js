@@ -17,11 +17,13 @@ export default class PaginationSize extends React.PureComponent {
         }),
         className: PropTypes.string,
         view: PropTypes.func,
+        size: PropTypes.oneOf(['sm', 'md', 'lg']),
     };
 
     static defaultProps = {
         sizes: [30, 50, 100],
         className: '',
+        size: 'sm'
     };
 
     constructor() {

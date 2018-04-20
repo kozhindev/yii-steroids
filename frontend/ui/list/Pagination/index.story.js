@@ -5,6 +5,12 @@ import {text, boolean, select, number} from '@storybook/addon-knobs/react';
 
 import Pagination from './Pagination';
 
+const sizes = {
+    sm: 'Small',
+    md: 'Middle',
+    lg: 'Large',
+};
+
 storiesOf('List', module)
     .add('Pagination', context => (
         <div>
@@ -17,6 +23,7 @@ storiesOf('List', module)
                         total: number('Total', 100),
                     }}
                     loadMore={boolean('Load more', false)}
+                    size={select('Size', sizes, 'md')}
                 />
             ))(context)}
         </div>

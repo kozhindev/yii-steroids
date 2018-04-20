@@ -21,10 +21,12 @@ export default class Pagination extends React.PureComponent {
         className: PropTypes.string,
         view: PropTypes.func,
         pageParam: PropTypes.string,
+        size: PropTypes.oneOf(['sm', 'md', 'lg']),
     };
 
     static defaultProps = {
         aroundCount: 3,
+        size: 'md',
     };
 
     constructor() {
@@ -37,8 +39,6 @@ export default class Pagination extends React.PureComponent {
     render() {
         const page = _get(this.props, 'list.page', 1);
         const totalPages = Math.ceil(_get(this.props, 'list.total', 0) / _get(this.props, 'list.pageSize', 0));
-
-        console.log(234, page, totalPages);
 
         // Do not show in last page in 'loadMore' mode
         if (this.props.loadMore && page >= totalPages) {
