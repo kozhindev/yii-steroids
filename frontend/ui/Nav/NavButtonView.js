@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 
 import {html} from 'components';
 import Button from '../form/Button';
+import './NavButtonView.scss';
 
 const bem = html.bem('NavButtonView');
 
@@ -16,17 +17,22 @@ export default class NavButtonView extends React.Component {
     render() {
         return (
             <div className={bem(bem.block(), this.props.className)}>
-                {this.props.items.map((item, index) => (
-                    <Button
-                        key={index}
-                        color='secondary'
-                        onClick={() => this.props.onClick(item, index)}
-                        {...item}
-                    />
-                ))}
-                {this.props.children}
+                <div className={bem.element('nav')}>
+                    {this.props.items.map((item, index) => (
+                        <Button
+                            key={index}
+                            color='secondary'
+                            outline={!item.isActive}
+                            onClick={() => this.props.onClick(item, index)}
+                            className={bem.element('nav-item')}
+                            {...item}
+                        />
+                    ))}
+                </div>
+                <div className={bem.element('content')}>
+                    {this.props.children}
+                </div>
             </div>
         );
     }
-
 }

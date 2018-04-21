@@ -1,3 +1,7 @@
 .NavButtonView {
-
+  &__nav-item {
+    &:not(:last-child) {
+      margin-right: 5px;
+    }
+  }
 }
