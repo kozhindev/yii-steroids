@@ -9,11 +9,16 @@ export default class EmptyView extends React.Component {
 
     static propTypes = {
         text: PropTypes.string,
+        className: PropTypes.string,
     };
 
     render() {
         return (
-            <div className={bem.block()}>
+            <div className={bem(
+                bem.block(),
+                'text-center p-5',
+                this.props.className
+            )}>
                 {this.props.text}
             </div>
         );

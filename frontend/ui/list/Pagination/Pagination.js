@@ -21,10 +21,12 @@ export default class Pagination extends React.PureComponent {
         className: PropTypes.string,
         view: PropTypes.func,
         pageParam: PropTypes.string,
+        size: PropTypes.oneOf(['sm', 'md', 'lg']),
     };
 
     static defaultProps = {
         aroundCount: 3,
+        size: 'md',
     };
 
     constructor() {

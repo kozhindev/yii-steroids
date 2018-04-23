@@ -6,7 +6,7 @@ import {ui} from 'components';
 export default class Empty extends React.PureComponent {
 
     static propTypes = {
-        emptyText: PropTypes.node,
+        text: PropTypes.string,
         className: PropTypes.string,
         view: PropTypes.func,
     };
@@ -16,7 +16,6 @@ export default class Empty extends React.PureComponent {
         return (
             <EmptyView
                 {...this.props}
-                text={this.props.text}
             />
         );
     }

@@ -2,8 +2,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import {html, locale} from 'components';
+import './PaginationSizeView.scss';
 
-const bem = html.bem('EmptyView');
+const bem = html.bem('PaginationSizeView');
 
 export default class PaginationSizeView extends React.Component {
 
@@ -15,6 +16,7 @@ export default class PaginationSizeView extends React.Component {
         })),
         onSelect: PropTypes.func,
         className: PropTypes.string,
+        size: PropTypes.oneOf(['sm', 'md', 'lg']),
     };
 
     render() {
@@ -23,18 +25,29 @@ export default class PaginationSizeView extends React.Component {
                 <div className={bem.element('label')}>
                     {locale.t('Выводить по')}:
                 </div>
-                <ul className={bem.element('sizes')}>
+                <ul className={bem(
+                    bem.element('sizes'),
+                    'pagination',
+                    `pagination-${this.props.size}`
+                )}>
                     {this.props.sizes.map((item, index) => (
                         <li
                             key={index}
                             className={bem(
-                                bem.element('sizes-item'),
-                                bem.element('sizes-item', {active: item.isActive}),
+                                bem.element(
+                                    'sizes-item', {
+                                        active: item.isActive
+                                    }),
+                                'page-item',
+                                item.isActive && 'active'
                             )}
                         >
                             <a
                                 href='javascript:void(0)'
-                                className={bem.element('link')}
+                                className={bem(
+                                    bem.element('link'),
+                                    'page-link'
+                                )}
                                 onClick={() => this.props.onSelect(item.size)}
                             >
                                 {item.label}

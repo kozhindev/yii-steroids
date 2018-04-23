@@ -15,11 +15,6 @@ export default class ModalView extends React.PureComponent {
     render() {
         return (
             <div className={bem.block()}>
-                <a
-                    href='javascript:void(0)'
-                    className={bem.element('close')}
-                    onClick={this.props.onClose}
-                />
                 {this.props.children}
             </div>
         );
