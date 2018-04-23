@@ -1,6 +1,7 @@
 import IntlMessageFormat from 'intl-messageformat';
 import moment from 'moment';
 import 'moment/locale/ru';
+import 'moment/locale/it';
 
 // Fix load locale data
 window.IntlMessageFormat = IntlMessageFormat;
@@ -15,6 +16,7 @@ export default class LocaleComponent {
 
     constructor() {
         this.language = 'en';
+        this.sourceLanguage = 'ru';
         this.backendTimeZone = null;
         this.translations = {};
 
@@ -38,7 +40,8 @@ export default class LocaleComponent {
         message = this.translations[message] || message;
 
         // Format message (params, plural, etc..)
-        const formatter = new IntlMessageFormat(message, this.language);
+        const language = this.translations[message] ? this.language : this.sourceLanguage;
+        const formatter = new IntlMessageFormat(message, language);
         message = formatter.format(params);
 
         return message;

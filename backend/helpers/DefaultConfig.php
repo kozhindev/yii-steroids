@@ -108,6 +108,7 @@ class DefaultConfig
             'timeZone' => $timeZone,
             'bootstrap' => [
                 'log',
+                'urlManager',
                 'siteMap',
                 'frontendState',
             ],
@@ -177,13 +178,7 @@ class DefaultConfig
                     'class' => 'steroids\components\SiteMap',
                 ],
                 'urlManager' => [
-                    'showScriptName' => false,
-                    'enablePrettyUrl' => true,
-                    'normalizer' => [
-                        'class' => 'yii\web\UrlNormalizer',
-                        'collapseSlashes' => true,
-                        'normalizeTrailingSlash' => true,
-                    ],
+                    'class' => 'steroids\components\UrlManager',
                 ],
             ],
         ];
