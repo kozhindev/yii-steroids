@@ -25,7 +25,10 @@ export default class DateTimeFormatter extends React.Component {
         if (!this.props.value) {
             return null;
         }
-        const date = this.props.timeZone === false ? moment(this.props.value) : locale.moment(this.props.value);
+
+        const date = this.props.timeZone === false
+            ? moment(this.props.value).locale(locale.language)
+            : locale.moment(this.props.value);
         return date.format(this.props.format);
     }
 

@@ -1,11 +1,12 @@
 import IntlMessageFormat from 'intl-messageformat';
 import moment from 'moment';
-import 'moment/locale/ru';
 import 'moment/locale/it';
+import 'moment/locale/ru';
 
 // Fix load locale data
 window.IntlMessageFormat = IntlMessageFormat;
 require('intl-messageformat/dist/locale-data/ru');
+require('intl-messageformat/dist/locale-data/it');
 delete window.IntlMessageFormat;
 
 /**
