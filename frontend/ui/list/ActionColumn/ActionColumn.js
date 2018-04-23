@@ -4,7 +4,7 @@ import _get from 'lodash-es/get';
 import _upperFirst from 'lodash-es/upperFirst';
 
 import {locale} from 'components';
-import Nav from '../../Nav';
+import Nav from '../../nav/Nav';
 
 export default class ActionColumn extends React.PureComponent {
 

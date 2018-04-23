@@ -106,6 +106,11 @@ class ModelClass extends BaseClass
         ]);
     }
 
+    public function getModuleId()
+    {
+        return $this->getModuleClass()->id;
+    }
+
     public function getRequestParamName()
     {
         /** @var Model $className */
@@ -132,6 +137,7 @@ class ModelClass extends BaseClass
             'className',
             'name',
             'tableName',
+            'moduleId',
             'moduleClass',
             'metaClass',
         ];

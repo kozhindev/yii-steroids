@@ -34,6 +34,8 @@ class GiiModule extends Module
     {
         return [
             'gii' => [
+                'label' => 'Gii',
+                'accessCheck' => [GiiModule::className(), 'accessCheck'],
                 'items' => array_merge(
                     GiiController::coreMenuItems(),
                     SiteMapController::coreMenuItems(),

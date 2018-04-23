@@ -73,30 +73,69 @@ trait MetaClassTrait
      * @param array $import
      * @return mixed|string
      */
-    public function renderJsMeta($indent = '', &$import = [])
+    public function renderJsFields($indent = '', &$import = [])
     {
-        $requireLocale = false;
-
         $result = [];
-        foreach (static::exportMeta($this->meta) as $name => $item) {
-            $metaItem = $this->getMetaItem($name);
-            $type = \Yii::$app->types->getType($metaItem->appType);
-            $jsItem = $type->getGiiJsMetaItem($metaItem, $item, $import);
+        foreach (static::exportMeta($this->meta) as $attribute => $item) {
+            $props = [];
+            $type = \Yii::$app->types->getType($this->getMetaItem($attribute)->appType);
 
+            // Add label and hint
             foreach (['label', 'hint'] as $key) {
-                if (!empty($jsItem[$key])) {
-                    $jsItem[$key] = GiiHelper::varExport($jsItem[$key]);
-                    $jsItem[$key] = str_replace('"', '\\"', $jsItem[$key]);
-                    $jsItem[$key] = new JsExpression('locale.t(' . $jsItem[$key] . ')');
-                    $requireLocale = true;
+                if (empty($item[$key])) {
+                    continue;
+                }
+
+                $text = ArrayHelper::getValue($item, $key);
+                if ($text) {
+                    $props[$key] = GiiHelper::locale($text);
+                    $import[] = 'import {locale} from \'components\';';
                 }
             }
 
-            $result[$metaItem->name] = $jsItem;
+            // Add required
+            if (ArrayHelper::getValue($item, 'required')) {
+                $props['required'] = true;
+            }
+
+            // Add other props
+            $type->prepareFieldProps($this->modelClass->className, $attribute, $props, $import);
+
+            $result[$attribute] = $props;
         }
 
-        if ($requireLocale) {
-            $import[] = 'import {locale} from \'components\';';
+        return GiiHelper::varJsExport($result, $indent);
+    }
+
+    /**
+     * @param string $indent
+     * @param array $import
+     * @return mixed|string
+     */
+    public function renderJsFormatters($indent = '', &$import = [])
+    {
+        $result = [];
+        foreach (static::exportMeta($this->meta) as $attribute => $item) {
+            $props = [];
+            $type = \Yii::$app->types->getType($this->getMetaItem($attribute)->appType);
+
+            // Add label and hint
+            foreach (['label', 'hint'] as $key) {
+                if (empty($item[$key])) {
+                    continue;
+                }
+
+                $text = ArrayHelper::getValue($item, $key);
+                if ($text) {
+                    $props[$key] = GiiHelper::locale($text);
+                    $import[] = 'import {locale} from \'components\';';
+                }
+            }
+
+            // Add other props
+            $type->prepareFormatterProps($this->modelClass->className, $attribute, $props, $import);
+
+            $result[$attribute] = $props;
         }
 
         return GiiHelper::varJsExport($result, $indent);

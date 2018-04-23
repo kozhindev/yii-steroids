@@ -10,7 +10,7 @@ class PrimaryKeyType extends Type
     /**
      * @inheritdoc
      */
-    public function prepareFieldProps($model, $attribute, &$props)
+    public function prepareFieldProps($modelClass, $attribute, &$props, &$import = null)
     {
         $props = array_merge(
             [

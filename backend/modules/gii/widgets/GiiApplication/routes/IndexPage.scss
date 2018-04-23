@@ -1,0 +1,13 @@
+@import '~bootstrap/scss/bootstrap';
+
+.IndexPage {
+  &__link.btn-link {
+    &, &:hover {
+      border: 1px solid rgba(0, 0, 0, 0.125);
+    }
+  }
+
+  tbody > tr > td {
+    width: 25%;
+  }
+}

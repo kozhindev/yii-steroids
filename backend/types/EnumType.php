@@ -3,6 +3,8 @@
 namespace steroids\types;
 
 use steroids\base\Enum;
+use steroids\base\FormModel;
+use steroids\base\Model;
 use steroids\base\Type;
 use steroids\modules\gii\models\EnumClass;
 use steroids\modules\gii\models\ValueExpression;
@@ -19,36 +21,57 @@ class EnumType extends Type
     /**
      * @inheritdoc
      */
-    public function prepareFieldProps($model, $attribute, &$props)
+    public function prepareFieldProps($modelClass, $attribute, &$props, &$import = null)
     {
-        /** @var Enum $enumClass */
-        $enumClass = ArrayHelper::getValue($this->getOptions($model, $attribute), self::OPTION_CLASS_NAME);
         $props = array_merge(
             [
                 'component' => 'DropDownField',
                 'attribute' => $attribute,
-                'items' => $enumClass ? $enumClass::toFrontend() : null,
+                'items' => $this->getItemsProp($modelClass, $attribute, $import),
             ],
             $props
         );
     }
-    
-    public function prepareViewProps($model, $attribute, &$props)
+
+    public function prepareFormatterProps($modelClass, $attribute, &$props, &$import = null)
     {
-        /** @var Enum $enumClass */
-        $enumClass = ArrayHelper::getValue($this->getOptions($model, $attribute), self::OPTION_CLASS_NAME);
         $props = array_merge(
             [
                 'format' => [
                     'component' => 'EnumFormatter',
                     'attribute' => $attribute,
-                    'items' => $enumClass ? $enumClass::toFrontend() : null,
+                    'items' => $this->getItemsProp($modelClass, $attribute, $import),
                 ],
             ],
             $props
         );
-
     }
+
+    /**
+     * @param Model|FormModel|string $modelClass
+     * @param string $attribute
+     * @param array|null $import
+     * @return mixed
+     * @throws \ReflectionException
+     */
+    protected function getItemsProp($modelClass, $attribute, &$import)
+    {
+        /** @var Enum $enumClass */
+        $enumClass = ArrayHelper::getValue($this->getOptions($modelClass, $attribute), self::OPTION_CLASS_NAME);
+        if ($enumClass) {
+            if (is_array($import)) {
+                $info = (new \ReflectionClass($enumClass))->getParentClass();
+                $import[] = "import {$info->getShortName()} from '" . str_replace('\\', '/', $info->getName()) . "';";
+                return new JsExpression($info->getShortName());
+            } else {
+                return $enumClass::toFrontend();
+            }
+        }
+        return null;
+    }
+
+
+
 
     /**
      * @inheritdoc

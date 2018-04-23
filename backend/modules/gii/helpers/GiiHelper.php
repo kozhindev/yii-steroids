@@ -4,7 +4,9 @@ namespace steroids\modules\gii\helpers;
 
 use steroids\modules\gii\models\ValueExpression;
 use yii\db\Schema;
+use yii\helpers\Html;
 use yii\helpers\Json;
+use yii\web\JsExpression;
 
 class GiiHelper
 {
@@ -17,6 +19,13 @@ class GiiHelper
     public static function getTableNames()
     {
         return \Yii::$app->db->schema->tableNames;
+    }
+
+    public static function locale($text)
+    {
+        $text = Html::encode($text);
+        $text = new JsExpression('locale.t(\'' . $text . '\')');
+        return $text;
     }
 
     public static function varExport($var, $indent = '', $arrayLine = false)

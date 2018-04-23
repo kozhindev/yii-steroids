@@ -19,9 +19,9 @@ class RangeType extends Type
     /**
      * @inheritdoc
      */
-    public function prepareFieldProps($model, $attribute, &$props)
+    public function prepareFieldProps($modelClass, $attribute, &$props, &$import = null)
     {
-        $options = $this->getOptions($model, $attribute);
+        $options = $this->getOptions($modelClass, $attribute);
         $props = array_merge(
             [
                 'component' => 'RangeField',
