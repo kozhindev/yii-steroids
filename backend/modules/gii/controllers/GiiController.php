@@ -16,6 +16,7 @@ use steroids\modules\gii\models\MetaItem;
 use steroids\modules\gii\models\ModelClass;
 use steroids\modules\gii\models\ModuleClass;
 use steroids\modules\gii\models\Relation;
+use steroids\modules\gii\widgets\GiiApplication\GiiApplication;
 use yii\helpers\ArrayHelper;
 use yii\web\Controller;
 
@@ -54,9 +55,23 @@ class GiiController extends Controller
                     ]
                 ]
             ],
+            'gii-new' => [
+                'label' => 'Генератор кода',
+                'url' => ['/gii/gii/index-new'],
+                'urlRule' => 'gii/new<action:.*>',
+                'order' => 500,
+                'accessCheck' => [GiiModule::className(), 'accessCheck'],
+                'visible' => YII_ENV_DEV,
+            ],
         ];
     }
 
+    public static function apiMap()
+    {
+        return [
+            'api-fetch-classes' => '/api/gii/fetch-classes',
+        ];
+    }
     public function actionIndex()
     {
         $modules = [];
@@ -78,6 +93,24 @@ class GiiController extends Controller
         return $this->render('index', [
             'modules' => $modules,
         ]);
+    }
+
+    public function actionIndexNew()
+    {
+        $this->layout = '@steroids/modules/gii/layouts/blank';
+        return $this->renderContent(GiiApplication::widget());
+    }
+
+    public function actionApiFetchClasses()
+    {
+        return [
+            'module' => ModuleClass::findAll(),
+            'enum' => EnumClass::findAll(),
+            'form' => FormModelClass::findAll(),
+            'model' => ModelClass::findAll(),
+            // TODO controllers
+            // TODO api forms/actions
+        ];
     }
 
     public function actionModel($moduleId = null, $modelName = null)

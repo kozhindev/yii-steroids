@@ -11,7 +11,8 @@ use yii\web\View;
 /* @var $modelClass ModelClass */
 
 $import = [];
-$meta = $modelClass->metaClass->renderJsMeta('        ', $import);
+$fields = $modelClass->metaClass->renderJsFields('        ', $import);
+$formatters = $modelClass->metaClass->renderJsFormatters('        ', $import);
 
 ?>
 import Model from 'yii-steroids/frontend/base/Model';
@@ -21,8 +22,12 @@ export default class <?= $modelClass->metaClass->name ?> extends Model {
 
     static className = '<?= str_replace('\\', '\\\\', $modelClass->className) ?>';
 
-    static meta() {
-        return <?= $meta ?>;
+    static fields() {
+        return <?= $fields ?>;
+    }
+
+    static formatters() {
+        return <?= $formatters ?>;
     }
 
 }

@@ -2,11 +2,11 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import {html} from 'components';
-import Button from '../form/Button';
+import Button from '../../form/Button';
 
-const bem = html.bem('NavTabsView');
+const bem = html.bem('NavBarView');
 
-export default class NavTabsView extends React.Component {
+export default class NavBarView extends React.Component {
 
     static propTypes = {
         items: PropTypes.arrayOf(PropTypes.object),
@@ -17,11 +17,11 @@ export default class NavTabsView extends React.Component {
     render() {
         return (
             <div className={bem(bem.block(), this.props.className)}>
-                <div className='nav nav-tabs mb-3'>
+                <div className='navbar-nav px-3'>
                     {this.props.items.map((item, index) => (
                         <li
                             key={index}
-                            className='nav-item'
+                            className='nav-item text-nowrap'
                         >
                             <Button
                                 link

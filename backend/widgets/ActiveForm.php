@@ -119,7 +119,7 @@ class ActiveForm extends Widget
             );
 
             $type = \Yii::$app->types->getTypeByModel($this->model, $attribute);
-            $type->prepareFieldProps($this->model, $attribute, $field);
+            $type->prepareFieldProps($this->model, $attribute, $field, $import);
 
             $config[] = $field;
         }
@@ -127,8 +127,7 @@ class ActiveForm extends Widget
     }
 
     /**
-     * @return array|mixed
-     * @throws \yii\base\InvalidConfigException
+     * @return array
      */
     protected function getInitialValues()
     {

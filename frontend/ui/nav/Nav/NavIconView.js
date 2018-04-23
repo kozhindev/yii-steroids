@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import {html} from 'components';
-import Button from '../form/Button';
+import Button from '../../form/Button';
 
 const bem = html.bem('NavIconView');
 

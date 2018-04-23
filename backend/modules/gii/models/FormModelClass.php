@@ -84,6 +84,11 @@ class FormModelClass extends BaseClass
         ]);
     }
 
+    public function getModuleId()
+    {
+        return $this->getModuleClass()->id;
+    }
+
     /**
      * @return FormModelMetaClass
      */
@@ -99,8 +104,9 @@ class FormModelClass extends BaseClass
 
     public function fields() {
         return [
-            'className',
             'name',
+            'className',
+            'moduleId',
             'moduleClass',
             'metaClass',
             'modelClass',

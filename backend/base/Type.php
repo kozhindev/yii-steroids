@@ -29,11 +29,12 @@ abstract class Type extends BaseObject
 
 
     /**
-     * @param Model|FormModel $model
+     * @param Model|FormModel|string $modelClass
      * @param string $attribute
      * @param array $props
+     * @param array|null $import
      */
-    public function prepareFieldProps($model, $attribute, &$props)
+    public function prepareFieldProps($modelClass, $attribute, &$props, &$import = null)
     {
     }
 
@@ -48,11 +49,12 @@ abstract class Type extends BaseObject
     }
 
     /**
-     * @param Model|FormModel $model
+     * @param Model|FormModel|string $modelClass
      * @param string $attribute
      * @param array $props
+     * @param array|null $import
      */
-    public function prepareViewProps($model, $attribute, &$props)
+    public function prepareFormatterProps($modelClass, $attribute, &$props, &$import = null)
     {
     }
 

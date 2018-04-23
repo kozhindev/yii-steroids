@@ -10,7 +10,8 @@
         "yiisoft/yii2": "~2.0.15",
         "yiisoft/yii2-swiftmailer": "^2.1.0",
         "yiisoft/yii2-debug": "^2.0.13",
-        "phpunit/phpunit": "5.7.19"
+        "phpunit/phpunit": "5.7.19",
+        "codemix/yii2-localeurls": "^1.7"
     },
     "autoload": {
         "psr-4": {"steroids\\": "backend"}

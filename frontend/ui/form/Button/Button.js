@@ -2,15 +2,11 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import {isSubmitting} from 'redux-form';
+import {push} from 'react-router-redux';
 
 import {ui} from 'components';
 import FieldLayout from '../FieldLayout';
 
-@connect(
-    (state, props) => ({
-        submitting: props.formId ? isSubmitting('myForm')(state) : !!props.submitting,
-    })
-)
 class ButtonInternal extends React.PureComponent {
 
     render() {
@@ -29,6 +25,11 @@ class ButtonInternal extends React.PureComponent {
 
 }
 
+@connect(
+    (state, props) => ({
+        submitting: props.formId ? isSubmitting('myForm')(state) : !!props.submitting,
+    })
+)
 export default class Button extends React.PureComponent {
 
     static propTypes = {
@@ -48,6 +49,7 @@ export default class Button extends React.PureComponent {
         link: PropTypes.bool,
         outline: PropTypes.bool,
         url: PropTypes.string,
+        to: PropTypes.string,
         onClick: PropTypes.func,
         disabled: PropTypes.bool,
         submitting: PropTypes.bool,
@@ -73,11 +75,18 @@ export default class Button extends React.PureComponent {
         layoutProps: PropTypes.object,
     };
 
+    constructor() {
+        super(...arguments);
+
+        this._onClick = this._onClick.bind(this);
+    }
+
     render() {
         const button = (
             <ButtonInternal
                 {...this.props}
                 url={this.props.link && !this.props.url ? 'javascript:void(0)' : this.props.url}
+                onClick={this._onClick}
                 formId={this.context.formId}
                 layout={this.context.layout}
                 layoutProps={this.context.layoutProps}
@@ -101,5 +110,15 @@ export default class Button extends React.PureComponent {
         }
 
         return button;
+    }
+
+    _onClick() {
+        if (this.props.to) {
+            this.props.dispatch(push(this.props.to));
+        }
+
+        if (this.props.onClick) {
+            this.props.onClick();
+        }
     }
 }

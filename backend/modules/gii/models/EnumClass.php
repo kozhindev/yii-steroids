@@ -13,7 +13,8 @@ class EnumClass extends BaseClass
     private static $_enums;
     private $_metaClass;
 
-    public static function idToClassName($moduleId, $modelName = null) {
+    public static function idToClassName($moduleId, $modelName = null)
+    {
         if ($modelName !== null) {
             return 'app\\' . str_replace('.', '\\', $moduleId) . '\\enums\\' . ucfirst($modelName);
         } else {
@@ -44,7 +45,8 @@ class EnumClass extends BaseClass
      * @param string $className
      * @return EnumClass|null
      */
-    public static function findOne($className) {
+    public static function findOne($className)
+    {
         foreach (static::findAll() as $modelClass) {
             if ($modelClass->className === $className) {
                 return $modelClass;
@@ -66,10 +68,16 @@ class EnumClass extends BaseClass
         ]);
     }
 
+    public function getModuleId()
+    {
+        return $this->getModuleClass()->id;
+    }
+
     /**
      * @return EnumMetaClass
      */
-    public function getMetaClass() {
+    public function getMetaClass()
+    {
         if ($this->_metaClass === null) {
             $this->_metaClass = new EnumMetaClass([
                 'className' => $this->getNamespace() . '\\meta\\' . $this->getName() . 'Meta',
@@ -79,10 +87,12 @@ class EnumClass extends BaseClass
         return $this->_metaClass;
     }
 
-    public function fields() {
+    public function fields()
+    {
         return [
-            'className',
             'name',
+            'className',
+            'moduleId',
             'moduleClass',
             'metaClass',
         ];

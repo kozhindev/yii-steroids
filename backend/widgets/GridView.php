@@ -85,7 +85,7 @@ class GridView extends Widget
 
                 // Prepare column props by type
                 $type = \Yii::$app->types->getTypeByModel($modelClass, $attribute);
-                $type->prepareViewProps($model, $attribute, $column);
+                $type->prepareFormatterProps($model, $attribute, $column, $import);
             }
 
             $config[] = $column;

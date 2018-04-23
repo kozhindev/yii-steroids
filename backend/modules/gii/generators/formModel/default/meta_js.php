@@ -13,7 +13,7 @@ use yii\web\View;
 /* @var $formModelClass FormModelClass */
 
 $import = [];
-$meta = $formModelClass->metaClass->renderJsMeta('        ', $import);
+$fields = $formModelClass->metaClass->renderJsFields('        ', $import);
 
 ?>
 import Model from 'yii-steroids/frontend/base/Model';
@@ -23,8 +23,8 @@ export default class <?= $formModelClass->metaClass->name ?> extends Model {
 
     static className = '<?= str_replace('\\', '\\\\', $formModelClass->className) ?>';
 
-    static meta() {
-        return <?= $meta ?>;
+    static fields() {
+        return <?= $fields ?>;
     }
 
 }
