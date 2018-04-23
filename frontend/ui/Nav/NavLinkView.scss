@@ -1,0 +1,7 @@
+.NavLinkView {
+  &__nav-item {
+    &:not(:last-child) {
+      margin-right: 10px;
+    }
+  }
+}
