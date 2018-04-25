@@ -3,6 +3,7 @@ const path = require('path');
 const fs = require('fs');
 const _ = require('lodash');
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
+const ExportTranslationKeysPlugin = require('./plugins/ExportTranslationKeysPlugin');
 
 const utils = require('./utils');
 const getConfigDefault = require('./config.default');
@@ -125,6 +126,7 @@ module.exports = (config, entry) => {
             ],
         },
         plugins: [
+            new ExportTranslationKeysPlugin(),
             utils.isProduction() && new webpack.DefinePlugin({
                 'process.env': {
                     NODE_ENV: '"production"'
