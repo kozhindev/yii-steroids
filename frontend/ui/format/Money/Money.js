@@ -25,10 +25,11 @@ export default class Money extends React.Component {
             rub: locale.t('₽'),
             usd: locale.t('$'),
         };
-        const symbol = symbols[this.props.currency] || this.props.currency.toUpperCase();
-        const amount = _round(this.props.amount, this.props.scale);
 
-        return amount + ' ' + symbol;
+        return locale.t('{amount, number}{symbol}', {
+            amount: _round(this.props.amount, this.props.scale),
+            symbol: symbols[this.props.currency] || this.props.currency.toUpperCase(),
+        });
     }
 
 }
