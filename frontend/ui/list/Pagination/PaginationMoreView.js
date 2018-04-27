@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import {html, locale} from 'components';
 import Button from '../../form/Button';
 
-const bem = html.bem('EmptyView');
+const bem = html.bem('PaginationMoreView');
 
 export default class PaginationMoreView extends React.Component {
 
@@ -16,7 +16,7 @@ export default class PaginationMoreView extends React.Component {
 
     render() {
         return (
-            <div className={bem(bem.block(), 'text-center')}>
+            <div className={bem(bem.block(), 'text-center my-4')}>
                 <Button
                     color='secondary'
                     outline

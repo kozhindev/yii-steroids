@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import {html} from 'components';
-import Button from '../form/Button';
+import {html} from 'components/index';
+import Button from '../../form/Button/index';
 import './NavLinkView.scss';
 
 const bem = html.bem('NavLinkView');
