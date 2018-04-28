@@ -21,6 +21,7 @@ storiesOf('List', module)
         <div>
             {withInfo()(() => (
                 <Pagination
+                    //Pagination.defaultProps not working
                     aroundCount={number('Around Count', 3)}
                     list={{
                         page: number('Page', 2),
