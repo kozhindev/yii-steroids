@@ -3,6 +3,7 @@
 namespace steroids\base;
 
 use yii\base\BaseObject;
+use yii\helpers\ArrayHelper;
 
 abstract class Enum extends BaseObject
 {
@@ -39,6 +40,12 @@ abstract class Enum extends BaseObject
         }
 
         return $idLabelMap[$id];
+    }
+
+    public static function getDataValue($name, $id)
+    {
+        $method = 'get' . ucfirst($name) . 'Data';
+        return ArrayHelper::getValue(static::$method(), $id);
     }
 
     /**

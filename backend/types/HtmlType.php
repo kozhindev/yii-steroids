@@ -26,7 +26,7 @@ class HtmlType extends Type
     /**
      * @inheritdoc
      */
-    public function giiDbType($metaItem)
+    public function giiDbType($attributeEntity)
     {
         return Schema::TYPE_TEXT;
     }
@@ -34,11 +34,11 @@ class HtmlType extends Type
     /**
      * @inheritdoc
      */
-    public function giiRules($metaItem, &$useClasses = [])
+    public function giiRules($attributeEntity, &$useClasses = [])
     {
         // TODO Html validator
         return [
-            [$metaItem->name, 'string']
+            [$attributeEntity->name, 'string']
         ];
     }
 }

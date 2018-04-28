@@ -1,0 +1,22 @@
+@import '~bootstrap/scss/bootstrap';
+
+.ClassCreatorPage {
+  .FieldLayoutView__field, .form-control {
+    width: 100% !important;
+  }
+  .FieldListView .CheckboxFieldView {
+    margin: 3px 0 0 3px;
+  }
+
+  .FieldListView__remove {
+    cursor: pointer;
+    width: 24px;
+    height: 31px;
+    text-align: center;
+    color: $danger;
+
+    &:hover {
+      color: lighten($danger, 15%);
+    }
+  }
+}

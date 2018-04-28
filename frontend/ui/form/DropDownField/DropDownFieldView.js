@@ -17,6 +17,7 @@ export default class DropDownFieldView extends React.PureComponent {
         placeholder: PropTypes.string,
         isInvalid: PropTypes.bool,
         searchPlaceholder: PropTypes.string,
+        size: PropTypes.oneOf(['sm', 'md', 'lg']),
         disabled: PropTypes.bool,
         className: PropTypes.string,
         searchInputProps: PropTypes.object,
@@ -50,7 +51,7 @@ export default class DropDownFieldView extends React.PureComponent {
 
     render() {
         return (
-            <div className={bem.block()}>
+            <div className={bem.block({size: this.props.size})}>
                 <div
                     className={bem.element('selected-items', {
                         reset: this.props.showReset,
@@ -63,7 +64,6 @@ export default class DropDownFieldView extends React.PureComponent {
                             {item.label} &nbsp;
                         </span>
                     ))}
-
                 </div>
                 {this.props.showReset && !!this.props.selectedItems.length && (
                     <span

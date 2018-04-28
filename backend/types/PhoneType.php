@@ -3,7 +3,6 @@
 namespace steroids\types;
 
 use steroids\base\Type;
-use steroids\modules\gii\models\MetaItem;
 use yii\db\Schema;
 
 class PhoneType extends Type
@@ -24,10 +23,9 @@ class PhoneType extends Type
     }
 
     /**
-     * @param MetaItem $metaItem
-     * @return string|false
+     * @inheritdoc
      */
-    public function giiDbType($metaItem)
+    public function giiDbType($attributeEntity)
     {
         return Schema::TYPE_STRING;
     }
@@ -35,11 +33,11 @@ class PhoneType extends Type
     /**
      * @inheritdoc
      */
-    public function giiRules($metaItem, &$useClasses = [])
+    public function giiRules($attributeEntity, &$useClasses = [])
     {
         // TODO Phone validator
         return [
-            [$metaItem->name, 'string', 'max' => $metaItem->stringLength ?: 255],
+            [$attributeEntity->name, 'string', 'max' => $attributeEntity->stringLength ?: 255],
         ];
     }
 }

@@ -25,8 +25,9 @@ class UrlManager extends \codemix\localeurls\UrlManager implements BootstrapInte
         );
         $this->ignoreLanguageUrlPatterns = array_merge(
             [
-                '#^api/#' => '#^api/#',
+                '#^api#' => '#^api#',
                 '#^debug/#' => '#^debug/#',
+                '#^gii#' => '#^gii#',
             ],
             $this->ignoreLanguageUrlPatterns ?: []
         );

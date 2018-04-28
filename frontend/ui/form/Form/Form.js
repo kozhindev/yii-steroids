@@ -42,6 +42,7 @@ export default class Form extends React.PureComponent {
         action: PropTypes.string,
         layout: PropTypes.oneOf(['default', 'inline', 'horizontal']),
         layoutProps: PropTypes.object,
+        size: PropTypes.oneOf(['sm', 'md', 'lg']),
         onSubmit: PropTypes.func,
         onAfterSubmit: PropTypes.func,
         onChange: PropTypes.func,
@@ -78,6 +79,7 @@ export default class Form extends React.PureComponent {
         ]),
         layout: PropTypes.oneOf(['default', 'inline', 'horizontal']),
         layoutProps: PropTypes.object,
+        size: PropTypes.oneOf(['sm', 'md', 'lg']),
     };
 
     constructor() {
@@ -95,6 +97,7 @@ export default class Form extends React.PureComponent {
             layoutProps: {
                 ...this.props.layoutProps,
             },
+            size: this.props.size,
         };
     }
 

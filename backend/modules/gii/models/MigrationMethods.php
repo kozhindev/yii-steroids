@@ -2,62 +2,64 @@
 
 namespace steroids\modules\gii\models;
 
-use yii\base\Object;
+use steroids\modules\gii\enums\MigrateMode;
+use steroids\modules\gii\enums\RelationType;
+use steroids\modules\gii\forms\ModelAttributeEntity;
+use steroids\modules\gii\forms\ModelEntity;
+use steroids\modules\gii\forms\ModelRelationEntity;
+use yii\base\BaseObject;
 use yii\helpers\ArrayHelper;
 
 /**
  * @property-read ModuleClass $moduleClass
  */
-class MigrationMethods extends Object
+class MigrationMethods extends BaseObject
 {
     use MigrationPostgresTrait;
 
-    const MIGRATE_MODE_CREATE = 'create';
-    const MIGRATE_MODE_UPDATE = 'update';
-
     /**
-     * @var ModelClass|null
+     * @var ModelEntity|null
      */
-    public $oldModelClass;
+    public $prevModelEntity;
 
     /**
-     * @var ModelClass
+     * @var ModelEntity
      */
-    public $modelClass;
+    public $nextModelEntity;
 
     /**
-     * One of value: create, update, none
      * @var string
+     * @see MigrateMode
      */
     public $migrateMode;
 
     /**
-     * @var MetaItem[]
+     * @var ModelAttributeEntity[]
      */
     public $createTable = [];
 
     /**
-     * @var MetaItem[]
+     * @var ModelAttributeEntity[]
      */
     public $addColumn = [];
 
     /**
-     * @var MetaItem[]
+     * @var ModelAttributeEntity[]
      */
     public $alterColumn = [];
 
     /**
-     * @var MetaItem[]
+     * @var ModelAttributeEntity[]
      */
     public $alterColumnDown = [];
 
     /**
-     * @var MetaItem[]
+     * @var ModelAttributeEntity[]
      */
     public $renameColumn = [];
 
     /**
-     * @var MetaItem[]
+     * @var ModelAttributeEntity[]
      */
     public $dropColumn = [];
 
@@ -67,7 +69,7 @@ class MigrationMethods extends Object
     public $junctionTables = [];
 
     /**
-     * @var Relation[]
+     * @var ModelRelationEntity[]
      */
     public $foreignKeys = [];
 
@@ -78,15 +80,15 @@ class MigrationMethods extends Object
     {
         parent::init();
 
-        if (!$this->oldModelClass || $this->migrateMode === self::MIGRATE_MODE_CREATE) {
+        if (!$this->prevModelEntity || $this->migrateMode === MigrateMode::CREATE) {
             $this->processCreateTable();
-        } else if ($this->migrateMode === self::MIGRATE_MODE_UPDATE) {
+        } else if ($this->migrateMode === MigrateMode::UPDATE) {
             $this->processAddColumn();
             $this->processUpdateColumn();
             $this->processDropColumn();
         }
 
-        if ($this->migrateMode === self::MIGRATE_MODE_UPDATE || $this->migrateMode === self::MIGRATE_MODE_CREATE) {
+        if ($this->migrateMode === MigrateMode::UPDATE || $this->migrateMode === MigrateMode::CREATE) {
             $this->processJunction();
             $this->processForeignKeys();
         }
@@ -109,28 +111,29 @@ class MigrationMethods extends Object
     {
         $parts = [];
 
-        if (!$this->oldModelClass) {
+        if (!$this->prevModelEntity) {
             $parts[] = 'create';
-            $parts[] = $this->modelClass->name;
+            $parts[] = $this->nextModelEntity->name;
         } else {
-            $parts[] = $this->modelClass->name;
+            $parts[] = $this->nextModelEntity->name;
 
-            $metaItems = [];
+            /** @var ModelAttributeEntity[] $attributeEntities */
+            $attributeEntities = [];
             if (!empty($this->addColumn)) {
                 $parts[] = 'add';
-                $metaItems = $this->addColumn;
+                $attributeEntities = $this->addColumn;
             } else if (!empty($this->alterColumn)) {
                 $parts[] = 'upd';
-                $metaItems = $this->alterColumn;
+                $attributeEntities = $this->alterColumn;
             } else if (!empty($this->renameColumn)) {
                 $parts[] = 'rename';
-                $metaItems = $this->renameColumn;
+                $attributeEntities = $this->renameColumn;
             } else if (!empty($this->dropColumn)) {
                 $parts[] = 'drop';
-                $metaItems = $this->dropColumn;
+                $attributeEntities = $this->dropColumn;
             }
-            foreach ($metaItems as $metaItem) {
-                $parts[] = $metaItem->name;
+            foreach ($attributeEntities as $attributeEntity) {
+                $parts[] = $attributeEntity->name;
             }
 
             if (!empty($this->junctionTables)) {
@@ -156,53 +159,52 @@ class MigrationMethods extends Object
 
     protected function processCreateTable()
     {
-        foreach ($this->modelClass->metaClass->metaWithChild as $metaItem) {
-            if ($metaItem->getDbType()) {
-                $this->createTable[] = $metaItem;
+        foreach ($this->nextModelEntity->attributeItems as $attributeEntity) {
+            if ($attributeEntity->getDbType()) {
+                $this->createTable[] = $attributeEntity;
             }
         }
     }
 
     protected function processAddColumn()
     {
-        foreach ($this->modelClass->metaClass->metaWithChild as $metaItem) {
-            if (!$metaItem->oldName && $metaItem->getDbType()) {
-                $this->addColumn[] = $metaItem;
+        foreach ($this->nextModelEntity->attributeItems as $attributeEntity) {
+            if (!$attributeEntity->prevName && $attributeEntity->getDbType()) {
+                $this->addColumn[] = $attributeEntity;
             }
         }
     }
 
     protected function processUpdateColumn()
     {
-        /** @var MetaItem $oldMeta [] */
-        $oldMeta = $this->oldModelClass ? ArrayHelper::index($this->oldModelClass->metaClass->metaWithChild, 'oldName') : [];
-        foreach ($this->modelClass->metaClass->metaWithChild as $metaItem) {
-            if (!isset($oldMeta[$metaItem->oldName]) || !$metaItem->oldName) {
+        $prevMeta = $this->prevModelEntity ? ArrayHelper::index($this->prevModelEntity->attributeItems, 'prevName') : [];
+        foreach ($this->nextModelEntity->attributeItems as $attributeEntity) {
+            if (!isset($prevMeta[$attributeEntity->prevName]) || !$attributeEntity->prevName) {
                 continue;
             }
 
-            if ($metaItem->oldName !== $metaItem->name) {
-                $this->renameColumn[] = $metaItem;
+            if ($attributeEntity->prevName !== $attributeEntity->name) {
+                $this->renameColumn[] = $attributeEntity;
             }
 
-            /** @var MetaItem $oldMetaItem */
-            $oldMetaItem = $oldMeta[$metaItem->oldName];
-            if ($oldMetaItem->renderMigrationColumnType() !== $metaItem->renderMigrationColumnType()) {
-                $this->alterColumn[] = $metaItem;
-                $this->alterColumnDown[] = $oldMetaItem;
+            /** @var ModelAttributeEntity $prevAttributeEntity */
+            $prevAttributeEntity = $prevMeta[$attributeEntity->prevName];
+            if ($prevAttributeEntity->renderMigrationColumnType() !== $attributeEntity->renderMigrationColumnType()) {
+                $this->alterColumn[] = $attributeEntity;
+                $this->alterColumnDown[] = $prevAttributeEntity;
             }
 
-            $this->postgresProcessUpdate($oldMetaItem, $metaItem);
+            $this->postgresProcessUpdate($prevAttributeEntity, $attributeEntity);
         }
     }
 
     protected function processDropColumn()
     {
-        if ($this->oldModelClass) {
-            $metaNames = ArrayHelper::getColumn($this->modelClass->metaClass->metaWithChild, 'oldName');
-            foreach ($this->oldModelClass->metaClass->metaWithChild as $oldMetaItem) {
-                if (!in_array($oldMetaItem->oldName, $metaNames)) {
-                    $this->dropColumn[] = $oldMetaItem;
+        if ($this->prevModelEntity) {
+            $metaNames = ArrayHelper::getColumn($this->nextModelEntity->attributeItems, 'prevName');
+            foreach ($this->prevModelEntity->attributeItems as $prevMetaItem) {
+                if (!in_array($prevMetaItem->prevName, $metaNames)) {
+                    $this->dropColumn[] = $prevMetaItem;
                 }
             }
         }
@@ -210,22 +212,22 @@ class MigrationMethods extends Object
 
     protected function processJunction()
     {
-        $oldRelationNames = $this->oldModelClass ? ArrayHelper::getColumn($this->oldModelClass->metaClass->relations, 'name') : [];
-        foreach ($this->modelClass->metaClass->relations as $relation) {
-            if (!$relation->viaTable) {
+        $prevRelationNames = $this->prevModelEntity ? ArrayHelper::getColumn($this->prevModelEntity->relationItems, 'name') : [];
+        foreach ($this->nextModelEntity->relationItems as $relationEntity) {
+            if (!$relationEntity->viaTable) {
                 continue;
             }
 
-            if ($this->migrateMode === self::MIGRATE_MODE_CREATE || !in_array($relation->name, $oldRelationNames)) {
+            if ($this->migrateMode === MigrateMode::CREATE || !in_array($relationEntity->name, $prevRelationNames)) {
                 $this->junctionTables[] = [
-                    'name' => $relation->name,
-                    'table' => $relation->viaTable,
+                    'name' => $relationEntity->name,
+                    'table' => $relationEntity->viaTable,
                     'columns' => [
-                        $relation->viaRelationKey => $relation->viaRelationMetaItem
-                            ? $relation->viaRelationMetaItem->renderMigrationColumnType()
+                        $relationEntity->viaRelationKey => $relationEntity->viaRelationAttributeEntry
+                            ? $relationEntity->viaRelationAttributeEntry->renderMigrationColumnType()
                             : '$this->integer()->notNull()',
-                        $relation->viaSelfKey => $relation->viaSelfMetaItem
-                            ? $relation->viaSelfMetaItem->renderMigrationColumnType()
+                        $relationEntity->viaSelfKey => $relationEntity->viaSelfAttributeEntry
+                            ? $relationEntity->viaSelfAttributeEntry->renderMigrationColumnType()
                             : '$this->integer()->notNull()',
                     ],
                 ];
@@ -235,14 +237,14 @@ class MigrationMethods extends Object
 
     protected function processForeignKeys()
     {
-        $oldRelationNames = $this->oldModelClass ? ArrayHelper::getColumn($this->oldModelClass->metaClass->relations, 'name') : [];
-        foreach ($this->modelClass->metaClass->relations as $relation) {
-            if ($relation->selfKey === 'id' || !$relation->isHasOne) {
+        $prevRelationNames = $this->prevModelEntity ? ArrayHelper::getColumn($this->prevModelEntity->relationItems, 'name') : [];
+        foreach ($this->nextModelEntity->relationItems as $relationEntity) {
+            if ($relationEntity->selfKey === 'id' || !$relationEntity->type === RelationType::HAS_ONE) {
                 continue;
             }
 
-            if ($this->migrateMode === self::MIGRATE_MODE_CREATE || !in_array($relation->name, $oldRelationNames)) {
-                $this->foreignKeys[] = $relation;
+            if ($this->migrateMode === MigrateMode::CREATE || !in_array($relationEntity->name, $prevRelationNames)) {
+                $this->foreignKeys[] = $relationEntity;
             }
         }
     }

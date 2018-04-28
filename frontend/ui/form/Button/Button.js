@@ -60,7 +60,6 @@ export default class Button extends React.PureComponent {
 
     static defaultProps = {
         type: 'button',
-        size: 'md',
         color: 'primary',
         outline: false,
         disabled: false,
@@ -73,6 +72,7 @@ export default class Button extends React.PureComponent {
         formId: PropTypes.string,
         layout: PropTypes.string,
         layoutProps: PropTypes.object,
+        size: PropTypes.oneOf(['sm', 'md', 'lg']),
     };
 
     constructor() {
@@ -90,6 +90,7 @@ export default class Button extends React.PureComponent {
                 formId={this.context.formId}
                 layout={this.context.layout}
                 layoutProps={this.context.layoutProps}
+                size={this.context.size}
             />
         );
 
@@ -103,6 +104,7 @@ export default class Button extends React.PureComponent {
                         ...this.context.layoutProps,
                         ...this.props.layoutProps,
                     }}
+                    size={this.props.size}
                 >
                     {button}
                 </FieldLayout>

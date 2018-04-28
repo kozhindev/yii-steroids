@@ -33,6 +33,7 @@ export default class FieldList extends React.PureComponent {
             ]),
             attribute: PropTypes.string,
             prefix: PropTypes.string,
+            visible: PropTypes.bool,
             model: PropTypes.oneOfType([
                 PropTypes.string,
                 PropTypes.func,
@@ -61,7 +62,6 @@ export default class FieldList extends React.PureComponent {
     };
 
     static defaultProps = {
-        size: 'md',
         disabled: false,
         required: false,
         showAdd: true,
@@ -85,6 +85,7 @@ export default class FieldList extends React.PureComponent {
         prefix: PropTypes.string,
         layout: PropTypes.string,
         layoutProps: PropTypes.object,
+        size: PropTypes.oneOf(['sm', 'md', 'lg']),
     };
 
     getChildContext() {
@@ -96,6 +97,7 @@ export default class FieldList extends React.PureComponent {
                 ...this.context.layoutProps,
                 ...this.props.layoutProps,
             },
+            size: this.props.size || this.context.size,
         };
     }
 
@@ -117,22 +119,35 @@ export default class FieldList extends React.PureComponent {
 
     render() {
         const FieldListView = this.props.view || ui.getView('form.FieldListView');
+        const FieldListItemView = this.props.itemView || ui.getView('form.FieldListItemView');
+        const items = (this.props.items || [])
+            .filter(field => field.visible !== false)
+            .map(field => ({
+                ...Field.getFieldPropsFromModel(this.props.model || this.context.model, field.attribute),
+                ...field,
+                disabled: field.disabled || this.props.disabled,
+                size: field.size || this.props.size,
+            }));
+
         return (
             <FieldListView
                 {...this.props}
-                rows={this.props.fields.map(prefix => prefix)}
-                items={(this.props.items || [])
-                    .map(field => ({
-                        ...Field.getFieldPropsFromModel(this.props.model || this.context.model, field.attribute),
-                        ...field,
-                        disabled: field.disabled || this.props.disabled,
-                        size: field.size || this.props.size,
-                    }))
-                }
+                items={items}
                 renderField={this._renderField}
                 onAdd={this._onAdd}
-                onRemove={this._onRemove}
-            />
+            >
+                {this.props.fields.map((prefix, rowIndex) => (
+                    <FieldListItemView
+                        {...this.props}
+                        items={items}
+                        renderField={this._renderField}
+                        onRemove={this._onRemove}
+                        key={rowIndex}
+                        prefix={prefix}
+                        rowIndex={rowIndex}
+                    />
+                ))}
+            </FieldListView>
         );
     }
 

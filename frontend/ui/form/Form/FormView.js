@@ -19,6 +19,7 @@ export default class FormView extends React.PureComponent {
         isInvalid: PropTypes.bool,
         layout: PropTypes.oneOf(['default', 'inline', 'horizontal']),
         layoutProps: PropTypes.object,
+        size: PropTypes.oneOf(['sm', 'md', 'lg']),
         className: PropTypes.string,
     };
 

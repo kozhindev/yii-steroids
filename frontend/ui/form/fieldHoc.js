@@ -133,10 +133,10 @@ class FieldHoc extends React.PureComponent {
 
         return (
             <FieldLayout
-                errors={errors}
-                isInvalid={errors && errors.length > 0}
                 {...props}
                 {..._config.layoutProps}
+                errors={errors}
+                isInvalid={errors && errors.length > 0}
             >
                 {!_config.list && props.formId && _config.attributes.map(attribute => (
                     <Field
@@ -194,7 +194,7 @@ class FieldHoc extends React.PureComponent {
     }
 }
 
-export default config => WrappedComponent => class FieldHocWrapper extends React.Component {
+export default config => WrappedComponent => class FieldHocWrapper extends React.PureComponent {
 
     static WrappedComponent = WrappedComponent;
 
@@ -214,6 +214,7 @@ export default config => WrappedComponent => class FieldHocWrapper extends React
         prefix: PropTypes.string,
         layout: PropTypes.string,
         layoutProps: PropTypes.object,
+        size: PropTypes.oneOf(['sm', 'md', 'lg']),
     };
 
     render() {
@@ -228,6 +229,7 @@ export default config => WrappedComponent => class FieldHocWrapper extends React
                     ...this.context.layoutProps,
                     ...this.props.layoutProps,
                 }}
+                size={this.props.size || this.context.size || 'md'}
                 _wrappedComponent={WrappedComponent}
                 _config={{
                     ...defaultConfig,

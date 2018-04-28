@@ -5,7 +5,7 @@ import {Router, Link, Nav} from 'yii-steroids/frontend/ui/nav';
 import {html, http, widget} from 'components';
 import IndexPage from './routes/IndexPage';
 import AccessPage from './routes/AccessPage';
-import ClassCreatorPage from './routes/ClassCreatorPage';
+import ClassCreatorPage from './routes/ClassCreatorPage/index';
 import ClassTypeMeta from '../../enums/meta/ClassTypeMeta';
 
 import './GiiApplication.scss';
@@ -25,70 +25,82 @@ export default class GiiApplication extends React.PureComponent {
         this.state = {
             isLoading: false,
             classes: null,
+            appTypes: null,
+            moduleIds: null,
         };
     }
 
     componentDidMount() {
-        this.fetchClasses();
+        this.fetchData();
     }
 
     render() {
         return (
             <div className={bem.block()}>
                 <nav className='navbar navbar-expand-md navbar-dark bg-dark mb-3'>
-                    <Link
-                        className='navbar-brand'
-                        to='/gii'
-                    >
-                        Gii
-                    </Link>
-                    <Nav
-                        layout='navbar'
-                        items={[
+                    <div className='container'>
+                        <Link
+                            className='navbar-brand'
+                            to='/'
+                        >
+                            Gii
+                        </Link>
+                        <Nav
+                            layout='navbar'
+                            items={[
+                                {
+                                    label: 'Сущности',
+                                    to: '/',
+                                },
+                                {
+                                    label: 'Права доступа',
+                                    to: '/access',
+                                },
+                                {
+                                    label: 'Карта сайта',
+                                    to: '/site-map',
+                                },
+                            ]}
+                        />
+                    </div>
+                </nav>
+                <div className='container'>
+                    <Router
+                        routes={[
                             {
-                                label: 'Сущности',
-                                to: '/',
+                                exact: true,
+                                path: '/',
+                                component: IndexPage,
+                                componentProps: {
+                                    moduleIds: this.state.moduleIds,
+                                    classes: this.state.classes,
+                                },
                             },
                             {
-                                label: 'Права доступа',
-                                to: '/gii/access',
+                                path: '/access',
+                                component: AccessPage,
                             },
                             {
-                                label: 'Карта сайта',
-                                to: '/gii/site-map',
+                                path: '/:classType(' + ClassTypeMeta.getKeys().join('|') + ')/:moduleId?/:name?',
+                                component: ClassCreatorPage,
+                                componentProps: {
+                                    moduleIds: this.state.moduleIds,
+                                    classes: this.state.classes,
+                                    appTypes: this.state.appTypes,
+                                },
                             },
                         ]}
                     />
-                </nav>
-                <Router
-                    routes={[
-                        {
-                            exact: true,
-                            path: '/gii',
-                            component: IndexPage,
-                            componentProps: {
-                                classes: this.state.classes,
-                            },
-                        },
-                        {
-                            path: '/gii/access',
-                            component: AccessPage,
-                        },
-                        {
-                            path: '/gii/:classType(' + ClassTypeMeta.getKeys().join('|') + ')/:moduleId?/:name?',
-                            component: ClassCreatorPage,
-                        },
-                    ]}
-                />
+                </div>
             </div>
         );
     }
 
-    fetchClasses() {
+    fetchData() {
         this.setState({isLoading: true});
-        http.post('/api/gii/fetch-classes')
-            .then(classes => this.setState({
-                classes,
+        http.post('/api/gii/get-data')
+            .then(data => this.setState({
+                ...data,
                 isLoading: false,
             }));
     }

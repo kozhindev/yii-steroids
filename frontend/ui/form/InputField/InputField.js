@@ -35,7 +35,6 @@ export default class InputField extends React.PureComponent {
 
     static defaultProps = {
         type: 'text',
-        size: 'md',
         disabled: false,
         required: false,
         className: '',

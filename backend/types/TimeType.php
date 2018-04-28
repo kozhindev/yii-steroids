@@ -25,7 +25,7 @@ class TimeType extends Type
     /**
      * @inheritdoc
      */
-    public function giiDbType($metaItem)
+    public function giiDbType($attributeEntity)
     {
         return Schema::TYPE_TIME;
     }
@@ -33,10 +33,10 @@ class TimeType extends Type
     /**
      * @inheritdoc
      */
-    public function giiRules($metaItem, &$useClasses = [])
+    public function giiRules($attributeEntity, &$useClasses = [])
     {
         return [
-            [$metaItem->name, 'date', 'format' => 'php:H:i:s'],
+            [$attributeEntity->name, 'date', 'format' => 'php:H:i:s'],
         ];
     }
 }

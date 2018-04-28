@@ -13,8 +13,8 @@ export default class FieldListView extends React.PureComponent {
             PropTypes.bool,
         ]),
         hint: PropTypes.string,
+        size: PropTypes.oneOf(['sm', 'md', 'lg']),
         required: PropTypes.bool,
-        rows: PropTypes.arrayOf(PropTypes.string),
         items: PropTypes.arrayOf(PropTypes.shape({
             label: PropTypes.oneOfType([
                 PropTypes.string,
@@ -45,7 +45,6 @@ export default class FieldListView extends React.PureComponent {
         showAdd: PropTypes.bool,
         showRemove: PropTypes.bool,
         onAdd: PropTypes.func,
-        onRemove: PropTypes.func,
         renderField: PropTypes.func,
         disabled: PropTypes.bool,
         className: PropTypes.string,
@@ -54,7 +53,13 @@ export default class FieldListView extends React.PureComponent {
     render() {
         return (
             <div className={bem(bem.block(), this.props.className)}>
-                <table className={bem(bem.element('table'), 'table')}>
+                <table
+                    className={bem(
+                        bem.element('table'),
+                        'table',
+                        this.props.size && 'table-' + this.props.size,
+                    )}
+                >
                     <thead>
                         <tr>
                             {this.props.items.map((field, rowIndex) => (
@@ -74,33 +79,7 @@ export default class FieldListView extends React.PureComponent {
                         </tr>
                     </thead>
                     <tbody>
-                        {this.props.rows.map((prefix, rowIndex) => (
-                            <tr key={rowIndex}>
-                                {this.props.items.map((field, columnIndex) => (
-                                    <td
-                                        key={`${rowIndex}_${columnIndex}`}
-                                        className={bem(
-                                            bem.element('table-cell'),
-                                            field.className
-                                        )}
-                                    >
-                                        {this.props.renderField(field, prefix)}
-                                    </td>
-                                ))}
-                                {this.props.showRemove && (
-                                    <td className={bem.element('table-cell', 'remove')}>
-                                        {(!this.props.required || rowIndex > 0) && (
-                                            <div
-                                                className={bem.element('remove')}
-                                                onClick={() => this.props.onRemove(rowIndex)}
-                                            >
-                                                &times;
-                                            </div>
-                                        )}
-                                    </td>
-                                )}
-                            </tr>
-                        ))}
+                        {this.props.children}
                     </tbody>
                 </table>
                 {this.props.showAdd && !this.props.disabled && (

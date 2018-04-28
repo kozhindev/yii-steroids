@@ -28,7 +28,7 @@ class DoubleType extends IntegerType
     /**
      * @inheritdoc
      */
-    public function giiDbType($metaItem)
+    public function giiDbType($attributeEntity)
     {
         return Schema::TYPE_DOUBLE;
     }
@@ -36,10 +36,10 @@ class DoubleType extends IntegerType
     /**
      * @inheritdoc
      */
-    public function giiRules($metaItem, &$useClasses = [])
+    public function giiRules($attributeEntity, &$useClasses = [])
     {
         return [
-            [$metaItem->name, 'number'],
+            [$attributeEntity->name, 'number'],
         ];
     }
 
@@ -49,8 +49,9 @@ class DoubleType extends IntegerType
     public function giiOptions()
     {
         return [
-            self::OPTION_SCALE => [
-                'component' => 'input',
+            [
+                'attribute' => self::OPTION_SCALE,
+                'component' => 'NumberField',
                 'label' => 'Scale',
             ]
         ];

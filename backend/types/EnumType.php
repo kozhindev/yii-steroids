@@ -6,6 +6,7 @@ use steroids\base\Enum;
 use steroids\base\FormModel;
 use steroids\base\Model;
 use steroids\base\Type;
+use steroids\modules\gii\forms\EnumEntity;
 use steroids\modules\gii\models\EnumClass;
 use steroids\modules\gii\models\ValueExpression;
 use yii\db\Schema;
@@ -27,7 +28,7 @@ class EnumType extends Type
             [
                 'component' => 'DropDownField',
                 'attribute' => $attribute,
-                'items' => $this->getItemsProp($modelClass, $attribute, $import),
+                'items' => $this->getItemsProperty($modelClass, $attribute, $import),
             ],
             $props
         );
@@ -40,7 +41,7 @@ class EnumType extends Type
                 'format' => [
                     'component' => 'EnumFormatter',
                     'attribute' => $attribute,
-                    'items' => $this->getItemsProp($modelClass, $attribute, $import),
+                    'items' => $this->getItemsProperty($modelClass, $attribute, $import),
                 ],
             ],
             $props
@@ -54,7 +55,7 @@ class EnumType extends Type
      * @return mixed
      * @throws \ReflectionException
      */
-    protected function getItemsProp($modelClass, $attribute, &$import)
+    protected function getItemsProperty($modelClass, $attribute, &$import)
     {
         /** @var Enum $enumClass */
         $enumClass = ArrayHelper::getValue($this->getOptions($modelClass, $attribute), self::OPTION_CLASS_NAME);
@@ -102,11 +103,11 @@ class EnumType extends Type
     /**
      * @inheritdoc
      */
-    public function getGiiJsMetaItem($metaItem, $item, &$import = [])
+    public function getGiiJsMetaItem($attributeEntity, $item, &$import = [])
     {
-        $result = parent::getGiiJsMetaItem($metaItem, $item, $import);
-        if ($metaItem->enumClassName) {
-            $enumClassMeta = EnumClass::findOne($metaItem->enumClassName);
+        $result = parent::getGiiJsMetaItem($attributeEntity, $item, $import);
+        if ($attributeEntity->enumClassName) {
+            $enumClassMeta = EnumClass::findOne($attributeEntity->enumClassName);
             if (file_exists($enumClassMeta->metaClass->filePath)) {
                 $import[] = 'import ' . $enumClassMeta->metaClass->name . ' from \'' . str_replace('\\', '/', $enumClassMeta->metaClass->className) . '\';';
                 $result['enumClassName'] = new JsExpression($enumClassMeta->metaClass->name);
@@ -121,7 +122,7 @@ class EnumType extends Type
     /**
      * @inheritdoc
      */
-    public function giiDbType($metaItem)
+    public function giiDbType($attributeEntity)
     {
         return Schema::TYPE_STRING;
     }
@@ -129,34 +130,41 @@ class EnumType extends Type
     /**
      * @inheritdoc
      */
-    public function giiRules($metaItem, &$useClasses = [])
+    public function giiRules($attributeEntity, &$useClasses = [])
     {
         /** @var Enum $className */
-        $className = $metaItem->enumClassName;
+        $className = $attributeEntity->enumClassName;
         if (!$className) {
             return [
-                [$metaItem->name, 'string'],
+                [$attributeEntity->name, 'string'],
             ];
         }
 
-        $shortClassName = StringHelper::basename($metaItem->enumClassName);
+        $shortClassName = StringHelper::basename($attributeEntity->enumClassName);
         $useClasses[] = $className;
 
         return [
-            [$metaItem->name, 'in', 'range' => new ValueExpression("$shortClassName::getKeys()")],
+            [$attributeEntity->name, 'in', 'range' => new ValueExpression("$shortClassName::getKeys()")],
         ];
     }
 
     /**
      * @return array
+     * @throws \ReflectionException
      */
     public function giiOptions()
     {
         return [
-            self::OPTION_CLASS_NAME => [
-                'component' => 'input',
-                'label' => 'Class',
-                'list' => ArrayHelper::getColumn(EnumClass::findAll(), 'className'),
+            [
+                'attribute' => self::OPTION_CLASS_NAME,
+                'component' => 'DropDownField',
+                'label' => 'Enum Class',
+                'items' => array_map(function (EnumEntity $enumEntity) {
+                    return [
+                        'id' => $enumEntity->getClassName(),
+                        'label' => $enumEntity->getClassName(),
+                    ];
+                }, EnumEntity::findAll()),
             ]
         ];
     }

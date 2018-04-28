@@ -24,15 +24,15 @@ class EnumListType extends EnumType
     /**
      * @inheritdoc
      */
-    public function giiDbType($metaItem)
+    public function giiDbType($attributeEntity)
     {
         return 'varchar(255)[]';
     }
 
-    public function giiRules($metaItem, &$useClasses = [])
+    public function giiRules($attributeEntity, &$useClasses = [])
     {
         /** @var Enum $className */
-        $className = $metaItem->enumClassName;
+        $className = $attributeEntity->enumClassName;
 
         //TODO return "['in', 'range' => $className::getKeys()]";
 

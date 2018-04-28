@@ -50,7 +50,6 @@ export default class RangeField extends React.PureComponent {
 
     static defaultProps = {
         type: 'input',
-        size: 'md',
         disabled: false,
         required: false,
         className: '',

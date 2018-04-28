@@ -46,9 +46,9 @@ class AddressType extends Type
     /**
      * @inheritdoc
      */
-    public function giiDbType($metaItem)
+    public function giiDbType($attributeEntity)
     {
-        $addressType = ArrayHelper::getValue($metaItem, self::OPTION_ADDRESS_TYPE);
+        $addressType = ArrayHelper::getValue($attributeEntity, self::OPTION_ADDRESS_TYPE);
         switch ($addressType) {
             case self::TYPE_COUNTRY:
             case self::TYPE_REGION:
@@ -69,28 +69,28 @@ class AddressType extends Type
     /**
      * @inheritdoc
      */
-    public function giiRules($metaItem, &$useClasses = [])
+    public function giiRules($attributeEntity, &$useClasses = [])
     {
-        $addressType = ArrayHelper::getValue($metaItem, self::OPTION_ADDRESS_TYPE);
+        $addressType = ArrayHelper::getValue($attributeEntity, self::OPTION_ADDRESS_TYPE);
         switch ($addressType) {
             case self::TYPE_COUNTRY:
             case self::TYPE_REGION:
             case self::TYPE_CITY:
             case self::TYPE_METRO_STATION:
                 return [
-                    [$metaItem->name, 'integer'],
+                    [$attributeEntity->name, 'integer'],
                 ];
 
             case self::TYPE_LONGITUDE:
             case self::TYPE_LATITUDE:
                 return [
-                    [$metaItem->name, 'number'],
+                    [$attributeEntity->name, 'number'],
                 ];
 
             default:
             case self::TYPE_ADDRESS:
                 return [
-                    [$metaItem->name, 'string'],
+                    [$attributeEntity->name, 'string'],
                 ];
         }
     }
@@ -101,10 +101,11 @@ class AddressType extends Type
     public function giiOptions()
     {
         return [
-            self::OPTION_ADDRESS_TYPE => [
-                'component' => 'select',
+            [
+                'attribute' => self::OPTION_ADDRESS_TYPE,
+                'component' => 'InputField',
                 'label' => 'Address type',
-                'options' => [
+                /*'options' => [
                     self::TYPE_COUNTRY => 'Country',
                     self::TYPE_REGION => 'Region',
                     self::TYPE_CITY => 'City',
@@ -115,15 +116,16 @@ class AddressType extends Type
                 ],
                 'style' => [
                     'width' => '100px'
-                ],
+                ],*/
             ],
-            self::OPTION_RELATION_NAME => [
-                'component' => 'input',
+            [
+                'attribute' => self::OPTION_RELATION_NAME,
+                'component' => 'InputField',
                 'label' => 'Relation name',
-                'list' => 'relations',
+                /*'list' => 'relations',
                 'style' => [
                     'width' => '100px'
-                ],
+                ],*/
             ],
         ];
     }

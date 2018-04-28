@@ -4,8 +4,17 @@
 .DropDownFieldView {
   position: relative;
 
+  font-size: 1rem;
+  &_size_sm {
+    font-size: 0.875rem;
+  }
+  &_size_lg {
+    font-size: 1.25rem;
+  }
+
   &__selected-items {
     padding: 0.375rem 1.75rem 0.375rem 0.75rem;
+    min-width: 100px;
     height: 38px;
     cursor: pointer;
     background-color: #fff;
@@ -13,7 +22,6 @@
     border: 1px solid #ced4da;
     border-radius: 0.25rem;
     line-height: 1.5;
-    font-size: 1rem;
     color: $gray-700;
     white-space: nowrap;
     overflow: hidden;
@@ -41,6 +49,18 @@
     &_is-invalid {
       border-color: $danger;
     }
+  }
+  &_size_sm &__selected-items {
+    padding: 0.25rem 0.5rem;
+    line-height: 1.5;
+    border-radius: 0.2rem;
+    height: 31px;
+  }
+  &_size_lg &__selected-items {
+    padding: 0.5rem 1rem;
+    line-height: 1.5;
+    border-radius: 0.3rem;
+    height: 48px;
   }
 
   &__reset {
@@ -87,7 +107,6 @@
     border: 1px solid #ced4da;
     border-radius: 0.25rem;
     box-shadow: 0 6px 12px rgba(0,0,0,.175);
-    font-size: 1rem;
     line-height: 1.5;
     color: #495057;
   }
@@ -113,5 +132,11 @@
       background-color: $primary;
       color: #fff;
     }
+  }
+  &_size_sm &__drop-down-item {
+    padding: 0.25rem 0.5rem;
+  }
+  &_size_lg &__drop-down-item {
+    padding: 0.5rem 1rem;
   }
 }

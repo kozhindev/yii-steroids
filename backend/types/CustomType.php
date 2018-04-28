@@ -12,18 +12,18 @@ class CustomType extends Type
     /**
      * @inheritdoc
      */
-    public function giiDbType($metaItem)
+    public function giiDbType($attributeEntity)
     {
-        return $metaItem->dbType;
+        return $attributeEntity->dbType;
     }
 
     /**
      * @inheritdoc
      */
-    public function giiRules($metaItem, &$useClasses = [])
+    public function giiRules($attributeEntity, &$useClasses = [])
     {
         return [
-            [$metaItem->name, 'safe'],
+            [$attributeEntity->name, 'safe'],
         ];
     }
 
@@ -33,10 +33,16 @@ class CustomType extends Type
     public function giiOptions()
     {
         return [
-            self::OPTION_DB_TYPE => [
-                'component' => 'input',
+            [
+                'attribute' => self::OPTION_DB_TYPE,
+                'component' => 'DropDownField',
                 'label' => 'Db Type',
-                'list' => GiiHelper::getDbTypes(),
+                'list' => array_map(function($id) {
+                    return [
+                        'id' => $id,
+                        'label' => $id,
+                    ];
+                }, GiiHelper::getDbTypes()),
             ],
         ];
     }

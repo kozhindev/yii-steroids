@@ -2,6 +2,7 @@
 
 namespace steroids\traits;
 
+use steroids\base\FormModel;
 use steroids\base\Model;
 use yii\base\Exception;
 use yii\db\ActiveQuery;
@@ -105,24 +106,35 @@ trait RelationSaveTrait
                 }
             } else {
                 // has many, many many
-                /* @type ActiveRecord $relatedModel */
+                /* @type Model|FormModel $relatedModel */
                 $relatedModel = $relation->modelClass;
-                $primaryKey = $relatedModel::primaryKey()[0];
 
-                $prevItems = $relation->indexBy($primaryKey)->all();
                 $nextItems = [];
-
                 if (is_array($value)) {
-                    foreach ($value as $valueItem) {
-                        // update or insert
-                        $pk = ArrayHelper::getValue($valueItem, $primaryKey);
+                    if (is_subclass_of($relatedModel, Model::class)) {
+                        $primaryKey = $relatedModel::primaryKey()[0];
+                        $prevItems = $relation->indexBy($primaryKey)->all();
 
-                        /** @var Model $item */
-                        $item = ArrayHelper::getValue($prevItems, $pk, new $relatedModel());
-                        $item->listenRelation($listenChildren);
-                        $item->load($valueItem, '');
+                        foreach ($value as $valueItem) {
+                            // update or insert
+                            $pk = ArrayHelper::getValue($valueItem, $primaryKey);
 
-                        $nextItems[] = $item;
+                            /** @var Model $item */
+                            $item = ArrayHelper::getValue($prevItems, $pk, new $relatedModel());
+                            $item->listenRelation($listenChildren);
+                            $item->load($valueItem, '');
+
+                            $nextItems[] = $item;
+                        }
+                    } elseif (is_subclass_of($relatedModel, FormModel::class)) {
+                        foreach ($value as $valueItem) {
+                            /** @var Model|FormModel $item */
+                            $item = new $relatedModel();
+                            $item->listenRelation($listenChildren);
+                            $item->load($valueItem, '');
+
+                            $nextItems[] = $item;
+                        }
                     }
                 }
 

@@ -2,12 +2,22 @@
 
 namespace steroids\modules\gii\controllers;
 
+use steroids\base\FormModel;
+use steroids\base\Type;
+use steroids\modules\gii\enums\ClassType;
+use steroids\modules\gii\forms\CrudEntity;
+use steroids\modules\gii\forms\EnumEntity;
+use steroids\modules\gii\forms\FormEntity;
+use steroids\modules\gii\forms\IEntity;
+use steroids\modules\gii\forms\ModelEntity;
+use steroids\modules\gii\forms\WidgetEntity;
 use steroids\modules\gii\generators\enum\EnumGenerator;
 use steroids\modules\gii\generators\formModel\FormModelGenerator;
 use steroids\modules\gii\generators\model\ModelGenerator;
 use steroids\modules\gii\generators\crud\CrudGenerator;
 use steroids\modules\gii\generators\module\ModuleGenerator;
 use steroids\modules\gii\GiiModule;
+use steroids\modules\gii\helpers\GiiHelper;
 use steroids\modules\gii\models\ControllerClass;
 use steroids\modules\gii\models\EnumClass;
 use steroids\modules\gii\models\EnumMetaItem;
@@ -17,7 +27,9 @@ use steroids\modules\gii\models\ModelClass;
 use steroids\modules\gii\models\ModuleClass;
 use steroids\modules\gii\models\Relation;
 use steroids\modules\gii\widgets\GiiApplication\GiiApplication;
+use steroids\widgets\ActiveForm;
 use yii\helpers\ArrayHelper;
+use yii\web\BadRequestHttpException;
 use yii\web\Controller;
 
 class GiiController extends Controller
@@ -26,42 +38,22 @@ class GiiController extends Controller
     {
         return [
             'gii' => [
-                'label' => 'Генератор кода',
+                'label' => 'Новый',
                 'url' => ['/gii/gii/index'],
                 'urlRule' => 'gii',
                 'order' => 500,
                 'accessCheck' => [GiiModule::className(), 'accessCheck'],
                 'visible' => YII_ENV_DEV,
                 'items' => [
-                    'model' => [
-                        'label' => 'Модель',
-                        'url' => ['/gii/gii/model'],
-                        'urlRule' => 'gii/model',
+                    'gii-children' => [
+                        'label' => 'Новый',
+                        'url' => ['/gii/gii/index'],
+                        'urlRule' => 'gii<action:.+>',
+                        'order' => 500,
+                        'accessCheck' => [GiiModule::className(), 'accessCheck'],
+                        'visible' => YII_ENV_DEV,
                     ],
-                    'form-model' => [
-                        'label' => 'Форма',
-                        'url' => ['/gii/gii/form-model'],
-                        'urlRule' => 'gii/form-model',
-                    ],
-                    'enum' => [
-                        'label' => 'Enum',
-                        'url' => ['/gii/gii/enum'],
-                        'urlRule' => 'gii/enum',
-                    ],
-                    'crud' => [
-                        'label' => 'CRUD',
-                        'url' => ['/gii/gii/crud'],
-                        'urlRule' => 'gii/crud',
-                    ]
                 ]
-            ],
-            'gii-new' => [
-                'label' => 'Генератор кода',
-                'url' => ['/gii/gii/index-new'],
-                'urlRule' => 'gii/new<action:.*>',
-                'order' => 500,
-                'accessCheck' => [GiiModule::className(), 'accessCheck'],
-                'visible' => YII_ENV_DEV,
             ],
         ];
     }
@@ -69,49 +61,81 @@ class GiiController extends Controller
     public static function apiMap()
     {
         return [
-            'api-fetch-classes' => '/api/gii/fetch-classes',
+            'api-get-data' => '/api/gii/get-data',
+            'api-class-save' => '/api/gii/class-save',
         ];
     }
+
     public function actionIndex()
-    {
-        $modules = [];
-        foreach (ModelClass::findAll() as $modelClass) {
-            $modules[$modelClass->moduleClass->id]['models'][] = $modelClass;
-        }
-        foreach (FormModelClass::findAll() as $formModelClass) {
-            $modules[$formModelClass->moduleClass->id]['formModels'][] = $formModelClass;
-        }
-        foreach (EnumClass::findAll() as $enumClass) {
-            $modules[$enumClass->moduleClass->id]['enums'][] = $enumClass;
-        }
-        foreach (ControllerClass::findAll() as $controllerClass) {
-            $modules[$controllerClass->moduleClass->id]['cruds'][] = $controllerClass;
-        }
-
-        ksort($modules);
-
-        return $this->render('index', [
-            'modules' => $modules,
-        ]);
-    }
-
-    public function actionIndexNew()
     {
         $this->layout = '@steroids/modules/gii/layouts/blank';
         return $this->renderContent(GiiApplication::widget());
     }
 
-    public function actionApiFetchClasses()
+    public function actionApiGetData()
     {
         return [
-            'module' => ModuleClass::findAll(),
-            'enum' => EnumClass::findAll(),
-            'form' => FormModelClass::findAll(),
-            'model' => ModelClass::findAll(),
-            // TODO controllers
-            // TODO api forms/actions
+            'moduleIds' => array_keys(GiiHelper::findModules()),
+            'classes' => [
+                'crud' => CrudEntity::findAll(),
+                'enum' => EnumEntity::findAll(),
+                'form' => FormEntity::findAll(),
+                'model' => ModelEntity::findAll(),
+                'widget' => WidgetEntity::findAll(),
+            ],
+            'appTypes' => array_map(function (Type $appType) {
+                return [
+                    'name' => $appType->name,
+                    'title' => ucfirst($appType->name),
+                    'additionalFields' => $appType->giiOptions(),
+                ];
+            }, \Yii::$app->types->getTypes()),
         ];
     }
+
+    public function actionApiClassSave()
+    {
+        switch (\Yii::$app->request->post('classType')) {
+            case ClassType::MODEL:
+                $entity = new ModelEntity();
+                $entity->listenRelationData('attributeItems');
+                $entity->listenRelationData('relationItems');
+                break;
+
+            case ClassType::FORM:
+                $entity = new FormEntity();
+                $entity->listenRelationData('attributeItems');
+                $entity->listenRelationData('relationItems');
+                break;
+
+            case ClassType::CRUD:
+                $entity = new CrudEntity();
+                $entity->listenRelationData('items');
+                break;
+
+            case ClassType::ENUM:
+                $entity = new EnumEntity();
+                $entity->listenRelationData('items');
+                break;
+
+            case ClassType::WIDGET:
+                $entity = new WidgetEntity();
+                break;
+
+            default:
+                throw new BadRequestHttpException();
+        }
+
+        if ($entity->load(\Yii::$app->request->post())) {
+            $entity->save();
+        }
+
+        return ActiveForm::renderAjax($entity);
+    }
+
+
+
+
 
     public function actionModel($moduleId = null, $modelName = null)
     {

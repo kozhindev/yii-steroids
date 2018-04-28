@@ -1,7 +1,7 @@
 <?php
 
 namespace steroids\modules\gii\models;
-
+use steroids\modules\gii\forms\ModelAttributeEntity;
 
 /**
  * Trait MigrationPostgresTrait
@@ -11,64 +11,63 @@ trait MigrationPostgresTrait
 {
     /**
      * Add single command if it's needed to change 'required' property on Postgres
-     *
-     * @param MetaItem $oldMetaItem
-     * @param MetaItem $newMetaItem
+     * @param ModelAttributeEntity $prev
+     * @param ModelAttributeEntity $next
+     * @throws \yii\base\NotSupportedException
      */
-    protected function postgresProcessUpdate($oldMetaItem, $newMetaItem)
+    protected function postgresProcessUpdate($prev, $next)
     {
         if (!(\Yii::$app->db->getSchema() instanceof \yii\db\pgsql\Schema)) {
             return;
         }
 
-        $this->postgresProcessNotNull($oldMetaItem, $newMetaItem);
-        $this->postgresProcessDefaultValue($oldMetaItem, $newMetaItem);
+        $this->postgresProcessNotNull($prev, $next);
+        $this->postgresProcessDefaultValue($prev, $next);
     }
 
     /**
-     * @param MetaItem $oldMetaItem
-     * @param MetaItem $newMetaItem
+     * @param ModelAttributeEntity $prev
+     * @param ModelAttributeEntity $next
      */
-    protected function postgresProcessDefaultValue($oldMetaItem, $newMetaItem)
+    protected function postgresProcessDefaultValue($prev, $next)
     {
         // Proceed only if default value has changed
-        if ($oldMetaItem->defaultValue == $newMetaItem->defaultValue) {
+        if ($prev->defaultValue == $next->defaultValue) {
             return;
         }
 
-        $oldMetaItemClone = clone $oldMetaItem;
-        $newMetaItemClone = clone $newMetaItem;
+        $prevAttributeEntityClone = clone $prev;
+        $nextAttributeEntityClone = clone $next;
 
-        $oldMetaItemClone->customMigrationColumnType = self::buildDefaultString($oldMetaItem->defaultValue, !!$oldMetaItem->required);
-        $newMetaItemClone->customMigrationColumnType = self::buildDefaultString($newMetaItem->defaultValue, !!$newMetaItem->required);
-        $this->alterColumn[] = $newMetaItemClone;
-        $this->alterColumnDown[] = $oldMetaItemClone;
+        $prevAttributeEntityClone->customMigrationColumnType = self::buildDefaultString($prev->defaultValue, !!$prev->isRequired);
+        $nextAttributeEntityClone->customMigrationColumnType = self::buildDefaultString($next->defaultValue, !!$next->isRequired);
+        $this->alterColumn[] = $nextAttributeEntityClone;
+        $this->alterColumnDown[] = $prevAttributeEntityClone;
     }
 
     /**
-     * @param MetaItem $oldMetaItem
-     * @param MetaItem $newMetaItem
+     * @param ModelAttributeEntity $prev
+     * @param ModelAttributeEntity $next
      */
-    protected function postgresProcessNotNull($oldMetaItem, $newMetaItem)
+    protected function postgresProcessNotNull($prev, $next)
     {
         // If 'required' property wasn't changed, then do not add no additional command
-        $oldItemIsRequired = $oldMetaItem->required !== null ?: false;
-        $newItemIsRequired = $newMetaItem->required !== null ?: false;
+        $prevItemIsRequired = $prev->isRequired !== null ?: false;
+        $nextItemIsRequired = $next->isRequired !== null ?: false;
 
         // Proceed only if 'required' flag is unchecked
-        if (!$oldItemIsRequired || $newItemIsRequired) {
+        if (!$prevItemIsRequired || $nextItemIsRequired) {
             return;
         }
 
-        $oldMetaItemClone = clone $oldMetaItem;
-        $newMetaItemClone = clone $newMetaItem;
+        $prevMetaItemClone = clone $prev;
+        $nextMetaItemClone = clone $next;
 
-        $oldMetaItemClone->customMigrationColumnType = '\'SET NOT NULL\'';
-        $newMetaItemClone->customMigrationColumnType = '\'DROP NOT NULL\'';
-        $this->alterColumn[] = $newMetaItemClone;
-        $this->alterColumnDown[] = $oldMetaItemClone;
+        $prevMetaItemClone->customMigrationColumnType = '\'SET NOT NULL\'';
+        $nextMetaItemClone->customMigrationColumnType = '\'DROP NOT NULL\'';
+        $this->alterColumn[] = $nextMetaItemClone;
+        $this->alterColumnDown[] = $prevMetaItemClone;
     }
-
 
     /**
      * Copy-pasted from the \yii\db\ColumnSchemaBuilder with minor adjustments for Postgres

@@ -23,6 +23,7 @@ export default class FieldLayoutView extends React.PureComponent {
         required: PropTypes.bool,
         layout: PropTypes.oneOf(['default', 'inline', 'horizontal']),
         layoutProps: PropTypes.object,
+        size: PropTypes.oneOf(['sm', 'md', 'lg']),
         className: PropTypes.string,
     };
 
@@ -48,25 +49,21 @@ export default class FieldLayoutView extends React.PureComponent {
                         {this.props.label + ':'}
                     </label>
                 )}
-                <div className={bem(
-                    bem.element('field'),
-                    this.props.layout === 'horizontal' && 'col-' + this.props.layoutProps.cols[1],
-                    this.props.layout === 'horizontal' && !this.props.label && 'offset-' + this.props.layoutProps.cols[0])
-                }>
+                <div
+                    className={bem(
+                        bem.element('field'),
+                        this.props.layout === 'horizontal' && 'col-' + this.props.layoutProps.cols[1],
+                        this.props.layout === 'horizontal' && !this.props.label && 'offset-' + this.props.layoutProps.cols[0]
+                    )}
+                >
                     {this.props.children}
                     {this.props.errors && (
                         <div className={bem(bem.element('invalid-feedback'), 'invalid-feedback')}>
-                            {typeof this.props.errors === 'object' && (
-                                this.props.errors.map((error, index) => (
-                                    <div key={index}>
-                                        {error}
-                                    </div>
-                                ))
-                            ) ||
-                                <div>
-                                    {this.props.errors}
+                            {[].concat(this.props.errors).map((error, index) => (
+                                <div key={index}>
+                                    {error}
                                 </div>
-                            }
+                            ))}
                         </div>
                     )}
                 </div>
