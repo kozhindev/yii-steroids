@@ -29,6 +29,7 @@ export default class WidgetCreatorView extends React.PureComponent {
             })),
         })),
         classType: PropTypes.string,
+        onEntityComplete: PropTypes.func,
     };
 
     render() {
@@ -40,6 +41,7 @@ export default class WidgetCreatorView extends React.PureComponent {
                     model={WidgetEntityMeta}
                     layout='default'
                     initialValues={this.props.initialValues}
+                    onComplete={this.props.onEntityComplete}
                 >
                     <div className='row'>
                         <div className='col-3'>

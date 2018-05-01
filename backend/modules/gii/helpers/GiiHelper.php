@@ -44,18 +44,20 @@ class GiiHelper
             $dirs[] = explode('/', $dir)[0];
         }
 
-        $moduleId = [];
+        //"steroids\modules\file\models\File"
+        $moduleNamespace = [];
         foreach (explode('\\', $className) as $part) {
-            if ($part === 'app') {
-                continue;
-            }
             if (in_array($part, $dirs)) {
                 break;
             }
-            $moduleId[] = $part;
+            $moduleNamespace[] = $part;
         }
+        
+        $moduleClass = implode('\\', $moduleNamespace) . '\\' . ucfirst(end($moduleNamespace)) . 'Module';
+        $moduleId = array_search($moduleClass, static::findModules());
+
         return [
-            'moduleId' => implode('.', $moduleId),
+            'moduleId' => $moduleId,
             'name' => (new \ReflectionClass($className))->getShortName(),
         ];
     }
@@ -141,7 +143,7 @@ class GiiHelper
 
     public static function getDbTypes()
     {
-        $classInfo = new \ReflectionClass(Schema::className());
+        $classInfo = new \ReflectionClass(Schema::class);
         return array_values($classInfo->getConstants());
     }
 

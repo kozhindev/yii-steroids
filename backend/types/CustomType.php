@@ -14,7 +14,7 @@ class CustomType extends Type
      */
     public function giiDbType($attributeEntity)
     {
-        return $attributeEntity->dbType;
+        return $attributeEntity->getCustomProperty(self::OPTION_DB_TYPE);
     }
 
     /**

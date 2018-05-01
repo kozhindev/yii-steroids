@@ -97,7 +97,7 @@ class ControllerMetaClass extends ControllerClass
     public function getMeta()
     {
         $meta = ArrayHelper::toArray($this, [
-            static::className() => [
+            static::class => [
                 'modelClassName',
                 'modelAttributes',
                 'formModelClassName',
@@ -198,11 +198,11 @@ class ControllerMetaClass extends ControllerClass
         $meta['formModelAttributes'] = $this->formModelAttributes;
 
         if ($this->modelClass) {
-            $meta['modelClassName'] = new ValueExpression($this->modelClass->name . '::className()');
+            $meta['modelClassName'] = new ValueExpression($this->modelClass->name . '::class');
             $useClasses[] = $this->modelClass->className;
         }
         if ($this->formModelClass) {
-            $meta['formModelClassName'] = new ValueExpression($this->formModelClass->name . '::className()');
+            $meta['formModelClassName'] = new ValueExpression($this->formModelClass->name . '::class');
             $useClasses[] = $this->formModelClass->className;
         }
 

@@ -1,6 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import {connect} from 'react-redux';
 import {Router, Link, Nav} from 'yii-steroids/frontend/ui/nav';
+import {Notifications} from 'yii-steroids/frontend/ui/layout';
+import {push} from 'react-router-redux';
 
 import {html, http, widget} from 'components';
 import IndexPage from './routes/IndexPage';
@@ -13,6 +16,7 @@ import './GiiApplication.scss';
 const bem = html.bem('GiiApplication');
 
 @widget.register('\\steroids\\modules\\gii\\widgets\\GiiApplication\\GiiApplication')
+@connect()
 export default class GiiApplication extends React.PureComponent {
 
     static propTypes = {
@@ -21,6 +25,8 @@ export default class GiiApplication extends React.PureComponent {
 
     constructor() {
         super(...arguments);
+
+        this._onEntityComplete = this._onEntityComplete.bind(this);
 
         this.state = {
             isLoading: false,
@@ -36,7 +42,7 @@ export default class GiiApplication extends React.PureComponent {
 
     render() {
         return (
-            <div className={bem.block()}>
+            <div className={bem.block({loading: this.state.isLoading})}>
                 <nav className='navbar navbar-expand-md navbar-dark bg-dark mb-3'>
                     <div className='container'>
                         <Link
@@ -64,7 +70,8 @@ export default class GiiApplication extends React.PureComponent {
                         />
                     </div>
                 </nav>
-                <div className='container'>
+                <div className={bem(bem.element('content'), 'container')}>
+                    <Notifications/>
                     <Router
                         routes={[
                             {
@@ -87,6 +94,7 @@ export default class GiiApplication extends React.PureComponent {
                                     moduleIds: this.state.moduleIds,
                                     classes: this.state.classes,
                                     appTypes: this.state.appTypes,
+                                    onEntityComplete: this._onEntityComplete,
                                 },
                             },
                         ]}
@@ -94,6 +102,11 @@ export default class GiiApplication extends React.PureComponent {
                 </div>
             </div>
         );
+    }
+
+    _onEntityComplete() {
+        this.props.dispatch(push('/'));
+        this.fetchData();
     }
 
     fetchData() {

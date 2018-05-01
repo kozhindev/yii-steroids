@@ -58,4 +58,12 @@ class EnumItemEntity extends EnumItemEntityMeta
     public function getConstName() {
         return strtoupper($this->name);
     }
+
+    public function renderConstValue() {
+        if ($this->value) {
+            return is_numeric($this->value) ? $this->value :  "'" . $this->value . "'";
+        }
+        return "'" . strtolower($this->name) . "'";
+    }
+
 }

@@ -23,13 +23,18 @@ export default class ModelEntityMeta extends Model {
             'tableName': {
                 'component': 'InputField',
                 'attribute': 'tableName',
-                'label': locale.t('Table name'),
-                'required': true
+                'label': locale.t('Table name')
             },
             'migrateMode': {
                 'component': 'CheckboxField',
                 'attribute': 'migrateMode',
                 'label': locale.t('Migrate mode'),
+            },
+            'queryModel': {
+                'component': 'InputField',
+                'attribute': 'queryModel',
+                'label': locale.t('Query model'),
+                'hint': locale.t('Set for SearchModel, skip for FormModel'),
             }
         };
     }

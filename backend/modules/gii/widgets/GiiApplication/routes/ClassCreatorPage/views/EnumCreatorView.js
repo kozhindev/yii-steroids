@@ -50,6 +50,7 @@ export default class EnumCreatorView extends React.PureComponent {
         classType: PropTypes.string,
         isCustomValues: PropTypes.bool,
         hasEnumValues: PropTypes.bool,
+        onEntityComplete: PropTypes.func,
     };
 
     render() {
@@ -62,6 +63,7 @@ export default class EnumCreatorView extends React.PureComponent {
                     layout='default'
                     size='sm'
                     initialValues={this.props.initialValues}
+                    onComplete={this.props.onEntityComplete}
                 >
                     <div className='row'>
                         <div className='col-3'>

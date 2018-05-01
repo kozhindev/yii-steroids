@@ -6,17 +6,15 @@ use steroids\modules\gii\generators\crud\CrudGenerator;
 use steroids\modules\gii\models\ControllerClass;
 use yii\web\View;
 
-/* @var $this View */
-/* @var $generator CrudGenerator */
-/* @var $controllerClass ControllerClass */
+/* @var $crudEntity ControllerClass */
 
 echo "<?php\n";
 ?>
 
-namespace <?= $controllerClass->namespace ?>;
+namespace <?= $crudEntity->namespace ?>;
 
-use <?= $controllerClass->metaClass->className ?>;
+use <?= $crudEntity->metaClass->className ?>;
 
-class <?= $controllerClass->name ?> extends <?= $controllerClass->metaClass->name . "\n" ?>
+class <?= $crudEntity->name ?> extends <?= $crudEntity->metaClass->name . "\n" ?>
 {
 }

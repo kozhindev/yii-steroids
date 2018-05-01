@@ -2,37 +2,20 @@
 
 namespace app\views;
 
-use steroids\modules\gii\generators\model\ModelGenerator;
-use steroids\modules\gii\models\FormModelClass;
-use steroids\modules\gii\models\ModelClass;
-use yii\web\View;
+use steroids\modules\gii\forms\FormEntity;
 
-/* @var $this View */
-/* @var $generator ModelGenerator */
-/* @var $modelClass ModelClass */
-/* @var $formModelClass FormModelClass */
+/* @var $formEntity FormEntity */
 
 echo "<?php\n";
 ?>
 
-namespace <?= $formModelClass->namespace ?>;
+namespace <?= $formEntity->getNamespace() ?>;
 
+<?php if ($formEntity->queryModel) { ?>
 use yii\db\ActiveQuery;
-use <?= $formModelClass->metaClass->className ?>;
+<?php } ?>
+use <?= $formEntity->getNamespace() ?>\meta\<?= $formEntity->name ?>Meta;
 
-class <?= $formModelClass->name ?> extends <?= $formModelClass->metaClass->name . "\n" ?>
+class <?= $formEntity->name ?> extends <?= $formEntity->name . "Meta\n" ?>
 {
-    public function fields()
-    {
-        return [
-            '*',
-        ];
-    }
-
-    /**
-     * @param ActiveQuery $query
-     */
-    public function prepare($query)
-    {
-    }
 }

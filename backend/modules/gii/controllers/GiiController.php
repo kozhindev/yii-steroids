@@ -42,15 +42,15 @@ class GiiController extends Controller
                 'url' => ['/gii/gii/index'],
                 'urlRule' => 'gii',
                 'order' => 500,
-                'accessCheck' => [GiiModule::className(), 'accessCheck'],
+                'accessCheck' => [GiiModule::class, 'accessCheck'],
                 'visible' => YII_ENV_DEV,
                 'items' => [
                     'gii-children' => [
                         'label' => 'Новый',
                         'url' => ['/gii/gii/index'],
-                        'urlRule' => 'gii<action:.+>',
+                        'urlRule' => 'gii/<action:.+>',
                         'order' => 500,
-                        'accessCheck' => [GiiModule::className(), 'accessCheck'],
+                        'accessCheck' => [GiiModule::class, 'accessCheck'],
                         'visible' => YII_ENV_DEV,
                     ],
                 ]

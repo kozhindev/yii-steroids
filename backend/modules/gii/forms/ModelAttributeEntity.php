@@ -35,6 +35,12 @@ class ModelAttributeEntity extends ModelAttributeEntityMeta
         $className = GiiHelper::getClassName($classType, $entity->moduleId, $entity->name);
         $items = [];
         foreach ($className::meta() as $attribute => $item) {
+            // Legacy support
+            if (isset($item['required'])) {
+                $item['isRequired'] = true;
+                unset($item['required']);
+            }
+
             $items[] = new static(array_merge(
                 [
                     'name' => $attribute,
@@ -59,6 +65,11 @@ class ModelAttributeEntity extends ModelAttributeEntityMeta
             : null;
     }
 
+    public function onUnsafeAttribute($name, $value)
+    {
+        $this->setCustomProperty($name, $value);
+    }
+
     /**
      * @inheritdoc
      */
@@ -66,7 +77,7 @@ class ModelAttributeEntity extends ModelAttributeEntityMeta
     {
         return array_merge(
             array_diff($this->attributes(), ['modelEntity', 'customMigrationColumnType']),
-            array_keys($this->customProperties)
+            array_keys($this->getCustomProperties())
         );
     }
 

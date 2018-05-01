@@ -2,6 +2,8 @@
 
 namespace steroids\modules\gii\traits;
 
+use yii\helpers\ArrayHelper;
+
 /**
  * @property-read array $customProperties
  */
@@ -15,12 +17,30 @@ trait CustomPropertyTrait
     }
 
     /**
+     * @param string $name
+     * @return mixed
+     */
+    public function getCustomProperty($name)
+    {
+        return ArrayHelper::getValue($this->_customProperties, $name);
+    }
+
+    /**
+     * @param string $name
+     * @param mixed $value
+     */
+    public function setCustomProperty($name, $value)
+    {
+        ArrayHelper::setValue($this->_customProperties, $name, $value);
+    }
+
+    /**
      * @inheritdoc
      */
     public function __get($name)
     {
         if (array_key_exists($name, $this->_customProperties)) {
-            return $this->_customProperties[$name];
+            return ArrayHelper::getValue($this->_customProperties, $name);
         } else {
             return parent::__get($name);
         }

@@ -30,6 +30,7 @@ export default class CrudCreatorView extends React.PureComponent {
             })),
         })),
         classType: PropTypes.string,
+        onEntityComplete: PropTypes.func,
     };
 
     render() {
@@ -42,6 +43,7 @@ export default class CrudCreatorView extends React.PureComponent {
                     layout='default'
                     size='sm'
                     initialValues={this.props.initialValues}
+                    onComplete={this.props.onEntityComplete}
                 >
                     <div className='row'>
                         <div className='col-3'>

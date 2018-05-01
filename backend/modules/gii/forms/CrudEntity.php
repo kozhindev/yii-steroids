@@ -37,6 +37,9 @@ class CrudEntity extends CrudEntityMeta implements IEntity
     public function save()
     {
         if ($this->validate()) {
+            // Lazy create module
+            ModuleEntity::findOrCreate($this->moduleId);
+
             // Create/update meta information
             GiiHelper::renderFile('crud/meta', $this->getMetaPath(), [
                 'crudEntity' => $this,

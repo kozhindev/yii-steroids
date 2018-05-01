@@ -36,7 +36,8 @@ class StringType extends Type
      */
     public function giiDbType($attributeEntity)
     {
-        return Schema::TYPE_STRING . ($attributeEntity->stringLength ? '(' . $attributeEntity->stringLength . ')' : '');
+        $length = $attributeEntity->getCustomProperty(self::OPTION_LENGTH);
+        return Schema::TYPE_STRING . ($length ? '(' . $length . ')' : '');
     }
 
     /**
@@ -44,15 +45,16 @@ class StringType extends Type
      */
     public function giiRules($attributeEntity, &$useClasses = [])
     {
+        $length = $attributeEntity->getCustomProperty(self::OPTION_LENGTH);
         $validators = [
-            [$attributeEntity->name, 'string', 'max' => $attributeEntity->stringLength ?: 255],
+            [$attributeEntity->name, 'string', 'max' => $length ?: 255],
         ];
 
-        switch ($attributeEntity->stringType) {
+        switch ($attributeEntity->getCustomProperty(self::OPTION_TYPE)) {
             case self::TYPE_WORDS:
-                $wordsValidatorClass = WordsValidator::className();
+                $wordsValidatorClass = WordsValidator::class;
                 $useClasses[] = $wordsValidatorClass;
-                $validators[] = [$attributeEntity->name, new ValueExpression(StringHelper::basename($wordsValidatorClass) . '::className()')];
+                $validators[] = [$attributeEntity->name, new ValueExpression(StringHelper::basename($wordsValidatorClass) . '::class')];
                 break;
         }
 

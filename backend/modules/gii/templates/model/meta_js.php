@@ -2,25 +2,21 @@
 
 namespace app\views;
 
-use steroids\modules\gii\generators\model\ModelGenerator;
-use steroids\modules\gii\models\ModelClass;
-use yii\web\View;
+use steroids\modules\gii\forms\ModelEntity;
 
-/* @var $this View */
-/* @var $generator ModelGenerator */
-/* @var $modelClass ModelClass */
+/* @var $modelEntity ModelEntity */
 
 $import = [];
-$fields = $modelClass->metaClass->renderJsFields('        ', $import);
-$formatters = $modelClass->metaClass->renderJsFormatters('        ', $import);
+$fields = $modelEntity->renderJsFields('        ', $import);
+$formatters = $modelEntity->renderJsFormatters('        ', $import);
 
 ?>
 import Model from 'yii-steroids/frontend/base/Model';
 <?= !empty($import) ? "\n" . implode("\n", array_unique($import)) . "\n" : '' ?>
 
-export default class <?= $modelClass->metaClass->name ?> extends Model {
+export default class <?= $modelEntity->name ?>Meta extends Model {
 
-    static className = '<?= str_replace('\\', '\\\\', $modelClass->className) ?>';
+    static className = '<?= str_replace('\\', '\\\\', $modelEntity->getClassName()) ?>';
 
     static fields() {
         return <?= $fields ?>;

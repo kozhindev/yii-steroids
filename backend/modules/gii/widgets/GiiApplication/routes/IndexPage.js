@@ -66,6 +66,12 @@ export default class IndexPage extends React.PureComponent {
                                                 </Link>
                                             ))}
                                         </div>
+                                        <Link
+                                            className={bem.element('add')}
+                                            to={`/${key}/${moduleId}`}
+                                        >
+                                            + Add {ClassTypeMeta.getLabel(key)}
+                                        </Link>
                                     </td>
                                 ))}
                             </tr>

@@ -7,7 +7,6 @@ use steroids\base\FormModel;
 use steroids\base\Model;
 use steroids\base\Type;
 use steroids\modules\gii\forms\EnumEntity;
-use steroids\modules\gii\models\EnumClass;
 use steroids\modules\gii\models\ValueExpression;
 use yii\db\Schema;
 use yii\helpers\ArrayHelper;
@@ -38,11 +37,9 @@ class EnumType extends Type
     {
         $props = array_merge(
             [
-                'format' => [
-                    'component' => 'EnumFormatter',
-                    'attribute' => $attribute,
-                    'items' => $this->getItemsProperty($modelClass, $attribute, $import),
-                ],
+                'component' => 'EnumFormatter',
+                'attribute' => $attribute,
+                'items' => $this->getItemsProperty($modelClass, $attribute, $import),
             ],
             $props
         );
@@ -74,17 +71,6 @@ class EnumType extends Type
 
 
 
-    /**
-     * @inheritdoc
-     */
-    public function renderInputWidget($item, $class, $config)
-    {
-        /** @var Enum $className */
-        $className = ArrayHelper::getValue($item, self::OPTION_CLASS_NAME);
-        $config['options']['items'] = $className::getLabels();
-
-        return $class::widget($config);
-    }
 
     /**
      * @inheritdoc
@@ -106,14 +92,15 @@ class EnumType extends Type
     public function getGiiJsMetaItem($attributeEntity, $item, &$import = [])
     {
         $result = parent::getGiiJsMetaItem($attributeEntity, $item, $import);
-        if ($attributeEntity->enumClassName) {
-            $enumClassMeta = EnumClass::findOne($attributeEntity->enumClassName);
-            if (file_exists($enumClassMeta->metaClass->filePath)) {
-                $import[] = 'import ' . $enumClassMeta->metaClass->name . ' from \'' . str_replace('\\', '/', $enumClassMeta->metaClass->className) . '\';';
-                $result['enumClassName'] = new JsExpression($enumClassMeta->metaClass->name);
-            } elseif (file_exists($enumClassMeta->filePath)) {
-                $import[] = 'import ' . $enumClassMeta->name . ' from \'' . str_replace('\\', '/', $enumClassMeta->className) . '\';';
-                $result['enumClassName'] = new JsExpression($enumClassMeta->name);
+        $enumClass = $attributeEntity->getCustomProperty(self::OPTION_CLASS_NAME);
+        if ($enumClass) {
+            $modelEntity = EnumEntity::findOne($enumClass);
+            if (file_exists($modelEntity->getMetaJsPath())) {
+                $import[] = 'import ' . $modelEntity->name . 'Meta from \'' . str_replace('\\', '/', $modelEntity->getClassName() . 'Meta') . '\';';
+                $result['enumClassName'] = new JsExpression($modelEntity->metaClass->name);
+            } elseif (file_exists($modelEntity->getPath())) {
+                $import[] = 'import ' . $modelEntity->name . ' from \'' . str_replace('\\', '/', $modelEntity->getClassName()) . '\';';
+                $result['enumClassName'] = new JsExpression($modelEntity->name);
             }
         }
         return $result;
@@ -132,16 +119,16 @@ class EnumType extends Type
      */
     public function giiRules($attributeEntity, &$useClasses = [])
     {
-        /** @var Enum $className */
-        $className = $attributeEntity->enumClassName;
-        if (!$className) {
+        /** @var Enum $enumClass */
+        $enumClass = $attributeEntity->getCustomProperty(self::OPTION_CLASS_NAME);
+        if (!$enumClass) {
             return [
                 [$attributeEntity->name, 'string'],
             ];
         }
 
-        $shortClassName = StringHelper::basename($attributeEntity->enumClassName);
-        $useClasses[] = $className;
+        $shortClassName = StringHelper::basename($enumClass);
+        $useClasses[] = $enumClass;
 
         return [
             [$attributeEntity->name, 'in', 'range' => new ValueExpression("$shortClassName::getKeys()")],

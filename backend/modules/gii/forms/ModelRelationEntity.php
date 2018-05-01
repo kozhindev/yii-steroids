@@ -11,6 +11,9 @@ use yii\db\ActiveQuery;
 
 /**
  * @property-read boolean $isHasOne
+ * @property-read boolean $isHasMany
+ * @property-read boolean $isManyMany
+ * @property-read ModelEntity $relationModelEntry
  * @property-read ModelAttributeEntity $viaRelationAttributeEntry
  * @property-read ModelAttributeEntity $viaSelfAttributeEntry
  */
@@ -40,6 +43,11 @@ class ModelRelationEntity extends ModelRelationEntityMeta
         foreach ($modelInfo->getMethods() as $methodInfo) {
             $methodName = $methodInfo->name;
 
+            // Skip classes without meta parent
+            if ($modelInfo->getShortName() . 'Meta' !== $modelInfo->getParentClass()->getShortName()) {
+                continue;
+            }
+
             // Check exists relation in meta class
             if (strpos($methodName, 'get') !== 0 || $methodInfo->class !== $modelInfo->getParentClass()->name) {
                 continue;
@@ -49,7 +57,7 @@ class ModelRelationEntity extends ModelRelationEntityMeta
             if ($activeQuery instanceof ActiveQuery) {
                 if ($activeQuery->multiple && $activeQuery->via) {
                     $items[] = new static([
-                        'type' => 'manyMany',
+                        'type' => RelationType::MANY_MANY,
                         'name' => lcfirst(substr($methodInfo->name, 3)),
                         'relationModel' => $activeQuery->modelClass,
                         'relationKey' => array_keys($activeQuery->link)[0],
@@ -61,7 +69,7 @@ class ModelRelationEntity extends ModelRelationEntityMeta
                     ]);
                 } else {
                     $items[] = new static([
-                        'type' => $activeQuery->multiple ? 'hasMany' : 'hasOne',
+                        'type' => $activeQuery->multiple ? RelationType::HAS_MANY : RelationType::HAS_ONE,
                         'name' => lcfirst(substr($methodInfo->name, 3)),
                         'relationModel' => $activeQuery->modelClass,
                         'relationKey' => array_keys($activeQuery->link)[0],
@@ -88,12 +96,30 @@ class ModelRelationEntity extends ModelRelationEntityMeta
         return $this->type === RelationType::HAS_ONE;
     }
 
+    public function getIsHasMany()
+    {
+        return $this->type === RelationType::HAS_MANY;
+    }
+
+    public function getIsManyMany()
+    {
+        return $this->type === RelationType::MANY_MANY;
+    }
+
+    /**
+     * @return ModelEntity|null
+     */
+    public function getRelationModelEntry()
+    {
+        return ModelEntity::findOne($this->relationModel);
+    }
+
     /**
      * @return ModelAttributeEntity|null
      */
     public function getViaRelationAttributeEntry()
     {
-        return ModelEntity::findOne($this->relationModel)->getAttributeEntity($this->viaRelationKey);
+        return $this->relationModelEntry->getAttributeEntity($this->viaRelationKey);
     }
 
     /**
@@ -101,6 +127,6 @@ class ModelRelationEntity extends ModelRelationEntityMeta
      */
     public function getViaSelfAttributeEntry()
     {
-        return ModelEntity::findOne($this->relationModel)->getAttributeEntity($this->viaSelfKey);
+        return $this->relationModelEntry->getAttributeEntity($this->viaSelfKey);
     }
 }

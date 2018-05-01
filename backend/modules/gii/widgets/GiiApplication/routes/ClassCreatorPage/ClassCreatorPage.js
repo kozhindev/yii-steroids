@@ -45,6 +45,7 @@ export default class ClassCreatorPage extends React.PureComponent {
                 label: PropTypes.string,
             })),
         })),
+        onEntityComplete: PropTypes.func,
     };
 
     render() {
@@ -123,6 +124,7 @@ export default class ClassCreatorPage extends React.PureComponent {
                     }}
                     classType={values.classType}
                     appTypes={this.props.appTypes}
+                    onEntityComplete={this.props.onEntityComplete}
                 />
             </div>
         );

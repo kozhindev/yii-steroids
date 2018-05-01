@@ -8,12 +8,15 @@ use steroids\modules\gii\forms\meta\ModelEntityMeta;
 use steroids\modules\gii\helpers\GiiHelper;
 use steroids\modules\gii\models\MigrationMethods;
 use steroids\modules\gii\models\ValueExpression;
+use steroids\modules\gii\traits\EntityTrait;
 use steroids\types\RelationType;
 use steroids\validators\RecordExistValidator;
 use yii\helpers\ArrayHelper;
 
 class ModelEntity extends ModelEntityMeta implements IEntity
 {
+    use EntityTrait;
+
     /**
      * @return static[]
      * @throws \ReflectionException
@@ -43,6 +46,22 @@ class ModelEntity extends ModelEntityMeta implements IEntity
 
         return $entity;
     }
+    
+    public function load($data, $formName = null)
+    {
+        if (parent::load($data, $formName)) {
+            // Set modelEntity link
+            foreach ($this->attributeItems as $attributeEntity) {
+                $attributeEntity->modelEntity = $this;
+            }
+            foreach ($this->relationItems as $relationEntity) {
+                $relationEntity->modelEntity = $this;
+            }
+            
+            return true;
+        }
+        return false;
+    }
 
     public function fields()
     {
@@ -58,6 +77,9 @@ class ModelEntity extends ModelEntityMeta implements IEntity
     public function save()
     {
         if ($this->validate()) {
+            // Lazy create module
+            ModuleEntity::findOrCreate($this->moduleId);
+
             // Create/update meta information
             GiiHelper::renderFile('model/meta', $this->getMetaPath(), [
                 'modelEntity' => $this,
@@ -106,17 +128,17 @@ class ModelEntity extends ModelEntityMeta implements IEntity
 
     public function getPath()
     {
-        return GiiHelper::getModuleDir($this->moduleId) . '/forms/' . $this->name . '.php';
+        return GiiHelper::getModuleDir($this->moduleId) . '/models/' . $this->name . '.php';
     }
 
     public function getMetaPath()
     {
-        return GiiHelper::getModuleDir($this->moduleId) . '/forms/meta/' . $this->name . '/Meta.php';
+        return GiiHelper::getModuleDir($this->moduleId) . '/models/meta/' . $this->name . 'Meta.php';
     }
 
     public function getMetaJsPath()
     {
-        return GiiHelper::getModuleDir($this->moduleId) . '/forms/meta/' . $this->name . '/Meta.js';
+        return GiiHelper::getModuleDir($this->moduleId) . '/models/meta/' . $this->name . 'Meta.js';
     }
 
     /**
@@ -193,7 +215,7 @@ class ModelEntity extends ModelEntityMeta implements IEntity
             }
 
             // Add required
-            if (ArrayHelper::getValue($item, 'required')) {
+            if (ArrayHelper::getValue($item, 'isRequired')) {
                 $props['required'] = true;
             }
 
@@ -250,7 +272,12 @@ class ModelEntity extends ModelEntityMeta implements IEntity
         $meta = [];
         foreach ($attributeEntries as $attributeEntry) {
             $meta[$attributeEntry->name] = [];
-            foreach ($attributeEntry as $key => $value) {
+
+            $properties = array_merge(
+                $attributeEntry->getAttributes(),
+                $attributeEntry->getCustomProperties()
+            );
+            foreach ($properties as $key => $value) {
                 // Skip defaults
                 if ($key === 'appType' && $value === 'string') {
                     continue;
@@ -258,19 +285,22 @@ class ModelEntity extends ModelEntityMeta implements IEntity
                 if ($key === 'stringType' && $value === 'text') {
                     continue;
                 }
-
-                // Skip array key
-                if ($key === 'name' || $key === 'oldName') {
+                if ($key === 'isRequired' && $value === false) {
                     continue;
                 }
 
-                // Skip relation to parent
-                if ($key === 'metaClass') {
+                // Skip array key
+                if ($key === 'name' || $key === 'prevName') {
                     continue;
                 }
 
                 // Skip service postgres-specific key
                 if ($key === 'customMigrationColumnType') {
+                    continue;
+                }
+
+                // Skip self link
+                if ($key === 'modelEntity') {
                     continue;
                 }
 
@@ -281,7 +311,7 @@ class ModelEntity extends ModelEntityMeta implements IEntity
 
                 if ($key === 'enumClassName') {
                     $enumEntity = EnumEntity::findOne($value);
-                    $value = new ValueExpression($enumEntity->name . '::className()');
+                    $value = new ValueExpression($enumEntity->name . '::class');
                     $useClasses[] = $enumEntity->getClassName();
                 }
 
@@ -292,7 +322,6 @@ class ModelEntity extends ModelEntityMeta implements IEntity
 
                 $meta[$attributeEntry->name][$key] = $value;
             }
-            $meta[$attributeEntry->name] = array_merge($meta[$attributeEntry->name], $attributeEntry->getCustomProperties());
         }
         return $meta;
     }
@@ -373,9 +402,9 @@ class ModelEntity extends ModelEntityMeta implements IEntity
 
             $rules[] = "[" . implode(', ', [
                     "'$attribute'",
-                    "RecordExistValidator::className()",
+                    "RecordExistValidator::class",
                     "'skipOnError' => true",
-                    "'targetClass' => $refClassName::className()",
+                    "'targetClass' => $refClassName::class",
                     "'targetAttribute' => [$targetAttributes]",
                 ]) . "]";
         }
@@ -426,10 +455,10 @@ class ModelEntity extends ModelEntityMeta implements IEntity
             $useClasses[] = $className;
 
             if (empty($params)) {
-                $items[] = "$name::className(),";
+                $items[] = "$name::class,";
             } else {
                 $params = array_merge([
-                    'class' => new ValueExpression("$name::className()"),
+                    'class' => new ValueExpression("$name::class"),
                 ], $params);
                 $items[] = GiiHelper::varExport($params, $indent) . ",";
             }

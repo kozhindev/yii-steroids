@@ -128,6 +128,7 @@ class FieldHoc extends React.PureComponent {
                 errors = (errors || []).concat(error);
             }
         });
+        const isInvalid = errors && errors.length > 0;
 
         // TODO implement values in state for list (instead of redux-form FieldArray)
 
@@ -135,8 +136,8 @@ class FieldHoc extends React.PureComponent {
             <FieldLayout
                 {...props}
                 {..._config.layoutProps}
-                errors={errors}
-                isInvalid={errors && errors.length > 0}
+                errors={isInvalid ? errors : null}
+                isInvalid={isInvalid}
             >
                 {!_config.list && props.formId && _config.attributes.map(attribute => (
                     <Field
@@ -159,7 +160,7 @@ class FieldHoc extends React.PureComponent {
                     <WrappedComponent
                         {...props}
                         {...inputProps}
-                        isInvalid={errors && errors.length > 0}
+                        isInvalid={isInvalid}
                         formId={props.formId}
                         fieldId={this._fieldId}
                     />

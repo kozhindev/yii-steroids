@@ -77,8 +77,8 @@ class File extends Model
     public function behaviors()
     {
         return [
-            UidBehavior::className(),
-            TimestampBehavior::className(),
+            UidBehavior::class,
+            TimestampBehavior::class,
         ];
     }
 

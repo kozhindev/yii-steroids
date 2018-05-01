@@ -18,12 +18,13 @@ abstract class ModelEntityMeta extends FormModel
     public $name;
     public $tableName;
     public $migrateMode;
+    public $queryModel;
 
     public function rules()
     {
         return [
-            [['moduleId', 'name', 'tableName'], 'string', 'max' => 255],
-            [['moduleId', 'name', 'tableName'], 'required'],
+            [['moduleId', 'name', 'tableName', 'queryModel'], 'string', 'max' => 255],
+            [['moduleId', 'name'], 'required'],
             ['migrateMode', 'boolean'],
         ];
     }
@@ -40,11 +41,14 @@ abstract class ModelEntityMeta extends FormModel
                 'required' => true
             ],
             'tableName' => [
-                'label' => Yii::t('app', 'Table name'),
-                'required' => true
+                'label' => Yii::t('app', 'Table name')
             ],
             'migrateMode' => [
                 'label' => Yii::t('app', 'Migration mode')
+            ],
+            'queryModel' => [
+                'label' => Yii::t('app', 'Query model'),
+                'hint' => Yii::t('app', 'Set for SearchModel, skip for FormModel')
             ]
         ];
     }

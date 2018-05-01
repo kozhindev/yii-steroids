@@ -22,7 +22,7 @@ class AutoTimeType extends DateTimeType
     public function giiBehaviors($attributeEntity)
     {
         return [
-            TimestampBehavior::className(),
+            TimestampBehavior::class,
         ];
     }
 

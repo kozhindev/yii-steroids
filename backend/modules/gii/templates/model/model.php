@@ -2,21 +2,17 @@
 
 namespace app\views;
 
-use steroids\modules\gii\generators\model\ModelGenerator;
-use steroids\modules\gii\models\ModelClass;
-use yii\web\View;
+use steroids\modules\gii\forms\ModelEntity;
 
-/* @var $this View */
-/* @var $generator ModelGenerator */
-/* @var $modelClass ModelClass */
+/* @var $modelEntity ModelEntity */
 
 echo "<?php\n";
 ?>
 
-namespace <?= $modelClass->namespace ?>;
+namespace <?= $modelEntity->getNamespace() ?>;
 
-use <?= $modelClass->metaClass->className ?>;
+use <?= $modelEntity->getClassName() ?>Meta;
 
-class <?= $modelClass->name ?> extends <?= $modelClass->metaClass->name . "\n" ?>
+class <?= $modelEntity->name ?> extends <?= $modelEntity->name . "Meta\n" ?>
 {
 }

@@ -54,11 +54,12 @@ class RangeType extends Type
      */
     public function getItems($attributeEntity)
     {
-        if ($attributeEntity->refAttribute) {
+        $name = $attributeEntity->getCustomProperty(self::OPTION_REF_ATTRIBUTE);
+        if ($name) {
             return [
                 new MetaItem([
                     'metaClass' => $attributeEntity->metaClass,
-                    'name' => $attributeEntity->refAttribute,
+                    'name' => $name,
                     'appType' => $attributeEntity->subAppType,
                     'publishToFrontend' => $attributeEntity->publishToFrontend,
                 ]),

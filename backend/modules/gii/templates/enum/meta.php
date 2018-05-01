@@ -2,29 +2,25 @@
 
 namespace app\views;
 
-use steroids\modules\gii\generators\model\ModelGenerator;
-use steroids\modules\gii\models\EnumClass;
-use yii\web\View;
+use steroids\modules\gii\forms\EnumEntity;
 
-/* @var $this View */
-/* @var $generator ModelGenerator */
-/* @var $enumClass EnumClass */
+/* @var $enumEntity EnumEntity */
 
-$labels = $enumClass->metaClass->renderLabels('        ');
-$cssClasses = $enumClass->metaClass->renderCssClasses('        ');
+$labels = $enumEntity->renderLabels('        ');
+$cssClasses = $enumEntity->renderCssClasses('        ');
 
 echo "<?php\n";
 ?>
 
-namespace <?= $enumClass->metaClass->namespace ?>;
+namespace <?= $enumEntity->getNamespace() ?>\meta;
 
 use Yii;
 use steroids\base\Enum;
 
-abstract class <?= $enumClass->metaClass->name ?> extends Enum
+abstract class <?= $enumEntity->name ?>Meta extends Enum
 {
-<?php foreach ($enumClass->metaClass->meta as $enumMetaItem) { ?>
-    const <?= $enumMetaItem->constName ?> = <?= is_numeric($enumMetaItem->value) ? $enumMetaItem->value :  "'" . $enumMetaItem->value . "'" ?>;
+<?php foreach ($enumEntity->items as $itemEntity) { ?>
+    const <?= $itemEntity->getConstName() ?> = <?= $itemEntity->renderConstValue() ?>;
 <?php } ?>
 
     public static function getLabels()
@@ -38,17 +34,16 @@ abstract class <?= $enumClass->metaClass->name ?> extends Enum
         return <?= $cssClasses ?>;
     }
 <?php } ?>
-<?php foreach ($enumClass->metaClass->getCustomColumns() as $columnName) { ?>
+<?php foreach ($enumEntity->getCustomColumns() as $columnName) { ?>
 
     public static function get<?= ucfirst($columnName) ?>Data()
     {
-        return <?= $enumClass->metaClass->renderCustomColumn($columnName, '        ') ?>;
+        return <?= $enumEntity->renderCustomColumn($columnName, '        ') ?>;
     }
 
     public static function get<?= ucfirst($columnName) ?>($id)
     {
-        $data = static::get<?= ucfirst($columnName) ?>Data();
-        return isset($data[$id]) ? $data[$id] : null;
+        return static::getDataValue('<?= $columnName ?>', $id);
     }
 <?php } ?>
 }

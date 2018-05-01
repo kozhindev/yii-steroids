@@ -66,6 +66,11 @@ export default class FieldLayoutView extends React.PureComponent {
                             ))}
                         </div>
                     )}
+                    {!this.props.errors && this.props.layout !== 'inline'  && this.props.hint && (
+                        <div className={bem(bem.element('hint'), 'text-muted')}>
+                            {this.props.hint}
+                        </div>
+                    )}
                 </div>
             </div>
         );

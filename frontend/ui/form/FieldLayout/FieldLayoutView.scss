@@ -13,4 +13,9 @@
   &__invalid-feedback {
     display: block !important;
   }
+  &__hint {
+    width: 100%;
+    margin-top: .25rem;
+    font-size: 80%;
+  }
 }

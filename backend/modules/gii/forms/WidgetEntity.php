@@ -25,6 +25,9 @@ class WidgetEntity extends WidgetEntityMeta implements IEntity
 
     public function save() {
         if ($this->validate()) {
+            // Lazy create module
+            ModuleEntity::findOrCreate($this->moduleId);
+
             // TODO
 
             return true;

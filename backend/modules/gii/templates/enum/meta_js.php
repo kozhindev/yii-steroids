@@ -2,26 +2,22 @@
 
 namespace app\views;
 
-use steroids\modules\gii\generators\model\ModelGenerator;
-use steroids\modules\gii\models\EnumClass;
-use yii\web\View;
+use steroids\modules\gii\forms\EnumEntity;
 
-/* @var $this View */
-/* @var $generator ModelGenerator */
-/* @var $enumClass EnumClass */
+/* @var $enumEntity EnumEntity */
 
-$labels = $enumClass->metaClass->renderJsLabels('        ');
-$cssClasses = $enumClass->metaClass->renderJsCssClasses('        ');
+$labels = $enumEntity->renderJsLabels('        ');
+$cssClasses = $enumEntity->renderJsCssClasses('        ');
 
 ?>
 import Enum from 'yii-steroids/frontend/base/Enum';
 
 import {locale} from 'components';
 
-export default class <?= $enumClass->metaClass->name ?> extends Enum {
+export default class <?= $enumEntity->name ?>Meta extends Enum {
 
-<?php foreach ($enumClass->metaClass->meta as $enumMetaItem) { ?>
-    static <?= $enumMetaItem->constName ?> = <?= is_numeric($enumMetaItem->value) ? $enumMetaItem->value :  "'" . $enumMetaItem->value . "'" ?>;
+<?php foreach ($enumEntity->items as $itemEntity) { ?>
+    static <?= $itemEntity->getConstName() ?> = <?= $itemEntity->renderConstValue() ?>;
 <?php } ?>
 
     static getLabels() {
@@ -33,11 +29,11 @@ export default class <?= $enumClass->metaClass->name ?> extends Enum {
         return <?= $cssClasses ?>;
     }
 <?php } ?>
-<?php foreach ($enumClass->metaClass->getCustomColumns() as $columnName) { ?>
+<?php foreach ($enumEntity->getCustomColumns() as $columnName) { ?>
 
     static get<?= ucfirst($columnName) ?>Data()
     {
-        return <?= $enumClass->metaClass->renderCustomColumnJs($columnName, '        ') ?>;
+        return <?= $enumEntity->renderCustomColumnJs($columnName, '        ') ?>;
     }
 
     static get<?= ucfirst($columnName) ?>(id)

@@ -46,6 +46,7 @@ export default class RadioListFieldView extends React.PureComponent {
                                 'custom-control-input',
                                 this.props.isInvalid && 'is-invalid',
                             )}
+                            checked={item.isSelected}
                             disabled={this.props.disabled}
                             onChange={() => this.props.onItemClick(item)}
                         />

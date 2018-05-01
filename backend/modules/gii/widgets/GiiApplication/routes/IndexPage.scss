@@ -12,4 +12,14 @@
   tbody > tr > td {
     width: 20%;
   }
+
+  &__add {
+    opacity: 0;
+    font-size: .85rem;
+    display: block;
+  }
+  tr:hover &__add {
+    opacity: 1;
+    color: $gray-500 !important;
+  }
 }

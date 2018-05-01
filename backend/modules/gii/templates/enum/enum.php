@@ -2,21 +2,17 @@
 
 namespace app\views;
 
-use steroids\modules\gii\generators\model\ModelGenerator;
-use steroids\modules\gii\models\EnumClass;
-use yii\web\View;
+use steroids\modules\gii\forms\EnumEntity;
 
-/* @var $this View */
-/* @var $generator ModelGenerator */
-/* @var $enumClass EnumClass */
+/* @var $enumEntity EnumEntity */
 
 echo "<?php\n";
 ?>
 
-namespace <?= $enumClass->namespace ?>;
+namespace <?= $enumEntity->getNamespace() ?>;
 
-use <?= $enumClass->metaClass->className ?>;
+use <?= $enumEntity->getNamespace() ?>\meta\<?= $enumEntity->name ?>Meta;
 
-class <?= $enumClass->name ?> extends <?= $enumClass->metaClass->name . "\n" ?>
+class <?= $enumEntity->name ?> extends <?= $enumEntity->name . "Meta\n" ?>
 {
 }

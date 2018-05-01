@@ -6,10 +6,13 @@ use steroids\modules\gii\enums\ClassType;
 use steroids\modules\gii\forms\meta\EnumEntityMeta;
 use steroids\modules\gii\helpers\GiiHelper;
 use steroids\modules\gii\models\ValueExpression;
+use steroids\modules\gii\traits\EntityTrait;
 use yii\helpers\ArrayHelper;
 
 class EnumEntity extends EnumEntityMeta implements IEntity
 {
+    use EntityTrait;
+
     /**
      * @return static[]
      * @throws \ReflectionException
@@ -46,6 +49,9 @@ class EnumEntity extends EnumEntityMeta implements IEntity
 
     public function save() {
         if ($this->validate()) {
+            // Lazy create module
+            ModuleEntity::findOrCreate($this->moduleId);
+
             // Create/update meta information
             GiiHelper::renderFile('enum/meta', $this->getMetaPath(), [
                 'enumEntity' => $this,
@@ -80,12 +86,12 @@ class EnumEntity extends EnumEntityMeta implements IEntity
 
     public function getMetaPath()
     {
-        return GiiHelper::getModuleDir($this->moduleId) . '/enums/meta/' . $this->name . '/Meta.php';
+        return GiiHelper::getModuleDir($this->moduleId) . '/enums/meta/' . $this->name . 'Meta.php';
     }
 
     public function getMetaJsPath()
     {
-        return GiiHelper::getModuleDir($this->moduleId) . '/enums/meta/' . $this->name . '/Meta.js';
+        return GiiHelper::getModuleDir($this->moduleId) . '/enums/meta/' . $this->name . 'Meta.js';
     }
 
     /**
@@ -156,7 +162,7 @@ class EnumEntity extends EnumEntityMeta implements IEntity
         $values = [];
         foreach ($this->items as $itemEntity) {
             if (isset($itemEntity->custom[$name])) {
-                $values[$itemEntity->value] = $itemEntity->custom[$name];
+                $values[$itemEntity->name] = $itemEntity->custom[$name];
             }
         }
         return !empty($values) ? GiiHelper::varExport($values, $indent) : '';
@@ -186,12 +192,12 @@ class EnumEntity extends EnumEntityMeta implements IEntity
     {
         $lines = [];
         foreach ($this->items as $itemEntity) {
-            if (isset($itemEntity->customColumns[$name])) {
+            if (isset($itemEntity->custom[$name])) {
                 $lines[] = $indent . '    [this.' . strtoupper($itemEntity->name) . ']: '
                     . '\'' . str_replace("'", "\\'", $itemEntity->custom[$name]) . '\',';
             }
         }
-        return !empty($lines) ? "{\n" . implode("\n", $lines) . "\n" . $indent . '}' : '';
+        return "{\n" . implode("\n", $lines) . "\n" . $indent . '}';
     }
 
 }

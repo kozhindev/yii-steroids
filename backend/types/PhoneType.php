@@ -37,7 +37,7 @@ class PhoneType extends Type
     {
         // TODO Phone validator
         return [
-            [$attributeEntity->name, 'string', 'max' => $attributeEntity->stringLength ?: 255],
+            [$attributeEntity->name, 'string', 'max' => 32],
         ];
     }
 }

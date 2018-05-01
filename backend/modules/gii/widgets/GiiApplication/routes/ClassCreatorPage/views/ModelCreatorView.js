@@ -35,6 +35,7 @@ export default class ModelCreatorView extends React.PureComponent {
             })),
         })),
         classType: PropTypes.string,
+        onEntityComplete: PropTypes.func,
     };
 
     render() {
@@ -47,6 +48,7 @@ export default class ModelCreatorView extends React.PureComponent {
                     layout='default'
                     size='sm'
                     initialValues={this.props.initialValues}
+                    onComplete={this.props.onEntityComplete}
                 >
                     <div className='row'>
                         <div className='col-3'>
@@ -55,10 +57,19 @@ export default class ModelCreatorView extends React.PureComponent {
                         <div className='col-4'>
                             <Field attribute='name'/>
                         </div>
-                        <div className='col-4'>
-                            <Field attribute='tableName'/>
-                        </div>
+                        {this.props.classType === ClassTypeMeta.MODEL && (
+                            <div className='col-4'>
+                                <Field attribute='tableName'/>
+                            </div>
+                        )}
                     </div>
+                    {this.props.classType === ClassTypeMeta.FORM && (
+                        <div className='row'>
+                            <div className='col-4'>
+                                <Field attribute='queryModel'/>
+                            </div>
+                        </div>
+                    )}
                     <h3 className='mt-4'>
                         Attributes
                     </h3>
@@ -133,6 +144,7 @@ export default class ModelCreatorView extends React.PureComponent {
                             model={ModelRelationEntityMeta}
                             itemView={ModelRelationRow}
                             className={bem(bem.element('field-list'), 'my-2')}
+                            initialRowsCount={0}
                             items={[
                                 {
                                     attribute: 'type',
