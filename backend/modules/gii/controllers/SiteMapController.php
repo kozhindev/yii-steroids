@@ -15,7 +15,7 @@ class SiteMapController extends Controller
                 'url' => ['/gii/site-map/index'],
                 'urlRule' => 'gii/site-map',
                 'order' => 499,
-                'accessCheck' => [GiiModule::className(), 'accessCheck'],
+                'accessCheck' => [GiiModule::class, 'accessCheck'],
                 'visible' => YII_ENV_DEV,
             ],
         ];

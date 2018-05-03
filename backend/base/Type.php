@@ -2,7 +2,7 @@
 
 namespace steroids\base;
 
-use steroids\modules\gii\models\MetaItem;
+use steroids\modules\gii\forms\ModelAttributeEntity;
 use yii\base\BaseObject;
 use yii\db\Schema;
 use yii\helpers\ArrayHelper;
@@ -70,50 +70,50 @@ abstract class Type extends BaseObject
 
 
     /**
-     * @param MetaItem $metaItem
+     * @param ModelAttributeEntity $attributeEntity
      * @param array $item
      * @return array
      */
-    public function getGiiJsMetaItem($metaItem, $item, &$import = [])
+    public function getGiiJsMetaItem($attributeEntity, $item, &$import = [])
     {
         return $item;
     }
 
     /**
-     * @param MetaItem $metaItem
+     * @param ModelAttributeEntity $attributeEntity
      * @return array
      */
-    public function getItems($metaItem)
+    public function getItems($attributeEntity)
     {
         return [];
     }
 
     /**
-     * @param MetaItem $metaItem
+     * @param ModelAttributeEntity $attributeEntity
      * @param string[] $useClasses
      * @return array
      */
-    public function giiRules($metaItem, &$useClasses = [])
+    public function giiRules($attributeEntity, &$useClasses = [])
     {
         return [
-            [$metaItem->name, 'string'],
+            [$attributeEntity->name, 'string'],
         ];
     }
 
     /**
-     * @param MetaItem $metaItem
+     * @param ModelAttributeEntity $attributeEntity
      * @return array
      */
-    public function giiBehaviors($metaItem)
+    public function giiBehaviors($attributeEntity)
     {
         return [];
     }
 
     /**
-     * @param MetaItem $metaItem
+     * @param ModelAttributeEntity $attributeEntity
      * @return string|false
      */
-    public function giiDbType($metaItem)
+    public function giiDbType($attributeEntity)
     {
         return Schema::TYPE_STRING;
     }

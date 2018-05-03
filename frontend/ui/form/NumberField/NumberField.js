@@ -36,7 +36,6 @@ export default class NumberField extends React.PureComponent {
     };
 
     static defaultProps = {
-        size: 'md',
         disabled: false,
         required: false,
         className: '',

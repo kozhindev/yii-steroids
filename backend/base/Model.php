@@ -9,7 +9,6 @@ use steroids\exceptions\ModelSaveException;
 use steroids\traits\MetaTrait;
 use yii\base\InvalidConfigException;
 use yii\db\ActiveRecord;
-use yii\helpers\ArrayHelper;
 use yii\web\NotFoundHttpException;
 
 /**
@@ -212,65 +211,6 @@ class Model extends ActiveRecord
         }
 
         return $errors;
-    }
-
-    /**
-     * @param array|null $fields
-     * @return array
-     */
-    public function toFrontend($fields = null)
-    {
-        $fields = $fields ?: ['*'];
-
-        // Detect *
-        foreach ($fields as $key => $name) {
-            if ($name === '*') {
-                unset($fields[$key]);
-                $fields = array_merge($fields, $this->fields());
-                break;
-            }
-        }
-
-        $entry = [];
-        foreach ($fields as $key => $name) {
-            if (is_int($key)) {
-                $key = $name;
-            }
-
-            if (is_array($name)) {
-                // Relations
-                $relation = $this->getRelation($key, false);
-                if ($relation) {
-                    if ($relation->multiple) {
-                        $entry[$key] = [];
-                        foreach ($this->$key as $childModel) {
-                            /** @type Model $childModel */
-                            $entry[$key][] = $childModel->toFrontend($name);
-                        }
-                    } else {
-                        $entry[$key] = $this->$key ? $this->$key->toFrontend($name) : null;
-                    }
-                } else {
-                    $child = $this->$key;
-                    if (is_array($child)) {
-                        $entry[$key] = [];
-                        foreach ($child as $childModel) {
-                            if ($childModel instanceof Model) {
-                                /** @type Model $childModel */
-                                $entry[$key][] = $childModel->toFrontend($name);
-                            }
-                        }
-                    } else {
-                        $entry[$key] = $child instanceof Model ? $child->toFrontend($name) : null;
-                    }
-                }
-            } else {
-                // Attributes
-                $value = ArrayHelper::getValue($this, $name);
-                $entry[is_string($key) ? $key : $name] = $value;
-            }
-        }
-        return $entry;
     }
 
     /**

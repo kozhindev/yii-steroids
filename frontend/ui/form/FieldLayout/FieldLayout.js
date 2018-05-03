@@ -17,12 +17,13 @@ export default class FieldLayout extends React.PureComponent {
         required: PropTypes.bool,
         layout: PropTypes.oneOf(['default', 'inline', 'horizontal']),
         layoutProps: PropTypes.object,
+        size: PropTypes.oneOf(['sm', 'md', 'lg']),
         errors: PropTypes.oneOfType([
             PropTypes.string,
             PropTypes.arrayOf(PropTypes.string),
         ]),
         className: PropTypes.string,
-        view: PropTypes.func,
+        layoutView: PropTypes.func,
     };
 
     static defaultProps = {
@@ -35,7 +36,7 @@ export default class FieldLayout extends React.PureComponent {
     };
 
     render() {
-        const FieldLayoutView = this.props.view || ui.getView('form.FieldLayoutView');
+        const FieldLayoutView = this.props.layoutView || ui.getView('form.FieldLayoutView');
         return (
             <FieldLayoutView
                 {...this.props}

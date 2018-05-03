@@ -34,7 +34,6 @@ export default class PasswordField extends React.PureComponent {
     };
 
     static defaultProps = {
-        size: 'md',
         disabled: false,
         security: false,
         required: false,

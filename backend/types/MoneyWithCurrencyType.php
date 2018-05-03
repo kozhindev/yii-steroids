@@ -2,10 +2,7 @@
 
 namespace steroids\types;
 
-use steroids\modules\gii\models\EnumClass;
-use steroids\modules\gii\models\MetaItem;
 use yii\db\Schema;
-use yii\helpers\ArrayHelper;
 
 class MoneyWithCurrencyType extends CategorizedStringType
 {
@@ -28,27 +25,27 @@ class MoneyWithCurrencyType extends CategorizedStringType
     /**
      * @inheritdoc
      */
-    public function getGiiJsMetaItem($metaItem, $item, &$import = [])
+    public function getGiiJsMetaItem($attributeEntity, $item, &$import = [])
     {
-        if (!$metaItem->enumClassName) {
-            $metaItem->enumClassName = $this->currencyEnum;
+        if (!$attributeEntity->enumClassName) {
+            $attributeEntity->enumClassName = $this->currencyEnum;
         }
-        return parent::getGiiJsMetaItem($metaItem, $item, $import);
+        return parent::getGiiJsMetaItem($attributeEntity, $item, $import);
     }
 
     /**
      * @inheritdoc
      */
-    public function getItems($metaItem)
+    public function getItems($attributeEntity)
     {
-        if ($metaItem->refAttribute) {
+        if ($attributeEntity->refAttribute) {
             return [
                 new MetaItem([
-                    'metaClass' => $metaItem->metaClass,
-                    'name' => $metaItem->refAttribute,
+                    'metaClass' => $attributeEntity->metaClass,
+                    'name' => $attributeEntity->refAttribute,
                     'appType' => 'enum',
                     'enumClassName' => $this->currencyEnum,
-                    'publishToFrontend' => $metaItem->publishToFrontend,
+                    'publishToFrontend' => $attributeEntity->publishToFrontend,
                 ]),
             ];
         }
@@ -58,7 +55,7 @@ class MoneyWithCurrencyType extends CategorizedStringType
     /**
      * @inheritdoc
      */
-    public function giiDbType($metaItem)
+    public function giiDbType($attributeEntity)
     {
         return Schema::TYPE_DECIMAL . '(19, 4)';
     }
@@ -66,10 +63,10 @@ class MoneyWithCurrencyType extends CategorizedStringType
     /**
      * @inheritdoc
      */
-    public function giiRules($metaItem, &$useClasses = [])
+    public function giiRules($attributeEntity, &$useClasses = [])
     {
         return [
-            [$metaItem->name, 'number'],
+            [$attributeEntity->name, 'number'],
         ];
     }
 
@@ -79,20 +76,22 @@ class MoneyWithCurrencyType extends CategorizedStringType
     public function giiOptions()
     {
         return [
-            self::OPTION_REF_ATTRIBUTE => [
-                'component' => 'input',
+            [
+                'attribute' => self::OPTION_REF_ATTRIBUTE,
+                'component' => 'InputField',
                 'label' => 'Currency attribute',
-                'style' => [
+                /*'style' => [
                     'width' => '120px'
-                ]
+                ]*/
             ],
-            self::OPTION_CLASS_NAME => [
-                'component' => 'input',
+            [
+                'attribute' => self::OPTION_CLASS_NAME,
+                'component' => 'InputField',
                 'label' => 'Enum',
-                'list' => ArrayHelper::getColumn(EnumClass::findAll(), 'className'),
+                /*'list' => ArrayHelper::getColumn(EnumClass::findAll(), 'className'),
                 'style' => [
                     'width' => '80px'
-                ]
+                ]*/
             ],
         ];
     }

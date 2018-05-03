@@ -2,12 +2,24 @@
 
 .IndexPage {
   &__link.btn-link {
+    padding: 0.25rem 1rem;
+
     &, &:hover {
       border: 1px solid rgba(0, 0, 0, 0.125);
     }
   }
 
   tbody > tr > td {
-    width: 25%;
+    width: 20%;
+  }
+
+  &__add {
+    opacity: 0;
+    font-size: .85rem;
+    display: block;
+  }
+  tr:hover &__add {
+    opacity: 1;
+    color: $gray-500 !important;
   }
 }

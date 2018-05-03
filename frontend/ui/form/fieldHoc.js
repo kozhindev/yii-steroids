@@ -128,15 +128,16 @@ class FieldHoc extends React.PureComponent {
                 errors = (errors || []).concat(error);
             }
         });
+        const isInvalid = errors && errors.length > 0;
 
         // TODO implement values in state for list (instead of redux-form FieldArray)
 
         return (
             <FieldLayout
-                errors={errors}
-                isInvalid={errors && errors.length > 0}
                 {...props}
                 {..._config.layoutProps}
+                errors={isInvalid ? errors : null}
+                isInvalid={isInvalid}
             >
                 {!_config.list && props.formId && _config.attributes.map(attribute => (
                     <Field
@@ -159,7 +160,7 @@ class FieldHoc extends React.PureComponent {
                     <WrappedComponent
                         {...props}
                         {...inputProps}
-                        isInvalid={errors && errors.length > 0}
+                        isInvalid={isInvalid}
                         formId={props.formId}
                         fieldId={this._fieldId}
                     />
@@ -194,7 +195,7 @@ class FieldHoc extends React.PureComponent {
     }
 }
 
-export default config => WrappedComponent => class FieldHocWrapper extends React.Component {
+export default config => WrappedComponent => class FieldHocWrapper extends React.PureComponent {
 
     static WrappedComponent = WrappedComponent;
 
@@ -214,6 +215,7 @@ export default config => WrappedComponent => class FieldHocWrapper extends React
         prefix: PropTypes.string,
         layout: PropTypes.string,
         layoutProps: PropTypes.object,
+        size: PropTypes.oneOf(['sm', 'md', 'lg']),
     };
 
     render() {
@@ -228,6 +230,7 @@ export default config => WrappedComponent => class FieldHocWrapper extends React
                     ...this.context.layoutProps,
                     ...this.props.layoutProps,
                 }}
+                size={this.props.size || this.context.size || 'md'}
                 _wrappedComponent={WrappedComponent}
                 _config={{
                     ...defaultConfig,

@@ -1,11 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import {connect} from 'react-redux';
 import {Router, Link, Nav} from 'yii-steroids/frontend/ui/nav';
+import {Notifications} from 'yii-steroids/frontend/ui/layout';
+import {push} from 'react-router-redux';
 
 import {html, http, widget} from 'components';
 import IndexPage from './routes/IndexPage';
 import AccessPage from './routes/AccessPage';
-import ClassCreatorPage from './routes/ClassCreatorPage';
+import ClassCreatorPage from './routes/ClassCreatorPage/index';
 import ClassTypeMeta from '../../enums/meta/ClassTypeMeta';
 
 import './GiiApplication.scss';
@@ -13,6 +16,7 @@ import './GiiApplication.scss';
 const bem = html.bem('GiiApplication');
 
 @widget.register('\\steroids\\modules\\gii\\widgets\\GiiApplication\\GiiApplication')
+@connect()
 export default class GiiApplication extends React.PureComponent {
 
     static propTypes = {
@@ -22,73 +26,94 @@ export default class GiiApplication extends React.PureComponent {
     constructor() {
         super(...arguments);
 
+        this._onEntityComplete = this._onEntityComplete.bind(this);
+
         this.state = {
             isLoading: false,
             classes: null,
+            appTypes: null,
+            moduleIds: null,
         };
     }
 
     componentDidMount() {
-        this.fetchClasses();
+        this.fetchData();
     }
 
     render() {
         return (
-            <div className={bem.block()}>
+            <div className={bem.block({loading: this.state.isLoading})}>
                 <nav className='navbar navbar-expand-md navbar-dark bg-dark mb-3'>
-                    <Link
-                        className='navbar-brand'
-                        to='/gii'
-                    >
-                        Gii
-                    </Link>
-                    <Nav
-                        layout='navbar'
-                        items={[
+                    <div className='container'>
+                        <Link
+                            className='navbar-brand'
+                            to='/'
+                        >
+                            Gii
+                        </Link>
+                        <Nav
+                            layout='navbar'
+                            items={[
+                                {
+                                    label: 'Сущности',
+                                    to: '/',
+                                },
+                                {
+                                    label: 'Права доступа',
+                                    to: '/access',
+                                },
+                                {
+                                    label: 'Карта сайта',
+                                    to: '/site-map',
+                                },
+                            ]}
+                        />
+                    </div>
+                </nav>
+                <div className={bem(bem.element('content'), 'container')}>
+                    <Notifications/>
+                    <Router
+                        routes={[
                             {
-                                label: 'Сущности',
-                                to: '/',
+                                exact: true,
+                                path: '/',
+                                component: IndexPage,
+                                componentProps: {
+                                    moduleIds: this.state.moduleIds,
+                                    classes: this.state.classes,
+                                },
                             },
                             {
-                                label: 'Права доступа',
-                                to: '/gii/access',
+                                path: '/access',
+                                component: AccessPage,
                             },
                             {
-                                label: 'Карта сайта',
-                                to: '/gii/site-map',
+                                path: '/:classType(' + ClassTypeMeta.getKeys().join('|') + ')/:moduleId?/:name?',
+                                component: ClassCreatorPage,
+                                componentProps: {
+                                    moduleIds: this.state.moduleIds,
+                                    classes: this.state.classes,
+                                    appTypes: this.state.appTypes,
+                                    onEntityComplete: this._onEntityComplete,
+                                },
                             },
                         ]}
                     />
-                </nav>
-                <Router
-                    routes={[
-                        {
-                            exact: true,
-                            path: '/gii',
-                            component: IndexPage,
-                            componentProps: {
-                                classes: this.state.classes,
-                            },
-                        },
-                        {
-                            path: '/gii/access',
-                            component: AccessPage,
-                        },
-                        {
-                            path: '/gii/:classType(' + ClassTypeMeta.getKeys().join('|') + ')/:moduleId?/:name?',
-                            component: ClassCreatorPage,
-                        },
-                    ]}
-                />
+                </div>
             </div>
         );
     }
 
-    fetchClasses() {
+    _onEntityComplete() {
+        this.props.dispatch(push('/'));
+        this.fetchData();
+    }
+
+    fetchData() {
         this.setState({isLoading: true});
-        http.post('/api/gii/fetch-classes')
-            .then(classes => this.setState({
-                classes,
+        http.post('/api/gii/get-data')
+            .then(data => this.setState({
+                ...data,
                 isLoading: false,
             }));
     }

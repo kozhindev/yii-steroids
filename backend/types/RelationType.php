@@ -13,7 +13,6 @@ use yii\web\JsExpression;
 class RelationType extends Type
 {
     const OPTION_RELATION_NAME = 'relationName';
-    const OPTION_LIST_RELATION_NAME = 'listRelationName';
 
     /**
      * @inheritdoc
@@ -75,25 +74,23 @@ class RelationType extends Type
     /**
      * @inheritdoc
      */
-    public function giiDbType($metaItem)
+    public function giiDbType($attributeEntity)
     {
-        $relation = $metaItem->metaClass instanceof ModelMetaClass
-            ? $metaItem->metaClass->getRelation($metaItem->relationName)
-            : null;
+        $relationName = $attributeEntity->getCustomProperty(self::OPTION_RELATION_NAME);
+        $relation = $attributeEntity->modelEntity->getRelationEntity($relationName);
         return $relation && $relation->isHasOne ? Schema::TYPE_INTEGER : false;
     }
 
     /**
      * @inheritdoc
      */
-    public function giiRules($metaItem, &$useClasses = [])
+    public function giiRules($attributeEntity, &$useClasses = [])
     {
-        $relation = $metaItem->metaClass instanceof ModelMetaClass
-            ? $metaItem->metaClass->getRelation($metaItem->relationName)
-            : null;
+        $relationName = $attributeEntity->getCustomProperty(self::OPTION_RELATION_NAME);
+        $relation = $attributeEntity->modelEntity->getRelationEntity($relationName);
         if ($relation && $relation->isHasOne) {
             return [
-                [$metaItem->name, 'integer'],
+                [$attributeEntity->name, 'integer'],
             ];
         }
         return false;
@@ -102,7 +99,7 @@ class RelationType extends Type
     /**
      * @inheritdoc
      */
-    public function giiBehaviors($metaItem)
+    public function giiBehaviors($attributeEntity)
     {
         return [];
     }
@@ -113,22 +110,12 @@ class RelationType extends Type
     public function giiOptions()
     {
         return [
-            self::OPTION_RELATION_NAME => [
-                'component' => 'input',
+            [
+                'attribute' => self::OPTION_RELATION_NAME,
+                'component' => 'InputField',
                 'label' => 'Relation name',
                 'list' => 'relations',
-                'style' => [
-                    'width' => '120px',
-                ],
             ],
-            self::OPTION_LIST_RELATION_NAME => [
-                'component' => 'input',
-                'label' => 'List relation name',
-                'list' => 'relations',
-                'style' => [
-                    'width' => '120px',
-                ],
-            ]
         ];
     }
 

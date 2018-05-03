@@ -20,7 +20,7 @@ class AccessController extends Controller
             'access' => [
                 'label' => 'Права доступа',
                 'order' => 499,
-                'accessCheck' => [GiiModule::className(), 'accessCheck'],
+                'accessCheck' => [GiiModule::class, 'accessCheck'],
                 'visible' => YII_ENV_DEV,
                 'redirectToChild' => true,
                 'items' => [

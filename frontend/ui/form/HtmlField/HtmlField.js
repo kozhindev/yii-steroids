@@ -32,7 +32,6 @@ export default class HtmlField extends React.PureComponent {
 
     static defaultProps = {
         disabled: false,
-        size: 'md',
         className: '',
     };
 

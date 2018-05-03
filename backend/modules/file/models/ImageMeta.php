@@ -60,7 +60,7 @@ class ImageMeta extends Model
     public function behaviors()
     {
         return [
-            TimestampBehavior::className(),
+            TimestampBehavior::class,
         ];
     }
 

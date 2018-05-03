@@ -3,7 +3,6 @@
 namespace steroids\types;
 
 use steroids\base\Type;
-use steroids\modules\gii\models\MetaItem;
 use yii\db\Schema;
 
 class EmailType extends Type
@@ -26,10 +25,9 @@ class EmailType extends Type
     }
 
     /**
-     * @param MetaItem $metaItem
-     * @return string|false
+     * @inheritdoc
      */
-    public function giiDbType($metaItem)
+    public function giiDbType($attributeEntity)
     {
         return Schema::TYPE_STRING;
     }
@@ -37,11 +35,11 @@ class EmailType extends Type
     /**
      * @inheritdoc
      */
-    public function giiRules($metaItem, &$useClasses = [])
+    public function giiRules($attributeEntity, &$useClasses = [])
     {
         return [
-            [$metaItem->name, 'string', 'max' => 255],
-            [$metaItem->name, 'email'],
+            [$attributeEntity->name, 'string', 'max' => 255],
+            [$attributeEntity->name, 'email'],
         ];
     }
 }

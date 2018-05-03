@@ -3,12 +3,11 @@
 namespace steroids\types;
 
 use steroids\base\Type;
-use steroids\modules\gii\models\MetaItem;
 use yii\helpers\ArrayHelper;
 
 class RangeType extends Type
 {
-    const OPTION_SUB_APP_TYPE = 'subAppType';
+    const OPTION_RANGE_TYPE = 'rangeType';
     const OPTION_REF_ATTRIBUTE = 'refAttribute';
 
     const RANGE_POSITION_START = 'start';
@@ -27,6 +26,7 @@ class RangeType extends Type
                 'component' => 'RangeField',
                 'attributeFrom' => $attribute,
                 'attributeTo' => ArrayHelper::getValue($options, self::OPTION_REF_ATTRIBUTE),
+                'type' => ArrayHelper::getValue($options, self::OPTION_RANGE_TYPE),
             ],
             $props
         );
@@ -37,7 +37,7 @@ class RangeType extends Type
      */
     public function renderValue($model, $attribute, $item, $options = [])
     {
-        $subAppType = ArrayHelper::remove($item, self::OPTION_SUB_APP_TYPE);
+        $subAppType = 'string';
         $refAttribute = ArrayHelper::remove($item, self::OPTION_REF_ATTRIBUTE);
         if ($refAttribute) {
             return strtr($this->template, [
@@ -52,15 +52,16 @@ class RangeType extends Type
     /**
      * @inheritdoc
      */
-    public function getItems($metaItem)
+    public function getItems($attributeEntity)
     {
-        if ($metaItem->refAttribute) {
+        $name = $attributeEntity->getCustomProperty(self::OPTION_REF_ATTRIBUTE);
+        if ($name) {
             return [
                 new MetaItem([
-                    'metaClass' => $metaItem->metaClass,
-                    'name' => $metaItem->refAttribute,
-                    'appType' => $metaItem->subAppType,
-                    'publishToFrontend' => $metaItem->publishToFrontend,
+                    'metaClass' => $attributeEntity->metaClass,
+                    'name' => $name,
+                    'appType' => $attributeEntity->subAppType,
+                    'publishToFrontend' => $attributeEntity->publishToFrontend,
                 ]),
             ];
         }
@@ -70,25 +71,25 @@ class RangeType extends Type
     /**
      * @inheritdoc
      */
-    public function giiDbType($metaItem)
+    public function giiDbType($attributeEntity)
     {
-        return \Yii::$app->types->getType($metaItem->subAppType)->giiDbType($metaItem);
+        return \Yii::$app->types->getType($attributeEntity->subAppType)->giiDbType($attributeEntity);
     }
 
     /**
      * @inheritdoc
      */
-    public function giiBehaviors($metaItem)
+    public function giiBehaviors($attributeEntity)
     {
-        return \Yii::$app->types->getType($metaItem->subAppType)->giiBehaviors($metaItem);
+        return \Yii::$app->types->getType($attributeEntity->subAppType)->giiBehaviors($attributeEntity);
     }
 
     /**
      * @inheritdoc
      */
-    public function giiRules($metaItem, &$useClasses = [])
+    public function giiRules($attributeEntity, &$useClasses = [])
     {
-        return \Yii::$app->types->getType($metaItem->subAppType)->giiRules($metaItem, $useClasses);
+        return \Yii::$app->types->getType($attributeEntity->subAppType)->giiRules($attributeEntity, $useClasses);
     }
 
     /**
@@ -97,16 +98,24 @@ class RangeType extends Type
     public function giiOptions()
     {
         return [
-            self::OPTION_SUB_APP_TYPE => [
-                'component' => 'input',
-                'list' => 'types',
-                'style' => [
-                    'width' => '90px',
+            [
+                'attribute' => self::OPTION_RANGE_TYPE,
+                'component' => 'DropDownField',
+                'items' => [
+                    [
+                        'id' => 'input',
+                        'label' => 'Input',
+                    ],
+                    [
+                        'id' => 'date',
+                        'label' => 'Date',
+                    ],
                 ],
             ],
-            self::OPTION_REF_ATTRIBUTE => [
-                'component' => 'input',
-                'label' => 'Attribute "to"',
+            [
+                'attribute' => self::OPTION_REF_ATTRIBUTE,
+                'component' => 'InputField',
+                'label' => 'Attribute To',
             ],
         ];
     }

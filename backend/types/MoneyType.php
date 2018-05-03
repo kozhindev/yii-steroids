@@ -28,7 +28,7 @@ class MoneyType extends Type
     /**
      * @inheritdoc
      */
-    public function giiDbType($metaItem)
+    public function giiDbType($attributeEntity)
     {
         return Schema::TYPE_DECIMAL . '(19, 4)';
     }
@@ -36,10 +36,10 @@ class MoneyType extends Type
     /**
      * @inheritdoc
      */
-    public function giiRules($metaItem, &$useClasses = [])
+    public function giiRules($attributeEntity, &$useClasses = [])
     {
         return [
-            [$metaItem->name, 'number'],
+            [$attributeEntity->name, 'number'],
         ];
     }
 
@@ -49,10 +49,11 @@ class MoneyType extends Type
     public function giiOptions()
     {
         return [
-            self::OPTION_CURRENCY => [
-                'component' => 'input',
+            [
+                'attribute' => self::OPTION_CURRENCY,
+                'component' => 'InputField',
                 'label' => 'Currency',
-                'list' => ['RUB', 'USD', 'EUR', 'BTC', 'XBT', 'YEN', 'JPY', 'GBP'],
+                //'list' => ['RUB', 'USD', 'EUR', 'BTC', 'XBT', 'YEN', 'JPY', 'GBP'],
             ],
         ];
     }

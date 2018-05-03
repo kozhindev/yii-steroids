@@ -26,7 +26,7 @@ class IntegerType extends Type
     /**
      * @inheritdoc
      */
-    public function giiDbType($metaItem)
+    public function giiDbType($attributeEntity)
     {
         return Schema::TYPE_INTEGER;
     }
@@ -34,10 +34,10 @@ class IntegerType extends Type
     /**
      * @inheritdoc
      */
-    public function giiRules($metaItem, &$useClasses = [])
+    public function giiRules($attributeEntity, &$useClasses = [])
     {
         return [
-            [$metaItem->name, 'integer'],
+            [$attributeEntity->name, 'integer'],
         ];
     }
 

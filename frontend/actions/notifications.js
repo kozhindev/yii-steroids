@@ -1,15 +1,17 @@
 let ID_COUNTER = 0;
 
-export const SHOW_NOTIFICATION = 'SHOW_NOTIFICATION';
-export const HIDE_NOTIFICATION = 'HIDE_NOTIFICATION';
+export const NOTIFICATIONS_SHOW = 'NOTIFICATIONS_SHOW';
+export const NOTIFICATIONS_CLOSING = 'NOTIFICATIONS_CLOSING';
+export const NOTIFICATIONS_CLOSE = 'NOTIFICATIONS_CLOSE';
 
-export const showNotification = (message, level = 'warn') => dispatch => {
+export const showNotification = (message, level = 'warning') => dispatch => {
     const id = ++ID_COUNTER;
-    dispatch({type: SHOW_NOTIFICATION, id, message, level});
-    setTimeout(() => dispatch({type: HIDE_NOTIFICATION, id}), 10000);
+    dispatch({type: NOTIFICATIONS_SHOW, id, message, level});
+    setTimeout(() => dispatch({type: NOTIFICATIONS_CLOSE, id}), 10000);
 };
 
-export const hideNotification = (id = null) => ({type: HIDE_NOTIFICATION, id});
+export const setClosing = (id = null) => ({type: NOTIFICATIONS_CLOSING, id});
+export const closeNotification = (id = null) => ({type: NOTIFICATIONS_CLOSE, id});
 
 export const setFlashes = flashes => Object.keys(flashes).map(level => {
     return [].concat(flashes[level] || []).map(message => showNotification(message, level));

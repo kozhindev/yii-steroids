@@ -33,21 +33,23 @@ class ScheduleType extends Type
     public function giiOptions()
     {
         return [
-            self::OPTION_SINCE_TIME_ATTRIBUTE => [
-                'component' => 'input',
+            [
+                'attribute' => self::OPTION_SINCE_TIME_ATTRIBUTE,
+                'component' => 'InputField',
                 'label' => 'Since time attribute',
-                'list' => 'attributes',
+                /*'list' => 'attributes',
                 'style' => [
                     'width' => '80px'
-                ]
+                ]*/
             ],
-            self::OPTION_TILL_TIME_ATTRIBUTE => [
-                'component' => 'input',
+            [
+                'attribute' => self::OPTION_TILL_TIME_ATTRIBUTE,
+                'component' => 'InputField',
                 'label' => 'Till time attribute',
-                'list' => 'attributes',
+                /*'list' => 'attributes',
                 'style' => [
                     'width' => '80px'
-                ]
+                ]*/
             ],
         ];
     }

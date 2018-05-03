@@ -25,7 +25,7 @@ class PrimaryKeyType extends Type
     /**
      * @inheritdoc
      */
-    public function giiDbType($metaItem)
+    public function giiDbType($attributeEntity)
     {
         return Schema::TYPE_PK;
     }
@@ -33,7 +33,7 @@ class PrimaryKeyType extends Type
     /**
      * @inheritdoc
      */
-    public function giiRules($metaItem, &$useClasses = [])
+    public function giiRules($attributeEntity, &$useClasses = [])
     {
         return false;
     }

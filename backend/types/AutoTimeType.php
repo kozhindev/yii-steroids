@@ -11,7 +11,7 @@ class AutoTimeType extends DateTimeType
     /**
      * @inheritdoc
      */
-    public function giiRules($metaItem, &$useClasses = [])
+    public function giiRules($attributeEntity, &$useClasses = [])
     {
         return false;
     }
@@ -19,10 +19,10 @@ class AutoTimeType extends DateTimeType
     /**
      * @inheritdoc
      */
-    public function giiBehaviors($metaItem)
+    public function giiBehaviors($attributeEntity)
     {
         return [
-            TimestampBehavior::className(),
+            TimestampBehavior::class,
         ];
     }
 
@@ -32,10 +32,10 @@ class AutoTimeType extends DateTimeType
     public function giiOptions()
     {
         return [
-            self::OPTION_TOUCH_ON_UPDATE => [
-                'component' => 'input',
+            [
+                'attribute' => self::OPTION_TOUCH_ON_UPDATE,
+                'component' => 'CheckboxField',
                 'label' => 'Is update',
-                'type' => 'checkbox',
             ],
         ];
     }

@@ -71,7 +71,7 @@ class FilesType extends RelationType
     /**
      * @inheritdoc
      */
-    public function giiDbType($metaItem)
+    public function giiDbType($attributeEntity)
     {
         return false;
     }
@@ -79,10 +79,10 @@ class FilesType extends RelationType
     /**
      * @inheritdoc
      */
-    public function giiRules($metaItem, &$useClasses = [])
+    public function giiRules($attributeEntity, &$useClasses = [])
     {
         return [
-            [$metaItem->name, 'each', 'rule' => ['integer']],
+            [$attributeEntity->name, 'each', 'rule' => ['integer']],
         ];
     }
 

@@ -222,12 +222,14 @@ class DefaultConfig
 
     /**
      * Recursive scan directory and return all fined module classes
-     * @param array $steroidsConfig
+     * @param array|null $steroidsConfig
      * @return array
      * @throws \Exception
      */
-    public static function getModuleClasses($steroidsConfig)
+    public static function getModuleClasses($steroidsConfig = null)
     {
+        $steroidsConfig = static::getSteroidsConfig($steroidsConfig ?: []);
+
         if (self::$moduleClasses === null) {
             // Require Module class
             $path = __DIR__ . '/../base/Module.php';
@@ -244,7 +246,7 @@ class DefaultConfig
         return self::$moduleClasses;
     }
 
-    protected static function getSteroidsConfig($params)
+    protected static function getSteroidsConfig($params = [])
     {
         return ArrayHelper::merge(
             [

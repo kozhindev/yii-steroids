@@ -11,6 +11,7 @@ export default class FieldSet extends React.PureComponent {
         prefix: PropTypes.string,
         layout: PropTypes.string,
         layoutProps: PropTypes.object,
+        size: PropTypes.oneOf(['sm', 'md', 'lg']),
     };
 
     static contextTypes = {
@@ -21,6 +22,7 @@ export default class FieldSet extends React.PureComponent {
         prefix: PropTypes.string,
         layout: PropTypes.string,
         layoutProps: PropTypes.object,
+        size: PropTypes.oneOf(['sm', 'md', 'lg']),
     };
 
     static childContextTypes = {
@@ -31,6 +33,7 @@ export default class FieldSet extends React.PureComponent {
         prefix: PropTypes.string,
         layout: PropTypes.string,
         layoutProps: PropTypes.object,
+        size: PropTypes.oneOf(['sm', 'md', 'lg']),
     };
 
     getChildContext() {
@@ -42,6 +45,7 @@ export default class FieldSet extends React.PureComponent {
                 ...this.context.layoutProps,
                 ...this.props.layoutProps,
             },
+            size: this.props.size || this.context.size,
         };
     }
 

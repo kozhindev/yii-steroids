@@ -12,12 +12,8 @@ const bem = html.bem('IndexPage');
 export default class IndexPage extends React.PureComponent {
 
     static propTypes = {
+        moduleIds: PropTypes.arrayOf(PropTypes.string),
         classes: PropTypes.shape({
-            module: PropTypes.arrayOf(PropTypes.shape({
-                id: PropTypes.string,
-                name: PropTypes.string,
-                className: PropTypes.string,
-            })),
             model: PropTypes.arrayOf(PropTypes.shape({
                 moduleId: PropTypes.string,
                 name: PropTypes.string,
@@ -44,36 +40,38 @@ export default class IndexPage extends React.PureComponent {
                     <thead>
                         <tr>
                             <th/>
-                            <th>
-                                Models
-                            </th>
-                            <th>
-                                Form models
-                            </th>
-                            <th>
-                                Enums
-                            </th>
+                            {ClassTypeMeta.getKeys().map(key => (
+                                <th key={key}>
+                                    {ClassTypeMeta.getLabel(key)}
+                                </th>
+                            ))}
                         </tr>
                     </thead>
                     <tbody>
-                        {this.props.classes && this.props.classes.module.map(module => (
-                            <tr key={module.id}>
+                        {this.props.classes && this.props.moduleIds.map(moduleId => (
+                            <tr key={moduleId}>
                                 <th className='pl-2'>
-                                    {module.id}
+                                    {moduleId}
                                 </th>
                                 {ClassTypeMeta.getKeys().map(key => (
                                     <td key={key}>
                                         <div className='list-group'>
-                                            {this.props.classes[key].filter(item => item.moduleId === module.id).map(item => (
+                                            {this.props.classes[key] && this.props.classes[key].filter(item => item.moduleId === moduleId).map(item => (
                                                 <Link
                                                     key={item.name}
                                                     className={bem(bem.element('link'), 'list-group-item list-group-item-action')}
-                                                    to={`/gii/${key}/${module.id}/${item.name}`}
+                                                    to={`/${key}/${moduleId}/${item.name}`}
                                                 >
                                                     {item.name}
                                                 </Link>
                                             ))}
                                         </div>
+                                        <Link
+                                            className={bem.element('add')}
+                                            to={`/${key}/${moduleId}`}
+                                        >
+                                            + Add {ClassTypeMeta.getLabel(key)}
+                                        </Link>
                                     </td>
                                 ))}
                             </tr>

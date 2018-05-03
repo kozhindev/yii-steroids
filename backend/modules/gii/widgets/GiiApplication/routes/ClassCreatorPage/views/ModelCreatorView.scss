@@ -1,0 +1,50 @@
+@import '~bootstrap/scss/bootstrap';
+
+.ModelCreatorView {
+  &__input-attribute .form-control {
+    font-weight: bold;
+  }
+  &__input-hint  .FieldLayoutView__field {
+    padding-left: 30%;
+  }
+
+  &__input-attribute, &__input-label, &__input-app-type {
+    .form-control, .DropDownFieldView__selected-items {
+      border-color: $info;
+    }
+  }
+
+  .table tbody tr:nth-of-type(odd) {
+    > td {
+      padding-top: 10px;
+    }
+  }
+  .table tbody tr:nth-of-type(even) {
+    border-bottom: solid $table-border-width $table-border-color;
+
+    > td {
+      padding-bottom: 10px;
+    }
+  }
+
+  .FieldListView__additional {
+    position: relative;
+
+    input.form-control {
+      width: 150px;
+    }
+  }
+  .FieldListView__additional-label {
+    position: absolute;
+    top: -6px;
+    left: 6px;
+    z-index: 1;
+    background: #fff;
+    height: 10px;
+    font-size: 10px;
+    padding: 2px;
+    box-shadow: 0 0 3px #fff;
+    line-height: 6px;
+    color: $gray-600;
+  }
+}

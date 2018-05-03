@@ -1,26 +1,45 @@
-import {SHOW_NOTIFICATION, HIDE_NOTIFICATION} from '../actions/notifications';
+import {NOTIFICATIONS_SHOW, NOTIFICATIONS_CLOSING, NOTIFICATIONS_CLOSE} from '../actions/notifications';
 
-export default (state = {}, action) => {
+const initialState = {
+    items: [],
+};
+
+export default (state = initialState, action) => {
     switch (action.type) {
-        case SHOW_NOTIFICATION:
+        case NOTIFICATIONS_SHOW:
             return {
                 ...state,
-                [action.id]: {
-                    id: action.id,
-                    level: action.level,
-                    message: action.message,
-                },
+                items: []
+                    .concat(state.items)
+                    .filter(item => item.level !== action.level || item.message !== action.message) // unique
+                    .concat([{
+                        id: action.id,
+                        level: action.level || 'info',
+                        message: action.message,
+                        isClosing: false,
+                    }]),
             };
 
-        case HIDE_NOTIFICATION:
-            if (!action.id) {
-                return {};
-            }
+        case NOTIFICATIONS_CLOSING:
+            return {
+                ...state,
+                items: [].concat(state.items).map(item => {
+                    if (item.id === action.id) {
+                        item.isClosing = true;
+                    }
+                    return item;
+                }),
+            };
 
-            delete state[action.id];
-            return {...state};
+        case NOTIFICATIONS_CLOSE:
+            return {
+                ...state,
+                items: state.items.filter(item => item.id !== action.id),
+            };
 
         default:
             return state;
     }
 };
+
+export const getNotifications = (state) => state.notifications.items;

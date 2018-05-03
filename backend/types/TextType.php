@@ -26,7 +26,7 @@ class TextType extends Type
     /**
      * @inheritdoc
      */
-    public function giiDbType($metaItem)
+    public function giiDbType($attributeEntity)
     {
         return Schema::TYPE_TEXT;
     }
@@ -34,10 +34,10 @@ class TextType extends Type
     /**
      * @inheritdoc
      */
-    public function giiRules($metaItem, &$useClasses = [])
+    public function giiRules($attributeEntity, &$useClasses = [])
     {
         return [
-            [$metaItem->name, 'string'],
+            [$attributeEntity->name, 'string'],
         ];
     }
 }

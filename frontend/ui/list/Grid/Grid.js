@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import _get from 'lodash-es/get';
-import _isString from 'lodash-es/isString';
 
 import {ui} from 'components';
 import listHoc from '../listHoc';
@@ -77,13 +76,11 @@ export default class Grid extends React.PureComponent {
         }
 
         // Formatter
-        if (column.format) {
-            const format = _isString(column.format) ? {component: column.format} : column.format;
+        if (column.component) {
             return (
                 <Format
-                    attribute={column.attribute}
                     item={item}
-                    {...format}
+                    {...column}
                 />
             );
         }

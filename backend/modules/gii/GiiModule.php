@@ -30,12 +30,14 @@ class GiiModule extends Module
      */
     public $allowedIPs = ['127.0.0.1', '::1'];
 
+    public $showGiiEntries = false;
+
     public static function siteMap()
     {
         return [
             'gii' => [
                 'label' => 'Gii',
-                'accessCheck' => [GiiModule::className(), 'accessCheck'],
+                'accessCheck' => [GiiModule::class, 'accessCheck'],
                 'items' => array_merge(
                     GiiController::coreMenuItems(),
                     SiteMapController::coreMenuItems(),

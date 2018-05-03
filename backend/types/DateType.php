@@ -36,7 +36,7 @@ class DateType extends Type
     /**
      * @inheritdoc
      */
-    public function giiDbType($metaItem)
+    public function giiDbType($attributeEntity)
     {
         return Schema::TYPE_DATE;
     }
@@ -44,10 +44,10 @@ class DateType extends Type
     /**
      * @inheritdoc
      */
-    public function giiRules($metaItem, &$useClasses = [])
+    public function giiRules($attributeEntity, &$useClasses = [])
     {
         return [
-            [$metaItem->name, 'date', 'format' => 'php:Y-m-d'],
+            [$attributeEntity->name, 'date', 'format' => 'php:Y-m-d'],
         ];
     }
 
@@ -57,15 +57,10 @@ class DateType extends Type
     public function giiOptions()
     {
         return [
-            self::OPTION_FORMAT => [
-                'component' => 'input',
+            [
+                'attribute' => self::OPTION_FORMAT,
+                'component' => 'InputField',
                 'label' => 'Format',
-                'list' => [
-                    'short',
-                    'medium',
-                    'long',
-                    'full'
-                ]
             ],
         ];
     }

@@ -1,14 +1,13 @@
 import React from 'react';
 import _trimStart from 'lodash-es/trimStart';
 import _trimEnd from 'lodash-es/trimEnd';
-// TODO import {setFlashes} from 'actions/notifications';
+import {setFlashes} from '../actions/notifications';
 import axios from 'axios';
 
 export default class HttpComponent {
 
-    constructor(store) {
+    constructor() {
         this.apiUrl = '//' + location.host;
-        this.store = store;
         this._lazyRequests = {};
 
         axios.interceptors.request.use((config) => {
@@ -111,12 +110,14 @@ export default class HttpComponent {
     }
 
     _sendAxios(config) {
+        const store = require('components').store;
+
         return axios(config)
             .then(response => response.data)
             .then(response => {
                 // Flash
                 if (response.flashes) {
-                    //this.store.dispatch(setFlashes(response.flashes));
+                    store.dispatch(setFlashes(response.flashes));
                 }
 
                 // Ajax redirect

@@ -1,5 +1,9 @@
 @import '~bootstrap/scss/bootstrap';
+@import '../../../../../frontend/ui/index';
 
 .GiiApplication {
-
+  &_loading &__content {
+    opacity: .5;
+    pointer-events: none;
+  }
 }

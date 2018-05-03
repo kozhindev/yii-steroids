@@ -38,10 +38,10 @@ class CategorizedStringType extends EnumType
     /**
      * @inheritdoc
      */
-    public function giiRules($metaItem, &$useClasses = [])
+    public function giiRules($attributeEntity, &$useClasses = [])
     {
         return [
-            [$metaItem->name, 'string', 'max' => 255],
+            [$attributeEntity->name, 'string', 'max' => 255],
         ];
     }
 
@@ -53,13 +53,14 @@ class CategorizedStringType extends EnumType
         return array_merge(
             parent::giiOptions(),
             [
-                self::OPTION_REF_ATTRIBUTE => [
-                    'component' => 'input',
+                [
+                    'attribute' => self::OPTION_REF_ATTRIBUTE,
+                    'component' => 'InputField',
                     'label' => 'Category Attribute',
-                    'list' => 'attributes',
+                    /*'list' => 'attributes',
                     'style' => [
                         'width' => '80px'
-                    ]
+                    ]*/
                 ],
             ]
         );

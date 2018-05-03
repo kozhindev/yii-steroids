@@ -32,28 +32,29 @@ class StringType extends Type
     }
 
     /**
-     * @param MetaItem $metaItem
-     * @return string|false
+     * @inheritdoc
      */
-    public function giiDbType($metaItem)
+    public function giiDbType($attributeEntity)
     {
-        return Schema::TYPE_STRING . ($metaItem->stringLength ? '(' . $metaItem->stringLength . ')' : '');
+        $length = $attributeEntity->getCustomProperty(self::OPTION_LENGTH);
+        return Schema::TYPE_STRING . ($length ? '(' . $length . ')' : '');
     }
 
     /**
      * @inheritdoc
      */
-    public function giiRules($metaItem, &$useClasses = [])
+    public function giiRules($attributeEntity, &$useClasses = [])
     {
+        $length = $attributeEntity->getCustomProperty(self::OPTION_LENGTH);
         $validators = [
-            [$metaItem->name, 'string', 'max' => $metaItem->stringLength ?: 255],
+            [$attributeEntity->name, 'string', 'max' => $length ?: 255],
         ];
 
-        switch ($metaItem->stringType) {
+        switch ($attributeEntity->getCustomProperty(self::OPTION_TYPE)) {
             case self::TYPE_WORDS:
-                $wordsValidatorClass = WordsValidator::className();
+                $wordsValidatorClass = WordsValidator::class;
                 $useClasses[] = $wordsValidatorClass;
-                $validators[] = [$metaItem->name, new ValueExpression(StringHelper::basename($wordsValidatorClass) . '::className()')];
+                $validators[] = [$attributeEntity->name, new ValueExpression(StringHelper::basename($wordsValidatorClass) . '::class')];
                 break;
         }
 
@@ -66,21 +67,26 @@ class StringType extends Type
     public function giiOptions()
     {
         return [
-            self::OPTION_TYPE => [
-                'component' => 'select',
+            [
+                'attribute' => self::OPTION_TYPE,
+                'component' => 'DropDownField',
                 'label' => 'Type',
-                'options' => [
-                    self::TYPE_TEXT => 'Text',
-                    self::TYPE_WORDS => 'Words',
+                'selectFirst' => true,
+                'items' => [
+                    [
+                        'id' => self::TYPE_TEXT,
+                        'label' => 'Text',
+                    ],
+                    [
+                        'id' => self::TYPE_WORDS,
+                        'label' => 'Words',
+                    ],
                 ],
             ],
-            self::OPTION_LENGTH => [
-                'component' => 'input',
-                'type' => 'number',
+            [
+                'attribute' => self::OPTION_LENGTH,
+                'component' => 'NumberField',
                 'label' => 'Length',
-                'style' => [
-                    'width' => '80px'
-                ]
             ],
         ];
     }

@@ -11,10 +11,10 @@ class SizeType extends Type
     /**
      * @inheritdoc
      */
-    public function giiRules($metaItem, &$useClasses = [])
+    public function giiRules($attributeEntity, &$useClasses = [])
     {
         return [
-            [$metaItem->name, 'number'],
+            [$attributeEntity->name, 'number'],
         ];
     }
 }

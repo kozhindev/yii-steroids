@@ -1,6 +1,7 @@
 import {createStore, applyMiddleware, compose} from 'redux';
 import {routerMiddleware} from 'react-router-redux';
 import createHistory from 'history/createBrowserHistory';
+import _get from 'lodash-es/get';
 import _merge from 'lodash-es/merge';
 import _isPlainObject from 'lodash-es/isPlainObject';
 
@@ -9,10 +10,12 @@ import reducers from 'reducers';
 export default class StoreComponent {
 
     constructor() {
-        this.history = createHistory();
+        const initialState = _merge(...(window.APP_REDUX_PRELOAD_STATES || [{}]));
+
+        this.history = createHistory(_get(initialState, 'config.store.history', {}));
         this.store = createStore(
             reducers,
-            _merge(...(window.APP_REDUX_PRELOAD_STATES || [{}])),
+            initialState,
             compose(
                 applyMiddleware(({getState}) => next => action => this._prepare(action, next, getState)),
                 applyMiddleware(routerMiddleware(this.history)),

@@ -48,7 +48,6 @@ export default class FileField extends React.PureComponent {
     };
 
     static defaultProps = {
-        size: 'md',
         disabled: false,
         required: false,
         className: '',
