@@ -4,6 +4,7 @@ import {connect} from 'react-redux';
 import {getFormValues} from 'redux-form';
 import _get from 'lodash-es/get';
 import _isEqual from 'lodash-es/isEqual';
+import _isFunction from 'lodash-es/isFunction';
 import _merge from 'lodash-es/merge';
 
 import {locale} from 'components';
@@ -133,7 +134,7 @@ const getFormId = props => _get(props, 'searchForm.formId', props.listId);
         }
 
         // Reverse items, if need
-        let items = _get(this.props, 'list.items', []);
+        let items = _get(this.props, 'list.items') || [];
         if (this.props.reverse) {
             items = [].concat(items).reverse();
         }
@@ -180,12 +181,13 @@ const getFormId = props => _get(props, 'searchForm.formId', props.listId);
             <Pagination
                 {...this.props}
                 {...this.props.paginationProps}
-                view={this.props.paginationView}
+                view={_isFunction(this.props.paginationSizeView) ? this.props.paginationSizeView : undefined}
             />
         );
     }
 
     renderPaginationSize() {
+
         if (this.props.paginationSizeView === false) {
             return null;
         }
@@ -194,11 +196,13 @@ const getFormId = props => _get(props, 'searchForm.formId', props.listId);
         }
 
         return (
-            <PaginationSize
-                {...this.props}
-                {...this.props.paginationSizeProps}
-                view={this.props.paginationSizeView}
-            />
+            <div>
+                <PaginationSize
+                    {...this.props}
+                    {...this.props.paginationSizeProps}
+                    view={_isFunction(this.props.paginationSizeView) ? this.props.paginationSizeView : undefined}
+                />
+            </div>
         );
     }
 

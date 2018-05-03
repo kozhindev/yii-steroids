@@ -1,13 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import {html} from 'components';
-import Button from '../../form/Button';
-import './NavButtonView.scss';
+import {html} from 'components/index';
+import Button from '../../form/Button/index';
+import './NavLinkView.scss';
 
-const bem = html.bem('NavButtonView');
+const bem = html.bem('NavLinkView');
 
-export default class NavButtonView extends React.Component {
+export default class NavLinkView extends React.Component {
 
     static propTypes = {
         items: PropTypes.arrayOf(PropTypes.object),
@@ -21,8 +21,7 @@ export default class NavButtonView extends React.Component {
                     {this.props.items.map((item, index) => (
                         <Button
                             key={index}
-                            color='secondary'
-                            outline={!item.isActive}
+                            link
                             onClick={() => this.props.onClick(item, index)}
                             className={bem.element('nav-item')}
                             {...item}
