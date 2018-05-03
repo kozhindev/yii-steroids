@@ -19,13 +19,13 @@ echo "<?php\n";
 
 namespace <?= $formEntity->getNamespace() ?>\meta;
 
-use steroids\base\FormModel;
+use steroids\base\SearchModel;
 <?php foreach (array_unique($useClasses) as $relationClassName) { ?>
 use <?= $relationClassName ?>;
 <?php } ?>
 use <?= $formEntity->queryModelEntity->getClassName() ?>;
 
-abstract class <?= $formEntity->name ?>Meta extends FormModel
+abstract class <?= $formEntity->name ?>Meta extends SearchModel
 {
 <?php foreach ($formEntity->attributeItems as $metaItem) { ?>
     public $<?= $metaItem->name ?>;
