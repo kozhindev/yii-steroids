@@ -14,14 +14,19 @@ import {getNotifications} from '../../../reducers/notifications';
 export default class Notifications extends React.PureComponent {
 
     static propTypes = {
-        initialFlashes: PropTypes.arrayOf(PropTypes.shape({
-            id: PropTypes.number,
-            level: PropTypes.oneOf(['error', 'warning', 'info', 'success']),
-            message: PropTypes.string,
-        })),
+        initialFlashes: PropTypes.object,
         notifications: PropTypes.arrayOf(PropTypes.shape({
             id: PropTypes.number,
-            level: PropTypes.oneOf(['error', 'warning', 'info', 'success']),
+            level: PropTypes.oneOf([
+                'primary',
+                'secondary',
+                'success',
+                'danger',
+                'warning',
+                'info',
+                'light',
+                'dark',
+            ]),
             message: PropTypes.string,
             isClosing: PropTypes.bool,
         })),
@@ -31,7 +36,7 @@ export default class Notifications extends React.PureComponent {
     };
 
     componentWillMount() {
-        if (this.props.initialFlashes && this.props.initialFlashes.length > 0) {
+        if (this.props.initialFlashes) {
             this.props.dispatch(setFlashes(this.props.initialFlashes));
 
             // Disable scroll or scroll to top on show notifications
