@@ -18,6 +18,7 @@ use steroids\modules\gii\generators\crud\CrudGenerator;
 use steroids\modules\gii\generators\module\ModuleGenerator;
 use steroids\modules\gii\GiiModule;
 use steroids\modules\gii\helpers\GiiHelper;
+use steroids\modules\gii\models\AuthPermissionSync;
 use steroids\modules\gii\models\ControllerClass;
 use steroids\modules\gii\models\EnumClass;
 use steroids\modules\gii\models\EnumMetaItem;
@@ -68,6 +69,8 @@ class GiiController extends Controller
 
     public function actionIndex()
     {
+        AuthPermissionSync::syncActions();
+
         $this->layout = '@steroids/modules/gii/layouts/blank';
         return $this->renderContent(GiiApplication::widget());
     }

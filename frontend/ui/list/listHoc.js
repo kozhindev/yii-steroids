@@ -121,6 +121,10 @@ const getFormId = props => _get(props, 'searchForm.formId', props.listId);
                 query: nextQuery,
             }));
         }
+
+        if (this.props.items !== nextProps.items) {
+            this.props.dispatch(init(this.props.listId, nextProps));
+        }
     }
 
     componentWillUnmount() {

@@ -29,14 +29,14 @@ class SiteMap extends Component
 
     /**
      * Recursive scan all items and return url rules for `UrlManager` component
-     * @param  array $items
+     * @param  SiteMapItem[] $items
      * @return array
      */
     public static function itemsToRules($items)
     {
         $rules = [];
         foreach ($items as $item) {
-            $url = ArrayHelper::getValue($item, 'url');
+            $url = $item->getNormalizedUrl();
             $urlRule = ArrayHelper::getValue($item, 'urlRule');
 
             if ($url && $urlRule && is_array($url)) {
@@ -485,6 +485,10 @@ class SiteMap extends Component
             // Merge item with group (as key)
             if (is_string($id) && isset($baseItems[$id])) {
                 foreach ($item as $key => $value) {
+                    if ($key === 'url' && !$baseItems[$id]->controllerRoute && $controllerRoute) {
+                        $baseItems[$id]->controllerRoute = $controllerRoute;
+                    }
+                    
                     if ($key === 'items') {
                         $baseItems[$id]->$key = $this->mergeItems($baseItems[$id]->$key, $value, $append, $controllerRoute, $baseItems[$id]);
                     } elseif (is_array($baseItems[$id]) && is_array($value)) {
@@ -506,18 +510,13 @@ class SiteMap extends Component
                         $item['url'] = [$controllerRoute . '/' . $id];
                     }
 
-                    // Normalize route
-                    $route = ArrayHelper::getValue($item, 'url.0');
-                    if ($route && strpos($route, '/') === false) {
-                        $item['url'][0] = $controllerRoute . '/' . $route;
-                    }
-
                     $item = new SiteMapItem(array_merge(
                         $item,
                         [
                             'id' => $id,
                             'owner' => $this,
                             'parent' => $parentItem,
+                            'controllerRoute' => isset($item['url']) ? $controllerRoute : null,
                         ]
                     ));
                     $item->items = $this->mergeItems([], $item->items, true, $controllerRoute, $item);

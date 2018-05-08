@@ -26,6 +26,9 @@ export default class EnumFormatter extends React.Component {
     };
 
     render() {
+        if (!this.props.photos || this.props.photos.length === 0) {
+            return null;
+        }
         return (
             <Gallery
                 images={this.props.photos}

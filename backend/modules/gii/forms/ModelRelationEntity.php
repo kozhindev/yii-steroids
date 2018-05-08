@@ -36,20 +36,20 @@ class ModelRelationEntity extends ModelRelationEntityMeta
         /** @var Model $className */
         $className = GiiHelper::getClassName(static::CLASS_TYPE, $entity->moduleId, $entity->name);
 
-        $items = [];
         $modelInstance = new $className();
-        $modelInfo = new \ReflectionClass($className);
+        $modelInfo = (new \ReflectionClass($className));
+        $parentInfo = $modelInfo->getParentClass();
 
-        foreach ($modelInfo->getMethods() as $methodInfo) {
+        if ($modelInfo->getShortName() . 'Meta' !== $parentInfo->getShortName()) {
+            return [];
+        }
+
+        $items = [];
+        foreach ($parentInfo->getMethods() as $methodInfo) {
             $methodName = $methodInfo->name;
 
-            // Skip classes without meta parent
-            if ($modelInfo->getShortName() . 'Meta' !== $modelInfo->getParentClass()->getShortName()) {
-                continue;
-            }
-
             // Check exists relation in meta class
-            if (strpos($methodName, 'get') !== 0 || $methodInfo->class !== $modelInfo->getParentClass()->name) {
+            if (strpos($methodName, 'get') !== 0 || $methodInfo->class !== $parentInfo->getName()) {
                 continue;
             }
 

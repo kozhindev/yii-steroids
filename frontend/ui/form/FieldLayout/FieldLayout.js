@@ -22,7 +22,7 @@ export default class FieldLayout extends React.PureComponent {
             PropTypes.string,
             PropTypes.arrayOf(PropTypes.string),
         ]),
-        className: PropTypes.string,
+        layoutClassName: PropTypes.string,
         layoutView: PropTypes.func,
     };
 

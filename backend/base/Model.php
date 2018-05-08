@@ -33,20 +33,6 @@ class Model extends ActiveRecord
     }
 
     /**
-     * @param Model[] $models
-     * @param array|null $fields
-     * @return array
-     */
-    /*public static function listToFrontend($models, $fields = null)
-    {
-        $result = [];
-        foreach ((array)$models as $model) {
-            $result[] = $model->toFrontend($fields);
-        }
-        return $result;
-    }*/
-
-    /**
      * @return string
      */
     public function getModelLabel()

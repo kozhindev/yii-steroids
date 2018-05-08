@@ -24,7 +24,7 @@ export default class FieldLayoutView extends React.PureComponent {
         layout: PropTypes.oneOf(['default', 'inline', 'horizontal']),
         layoutProps: PropTypes.object,
         size: PropTypes.oneOf(['sm', 'md', 'lg']),
-        className: PropTypes.string,
+        layoutClassName: PropTypes.string,
     };
 
     render() {
@@ -34,6 +34,7 @@ export default class FieldLayoutView extends React.PureComponent {
                     layout: this.props.layout
                 }),
                 'form-group',
+                this.props.layoutClassName,
                 this.props.layout === 'horizontal' && 'row',
                 this.props.layout === 'inline' && 'form-inline'
             )}>

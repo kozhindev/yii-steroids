@@ -77,6 +77,8 @@ class ModelEntity extends ModelEntityMeta implements IEntity
     public function save()
     {
         if ($this->validate()) {
+            $prevModelEntity = static::findOne($this->getClassName());
+
             // Lazy create module
             ModuleEntity::findOrCreate($this->moduleId);
 
@@ -99,7 +101,7 @@ class ModelEntity extends ModelEntityMeta implements IEntity
 
             // Create migration
             $migrationMethods = new MigrationMethods([
-                'prevModelEntity' => static::findOne($this->getClassName()),
+                'prevModelEntity' => $prevModelEntity,
                 'nextModelEntity' => $this,
                 'migrateMode' => $this->migrateMode,
             ]);

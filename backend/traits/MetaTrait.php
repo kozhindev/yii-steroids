@@ -56,9 +56,9 @@ trait MetaTrait
     {
         $fields = $fields ? (array)$fields : ['*'];
 
-        // Detect null
+        // Detect empty
         if (!$model) {
-            return null;
+            return is_array($model) ? [] : null;
         }
 
         // Detect array
