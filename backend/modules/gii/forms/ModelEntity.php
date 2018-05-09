@@ -4,6 +4,7 @@ namespace steroids\modules\gii\forms;
 
 use steroids\base\Model;
 use steroids\modules\gii\enums\ClassType;
+use steroids\modules\gii\enums\MigrateMode;
 use steroids\modules\gii\forms\meta\ModelEntityMeta;
 use steroids\modules\gii\helpers\GiiHelper;
 use steroids\modules\gii\models\MigrationMethods;
@@ -77,7 +78,7 @@ class ModelEntity extends ModelEntityMeta implements IEntity
     public function save()
     {
         if ($this->validate()) {
-            $prevModelEntity = static::findOne($this->getClassName());
+            $prevModelEntity = class_exists($this->getClassName()) ? static::findOne($this->getClassName()) : null;
 
             // Lazy create module
             ModuleEntity::findOrCreate($this->moduleId);
@@ -103,7 +104,7 @@ class ModelEntity extends ModelEntityMeta implements IEntity
             $migrationMethods = new MigrationMethods([
                 'prevModelEntity' => $prevModelEntity,
                 'nextModelEntity' => $this,
-                'migrateMode' => $this->migrateMode,
+                'migrateMode' => MigrateMode::UPDATE,// TODO $this->migrateMode,
             ]);
             if (!$migrationMethods->isEmpty()) {
                 $name = $migrationMethods->generateName();
@@ -186,6 +187,12 @@ class ModelEntity extends ModelEntityMeta implements IEntity
                     $meta[$name][$key] = new ValueExpression('Yii::t(\'app\', ' . GiiHelper::varExport($value) . ')');
                     $useClasses[] = '\Yii';
                 }
+
+                if ($key === 'enumClassName') {
+                    $enumEntity = EnumEntity::findOne($value);
+                    $meta[$name][$key] = new ValueExpression($enumEntity->name . '::class');
+                    $useClasses[] = $enumEntity->getClassName();
+                }
             }
         }
         return GiiHelper::varExport($meta, $indent);
@@ -199,6 +206,7 @@ class ModelEntity extends ModelEntityMeta implements IEntity
     public function renderJsFields($indent = '', &$import = [])
     {
         $result = [];
+
         foreach (static::exportMeta($this->attributeItems) as $attribute => $item) {
             $props = [];
             $type = \Yii::$app->types->getType($this->getAttributeEntity($attribute)->appType);
@@ -309,12 +317,6 @@ class ModelEntity extends ModelEntityMeta implements IEntity
                 // Skip null values
                 if ($value === '' || $value === null) {
                     continue;
-                }
-
-                if ($key === 'enumClassName') {
-                    $enumEntity = EnumEntity::findOne($value);
-                    $value = new ValueExpression($enumEntity->name . '::class');
-                    $useClasses[] = $enumEntity->getClassName();
                 }
 
                 // Items process

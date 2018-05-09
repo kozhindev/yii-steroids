@@ -1,5 +1,6 @@
 import Button from './Button';
 import CheckboxField from './CheckboxField';
+import CheckboxListField from './CheckboxListField';
 import DateField from './DateField';
 import DateTimeField from './DateTimeField';
 import DropDownField from './DropDownField';
@@ -19,6 +20,7 @@ import TextField from './TextField';
 export {
     Button,
     CheckboxField,
+    CheckboxListField,
     DateField,
     DateTimeField,
     DropDownField,

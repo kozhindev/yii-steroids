@@ -53,7 +53,7 @@ export default class FieldListItemView extends React.PureComponent {
 
     render() {
         return (
-            <tr key={this.props.rowIndex}>
+            <tr>
                 {this.props.items.map((field, index) => (
                     <td
                         key={index}

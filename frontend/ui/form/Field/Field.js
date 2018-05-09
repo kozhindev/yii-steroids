@@ -26,6 +26,7 @@ export default class Field extends React.Component {
         ]),
         onChange: PropTypes.func,
         className: PropTypes.string,
+        layoutClassName: PropTypes.string,
         view: PropTypes.func,
     };
 

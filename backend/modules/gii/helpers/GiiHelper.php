@@ -11,6 +11,7 @@ use yii\db\Schema;
 use yii\helpers\FileHelper;
 use yii\helpers\Html;
 use yii\helpers\Json;
+use yii\helpers\StringHelper;
 use yii\web\JsExpression;
 
 class GiiHelper
@@ -58,7 +59,7 @@ class GiiHelper
 
         return [
             'moduleId' => $moduleId,
-            'name' => (new \ReflectionClass($className))->getShortName(),
+            'name' => StringHelper::basename($className),
         ];
     }
 

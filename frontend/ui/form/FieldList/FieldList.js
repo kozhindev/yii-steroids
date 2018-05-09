@@ -58,7 +58,9 @@ export default class FieldList extends React.PureComponent {
         onChange: PropTypes.func,
         className: PropTypes.string,
         view: PropTypes.func,
+        viewProps: PropTypes.object,
         itemView: PropTypes.func,
+        itemViewProps: PropTypes.object,
     };
 
     static defaultProps = {
@@ -132,6 +134,7 @@ export default class FieldList extends React.PureComponent {
         return (
             <FieldListView
                 {...this.props}
+                {...this.props.view}
                 items={items}
                 renderField={this._renderField}
                 onAdd={this._onAdd}
@@ -139,6 +142,7 @@ export default class FieldList extends React.PureComponent {
                 {this.props.fields.map((prefix, rowIndex) => (
                     <FieldListItemView
                         {...this.props}
+                        {...this.props.itemViewProps}
                         items={items}
                         renderField={this._renderField}
                         onRemove={this._onRemove}
@@ -154,8 +158,8 @@ export default class FieldList extends React.PureComponent {
     _renderField(field, prefix) {
         return (
             <Field
-                {...field}
                 layout='inline'
+                {...field}
                 prefix={prefix}
             />
         );
