@@ -3,6 +3,7 @@ $state-info-bg: #d9edf7;
 .PermissionCheckbox {
   &__checkbox {
     display: inline-block;
+    text-align: center;
 
     &:nth-child(2) {
       border-left: solid 1px #aaa;

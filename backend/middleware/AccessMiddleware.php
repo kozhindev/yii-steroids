@@ -31,8 +31,8 @@ class AccessMiddleware extends BaseObject
      */
     public static function checkAccess($event)
     {
-        // Skip debug module
-        if ($event->action->controller->module->id === 'debug') {
+        // Skip gii and debug modules
+        if (in_array($event->action->controller->module->id, ['debug', 'gii'])) {
             return;
         }
 

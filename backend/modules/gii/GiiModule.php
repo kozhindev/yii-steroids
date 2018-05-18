@@ -3,7 +3,6 @@
 namespace steroids\modules\gii;
 
 use steroids\base\Module;
-use steroids\modules\gii\controllers\AccessController;
 use steroids\modules\gii\controllers\GiiController;
 use steroids\modules\gii\controllers\SiteMapController;
 
@@ -40,8 +39,7 @@ class GiiModule extends Module
                 'accessCheck' => [GiiModule::class, 'accessCheck'],
                 'items' => array_merge(
                     GiiController::coreMenuItems(),
-                    SiteMapController::coreMenuItems(),
-                    AccessController::coreMenuItems()
+                    SiteMapController::coreMenuItems()
                 ),
             ],
         ];
