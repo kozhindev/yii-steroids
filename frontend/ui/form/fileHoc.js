@@ -208,10 +208,13 @@ export default () => WrappedComponent => class FileHoc extends React.PureCompone
      */
     _onQueueRemove(files) {
         const toRemove = files.map(file => _get(file.getResultHttpMessage(), 'id')).filter(Boolean);
+        if (toRemove.length === 0) {
+            return;
+        }
 
         // Update value
         if (this.props.multiple) {
-            this.props.input.onChange([].concat(this.props.input.value || []).filter(id => toRemove.indexOf(id) === -1));
+            this.props.input.onChange([].concat(this.props.input.value || []).filter(id => toRemove.indexOf(parseInt(id)) === -1));
         } else if (toRemove.indexOf(this.props.input.value) !== -1) {
             this.props.input.onChange(null);
         }

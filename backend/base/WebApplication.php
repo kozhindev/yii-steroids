@@ -24,7 +24,7 @@ class WebApplication extends Application
      */
     protected function bootstrap()
     {
-        $versionFilePath = STEROIDS_ROOT_DIR . '/version.txt';
+        $versionFilePath = STEROIDS_ROOT_DIR . '/public/version.txt';
         if (file_exists($versionFilePath)) {
             $this->version = trim(file_get_contents($versionFilePath));
         }
