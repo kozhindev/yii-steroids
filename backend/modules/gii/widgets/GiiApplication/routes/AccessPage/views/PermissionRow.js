@@ -117,12 +117,9 @@ export default class PermissionRow extends React.PureComponent {
                                     marginLeft: 30 * this.props.level,
                                 }}
                             >
-                                <span
-                                    className={bem(
-                                        !this.state.isExpanded ? 'glyphicon glyphicon-plus' : 'glyphicon glyphicon-minus',
-                                        bem.element('collapse-icon'),
-                                    )}
-                                />
+                                <span className={bem.element('collapse-icon')}>
+                                    {!this.state.isExpanded ? '+' : '-'}
+                                </span>
                                 <span className={bem.element('description')}>
                                     <code>
                                         {this.props.permission.description}

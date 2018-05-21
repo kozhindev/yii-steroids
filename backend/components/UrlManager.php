@@ -5,6 +5,7 @@ namespace steroids\components;
 use steroids\base\WebApplication;
 use yii\base\BootstrapInterface;
 use yii\web\UrlNormalizer;
+use yii\web\UrlNormalizerRedirectException;
 
 class UrlManager extends \codemix\localeurls\UrlManager implements BootstrapInterface
 {
@@ -39,7 +40,28 @@ class UrlManager extends \codemix\localeurls\UrlManager implements BootstrapInte
     {
         if ($this->enableLocaleUrls && $app instanceof WebApplication) {
             // Set Application language before request
-            $this->parseRequest(\Yii::$app->request);
+
+            $request = \Yii::$app->request;
+
+            try {
+                $this->parseRequest($request);
+            }
+            // Suppress the UrlNormalizerRedirectException when parsing service (ignoreLanguageUrlPatterns) urls
+            catch (UrlNormalizerRedirectException $e) {
+                $pathInfo = $request->getPathInfo();
+                $isInIgnoredPatterns = false;
+
+                foreach ($this->ignoreLanguageUrlPatterns as $k => $pattern) {
+                    if (preg_match($pattern, $pathInfo)) {
+                        $isInIgnoredPatterns = true;
+                        break;
+                    }
+                }
+
+                if (!$isInIgnoredPatterns) {
+                    throw $e;
+                }
+            }
 
             // Fix language for api
             $language = \Yii::$app->session->get($this->languageSessionKey);

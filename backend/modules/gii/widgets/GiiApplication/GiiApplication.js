@@ -7,7 +7,7 @@ import {push} from 'react-router-redux';
 
 import {html, http, widget} from 'components';
 import IndexPage from './routes/IndexPage';
-import AccessPage from './routes/AccessPage';
+import AccessPage from './routes/AccessPage/index';
 import ClassCreatorPage from './routes/ClassCreatorPage/index';
 import ClassTypeMeta from '../../enums/meta/ClassTypeMeta';
 
@@ -60,7 +60,7 @@ export default class GiiApplication extends React.PureComponent {
                                 },
                                 {
                                     label: 'Права доступа',
-                                    to: '/access',
+                                    to: '/access/actions',
                                 },
                                 {
                                     label: 'Карта сайта',
@@ -111,7 +111,7 @@ export default class GiiApplication extends React.PureComponent {
 
     fetchData() {
         this.setState({isLoading: true});
-        http.post('/api/gii/get-data')
+        http.post('/api/gii/get-entities')
             .then(data => this.setState({
                 ...data,
                 isLoading: false,

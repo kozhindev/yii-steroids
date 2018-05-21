@@ -1,19 +1,25 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {reduxForm} from 'redux-form';
+import {Form} from 'yii-steroids/frontend/ui/form';
 
-import {html, widget} from 'components';
-import PermissionRow from './views/PermissionRow';
+import {html, http} from 'components';
+import PermissionRow from './PermissionRow';
 
 import './AccessRulesEditor.scss';
 
 const bem = html.bem('AccessRulesEditor');
 const FORM_ID = 'AccessRulesEditor';
 
-@widget.register('\\steroids\\modules\\gii\\widgets\\AccessRulesEditor\\AccessRulesEditor')
-@reduxForm({
-    form: FORM_ID,
-})
+@http.hoc(props => (
+    http.post('/api/gii/get-permissions', {
+        prefix: props.rulePrefix,
+    })
+        .then(data => ({
+            roles: data.roles,
+            permissions: data.permissions,
+            initialValues: data.initialValues,
+        }))
+))
 export default class AccessRulesEditor extends React.PureComponent {
 
     static propTypes = {
@@ -23,21 +29,22 @@ export default class AccessRulesEditor extends React.PureComponent {
             description: PropTypes.string,
             children: PropTypes.arrayOf(PropTypes.string),
         })),
-        csrfToken: PropTypes.string,
-        enableInlineMode: PropTypes.bool,
+        initialValues: PropTypes.object,
+        rulePrefix: PropTypes.string,
     };
 
     render() {
+        if (!this.props.roles) {
+            return null;
+        }
+
         return (
-            <form
-                method='post'
+            <Form
+                formId={FORM_ID}
+                action='/api/gii/permissions-save'
                 className={bem(bem.block(), 'form-horizontal')}
+                initialValues={this.props.initialValues}
             >
-                <input
-                    type='hidden'
-                    name='_csrf'
-                    value={this.props.csrfToken}
-                />
                 <div
                     className={bem.element('roles')}
                     style={{
@@ -62,7 +69,7 @@ export default class AccessRulesEditor extends React.PureComponent {
                             permission={permission}
                             roles={this.props.roles}
                             permissions={this.props.permissions}
-                            enableInlineMode={this.props.enableInlineMode}
+                            enableInlineMode={this.props.rulePrefix === 'm'}
                             visible
                         />
                     ))}
@@ -77,7 +84,7 @@ export default class AccessRulesEditor extends React.PureComponent {
                         </button>
                     </div>
                 </div>
-            </form>
+            </Form>
         );
     }
 
