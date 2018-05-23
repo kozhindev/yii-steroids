@@ -1,11 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import {arrayPush} from 'redux-form';
+import {findDOMNode} from 'react-dom';
 
 import {ui} from 'components';
 import Field from '../Field';
 import fieldHoc from '../fieldHoc';
 
 import './FieldListView.scss';
+import tableNavigationHandler from './tableNavigationHandler';
 
 @fieldHoc({
     componentId: 'form.FieldList',
@@ -61,6 +64,7 @@ export default class FieldList extends React.PureComponent {
         viewProps: PropTypes.object,
         itemView: PropTypes.func,
         itemViewProps: PropTypes.object,
+        enableKeyboardNavigation: PropTypes.bool,
     };
 
     static defaultProps = {
@@ -70,6 +74,7 @@ export default class FieldList extends React.PureComponent {
         showRemove: true,
         className: '',
         initialRowsCount: 1,
+        enableKeyboardNavigation: true,
     };
 
     static contextTypes = {
@@ -109,6 +114,7 @@ export default class FieldList extends React.PureComponent {
         this._onAdd = this._onAdd.bind(this);
         this._onRemove = this._onRemove.bind(this);
         this._renderField = this._renderField.bind(this);
+        this._onKeyDown = this._onKeyDown.bind(this);
     }
 
     componentWillMount() {
@@ -117,6 +123,35 @@ export default class FieldList extends React.PureComponent {
                 this._onAdd();
             }
         }
+
+        if (this.props.enableKeyboardNavigation) {
+            document.addEventListener('keydown', this._onKeyDown, false);
+        }
+    }
+
+    componentWillUnmount() {
+        if (this.props.enableKeyboardNavigation) {
+            document.removeEventListener('keydown', this._onKeyDown, false);
+        }
+    }
+
+    _onKeyDown(e) {
+        const isDescendant = (parent, child) => {
+            let node = child.parentNode;
+            while (node !== null) {
+                if (node === parent) {
+                    return true;
+                }
+                node = node.parentNode;
+            }
+            return false;
+        };
+
+        if (!isDescendant(findDOMNode(this), e.target)) {
+            return;
+        }
+
+        tableNavigationHandler(e, () => this.props.dispatch(arrayPush(this.props.formId, this.props.attribute)));
     }
 
     render() {
