@@ -39,6 +39,8 @@ class ModelEntity extends ModelEntityMeta implements IEntity
         $entity = new static();
         $entity->attributes = GiiHelper::parseClassName($className);
 
+        $entity->validate('migrateMode');
+
         /** @var Model $className */
         $entity->tableName = $className::tableName();
 
@@ -104,7 +106,9 @@ class ModelEntity extends ModelEntityMeta implements IEntity
             $migrationMethods = new MigrationMethods([
                 'prevModelEntity' => $prevModelEntity,
                 'nextModelEntity' => $this,
-                'migrateMode' => MigrateMode::UPDATE,// TODO $this->migrateMode,
+                'migrateMode' => !empty($this->migrateMode)
+                    ? $this->migrateMode
+                    : MigrateMode::UPDATE,
             ]);
             if (!$migrationMethods->isEmpty()) {
                 $name = $migrationMethods->generateName();

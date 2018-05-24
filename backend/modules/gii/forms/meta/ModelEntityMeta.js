@@ -26,7 +26,7 @@ export default class ModelEntityMeta extends Model {
                 'label': locale.t('Table name')
             },
             'migrateMode': {
-                'component': 'CheckboxField',
+                'component': 'DropDownField',
                 'attribute': 'migrateMode',
                 'label': locale.t('Migrate mode'),
             },
