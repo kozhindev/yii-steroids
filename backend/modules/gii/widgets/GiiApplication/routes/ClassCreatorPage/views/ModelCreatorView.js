@@ -10,6 +10,7 @@ import ModelRelationEntityMeta from '../../../../../forms/meta/ModelRelationEnti
 import ClassTypeMeta from '../../../../../enums/meta/ClassTypeMeta';
 import ModelAttributeRow from './ModelAttributeRow';
 import ModelRelationRow from './ModelRelationRow';
+import MigrateModeMeta from '../../../../../enums/meta/MigrateModeMeta';
 
 import './ModelCreatorView.scss';
 
@@ -184,7 +185,15 @@ export default class ModelCreatorView extends React.PureComponent {
                             ]}
                         />
                     </div>
-                    <div className='mt-4'>
+                    <div className='mt-4 row'>
+                        <div className='col-md-3'>
+                            <Field
+                                attribute='migrateMode'
+                                items={MigrateModeMeta}
+                            />
+                        </div>
+                    </div>
+                    <div>
                         <Button
                             type='submit'
                             label='Save'

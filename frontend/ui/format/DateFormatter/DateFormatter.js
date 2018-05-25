@@ -2,9 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import {locale} from 'components';
-import viewHoc from '../viewHoc';
 
-@viewHoc()
 export default class DateFormatter extends React.Component {
 
     static propTypes = {

@@ -7,6 +7,7 @@ use steroids\modules\gii\forms\ModelAttributeEntity;
 use steroids\modules\gii\forms\ModelRelationEntity;
 use \Yii;
 use yii\db\ActiveQuery;
+use steroids\modules\gii\enums\MigrateMode;
 
 /**
  * @property-read ModelAttributeEntity[] $attributeItems
@@ -25,7 +26,8 @@ abstract class ModelEntityMeta extends FormModel
         return [
             [['moduleId', 'name', 'tableName', 'queryModel'], 'string', 'max' => 255],
             [['moduleId', 'name'], 'required'],
-            ['migrateMode', 'boolean'],
+            ['migrateMode', 'in', 'range' => MigrateMode::getKeys()],
+            ['migrateMode', 'default', 'value' => MigrateMode::UPDATE],
         ];
     }
 
@@ -44,6 +46,8 @@ abstract class ModelEntityMeta extends FormModel
                 'label' => Yii::t('app', 'Table name')
             ],
             'migrateMode' => [
+                'appType' => 'enum',
+                'enumClassName' => MigrateMode::class,
                 'label' => Yii::t('app', 'Migration mode')
             ],
             'queryModel' => [
