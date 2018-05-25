@@ -3,9 +3,9 @@ import PropTypes from 'prop-types';
 import {Nav, Router} from 'yii-steroids/frontend/ui/nav';
 
 import {html} from 'components';
+import AccessRulesEditor from './views/AccessRulesEditor';
 
 import './AccessPage.scss';
-import AccessRulesEditor from "./views/AccessRulesEditor";
 
 const bem = html.bem('AccessPage');
 

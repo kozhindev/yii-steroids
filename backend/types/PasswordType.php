@@ -8,7 +8,7 @@ use yii\db\Schema;
 class PasswordType extends Type
 {
     public $min = YII_ENV_DEV ? 1 : 3;
-    public $max = 32;
+    public $max = 255;
 
     /**
      * @inheritdoc

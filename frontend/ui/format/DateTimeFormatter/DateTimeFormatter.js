@@ -3,9 +3,7 @@ import PropTypes from 'prop-types';
 import moment from 'moment';
 
 import {locale} from 'components';
-import viewHoc from '../viewHoc';
 
-@viewHoc()
 export default class DateTimeFormatter extends React.Component {
 
     static propTypes = {

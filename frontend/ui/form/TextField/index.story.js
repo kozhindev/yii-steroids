@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {storiesOf} from '@storybook/react';
 import {withInfo} from '@storybook/addon-info';
-import {withReadme} from "storybook-readme";
+import {withReadme} from 'storybook-readme';
 import {text, boolean, select, array} from '@storybook/addon-knobs/react';
 
 import TextField from './TextField';
