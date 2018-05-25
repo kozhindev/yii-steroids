@@ -85,6 +85,14 @@ class ModelEntity extends ModelEntityMeta implements IEntity
             // Lazy create module
             ModuleEntity::findOrCreate($this->moduleId);
 
+            // Create model, if not exists
+            if (!file_exists($this->getPath())) {
+                GiiHelper::renderFile('model/model', $this->getPath(), [
+                    'modelEntity' => $this,
+                ]);
+                \Yii::$app->session->addFlash('success', 'Added model ' . $this->name);
+            }
+
             // Create/update meta information
             GiiHelper::renderFile('model/meta', $this->getMetaPath(), [
                 'modelEntity' => $this,
@@ -93,14 +101,6 @@ class ModelEntity extends ModelEntityMeta implements IEntity
                 'modelEntity' => $this,
             ]);
             \Yii::$app->session->addFlash('success', 'Meta  info model ' . $this->name . 'Meta updated');
-
-            // Create model, if not exists
-            if (!file_exists($this->getPath())) {
-                GiiHelper::renderFile('model/model', $this->getPath(), [
-                    'modelEntity' => $this,
-                ]);
-                \Yii::$app->session->addFlash('success', 'Added model ' . $this->name);
-            }
 
             // Create migration
             $migrationMethods = new MigrationMethods([

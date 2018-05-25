@@ -66,14 +66,6 @@ class FormEntity extends ModelEntity implements IEntity
             // Lazy create module
             ModuleEntity::findOrCreate($this->moduleId);
 
-            GiiHelper::renderFile($this->queryModel ? 'form/meta_search' : 'form/meta_form', $this->getMetaPath(), [
-                'formEntity' => $this,
-            ]);
-            GiiHelper::renderFile('form/meta_js', $this->getMetaJsPath(), [
-                'formEntity' => $this,
-            ]);
-            \Yii::$app->session->addFlash('success', 'Meta info form ' . $this->name . 'Meta update');
-
             // Create model, if not exists
             if (!file_exists($this->getPath())) {
                 GiiHelper::renderFile('form/form', $this->getPath(), [
@@ -81,6 +73,14 @@ class FormEntity extends ModelEntity implements IEntity
                 ]);
                 \Yii::$app->session->addFlash('success', 'Added form ' . $this->name);
             }
+
+            GiiHelper::renderFile($this->queryModel ? 'form/meta_search' : 'form/meta_form', $this->getMetaPath(), [
+                'formEntity' => $this,
+            ]);
+            GiiHelper::renderFile('form/meta_js', $this->getMetaJsPath(), [
+                'formEntity' => $this,
+            ]);
+            \Yii::$app->session->addFlash('success', 'Meta info form ' . $this->name . 'Meta update');
 
             return true;
         }

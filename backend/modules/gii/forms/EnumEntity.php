@@ -42,6 +42,7 @@ class EnumEntity extends EnumEntityMeta implements IEntity
         return array_merge(
             $this->attributes(),
             [
+                'customColumns',
                 'items',
             ]
         );
@@ -162,10 +163,12 @@ class EnumEntity extends EnumEntityMeta implements IEntity
         $values = [];
         foreach ($this->items as $itemEntity) {
             if (isset($itemEntity->custom[$name])) {
-                $values[$itemEntity->name] = $itemEntity->custom[$name];
+                $values[] = new ValueExpression(
+                    'self::' . $itemEntity->getConstName() . ' => ' . GiiHelper::varExport($itemEntity->custom[$name]) . ''
+                );
             }
         }
-        return !empty($values) ? GiiHelper::varExport($values, $indent) : '';
+        return GiiHelper::varExport($values, $indent);
     }
 
     /**
