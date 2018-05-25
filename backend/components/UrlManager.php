@@ -38,7 +38,7 @@ class UrlManager extends \codemix\localeurls\UrlManager implements BootstrapInte
 
     public function bootstrap($app)
     {
-        if ($this->enableLocaleUrls && $app instanceof WebApplication) {
+        if ($this->enableLocaleUrls && $app instanceof WebApplication && !YII_ENV_TEST) {
             // Set Application language before request
 
             $request = \Yii::$app->request;
