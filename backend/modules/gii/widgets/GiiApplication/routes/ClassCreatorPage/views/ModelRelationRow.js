@@ -59,22 +59,14 @@ export default class ModelRelationRow extends React.PureComponent {
                             }
                             : {};
 
-                        const isHighlighted = field => {
-                            const isSelfAttribute = ['selfKey', 'viaSelfKey'].indexOf(field.attribute) !== -1;
-                            const isRelatedClassAttribute = [
-                                'viaRelationKey', 'relationKey', 'relationModel'
-                            ].indexOf(field.attribute) !== -1;
-
-                            return (isSelfAttribute || isRelatedClassAttribute) && this._isFocused(isRelatedClassAttribute);
-                        };
-
                         return (
                             <td
                                 key={index}
                                 className={bem(
                                     bem.element('table-cell'),
-                                    field.className
-                                ) + (isHighlighted(field) ? ' bg-success' : '')}
+                                    field.className,
+                                    this._isHighlighted(field.attribute) && 'table-success'
+                                )}
                             >
                                 <Field
                                     layout='inline'
@@ -102,6 +94,14 @@ export default class ModelRelationRow extends React.PureComponent {
         );
     }
 
+    _isHighlighted(attribute) {
+        const isSelfAttribute = ['selfKey', 'viaSelfKey'].indexOf(attribute) !== -1;
+        const isRelatedClassAttribute = [
+            'viaRelationKey', 'relationKey', 'relationModel'
+        ].indexOf(attribute) !== -1;
+
+        return (isSelfAttribute || isRelatedClassAttribute) && this._isFocused(isRelatedClassAttribute);
+    }
 
     _isFocused(isRelation) {
         return this.state[isRelation ? 'relationFocuses' : 'selfFocuses'] === true;
