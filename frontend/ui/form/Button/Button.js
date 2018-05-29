@@ -90,7 +90,7 @@ export default class Button extends React.PureComponent {
                 formId={this.context.formId}
                 layout={this.context.layout}
                 layoutProps={this.context.layoutProps}
-                size={this.context.size}
+                size={this.context.size || this.props.size}
             />
         );
 

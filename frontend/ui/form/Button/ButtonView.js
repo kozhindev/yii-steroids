@@ -91,7 +91,7 @@ export default class ButtonView extends React.PureComponent {
             }),
             this.props.className,
             !this.props.link && 'btn',
-            'btn-' + this.props.size,
+            this.props.size && 'btn-' + this.props.size,
             !this.props.link && 'btn-' + (this.props.outline ? 'outline-' : '') + this.props.color,
             this.props.block && 'btn-block',
             this.props.link && 'btn-link',
