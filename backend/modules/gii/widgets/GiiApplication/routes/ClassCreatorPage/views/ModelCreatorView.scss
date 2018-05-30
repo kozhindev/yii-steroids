@@ -16,14 +16,14 @@
 
   .table tbody tr:nth-of-type(odd) {
     > td {
-      padding-top: 10px;
+      padding-top: 15px;
     }
   }
   .table tbody tr:nth-of-type(even) {
     border-bottom: solid $table-border-width $table-border-color;
 
     > td {
-      padding-bottom: 10px;
+      padding-bottom: 15px;
     }
   }
 

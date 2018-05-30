@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import {formValueSelector} from 'redux-form';
+import {Field} from 'yii-steroids/frontend/ui/form';
 
 import {html} from 'components';
 import RelationTypeMeta from '../../../../../enums/meta/RelationTypeMeta';
@@ -35,22 +36,47 @@ export default class ModelRelationRow extends React.PureComponent {
         relationType: PropTypes.string,
     };
 
+    constructor() {
+        super(...arguments);
+
+        this.state = {
+            relationFocused: false,
+            selfFocused: false,
+        };
+    }
+
     render() {
         return (
             <tr key={this.props.rowIndex}>
                 {this.props.items
                     .filter(field => !field.isVia || this.props.relationType === RelationTypeMeta.MANY_MANY)
-                    .map((field, index) => (
-                        <td
-                            key={index}
-                            className={bem(
-                                bem.element('table-cell'),
-                                field.className
-                            )}
-                        >
-                            {this.props.renderField(field, this.props.prefix)}
-                        </td>
-                    ))
+                    .map((field, index) => {
+
+                        const inputProps = ['viaRelationKey', 'viaSelfKey'].indexOf(field.attribute) !== -1
+                            ? {
+                                onFocus: () => this._setFocus(field.attribute === 'viaRelationKey', true),
+                                onBlur: () => this._setFocus(field.attribute === 'viaRelationKey', false),
+                            }
+                            : {};
+
+                        return (
+                            <td
+                                key={index}
+                                className={bem(
+                                    bem.element('table-cell'),
+                                    field.className,
+                                    this._isHighlighted(field.attribute) && 'table-success'
+                                )}
+                            >
+                                <Field
+                                    layout='inline'
+                                    {...field}
+                                    inputProps={inputProps}
+                                    prefix={this.props.prefix}
+                                />
+                            </td>
+                        );
+                    })
                 }
                 {this.props.showRemove && (
                     <td className={bem.element('table-cell', 'remove')}>
@@ -66,6 +92,25 @@ export default class ModelRelationRow extends React.PureComponent {
                 )}
             </tr>
         );
+    }
+
+    _isHighlighted(attribute) {
+        const isSelfAttribute = ['selfKey', 'viaSelfKey'].indexOf(attribute) !== -1;
+        const isRelatedClassAttribute = [
+            'viaRelationKey', 'relationKey', 'relationModel'
+        ].indexOf(attribute) !== -1;
+
+        return (isSelfAttribute || isRelatedClassAttribute) && this._isFocused(isRelatedClassAttribute);
+    }
+
+    _isFocused(isRelation) {
+        return this.state[isRelation ? 'relationFocuses' : 'selfFocuses'] === true;
+    }
+
+    _setFocus(isRelation, isFocus) {
+        this.setState({
+            [isRelation ? 'relationFocuses' : 'selfFocuses']: isFocus,
+        });
     }
 
 }

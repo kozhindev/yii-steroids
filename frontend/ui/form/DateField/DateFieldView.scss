@@ -7,6 +7,9 @@
 .DayPickerInput-Overlay {
   top: 5px;
 }
+.DayPickerInput-OverlayWrapper {
+  z-index: 999;
+}
 
 .DateFieldView {
 

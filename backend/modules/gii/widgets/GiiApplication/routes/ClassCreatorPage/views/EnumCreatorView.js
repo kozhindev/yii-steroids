@@ -104,8 +104,8 @@ export default class EnumCreatorView extends React.PureComponent {
                                     attribute: 'cssClass',
                                 },
                             ])
-                            .concat(_get(this.props.entity, 'metaClass.customColumns', []).map(attribute => ({
-                                attribute: 'customColumns.' + attribute,
+                            .concat(_get(this.props.entity, 'customColumns', []).map(attribute => ({
+                                attribute: 'custom.' + attribute,
                                 label: _upperFirst(attribute),
                                 component: InputField,
                             })))

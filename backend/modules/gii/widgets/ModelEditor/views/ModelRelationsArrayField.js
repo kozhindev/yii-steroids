@@ -79,7 +79,7 @@ class ModelRelationsArrayField extends React.Component {
                                         onKeyDown={this.props.onKeyDown}
                                     />
                                 </td>
-                                <td className={this._isFocused(index, true) ? 'bg-success' : ''}>
+                                <td className={this._isFocused(index, true) ? 'table-success' : ''}>
                                     <datalist id={`${ModelRelationsArrayField.formId}_${index}_relationAttributesList`}>
                                         {this._getModelMeta(index).map(item => (
                                             <option key={item.name} value={item.name} />
@@ -105,7 +105,7 @@ class ModelRelationsArrayField extends React.Component {
                                         onKeyDown={this.props.onKeyDown}
                                     />
                                 </td>
-                                <td className={this._isFocused(index, false) ? 'bg-success' : ''}>
+                                <td className={this._isFocused(index, false) ? 'table-success' : ''}>
                                     <input
                                         className='form-control input-sm'
                                         defaultValue={this.props.formValues.modelName}
@@ -140,7 +140,10 @@ class ModelRelationsArrayField extends React.Component {
                                                 <Field
                                                     name={`${attribute}[viaRelationKey]`}
                                                     component='input'
-                                                    className={'form-control input-sm' + (this._isFocused(index, true) ? ' bg-success' : '')}
+                                                    className={bem(
+                                                        'form-control input-sm',
+                                                        this._isFocused(index, true) && 'table-success'
+                                                    )}
                                                     placeholder='Key'
                                                     onFocus={() => this._setFocus(index, true, true)}
                                                     onBlur={() => this._setFocus(index, true, false)}

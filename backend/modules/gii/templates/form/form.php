@@ -12,7 +12,6 @@ echo "<?php\n";
 namespace <?= $formEntity->getNamespace() ?>;
 
 <?php if ($formEntity->queryModel) { ?>
-use yii\db\ActiveQuery;
 <?php } ?>
 use <?= $formEntity->getNamespace() ?>\meta\<?= $formEntity->name ?>Meta;
 
