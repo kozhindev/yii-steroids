@@ -77,6 +77,9 @@ class DefaultConfig
                     'migrate' => [
                         'class' => '\steroids\commands\MigrateCommand',
                     ],
+                    'steroids' => [
+                        'class' => '\steroids\commands\SteroidsCommand',
+                    ],
                 ],
                 'on beforeAction' => function() use ($steroidsConfig) {
                     Yii::setAlias('@tests', STEROIDS_ROOT_DIR . '/tests');
