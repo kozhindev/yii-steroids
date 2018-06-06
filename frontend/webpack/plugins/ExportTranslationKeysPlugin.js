@@ -95,13 +95,20 @@ class ExportTranslationKeysPlugin {
                         }
                     }
 
+                    // Find module name
+                    var reg = bundlePath.match('/app/(.+?)/.*');
+                    const moduleName = reg && reg[1];
+
                     // Find bundle name
                     const bundleName = bundlePath ? path.basename(bundlePath, '.js') : null;
                     if (bundleName) {
-                        translationKeys[bundleName] = translationKeys[bundleName] || [];
-                        translationKeys[bundleName].push(result);
+                        translationKeys[bundleName] = translationKeys[bundleName] || {
+                            translationKeys: [],
+                            moduleName,
+                            bundleName,
+                        };
+                        translationKeys[bundleName]['translationKeys'].push(result);
                     }
-
                     return true;
                 });
             });
@@ -109,8 +116,9 @@ class ExportTranslationKeysPlugin {
 
         compiler.plugin('done', (stats) => {
             Object.keys(translationKeys).forEach(bundleName => {
-                const filePath = stats.compilation.outputOptions.path + '/assets/' + bundleName + '-lang.json';
-                const arrayKeys = JSON.stringify(_.uniq(translationKeys[bundleName]));
+                const fileName = 'bundle-' + translationKeys[bundleName].moduleName + '-' + translationKeys[bundleName].bundleName;
+                const filePath = stats.compilation.outputOptions.path + '/assets/' + fileName + '-lang.json';
+                const arrayKeys = JSON.stringify(_.uniq(translationKeys[bundleName].translationKeys));
                 fs.writeFileSync(filePath, arrayKeys);
             });
 
