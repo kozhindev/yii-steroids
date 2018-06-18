@@ -180,6 +180,9 @@ class DefaultConfig
                 'urlManager' => [
                     'class' => 'steroids\components\UrlManager',
                 ],
+                'view' => [
+                    'class' => 'steroids\components\View',
+                ],
             ],
         ];
 

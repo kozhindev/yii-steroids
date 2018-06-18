@@ -47,6 +47,7 @@ class ActiveForm extends Widget
         parent::init();
 
         // Normalize fields
+        $this->fields = array_filter($this->fields);
         foreach ($this->fields as $key => $field) {
             if (is_string($field)) {
                 $this->fields[$key] = ['attribute' => $field];
