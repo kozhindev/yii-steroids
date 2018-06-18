@@ -30,7 +30,11 @@ class GiiHelper
         }
 
         $path = dirname(__DIR__) . '/templates/' . $template . '.php';
-        file_put_contents($savePath, \Yii::$app->view->renderPhpFile($path, $params));
+        if (file_put_contents($savePath, \Yii::$app->view->renderPhpFile($path, $params)) !== false) {
+            $mask = @umask(0);
+            @chmod($savePath, 0666);
+            @umask($mask);
+        }
     }
 
     /**

@@ -60,7 +60,7 @@ export default class WidgetCreatorView extends React.PureComponent {
                     <Field attribute='withGrid'/>
                     <Field attribute='withForm'/>
                     <Field attribute='withRouter'/>
-                    <div className='mt-4'>
+                    <div className='mt-4 mb-5'>
                         <Button
                             type='submit'
                             label='Save'

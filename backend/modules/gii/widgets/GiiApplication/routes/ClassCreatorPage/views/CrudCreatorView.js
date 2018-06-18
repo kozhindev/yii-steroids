@@ -98,7 +98,7 @@ export default class CrudCreatorView extends React.PureComponent {
                     <Field attribute='createActionCreate'/>
                     <Field attribute='createActionUpdate'/>
                     <Field attribute='createActionView'/>
-                    <div className='mt-4'>
+                    <div className='mt-4 mb-5'>
                         <Button
                             type='submit'
                             label='Save'

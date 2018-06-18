@@ -193,7 +193,7 @@ export default class ModelCreatorView extends React.PureComponent {
                             />
                         </div>
                     </div>
-                    <div>
+                    <div className='mb-5'>
                         <Button
                             type='submit'
                             label='Save'

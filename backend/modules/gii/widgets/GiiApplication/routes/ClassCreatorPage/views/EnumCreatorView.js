@@ -111,7 +111,7 @@ export default class EnumCreatorView extends React.PureComponent {
                             })))
                         }
                     />
-                    <div className='mt-4'>
+                    <div className='mt-4 mb-5'>
                         <Button
                             type='submit'
                             label='Save'
