@@ -113,7 +113,7 @@ class GiiHelper
             if ($id === 'debug') {
                 unset($classes[$id]);
             }
-            if ($id === 'gii' && !GiiModule::getInstance()->showGiiEntries) {
+            if (strpos($className, 'steroids\\modules\\') === 0 && !GiiModule::getInstance()->showSteroidsEntries) {
                 unset($classes[$id]);
             }
         }
@@ -135,7 +135,7 @@ class GiiHelper
 
                 $className = static::getClassName($classType, $moduleId, $name);
                 $info = new \ReflectionClass($className);
-                if (preg_match('/Meta$/', $info->getParentClass()->name)) {
+                if ($info->getParentClass() && preg_match('/Meta$/', $info->getParentClass()->name)) {
                     $classes[] = [
                         'moduleId' => $moduleId,
                         'name' => $name,

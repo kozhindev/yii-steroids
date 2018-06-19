@@ -67,7 +67,7 @@ class ModelRelationEntity extends ModelRelationEntityMeta
                         'viaSelfKey' => array_keys($activeQuery->via->link)[0],
                         'modelEntity' => $entity,
                     ]);
-                } else {
+                } elseif ($activeQuery->link) {
                     $items[] = new static([
                         'type' => $activeQuery->multiple ? RelationType::HAS_MANY : RelationType::HAS_ONE,
                         'name' => lcfirst(substr($methodInfo->name, 3)),
