@@ -3,7 +3,7 @@
 namespace steroids\modules\user\forms;
 
 use Yii;
-use app\core\validators\ReCaptchaValidator;
+use steroids\validators\ReCaptchaValidator;
 use steroids\modules\user\forms\meta\LoginFormMeta;
 use steroids\modules\user\models\User;
 use steroids\modules\user\UserModule;

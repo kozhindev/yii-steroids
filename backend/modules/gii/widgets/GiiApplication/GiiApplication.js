@@ -21,6 +21,7 @@ export default class GiiApplication extends React.PureComponent {
 
     static propTypes = {
         roles: PropTypes.arrayOf(PropTypes.string),
+        siteName: PropTypes.string,
     };
 
     constructor() {
@@ -45,12 +46,20 @@ export default class GiiApplication extends React.PureComponent {
             <div className={bem.block({loading: this.state.isLoading})}>
                 <nav className='navbar navbar-expand-md navbar-dark bg-dark mb-3'>
                     <div className='container'>
-                        <Link
-                            className='navbar-brand'
-                            to='/'
-                        >
-                            Gii
-                        </Link>
+                        <div>
+                            <Link
+                                className='navbar-brand'
+                                to='/'
+                            >
+                                Gii
+                            </Link>
+                            <Link
+                                className='navbar-brand'
+                                url={this.props.siteName}
+                            >
+                                На главную
+                            </Link>
+                        </div>
                         <Nav
                             layout='navbar'
                             items={[

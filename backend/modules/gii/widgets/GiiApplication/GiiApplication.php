@@ -15,6 +15,8 @@ class GiiApplication extends Widget
             ],
         ]);
 
-        return $this->renderReact([]);
+        return $this->renderReact([
+            'siteName' => Url::home(true),
+        ]);
     }
 }

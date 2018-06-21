@@ -9,40 +9,25 @@ class View extends \yii\web\View
     /**
      * Detect overwrite library file in application views
      * @param string $view
-     * @param null $context
      * @return null|string
      */
-    public static function findOverwriteView($view, $context = null)
+    public function findOverwriteView($view)
     {
-        $appView = null;
-        if (preg_match('/^[^@\\/]+/$', $view) && $context && $context instanceof Controller) {
-            $appView = $context->viewPath . '/' . $view;
-        }
         if (strpos($view, '@steroids/modules') === 0) {
-            $appView = \Yii::getAlias(str_replace('@steroids/modules', '@app', $view));
-        }
+            $appView = str_replace('@steroids/modules', '@app', $view);
 
-        if ($appView) {
-            if (!pathinfo($appView, PATHINFO_EXTENSION)) {
-                $appView = $appView . '.php';
+            $appPath = \Yii::getAlias($appView);
+
+            if (!pathinfo($appPath, PATHINFO_EXTENSION)) {
+                $appPath = $appPath . '.php';
             }
-            if (file_exists($appView)) {
+
+            if (file_exists($appPath)) {
                 return $appView;
             }
         }
 
-        return null;
+        return $view;
     }
 
-    /**
-     * @inheritdoc
-     */
-    protected function findViewFile($view, $context = null)
-    {
-        if ($appView = static::findOverwriteView($view, $context)) {
-            $view = $appView;
-        }
-
-        return parent::findViewFile($view, $context);
-    }
 }

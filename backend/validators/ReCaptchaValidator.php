@@ -1,6 +1,6 @@
 <?php
 
-namespace app\core\validators;
+namespace steroids\validators;
 
 use Yii;
 use yii\base\Exception;

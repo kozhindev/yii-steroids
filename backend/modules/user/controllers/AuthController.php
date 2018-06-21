@@ -48,13 +48,13 @@ class AuthController extends Controller
             $this->trigger(self::EVENT_BEFORE_LOGIN);
 
             if (!$model->login()) {
-                $this->trigger(self::EVENT_AFTER_LOGIN);
                 return ActiveForm::renderAjax($model);
             }
+            $this->trigger(self::EVENT_AFTER_LOGIN);
             return $this->redirect($redirectUrl);
         }
 
-        return $this->render('login', [
+        return $this->render($this->view->findOverwriteView('@steroids/modules/user/views/auth/login'), [
             'model' => $model,
         ]);
     }

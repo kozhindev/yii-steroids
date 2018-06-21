@@ -27,6 +27,7 @@ class UserModule extends Module
     public function init()
     {
         parent::init();
+        $this->modelsMap = $this->modelsMap ?: [];
 
         $this->modelsMap = array_merge([
             'User' => User::class,

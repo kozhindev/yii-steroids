@@ -2,8 +2,8 @@
 
 namespace steroids\modules\user\controllers;
 
-use app\auth\forms\EmailConfirm;
-use app\auth\forms\RegistrationForm;
+use steroids\modules\user\forms\EmailConfirmForm;
+use steroids\modules\user\forms\RegistrationForm;
 use steroids\modules\user\UserModule;
 use Yii;
 use yii\web\Controller;
@@ -11,27 +11,27 @@ use steroids\widgets\ActiveForm;
 
 class RegistrationController extends Controller
 {
-    public static function coreMenuItems()
+    public static function siteMap()
     {
         return [
-            'user.auth.registration' => [
+            'user.registration' => [
                 'label' => \Yii::t('app', 'Регистрация'),
                 'url' => ['/user/registration/index'],
                 'urlRule' => 'user/registration',
                 'items' => [
                     'email-confirm' => [
                         'label' => \Yii::t('app', 'Подтверждение email'),
-                        'url' => ['/auth/registration/email-confirm'],
+                        'url' => ['/user/registration/email-confirm'],
                         'urlRule' => 'user/registration/email-confirm',
                     ],
                     'success' => [
                         'label' => \Yii::t('app', 'Вы зарегистрировались'),
-                        'url' => ['/auth/registration/success'],
+                        'url' => ['/user/registration/success'],
                         'urlRule' => 'user/registration/success',
                     ],
                     'agreement' => [
                         'label' => \Yii::t('app', 'Пользовательское соглашение'),
-                        'url' => ['/auth/registration/agreement'],
+                        'url' => ['/user/registration/agreement'],
                         'urlRule' => 'user/registration/agreement',
                     ],
                 ],
@@ -49,14 +49,14 @@ class RegistrationController extends Controller
             return ActiveForm::renderAjax($model);
         }
 
-        return $this->render('registration', [
+        return $this->render($this->view->findOverwriteView('@steroids/modules/user/views/registration/registration'), [
             'model' => $model,
         ]);
     }
 
     public function actionEmailConfirm()
     {
-        $model = new EmailConfirm();
+        $model = new EmailConfirmForm();
         $model->load(array_merge(
             Yii::$app->request->get(),
             Yii::$app->request->post()
@@ -70,18 +70,18 @@ class RegistrationController extends Controller
             return ActiveForm::renderAjax($model);
         }
 
-        return $this->render('email-confirm', [
+        return $this->render($this->view->findOverwriteView('@steroids/modules/user/views/registration/email-confirm'), [
             'model' => $model,
         ]);
     }
 
     public function actionSuccess()
     {
-        return $this->render('success');
+        return $this->render($this->view->findOverwriteView('@steroids/modules/user/views/registration/success'));
     }
 
     public function actionAgreement()
     {
-        return $this->render('agreement');
+        return $this->render($this->view->findOverwriteView('@steroids/modules/user/views/registration/agreement'));
     }
 }

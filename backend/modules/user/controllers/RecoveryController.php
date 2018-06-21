@@ -40,7 +40,7 @@ class RecoveryController extends Controller
             return ActiveForm::renderAjax($model);
         }
 
-        return $this->render('request', [
+        return $this->render($this->view->findOverwriteView('@steroids/modules/user/views/recovery/request'), [
             'model' => $model,
         ]);
     }
@@ -51,7 +51,7 @@ class RecoveryController extends Controller
             'token' => $token,
         ]);
 
-        if ($model->load(Yii::$app->request->post()) && $model->change()) {
+        if ($model->load(Yii::$app->request->post()) && $model->reset()) {
             Yii::$app->session->setFlash('success', \Yii::t('app', 'Новый пароль сохранен. Теперь вы можете войти, используя новый пароль'));
             return $this->redirect(['/user/auth/login']);
         }
@@ -59,7 +59,7 @@ class RecoveryController extends Controller
             return ActiveForm::renderAjax($model);
         }
 
-        return $this->render('reset', [
+        return $this->render($this->view->findOverwriteView('@steroids/modules/user/views/recovery/reset'), [
             'model' => $model,
         ]);
     }
