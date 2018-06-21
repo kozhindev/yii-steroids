@@ -1,4 +1,4 @@
-import Model from 'yii-steroids/frontend/base/Model';
+import Model from 'yii-steroids/base/Model';
 
 import {locale} from 'components';
 

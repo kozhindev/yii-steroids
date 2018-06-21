@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Form, Button, Field, FieldList} from 'yii-steroids/frontend/ui/form';
+import {Form, Button, Field, FieldList} from 'yii-steroids/ui/form';
 
 import {html} from 'components';
 import CrudEntityMeta from '../../../../../forms/meta/CrudEntityMeta';

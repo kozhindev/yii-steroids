@@ -11,7 +11,7 @@ $fields = $modelEntity->renderJsFields('        ', $import);
 $formatters = $modelEntity->renderJsFormatters('        ', $import);
 
 ?>
-import Model from 'yii-steroids/frontend/base/Model';
+import Model from 'yii-steroids/base/Model';
 <?= !empty($import) ? "\n" . implode("\n", array_unique($import)) . "\n" : '' ?>
 
 export default class <?= $modelEntity->name ?>Meta extends Model {

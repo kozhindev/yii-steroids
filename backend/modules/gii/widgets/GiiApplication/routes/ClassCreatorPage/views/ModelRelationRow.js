@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import {formValueSelector} from 'redux-form';
-import {Field} from 'yii-steroids/frontend/ui/form';
+import {Field} from 'yii-steroids/ui/form';
 
 import {html} from 'components';
 import RelationTypeMeta from '../../../../../enums/meta/RelationTypeMeta';

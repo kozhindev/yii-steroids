@@ -10,7 +10,7 @@ $import = [];
 $fields = $formEntity->renderJsFields('        ', $import);
 
 ?>
-import Model from 'yii-steroids/frontend/base/Model';
+import Model from 'yii-steroids/base/Model';
 <?= !empty($import) ? "\n" . implode("\n", array_unique($import)) . "\n" : '' ?>
 
 export default class <?= $formEntity->name ?>Meta extends Model {
