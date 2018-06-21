@@ -1,8 +1,15 @@
 # Ignore some meta files and frontend part when creating an archive of this repository
+/.idea              export-ignore
 /.gitignore         export-ignore
 /.gitattributes     export-ignore
 /.storybook         export-ignore
+/backend/tests      export-ignore
 /stories            export-ignore
 /package.json       export-ignore
 /package-lock.json  export-ignore
-/package-lock.json  export-ignore
+/actions            export-ignore
+/base               export-ignore
+/components         export-ignore
+/reducers           export-ignore
+/ui                 export-ignore
+/webpack            export-ignore
