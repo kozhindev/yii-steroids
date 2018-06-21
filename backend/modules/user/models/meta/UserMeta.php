@@ -23,6 +23,7 @@ use app\cruises\enums\CabinBedConfiguration;
  * @property string $emailConfirmTime
  * @property string $blockedTime
  * @property string $lastLoginTime
+ * @property string $name
  */
 abstract class UserMeta extends Model
 {
@@ -40,7 +41,7 @@ abstract class UserMeta extends Model
     public function rules()
     {
         return [
-            [['login', 'email', 'role'], 'string', 'max' => 255],
+            [['login', 'email', 'role', 'name'], 'string', 'max' => 255],
             ['email', 'email'],
             ['email', 'required'],
             ['phone', 'string', 'max' => 32],
@@ -122,6 +123,9 @@ abstract class UserMeta extends Model
             'lastLoginTime' => [
                 'label' => Yii::t('app', 'Дата последнего входа'),
                 'appType' => 'dateTime'
+            ],
+            'name' => [
+                'label' => Yii::t('app', 'Имя')
             ]
         ];
     }

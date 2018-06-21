@@ -10,11 +10,12 @@ abstract class RegistrationFormMeta extends FormModel
     public $email;
     public $password;
     public $passwordAgain;
+    public $name;
 
     public function rules()
     {
         return [
-            ['email', 'string', 'max' => 255],
+            [['email', 'name'], 'string', 'max' => 255],
             ['email', 'email'],
             [['email', 'password', 'passwordAgain'], 'required'],
             [['password', 'passwordAgain'], 'string', 'min' => 1,'max' => 255],
@@ -38,6 +39,9 @@ abstract class RegistrationFormMeta extends FormModel
                 'label' => Yii::t('app', 'Повтор пароля'),
                 'appType' => 'password',
                 'isRequired' => true
+            ],
+            'name' => [
+                'label' => Yii::t('app', 'Имя')
             ]
         ];
     }

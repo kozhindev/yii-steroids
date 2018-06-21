@@ -21,6 +21,7 @@ use yii\web\View;
         'email',
         'password',
         'passwordAgain',
+        'name'
     ],
     'submitLabel' => Yii::t('app', 'Зарегистрироваться'),
 ]); ?>

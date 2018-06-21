@@ -13,6 +13,7 @@ class M180609040638CreateUser extends Migration
                 'id' => $this->primaryKey(),
                 'login' => $this->string(),
                 'email' => $this->string()->notNull(),
+                'name' => $this->string(),
                 'phone' => $this->string(),
                 'role' => $this->string(),
                 'passwordHash' => $this->text(),

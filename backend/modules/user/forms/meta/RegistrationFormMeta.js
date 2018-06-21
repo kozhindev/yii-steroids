@@ -26,6 +26,11 @@ export default class RegistrationFormMeta extends Model {
                 'attribute': 'passwordAgain',
                 'label': locale.t('Повтор пароля'),
                 'required': true
+            },
+            'name': {
+                'component': 'InputField',
+                'attribute': 'name',
+                'label': locale.t('Имя')
             }
         };
     }

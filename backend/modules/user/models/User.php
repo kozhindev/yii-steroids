@@ -57,4 +57,9 @@ class User extends UserMeta implements IdentityInterface
         return Yii::$app->security->validatePassword($password, $this->passwordHash);
     }
 
+    public function getTitle()
+    {
+        return $this->name ?: $this->email ?: Yii::t('app', 'Гость');
+    }
+
 }

@@ -86,6 +86,11 @@ export default class UserMeta extends Model {
                 'component': 'DateTimeField',
                 'attribute': 'lastLoginTime',
                 'label': locale.t('Дата последнего входа')
+            },
+            'name': {
+                'component': 'InputField',
+                'attribute': 'name',
+                'label': locale.t('Имя')
             }
         };
     }
@@ -136,6 +141,9 @@ export default class UserMeta extends Model {
             },
             'lastLoginTime': {
                 'label': locale.t('Дата последнего входа')
+            },
+            'name': {
+                'label': locale.t('Имя')
             }
         };
     }
