@@ -22,9 +22,15 @@ use yii\web\View;
         'login',
         'password',
         'rememberMe',
-        UserModule::getInstance()->enableCaptcha ? 'reCaptcha' : null
+        UserModule::getInstance()->enableCaptcha
+            ? [
+                'label' => false,
+                'attribute' => 'reCaptcha',
+                'component' => 'ReCaptchaField',
+            ]
+            : null,
     ],
-    'submitLabel' => \Yii::t('steroids','Войти'),
+    'submitLabel' => \Yii::t('steroids', 'Войти'),
 ]); ?>
 <div class="row">
     <div class="offset-3 col-6">

@@ -15,6 +15,7 @@ import NumberField from './NumberField';
 import PasswordField from './PasswordField';
 import RadioListField from './RadioListField';
 import RangeField from './RangeField';
+import ReCaptchaField from './ReCaptchaField';
 import TextField from './TextField';
 
 export {
@@ -35,5 +36,6 @@ export {
     PasswordField,
     RadioListField,
     RangeField,
+    ReCaptchaField,
     TextField,
 };
