@@ -30,34 +30,34 @@ abstract class ModelAttributeEntityMeta extends FormModel
     {
         return [
             'name' => [
-                'label' => Yii::t('app', 'Attribute'),
+                'label' => Yii::t('steroids', 'Attribute'),
                 'required' => true
             ],
             'prevName' => [
-                'label' => Yii::t('app', 'Previous name')
+                'label' => Yii::t('steroids', 'Previous name')
             ],
             'label' => [
-                'label' => Yii::t('app', 'Label')
+                'label' => Yii::t('steroids', 'Label')
             ],
             'hint' => [
-                'label' => Yii::t('app', 'Hint')
+                'label' => Yii::t('steroids', 'Hint')
             ],
             'example' => [
-                'label' => Yii::t('app', 'Example value')
+                'label' => Yii::t('steroids', 'Example value')
             ],
             'appType' => [
-                'label' => Yii::t('app', 'Type'),
+                'label' => Yii::t('steroids', 'Type'),
                 'required' => true
             ],
             'defaultValue' => [
-                'label' => Yii::t('app', 'Default value')
+                'label' => Yii::t('steroids', 'Default value')
             ],
             'isRequired' => [
-                'label' => Yii::t('app', 'Required'),
+                'label' => Yii::t('steroids', 'Required'),
                 'appType' => 'boolean'
             ],
             'isPublishToFrontend' => [
-                'label' => Yii::t('app', 'Publish'),
+                'label' => Yii::t('steroids', 'Publish'),
                 'appType' => 'boolean'
             ]
         ];

@@ -29,35 +29,35 @@ abstract class WidgetEntityMeta extends FormModel
     {
         return [
             'moduleId' => [
-                'label' => Yii::t('app', 'Module ID'),
+                'label' => Yii::t('steroids', 'Module ID'),
                 'required' => true
             ],
             'name' => [
-                'label' => Yii::t('app', 'Class name'),
+                'label' => Yii::t('steroids', 'Class name'),
                 'required' => true
             ],
             'parentName' => [
-                'label' => Yii::t('app', 'Parent widget name'),
-                'hint' => Yii::t('app', 'For create child view')
+                'label' => Yii::t('steroids', 'Parent widget name'),
+                'hint' => Yii::t('steroids', 'For create child view')
             ],
             'withPropTypes' => [
-                'label' => Yii::t('app', 'With PropTypes'),
+                'label' => Yii::t('steroids', 'With PropTypes'),
                 'appType' => 'boolean'
             ],
             'withConnect' => [
-                'label' => Yii::t('app', 'With connect()'),
+                'label' => Yii::t('steroids', 'With connect()'),
                 'appType' => 'boolean'
             ],
             'withGrid' => [
-                'label' => Yii::t('app', 'With Grid'),
+                'label' => Yii::t('steroids', 'With Grid'),
                 'appType' => 'boolean'
             ],
             'withForm' => [
-                'label' => Yii::t('app', 'With Form'),
+                'label' => Yii::t('steroids', 'With Form'),
                 'appType' => 'boolean'
             ],
             'withRouter' => [
-                'label' => Yii::t('app', 'With Router'),
+                'label' => Yii::t('steroids', 'With Router'),
                 'appType' => 'boolean'
             ]
         ];

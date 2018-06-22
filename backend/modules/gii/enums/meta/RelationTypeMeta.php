@@ -14,9 +14,9 @@ abstract class RelationTypeMeta extends Enum
     public static function getLabels()
     {
         return [
-            self::HAS_ONE => Yii::t('app', 'Has One'),
-            self::HAS_MANY => Yii::t('app', 'Has Many'),
-            self::MANY_MANY => Yii::t('app', 'Many-Many')
+            self::HAS_ONE => Yii::t('steroids', 'Has One'),
+            self::HAS_MANY => Yii::t('steroids', 'Has Many'),
+            self::MANY_MANY => Yii::t('steroids', 'Many-Many')
         ];
     }
 }

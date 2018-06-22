@@ -21,13 +21,13 @@ class AuthController extends Controller
             'user.auth' => [
                 'items' => [
                     'login' => [
-                        'label' => \Yii::t('app', 'Вход'),
+                        'label' => \Yii::t('steroids', 'Вход'),
                         'url' => ['/user/auth/login'],
                         'urlRule' => 'user/login',
                         'visible' => false,
                     ],
                     'logout' => [
-                        'label' => \Yii::t('app', 'Выход'),
+                        'label' => \Yii::t('steroids', 'Выход'),
                         'url' => ['/user/auth/logout'],
                         'urlRule' => 'user/logout',
                     ],

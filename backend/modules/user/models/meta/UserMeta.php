@@ -64,68 +64,68 @@ abstract class UserMeta extends Model
     {
         return [
             'id' => [
-                'label' => Yii::t('app', 'ИД'),
+                'label' => Yii::t('steroids', 'ИД'),
                 'appType' => 'primaryKey'
             ],
             'login' => [
-                'label' => Yii::t('app', 'Логин')
+                'label' => Yii::t('steroids', 'Логин')
             ],
             'email' => [
-                'label' => Yii::t('app', 'Email'),
+                'label' => Yii::t('steroids', 'Email'),
                 'appType' => 'email',
                 'isRequired' => true
             ],
             'phone' => [
-                'label' => Yii::t('app', 'Телефон'),
+                'label' => Yii::t('steroids', 'Телефон'),
                 'appType' => 'phone'
             ],
             'role' => [
-                'label' => Yii::t('app', 'Роль'),
+                'label' => Yii::t('steroids', 'Роль'),
                 'enumClassName' => CabinBedConfiguration::class
             ],
             'passwordHash' => [
-                'label' => Yii::t('app', 'Пароль'),
+                'label' => Yii::t('steroids', 'Пароль'),
                 'appType' => 'text'
             ],
             'sessionKey' => [
-                'label' => Yii::t('app', 'Ключ сессии'),
+                'label' => Yii::t('steroids', 'Ключ сессии'),
                 'stringLength' => '32'
             ],
             'language' => [
-                'label' => Yii::t('app', 'Язык'),
+                'label' => Yii::t('steroids', 'Язык'),
                 'stringLength' => '10'
             ],
             'lastLoginIp' => [
-                'label' => Yii::t('app', 'IP последнего входа'),
+                'label' => Yii::t('steroids', 'IP последнего входа'),
                 'stringLength' => '45'
             ],
             'emailConfirmKey' => [
-                'label' => Yii::t('app', 'Ключ подтверждения почты'),
+                'label' => Yii::t('steroids', 'Ключ подтверждения почты'),
                 'stringLength' => '32'
             ],
             'createTime' => [
-                'label' => Yii::t('app', 'Дата регистрации'),
+                'label' => Yii::t('steroids', 'Дата регистрации'),
                 'appType' => 'autoTime'
             ],
             'updateTime' => [
-                'label' => Yii::t('app', 'Дата обновления'),
+                'label' => Yii::t('steroids', 'Дата обновления'),
                 'appType' => 'autoTime',
                 'touchOnUpdate' => true
             ],
             'emailConfirmTime' => [
-                'label' => Yii::t('app', 'Дата подтверждения почты'),
+                'label' => Yii::t('steroids', 'Дата подтверждения почты'),
                 'appType' => 'dateTime'
             ],
             'blockedTime' => [
-                'label' => Yii::t('app', 'Дата блокировки'),
+                'label' => Yii::t('steroids', 'Дата блокировки'),
                 'appType' => 'dateTime'
             ],
             'lastLoginTime' => [
-                'label' => Yii::t('app', 'Дата последнего входа'),
+                'label' => Yii::t('steroids', 'Дата последнего входа'),
                 'appType' => 'dateTime'
             ],
             'name' => [
-                'label' => Yii::t('app', 'Имя')
+                'label' => Yii::t('steroids', 'Имя')
             ]
         ];
     }

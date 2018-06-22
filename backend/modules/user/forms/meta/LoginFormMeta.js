@@ -23,7 +23,7 @@ export default class LoginFormMeta extends Model {
             'rememberMe': {
                 'component': 'CheckboxField',
                 'attribute': 'rememberMe',
-                'label': locale.t('Запомнить вход')
+                'label': locale.t('Запомнить меня')
             },
             'reCaptcha': {
                 'component': 'InputField',

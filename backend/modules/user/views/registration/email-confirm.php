@@ -22,6 +22,6 @@ use yii\web\View;
         'email',
         'code',
     ],
-    'submitLabel' => Yii::t('app', 'Подтвердить почту'),
+    'submitLabel' => Yii::t('steroids', 'Подтвердить почту'),
 ]); ?>
 

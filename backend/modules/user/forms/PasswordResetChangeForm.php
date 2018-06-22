@@ -26,13 +26,13 @@ class PasswordResetChangeForm extends PasswordResetChangeFormMeta
                     'emailConfirmKey' => $this->$attribute,
                 ]);
                 if (!$this->user) {
-                    $this->addError($attribute, Yii::t('app', 'Код подтверждения неверен или устарел.'));
+                    $this->addError($attribute, Yii::t('steroids', 'Код подтверждения неверен или устарел.'));
                 }
             }],
             [['newPassword', 'newPasswordAgain'], 'string', 'min' => YII_ENV_DEV ? 1 : 6],
             ['newPasswordAgain', 'compare',
                 'compareAttribute' => 'newPassword',
-                'message' => \Yii::t('app', 'Пароли должны совпадать'),
+                'message' => \Yii::t('steroids', 'Пароли должны совпадать'),
             ],
         ]);
     }

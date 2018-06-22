@@ -26,20 +26,20 @@ abstract class EnumItemEntityMeta extends FormModel
     {
         return [
             'name' => [
-                'label' => Yii::t('app', 'Name'),
+                'label' => Yii::t('steroids', 'Name'),
                 'required' => true
             ],
             'value' => [
-                'label' => Yii::t('app', 'Value')
+                'label' => Yii::t('steroids', 'Value')
             ],
             'label' => [
-                'label' => Yii::t('app', 'Label')
+                'label' => Yii::t('steroids', 'Label')
             ],
             'cssClass' => [
-                'label' => Yii::t('app', 'CSS Class')
+                'label' => Yii::t('steroids', 'CSS Class')
             ],
             'custom' => [
-                'label' => Yii::t('app', 'Custom values'),
+                'label' => Yii::t('steroids', 'Custom values'),
                 'appType' => 'custom'
             ]
         ];

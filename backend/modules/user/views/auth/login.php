@@ -24,10 +24,10 @@ use yii\web\View;
         'rememberMe',
         UserModule::getInstance()->enableCaptcha ? 'reCaptcha' : null
     ],
-    'submitLabel' => \Yii::t('app','Войти'),
+    'submitLabel' => \Yii::t('steroids','Войти'),
 ]); ?>
 <div class="row">
     <div class="offset-3 col-6">
-        <?= Html::a(\Yii::t('app', 'Забыли пароль?'), ['/user/recovery/index']) ?>
+        <?= Html::a(\Yii::t('steroids', 'Забыли пароль?'), ['/user/recovery/index']) ?>
     </div>
 </div>

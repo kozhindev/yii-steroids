@@ -26,22 +26,22 @@ abstract class RegistrationFormMeta extends FormModel
     {
         return [
             'email' => [
-                'label' => Yii::t('app', 'Email'),
+                'label' => Yii::t('steroids', 'Email'),
                 'appType' => 'email',
                 'isRequired' => true
             ],
             'password' => [
-                'label' => Yii::t('app', 'Пароль'),
+                'label' => Yii::t('steroids', 'Пароль'),
                 'appType' => 'password',
                 'isRequired' => true
             ],
             'passwordAgain' => [
-                'label' => Yii::t('app', 'Повтор пароля'),
+                'label' => Yii::t('steroids', 'Повтор пароля'),
                 'appType' => 'password',
                 'isRequired' => true
             ],
             'name' => [
-                'label' => Yii::t('app', 'Имя')
+                'label' => Yii::t('steroids', 'Имя')
             ]
         ];
     }

@@ -21,5 +21,5 @@ use yii\web\View;
         'newPassword',
         'newPasswordAgain'
     ],
-    'submitLabel' => Yii::t('app','Изменить пароль'),
+    'submitLabel' => Yii::t('steroids','Изменить пароль'),
 ]); ?>

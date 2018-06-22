@@ -49,9 +49,9 @@ class AccessMiddleware extends BaseObject
             if (\Yii::$app->user->isGuest) {
                 \Yii::$app->user->loginRequired();
             } else {
-                $messages = \Yii::t('app', 'Нет доступа');
+                $messages = \Yii::t('steroids', 'Нет доступа');
                 if (YII_ENV_DEV) {
-                    $messages .= '. ' . \Yii::t('app', 'Возможно не заданы права доступа?');
+                    $messages .= '. ' . \Yii::t('steroids', 'Возможно не заданы права доступа?');
                     $messages .= ' - ' . Url::to(['/gii/access/actions'], true);
                 }
                 throw new ForbiddenHttpException($messages);

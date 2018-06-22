@@ -14,12 +14,12 @@ class RecoveryController extends Controller
     {
         return [
             'user.auth.recovery' => [
-                'label' => \Yii::t('app', 'Восстановление пароля'),
+                'label' => \Yii::t('steroids', 'Восстановление пароля'),
                 'url' => ['/user/recovery/index'],
                 'urlRule' => 'user/recovery',
                 'items' => [
                     'change' => [
-                        'label' => \Yii::t('app', 'Смена пароля'),
+                        'label' => \Yii::t('steroids', 'Смена пароля'),
                         'url' => ['/user/recovery/change'],
                         'urlRule' => 'user/recovery/<token>',
                     ],
@@ -33,7 +33,7 @@ class RecoveryController extends Controller
         $model = new PasswordResetRequestForm();
 
         if ($model->load(Yii::$app->request->post()) && $model->send()) {
-            Yii::$app->session->setFlash('info', Yii::t('app', 'Вам отправлено письмо с инструкциями по смене пароля'));
+            Yii::$app->session->setFlash('info', Yii::t('steroids', 'Вам отправлено письмо с инструкциями по смене пароля'));
             return $this->refresh();
         }
         if (Yii::$app->request->isAjax) {
@@ -52,7 +52,7 @@ class RecoveryController extends Controller
         ]);
 
         if ($model->load(Yii::$app->request->post()) && $model->reset()) {
-            Yii::$app->session->setFlash('success', \Yii::t('app', 'Новый пароль сохранен. Теперь вы можете войти, используя новый пароль'));
+            Yii::$app->session->setFlash('success', \Yii::t('steroids', 'Новый пароль сохранен. Теперь вы можете войти, используя новый пароль'));
             return $this->redirect(['/user/auth/login']);
         }
         if (Yii::$app->request->isAjax) {

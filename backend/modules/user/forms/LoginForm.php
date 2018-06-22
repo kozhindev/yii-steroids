@@ -31,12 +31,12 @@ class LoginForm extends LoginFormMeta
                     ->one();
                 if (!$this->user || !$this->user->validatePassword($this->$attribute)) {
                     $this->$attribute = null;
-                    $this->addError($attribute, Yii::t('app', 'Неверный логин или пароль'));
+                    $this->addError($attribute, Yii::t('steroids', 'Неверный логин или пароль'));
                 }
             }],
             ['login', function ($attribute) {
                 if ($this->user && $this->user->emailConfirmKey) {
-                    $this->addError($attribute, \Yii::t('app', 'Email не подтвержден. Проверьте почту или восстановите пароль'));
+                    $this->addError($attribute, \Yii::t('steroids', 'Email не подтвержден. Проверьте почту или восстановите пароль'));
                 }
             }],
             ['reCaptcha', ReCaptchaValidator::class, 'when' => function() {

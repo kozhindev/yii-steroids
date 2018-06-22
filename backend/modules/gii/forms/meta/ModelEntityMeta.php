@@ -35,24 +35,24 @@ abstract class ModelEntityMeta extends FormModel
     {
         return [
             'moduleId' => [
-                'label' => Yii::t('app', 'Module ID'),
+                'label' => Yii::t('steroids', 'Module ID'),
                 'required' => true
             ],
             'name' => [
-                'label' => Yii::t('app', 'Class name'),
+                'label' => Yii::t('steroids', 'Class name'),
                 'required' => true
             ],
             'tableName' => [
-                'label' => Yii::t('app', 'Table name')
+                'label' => Yii::t('steroids', 'Table name')
             ],
             'migrateMode' => [
                 'appType' => 'enum',
                 'enumClassName' => MigrateMode::class,
-                'label' => Yii::t('app', 'Migration mode')
+                'label' => Yii::t('steroids', 'Migration mode')
             ],
             'queryModel' => [
-                'label' => Yii::t('app', 'Query model'),
-                'hint' => Yii::t('app', 'Set for SearchModel, skip for FormModel')
+                'label' => Yii::t('steroids', 'Query model'),
+                'hint' => Yii::t('steroids', 'Set for SearchModel, skip for FormModel')
             ]
         ];
     }

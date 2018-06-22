@@ -26,20 +26,20 @@ abstract class LoginFormMeta extends FormModel
     {
         return [
             'login' => [
-                'label' => Yii::t('app', 'Логин или email'),
+                'label' => Yii::t('steroids', 'Логин или email'),
                 'isRequired' => true
             ],
             'password' => [
-                'label' => Yii::t('app', 'Пароль'),
+                'label' => Yii::t('steroids', 'Пароль'),
                 'appType' => 'password',
                 'isRequired' => true
             ],
             'rememberMe' => [
-                'label' => Yii::t('app', 'Запомнить вход'),
+                'label' => Yii::t('steroids', 'Запомнить меня'),
                 'appType' => 'boolean'
             ],
             'reCaptcha' => [
-                'label' => Yii::t('app', 'Я не робот')
+                'label' => Yii::t('steroids', 'Я не робот')
             ]
         ];
     }
