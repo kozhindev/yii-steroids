@@ -24,7 +24,6 @@ class AuthController extends Controller
                         'label' => \Yii::t('app', 'Вход'),
                         'url' => ['/user/auth/login'],
                         'urlRule' => 'user/login',
-                        'visible' => false,
                     ],
                     'logout' => [
                         'label' => \Yii::t('app', 'Выход'),
