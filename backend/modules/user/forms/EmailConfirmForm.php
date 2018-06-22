@@ -25,7 +25,7 @@ class EmailConfirmForm extends EmailConfirmFormMeta
                     'emailConfirmKey' => $this->$attribute,
                 ]);
                 if (!$this->user) {
-                    $this->addError($attribute, \Yii::t('app', 'Код подтверждения неверен или устарел.'));
+                    $this->addError($attribute, \Yii::t('steroids', 'Код подтверждения неверен или устарел.'));
                 }
             }],
         ]);

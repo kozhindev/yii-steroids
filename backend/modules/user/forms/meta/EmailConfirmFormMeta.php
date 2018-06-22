@@ -24,12 +24,12 @@ abstract class EmailConfirmFormMeta extends FormModel
     {
         return [
             'email' => [
-                'label' => Yii::t('app', 'Email'),
+                'label' => Yii::t('steroids', 'Email'),
                 'appType' => 'email',
                 'isRequired' => true
             ],
             'code' => [
-                'label' => Yii::t('app', 'Код'),
+                'label' => Yii::t('steroids', 'Код'),
                 'isRequired' => true,
                 'stringLength' => '32'
             ]

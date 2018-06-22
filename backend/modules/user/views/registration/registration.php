@@ -23,13 +23,13 @@ use yii\web\View;
         'passwordAgain',
         'name'
     ],
-    'submitLabel' => Yii::t('app', 'Зарегистрироваться'),
+    'submitLabel' => Yii::t('steroids', 'Зарегистрироваться'),
 ]); ?>
 <div class="row">
     <div class="offset-3 col-7">
-        <?= \Yii::t('app', 'Регистрируясь, вы принимаете условия {agreement}', [
+        <?= \Yii::t('steroids', 'Регистрируясь, вы принимаете условия {agreement}', [
             'agreement' => Html::a(
-                \Yii::t('app', 'пользовательского соглашения'),
+                \Yii::t('steroids', 'пользовательского соглашения'),
                 ['/user/registration/agreement'],
                 ['target' => '_blank']
             ),

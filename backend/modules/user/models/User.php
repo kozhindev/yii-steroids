@@ -59,7 +59,7 @@ class User extends UserMeta implements IdentityInterface
 
     public function getTitle()
     {
-        return $this->name ?: $this->email ?: Yii::t('app', 'Гость');
+        return $this->name ?: $this->email ?: Yii::t('steroids', 'Гость');
     }
 
 }

@@ -12,13 +12,13 @@ use yii\web\View;
 /* @var $message BaseMessage */
 /* @var $user User */
 
-$message->setSubject(\Yii::t('app', 'Смена пароля на сайте') . ' ' . Yii::$app->name);
+$message->setSubject(\Yii::t('steroids', 'Смена пароля на сайте') . ' ' . Yii::$app->name);
 $link = Yii::$app->urlManager->createAbsoluteUrl(['/user/recovery/change', 'token' => $user->emailConfirmKey]);
 ?>
 <h2>
-    <?= \Yii::t('app', 'Здравствуйте, {username}.', [
+    <?= \Yii::t('steroids', 'Здравствуйте, {username}.', [
         'username' => Html::encode($user->name ?: $user->email),
     ]) ?>
 </h2>
-<p><?= \Yii::t('app', 'Для смены пароля перейдите по ссылке:') ?></p>
+<p><?= \Yii::t('steroids', 'Для смены пароля перейдите по ссылке:') ?></p>
 <p><?= Html::a(Html::encode($link), $link) ?></p>

@@ -14,7 +14,7 @@ class PasswordResetRequestForm extends PasswordResetRequestFormMeta
             ['email', 'filter', 'filter' => 'trim'],
             ['email', 'exist',
                 'targetClass' => User::className(),
-                'message' => \Yii::t('app', 'Нет пользователя с таким email адресом'),
+                'message' => \Yii::t('steroids', 'Нет пользователя с таким email адресом'),
             ],
         ]);
     }

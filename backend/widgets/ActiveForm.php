@@ -89,8 +89,8 @@ class ActiveForm extends Widget
         $submitLabel = $this->submitLabel;
         if (!$submitLabel) {
             $submitLabel = $this->model->isNewRecord
-                ? \Yii::t('app', 'Добавить')
-                : \Yii::t('app', 'Сохранить');
+                ? \Yii::t('steroids', 'Добавить')
+                : \Yii::t('steroids', 'Сохранить');
         }
 
         return $this->renderReact([

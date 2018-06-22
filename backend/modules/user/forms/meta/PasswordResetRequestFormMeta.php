@@ -22,7 +22,7 @@ abstract class PasswordResetRequestFormMeta extends FormModel
     {
         return [
             'email' => [
-                'label' => Yii::t('app', 'Email'),
+                'label' => Yii::t('steroids', 'Email'),
                 'appType' => 'email',
                 'isRequired' => true
             ]

@@ -119,6 +119,15 @@ class DefaultConfig
                 'authManager' => [
                     'class' => 'steroids\components\AuthManager',
                 ],
+                'i18n' => [
+                    'translations' => [
+                        'steroids*' => [
+                            'class' => 'yii\i18n\PhpMessageSource',
+                            'basePath' => '@steroids/messages',
+                            'sourceLanguage' => 'ru',
+                        ]
+                    ],
+                ],
                 'assetManager' => [
                     'forceCopy' => true,
                     'bundles' => [

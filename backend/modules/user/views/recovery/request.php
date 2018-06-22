@@ -20,5 +20,5 @@ use yii\web\View;
     'fields' => [
         'email',
     ],
-    'submitLabel' => Yii::t('app', 'Продолжить'),
+    'submitLabel' => Yii::t('steroids', 'Продолжить'),
 ]); ?>

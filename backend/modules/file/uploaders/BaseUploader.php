@@ -29,7 +29,7 @@ class BaseUploader extends FormModel
             ['destinationDir', 'required'],
             ['destinationDir', function () {
                 if (!is_writable($this->destinationDir)) {
-                    $this->addError('destinationDir', \Yii::t('app', 'Destination directory is not writable.'));
+                    $this->addError('destinationDir', \Yii::t('steroids', 'Destination directory is not writable.'));
                 }
             }],
             [['maxFileSize', 'maxRequestSize'], 'filter', 'filter' => function ($value) {

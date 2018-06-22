@@ -28,7 +28,7 @@ class ReCaptchaValidator extends Validator
         parent::init();
 
         if ($this->message === null) {
-            $this->message = Yii::t('app', 'Проверка не пройдена');
+            $this->message = Yii::t('steroids', 'Проверка не пройдена');
         }
     }
 

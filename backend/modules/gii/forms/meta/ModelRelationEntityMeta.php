@@ -28,33 +28,33 @@ abstract class ModelRelationEntityMeta extends FormModel
     {
         return [
             'type' => [
-                'label' => Yii::t('app', 'Type'),
+                'label' => Yii::t('steroids', 'Type'),
                 'required' => true
             ],
             'name' => [
-                'label' => Yii::t('app', 'Name'),
+                'label' => Yii::t('steroids', 'Name'),
                 'required' => true
             ],
             'relationModel' => [
-                'label' => Yii::t('app', 'Model class'),
+                'label' => Yii::t('steroids', 'Model class'),
                 'required' => true
             ],
             'relationKey' => [
-                'label' => Yii::t('app', 'Relation Key'),
+                'label' => Yii::t('steroids', 'Relation Key'),
                 'required' => true
             ],
             'selfKey' => [
-                'label' => Yii::t('app', 'Self key'),
+                'label' => Yii::t('steroids', 'Self key'),
                 'required' => true
             ],
             'viaTable' => [
-                'label' => Yii::t('app', 'Table name')
+                'label' => Yii::t('steroids', 'Table name')
             ],
             'viaRelationKey' => [
-                'label' => Yii::t('app', 'Relation Key')
+                'label' => Yii::t('steroids', 'Relation Key')
             ],
             'viaSelfKey' => [
-                'label' => Yii::t('app', 'Self key')
+                'label' => Yii::t('steroids', 'Self key')
             ]
         ];
     }

@@ -15,22 +15,22 @@ class RegistrationController extends Controller
     {
         return [
             'user.registration' => [
-                'label' => \Yii::t('app', 'Регистрация'),
+                'label' => \Yii::t('steroids', 'Регистрация'),
                 'url' => ['/user/registration/index'],
                 'urlRule' => 'user/registration',
                 'items' => [
                     'email-confirm' => [
-                        'label' => \Yii::t('app', 'Подтверждение email'),
+                        'label' => \Yii::t('steroids', 'Подтверждение email'),
                         'url' => ['/user/registration/email-confirm'],
                         'urlRule' => 'user/registration/email-confirm',
                     ],
                     'success' => [
-                        'label' => \Yii::t('app', 'Вы зарегистрировались'),
+                        'label' => \Yii::t('steroids', 'Вы зарегистрировались'),
                         'url' => ['/user/registration/success'],
                         'urlRule' => 'user/registration/success',
                     ],
                     'agreement' => [
-                        'label' => \Yii::t('app', 'Пользовательское соглашение'),
+                        'label' => \Yii::t('steroids', 'Пользовательское соглашение'),
                         'url' => ['/user/registration/agreement'],
                         'urlRule' => 'user/registration/agreement',
                     ],
@@ -63,7 +63,7 @@ class RegistrationController extends Controller
         ));
 
         if ($model->confirm()) {
-            \Yii::$app->session->setFlash('success', \Yii::t('app', 'Email успешно подтверджен!'));
+            \Yii::$app->session->setFlash('success', \Yii::t('steroids', 'Email успешно подтверджен!'));
             return $this->goHome();
         }
         if (Yii::$app->request->isAjax) {
