@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Form} from 'yii-steroids/frontend/ui/form';
+import {Form} from 'yii-steroids/ui/form';
 
 import {html, http} from 'components';
 import PermissionRow from './PermissionRow';

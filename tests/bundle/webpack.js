@@ -1,6 +1,6 @@
 const path = require('path');
 
-require('../../frontend/webpack')
+require('../../webpack')
     .base('./app/*/client.js')
     .config({
         webpack: {

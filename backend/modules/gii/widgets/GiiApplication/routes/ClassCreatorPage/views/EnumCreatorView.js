@@ -4,7 +4,7 @@ import {connect} from 'react-redux';
 import {formValueSelector} from 'redux-form';
 import _get from 'lodash-es/get';
 import _upperFirst from 'lodash-es/upperFirst';
-import {Form, Button, Field, InputField, CheckboxField, FieldList} from 'yii-steroids/frontend/ui/form';
+import {Form, Button, Field, InputField, CheckboxField, FieldList} from 'yii-steroids/ui/form';
 
 import {html} from 'components';
 import EnumEntityMeta from '../../../../../forms/meta/EnumEntityMeta';

@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
-import {Router, Link, Nav} from 'yii-steroids/frontend/ui/nav';
-import {Notifications} from 'yii-steroids/frontend/ui/layout';
+import {Router, Link, Nav} from 'yii-steroids/ui/nav';
+import {Notifications} from 'yii-steroids/ui/layout';
 import {push} from 'react-router-redux';
 
 import {html, http, widget} from 'components';

@@ -1,8 +1,8 @@
 {
   "name": "yii-steroids",
-  "version": "1.0.0",
+  "version": "1.1.2",
   "description": "JavaScript part for php library yii-steroids",
-  "main": "frontend/index.js",
+  "main": "index.js",
   "author": "Vladimir Kozhin <hello@kozhindev.com>",
   "repository": {
     "type": "git",
@@ -89,7 +89,7 @@
     "storybook-readme": "^3.3.0"
   },
   "scripts": {
-    "storybook": "start-storybook -p 6006 -c frontend/.storybook",
+    "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook"
   }
 }

@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Form, Button, Field, DropDownField, FieldList} from 'yii-steroids/frontend/ui/form';
+import {Form, Button, Field, DropDownField, FieldList} from 'yii-steroids/ui/form';
 
 import {html} from 'components';
 import RelationTypeMeta from '../../../../../enums/meta/RelationTypeMeta';
