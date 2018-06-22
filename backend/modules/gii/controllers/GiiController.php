@@ -168,7 +168,7 @@ class GiiController extends Controller
                 $isParentChecked = false;
                 foreach ($allNames as $permissionName) {
                     $childNames = ArrayHelper::getColumn($auth->getChildren($permissionName), 'name');
-                    if (in_array($rule, $childNames) && ArrayHelper::keyExists($permissionName, $rules)) {
+                    if (in_array($rule, $childNames) && ArrayHelper::getValue($rules, $permissionName)) {
                         $isParentChecked = true;
                         break;
                     }

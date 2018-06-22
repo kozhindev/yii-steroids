@@ -2,7 +2,6 @@
 
 namespace steroids\commands;
 
-use steroids\helpers\DefaultConfig;
 use yii\console\controllers\MigrateController;
 
 class MigrateCommand extends MigrateController
@@ -11,26 +10,14 @@ class MigrateCommand extends MigrateController
 
     public function beforeAction($action)
     {
-        $steroidsConfig = [
-            'appDir' => STEROIDS_ROOT_DIR . '/app',
-            'namespace' => 'app',
-        ];
+        $appPath = \Yii::getAlias('@app');
 
         // Set migration namespaces
-        foreach (DefaultConfig::getModuleClasses($steroidsConfig) as $name => $moduleClass) {
-            $namespace = preg_replace('/[^\\\\]+$/', 'migrations', $moduleClass);
-
-            // Set alias for load migrations
-            if (!preg_match('/^\\\\?app\\\\/', $moduleClass)) {
-                $moduleDir = dirname((new \ReflectionClass($moduleClass))->getFileName());
-
-                \Yii::setAlias(
-                    '@' . str_replace('\\', '/', $namespace),
-                    $moduleDir . '/migrations'
-                );
-            }
-
+        foreach (scandir($appPath) as $dirName) {
+            $namespace = 'app\\' . $dirName . '\migrations';
             $this->migrationNamespaces[] = $namespace;
+
+            \Yii::setAlias('@' . $namespace,$appPath . '/' . $dirName . '/migrations');
         }
 
         return parent::beforeAction($action);

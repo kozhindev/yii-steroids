@@ -224,6 +224,26 @@ class SiteMap extends Component
     }
 
     /**
+     * @param string $key
+     * @param int $level
+     * @return array
+     * @throws InvalidConfigException
+     */
+    public function getNavItem($key = null, $level = 0)
+    {
+        $item = $this->getItem($key);
+        if ($item !== null) {
+            return array_merge(
+                $item->toArray(),
+                [
+                    'items' => ArrayHelper::getValue($this->sliceTreeItems([$item], $level), '0.items'),
+                ]
+            );
+        }
+        return null;
+    }
+
+    /**
      * Find item by url (ot current page) label and return it
      * @param array|null $url Child url or route, default - current route
      * @return string
