@@ -37,10 +37,7 @@ class GiiModule extends Module
             'gii' => [
                 'label' => 'Gii',
                 'accessCheck' => [GiiModule::class, 'accessCheck'],
-                'items' => array_merge(
-                    GiiController::coreMenuItems(),
-                    SiteMapController::coreMenuItems()
-                ),
+                'items' => GiiController::coreMenuItems(),
             ],
         ];
     }

@@ -7,6 +7,7 @@ use steroids\base\FormModel;
 use steroids\base\Model;
 use steroids\base\Type;
 use steroids\modules\gii\forms\EnumEntity;
+use steroids\modules\gii\helpers\GiiHelper;
 use steroids\modules\gii\models\ValueExpression;
 use yii\db\Schema;
 use yii\helpers\ArrayHelper;
@@ -59,7 +60,15 @@ class EnumType extends Type
         if ($enumClass) {
             if (is_array($import)) {
                 $info = (new \ReflectionClass($enumClass))->getParentClass();
-                $import[] = "import {$info->getShortName()} from '" . str_replace('\\', '/', $info->getName()) . "';";
+                $name = $info->getName();
+                if (strpos('app\\', $name) === 0) {
+                    $path = str_replace('\\', '/', $info->getName());
+                } else {
+                    $path = GiiHelper::getRelativePath((new \ReflectionClass($modelClass))->getParentClass()->getFileName(), $info->getFileName());
+                    $path = preg_replace('/\.php$/', '', $path);
+                }
+                
+                $import[] = "import {$info->getShortName()} from '" . $path . "';";
                 return new JsExpression($info->getShortName());
             } else {
                 return $enumClass::toFrontend();

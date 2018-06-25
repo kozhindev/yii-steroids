@@ -3,10 +3,8 @@
 namespace steroids\modules\gii\forms;
 
 use steroids\base\Model;
-use steroids\modules\gii\enums\ClassType;
 use steroids\modules\gii\enums\RelationType;
 use steroids\modules\gii\forms\meta\ModelRelationEntityMeta;
-use steroids\modules\gii\helpers\GiiHelper;
 use yii\db\ActiveQuery;
 
 /**
@@ -16,11 +14,10 @@ use yii\db\ActiveQuery;
  * @property-read ModelEntity $relationModelEntry
  * @property-read ModelAttributeEntity $viaRelationAttributeEntry
  * @property-read ModelAttributeEntity $viaSelfAttributeEntry
+ * @property-read bool $isProtected
  */
 class ModelRelationEntity extends ModelRelationEntityMeta
 {
-    const CLASS_TYPE = ClassType::MODEL;
-
     /**
      * @var ModelEntity
      */
@@ -34,7 +31,7 @@ class ModelRelationEntity extends ModelRelationEntityMeta
     public static function findAll($entity)
     {
         /** @var Model $className */
-        $className = GiiHelper::getClassName(static::CLASS_TYPE, $entity->moduleId, $entity->name);
+        $className = $entity->getClassName();
 
         $modelInstance = new $className();
         $modelInfo = (new \ReflectionClass($className));
@@ -76,6 +73,13 @@ class ModelRelationEntity extends ModelRelationEntityMeta
                         'selfKey' => array_values($activeQuery->link)[0],
                         'modelEntity' => $entity,
                     ]);
+                } else {
+                    $items[] = new static([
+                        'type' => $activeQuery->multiple ? RelationType::HAS_MANY : RelationType::HAS_ONE,
+                        'name' => lcfirst(substr($methodInfo->name, 3)),
+                        'relationModel' => $activeQuery->modelClass,
+                        'modelEntity' => $entity,
+                    ]);
                 }
             }
         }
@@ -88,7 +92,10 @@ class ModelRelationEntity extends ModelRelationEntityMeta
      */
     public function fields()
     {
-        return array_diff($this->attributes(), ['modelEntity']);
+        return array_merge(
+            array_diff($this->attributes(), ['modelEntity']),
+            ['isProtected']
+        );
     }
 
     public function getIsHasOne()
@@ -128,5 +135,19 @@ class ModelRelationEntity extends ModelRelationEntityMeta
     public function getViaSelfAttributeEntry()
     {
         return $this->relationModelEntry->getAttributeEntity($this->viaSelfKey);
+    }
+
+    public function getIsProtected()
+    {
+        /*$info = new \ReflectionClass($this->modelEntity->getClassName());
+        $parentClassName = $info->getParentClass()->getParentClass()->name;
+
+        if (method_exists($parentClassName, 'meta')) {
+            $meta = $parentClassName::meta();
+            return ArrayHelper::keyExists($this->name, $meta);
+        }*/
+        // TODO
+
+        return false;
     }
 }

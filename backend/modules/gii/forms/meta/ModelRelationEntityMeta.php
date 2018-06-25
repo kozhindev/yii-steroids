@@ -20,7 +20,7 @@ abstract class ModelRelationEntityMeta extends FormModel
     {
         return [
             [['type', 'name', 'relationModel', 'relationKey', 'selfKey', 'viaTable', 'viaRelationKey', 'viaSelfKey'], 'string', 'max' => 255],
-            [['type', 'name', 'relationModel', 'relationKey', 'selfKey'], 'required'],
+            [['type', 'name', 'relationModel'], 'required'],
         ];
     }
 
@@ -29,23 +29,21 @@ abstract class ModelRelationEntityMeta extends FormModel
         return [
             'type' => [
                 'label' => Yii::t('steroids', 'Type'),
-                'required' => true
+                'isRequired' => true
             ],
             'name' => [
                 'label' => Yii::t('steroids', 'Name'),
-                'required' => true
+                'isRequired' => true
             ],
             'relationModel' => [
                 'label' => Yii::t('steroids', 'Model class'),
-                'required' => true
+                'isRequired' => true
             ],
             'relationKey' => [
-                'label' => Yii::t('steroids', 'Relation Key'),
-                'required' => true
+                'label' => Yii::t('steroids', 'Relation Key')
             ],
             'selfKey' => [
-                'label' => Yii::t('steroids', 'Self key'),
-                'required' => true
+                'label' => Yii::t('steroids', 'Self key')
             ],
             'viaTable' => [
                 'label' => Yii::t('steroids', 'Table name')

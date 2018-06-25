@@ -3,12 +3,13 @@
 namespace steroids\modules\gii\forms;
 
 use steroids\base\Model;
-use steroids\modules\gii\enums\ClassType;
 use steroids\modules\gii\forms\meta\ModelAttributeEntityMeta;
-use steroids\modules\gii\helpers\GiiHelper;
 use steroids\modules\gii\traits\CustomPropertyTrait;
 use yii\helpers\ArrayHelper;
 
+/**
+ * @property-read bool $isProtected
+ */
 class ModelAttributeEntity extends ModelAttributeEntityMeta
 {
     use CustomPropertyTrait;
@@ -29,10 +30,12 @@ class ModelAttributeEntity extends ModelAttributeEntityMeta
      * @return static[]
      * @throws \ReflectionException
      */
-    public static function findAll($entity, $classType = ClassType::MODEL)
+    public static function findAll($entity)
     {
         /** @var Model $className */
-        $className = GiiHelper::getClassName($classType, $entity->moduleId, $entity->name);
+        $className = $entity->getClassName();
+
+        /** @var Model $className */
         $items = [];
         foreach ($className::meta() as $attribute => $item) {
             // Legacy support
@@ -77,7 +80,8 @@ class ModelAttributeEntity extends ModelAttributeEntityMeta
     {
         return array_merge(
             array_diff($this->attributes(), ['modelEntity', 'customMigrationColumnType']),
-            array_keys($this->getCustomProperties())
+            array_keys($this->getCustomProperties()),
+            ['isProtected']
         );
     }
 
@@ -158,6 +162,19 @@ class ModelAttributeEntity extends ModelAttributeEntityMeta
             return "'$dbType'";
         }
     }
-    
-    
+
+    public function getIsProtected()
+    {
+        $info = new \ReflectionClass($this->modelEntity->getClassName());
+        /** @var Model $parentClassName */
+        $parentClassName = $info->getParentClass()->getParentClass()->name;
+
+        if (method_exists($parentClassName, 'meta')) {
+            $meta = $parentClassName::meta();
+            return ArrayHelper::keyExists($this->name, $meta);
+        }
+
+        return false;
+    }
+
 }

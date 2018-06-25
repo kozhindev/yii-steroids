@@ -4,7 +4,7 @@
   &__input-attribute .form-control {
     font-weight: bold;
   }
-  &__input-hint  .FieldLayoutView__field {
+  &__input-hint .FieldLayoutView__field {
     padding-left: 30%;
   }
 
@@ -25,6 +25,11 @@
     > td {
       padding-bottom: 15px;
     }
+  }
+
+  .FieldListView__tr_is-protected {
+    opacity: .4;
+    pointer-events: none;
   }
 
   .FieldListView__additional {
