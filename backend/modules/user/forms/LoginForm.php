@@ -26,7 +26,11 @@ class LoginForm extends LoginFormMeta
                 $modelClass = UserModule::getInstance()->modelsMap['User'];
 
                 $this->user = $modelClass::find()
-                    ->where(['email' => $this->login])
+                    ->where([
+                        'or',
+                        ['email' => $this->login],
+                        ['login' => $this->login],
+                    ])
                     ->limit(1)
                     ->one();
                 if (!$this->user || !$this->user->validatePassword($this->$attribute)) {
