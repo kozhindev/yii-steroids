@@ -5,7 +5,6 @@ namespace steroids\modules\user\models\meta;
 use steroids\base\Model;
 use steroids\behaviors\TimestampBehavior;
 use \Yii;
-use app\cruises\enums\CabinBedConfiguration;
 
 /**
  * @property string $id
@@ -81,7 +80,6 @@ abstract class UserMeta extends Model
             ],
             'role' => [
                 'label' => Yii::t('steroids', 'Роль'),
-                'enumClassName' => CabinBedConfiguration::class
             ],
             'passwordHash' => [
                 'label' => Yii::t('steroids', 'Пароль'),

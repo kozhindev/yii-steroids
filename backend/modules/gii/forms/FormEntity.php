@@ -4,6 +4,7 @@ namespace steroids\modules\gii\forms;
 
 use steroids\base\SearchModel;
 use steroids\modules\gii\enums\ClassType;
+use steroids\modules\gii\GiiModule;
 use steroids\modules\gii\helpers\GiiHelper;
 use yii\db\ActiveQuery;
 use yii\helpers\ArrayHelper;
@@ -32,6 +33,7 @@ class FormEntity extends ModelEntity implements IEntity
     public static function findOne($className)
     {
         $entity = new static();
+        $entity->className = $className;
         $entity->attributes = GiiHelper::parseClassName($className);
 
         if (is_subclass_of($className, SearchModel::class)) {
@@ -74,6 +76,9 @@ class FormEntity extends ModelEntity implements IEntity
                 \Yii::$app->session->addFlash('success', 'Added form ' . $this->name);
             }
 
+            if (GiiHelper::isOverWriteClass($this->getClassName()) && GiiModule::getInstance()->showSteroidsEntries) {
+                // TODO Save lib class
+            }
             GiiHelper::renderFile($this->queryModel ? 'form/meta_search' : 'form/meta_form', $this->getMetaPath(), [
                 'formEntity' => $this,
             ]);
@@ -109,7 +114,7 @@ class FormEntity extends ModelEntity implements IEntity
 
     public function renderRules(&$useClasses = [])
     {
-        return ModelEntity::exportRules($this->attributeItems, $this->relationItems, $useClasses);
+        return ModelEntity::exportRules($this->publicAttributeItems, $this->publicRelationItems, $useClasses);
     }
 
     /**
@@ -118,5 +123,21 @@ class FormEntity extends ModelEntity implements IEntity
     public function getQueryModelEntity()
     {
         return $this->queryModel ? ModelEntity::findOne($this->queryModel) : null;
+    }
+
+    /**
+     * @return ActiveQuery
+     */
+    public function getAttributeItems()
+    {
+        return $this->hasMany(FormAttributeEntity::class);
+    }
+
+    /**
+     * @return ActiveQuery
+     */
+    public function getRelationItems()
+    {
+        return $this->hasMany(FormRelationEntity::class);
     }
 }

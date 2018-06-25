@@ -101,10 +101,11 @@ class EnumEntity extends EnumEntityMeta implements IEntity
      */
     public function renderLabels($indent = '')
     {
+        $category = strpos('steroids\\', $this->getClassName()) === 0 ? 'steroids' : 'app';
         $labels = [];
         foreach ($this->items as $itemEntity) {
             $labels[] = new ValueExpression(
-                'self::' . $itemEntity->getConstName() . ' => Yii::t(\'app\', ' . GiiHelper::varExport($itemEntity->label) . ')'
+                'self::' . $itemEntity->getConstName() . ' => Yii::t(\'' . $category . '\', ' . GiiHelper::varExport($itemEntity->label) . ')'
             );
         }
         return GiiHelper::varExport($labels, $indent);

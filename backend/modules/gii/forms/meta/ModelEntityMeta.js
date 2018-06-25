@@ -1,6 +1,7 @@
 import Model from 'yii-steroids/base/Model';
 
 import {locale} from 'components';
+import MigrateModeMeta from '../../enums/meta/MigrateModeMeta';
 
 export default class ModelEntityMeta extends Model {
 
@@ -28,13 +29,19 @@ export default class ModelEntityMeta extends Model {
             'migrateMode': {
                 'component': 'DropDownField',
                 'attribute': 'migrateMode',
-                'label': locale.t('Migrate mode'),
+                'items': MigrateModeMeta,
+                'label': locale.t('Migration mode')
             },
             'queryModel': {
                 'component': 'InputField',
                 'attribute': 'queryModel',
                 'label': locale.t('Query model'),
-                'hint': locale.t('Set for SearchModel, skip for FormModel'),
+                'hint': locale.t('Set for SearchModel, skip for FormModel')
+            },
+            'className': {
+                'component': 'InputField',
+                'attribute': 'className',
+                'label': locale.t('Class name')
             }
         };
     }
