@@ -1,13 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
-import {Router, Link, Nav} from 'yii-steroids/frontend/ui/nav';
-import {Notifications} from 'yii-steroids/frontend/ui/layout';
+import {Router, Link, Nav} from 'yii-steroids/ui/nav';
+import {Notifications} from 'yii-steroids/ui/layout';
 import {push} from 'react-router-redux';
 
 import {html, http, widget} from 'components';
 import IndexPage from './routes/IndexPage';
-import AccessPage from './routes/AccessPage';
+import AccessPage from './routes/AccessPage/index';
 import ClassCreatorPage from './routes/ClassCreatorPage/index';
 import ClassTypeMeta from '../../enums/meta/ClassTypeMeta';
 
@@ -21,6 +21,7 @@ export default class GiiApplication extends React.PureComponent {
 
     static propTypes = {
         roles: PropTypes.arrayOf(PropTypes.string),
+        siteName: PropTypes.string,
     };
 
     constructor() {
@@ -45,12 +46,20 @@ export default class GiiApplication extends React.PureComponent {
             <div className={bem.block({loading: this.state.isLoading})}>
                 <nav className='navbar navbar-expand-md navbar-dark bg-dark mb-3'>
                     <div className='container'>
-                        <Link
-                            className='navbar-brand'
-                            to='/'
-                        >
-                            Gii
-                        </Link>
+                        <div>
+                            <Link
+                                className='navbar-brand'
+                                to='/'
+                            >
+                                Gii
+                            </Link>
+                            <Link
+                                className='navbar-brand'
+                                url={this.props.siteName}
+                            >
+                                На главную
+                            </Link>
+                        </div>
                         <Nav
                             layout='navbar'
                             items={[
@@ -60,7 +69,7 @@ export default class GiiApplication extends React.PureComponent {
                                 },
                                 {
                                     label: 'Права доступа',
-                                    to: '/access',
+                                    to: '/access/actions',
                                 },
                                 {
                                     label: 'Карта сайта',
@@ -111,7 +120,7 @@ export default class GiiApplication extends React.PureComponent {
 
     fetchData() {
         this.setState({isLoading: true});
-        http.post('/api/gii/get-data')
+        http.post('/api/gii/get-entities')
             .then(data => this.setState({
                 ...data,
                 isLoading: false,

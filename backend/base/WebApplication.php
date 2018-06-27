@@ -29,6 +29,7 @@ class WebApplication extends Application
             $this->version = trim(file_get_contents($versionFilePath));
         }
 
+        Yii::setAlias('@bower', Yii::getAlias('@vendor') . '/bower-asset');
         Yii::setAlias('@static', $this->getRequest()->getBaseUrl() . '/static/' . $this->version);
 
         parent::bootstrap();

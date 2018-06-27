@@ -6,6 +6,7 @@ use steroids\base\Model;
 use steroids\modules\gii\enums\ClassType;
 use steroids\modules\gii\enums\MigrateMode;
 use steroids\modules\gii\forms\meta\ModelEntityMeta;
+use steroids\modules\gii\GiiModule;
 use steroids\modules\gii\helpers\GiiHelper;
 use steroids\modules\gii\models\MigrationMethods;
 use steroids\modules\gii\models\ValueExpression;
@@ -14,6 +15,12 @@ use steroids\types\RelationType;
 use steroids\validators\RecordExistValidator;
 use yii\helpers\ArrayHelper;
 
+/**
+ * @property-read ModelAttributeEntity[] $attributeItems
+ * @property-read ModelAttributeEntity[] $publicAttributeItems
+ * @property-read ModelRelationEntity[] $relationItems
+ * @property-read ModelRelationEntity[] $publicRelationItems
+ */
 class ModelEntity extends ModelEntityMeta implements IEntity
 {
     use EntityTrait;
@@ -37,7 +44,10 @@ class ModelEntity extends ModelEntityMeta implements IEntity
     public static function findOne($className)
     {
         $entity = new static();
+        $entity->className = $className;
         $entity->attributes = GiiHelper::parseClassName($className);
+
+        $entity->validate('migrateMode');
 
         /** @var Model $className */
         $entity->tableName = $className::tableName();
@@ -47,7 +57,7 @@ class ModelEntity extends ModelEntityMeta implements IEntity
 
         return $entity;
     }
-    
+
     public function load($data, $formName = null)
     {
         if (parent::load($data, $formName)) {
@@ -58,7 +68,7 @@ class ModelEntity extends ModelEntityMeta implements IEntity
             foreach ($this->relationItems as $relationEntity) {
                 $relationEntity->modelEntity = $this;
             }
-            
+
             return true;
         }
         return false;
@@ -84,6 +94,9 @@ class ModelEntity extends ModelEntityMeta implements IEntity
             ModuleEntity::findOrCreate($this->moduleId);
 
             // Create/update meta information
+            if (GiiHelper::isOverWriteClass($this->getClassName()) && GiiModule::getInstance()->showSteroidsEntries) {
+                // TODO Save lib class
+            }
             GiiHelper::renderFile('model/meta', $this->getMetaPath(), [
                 'modelEntity' => $this,
             ]);
@@ -104,7 +117,9 @@ class ModelEntity extends ModelEntityMeta implements IEntity
             $migrationMethods = new MigrationMethods([
                 'prevModelEntity' => $prevModelEntity,
                 'nextModelEntity' => $this,
-                'migrateMode' => MigrateMode::UPDATE,// TODO $this->migrateMode,
+                'migrateMode' => !empty($this->migrateMode)
+                    ? $this->migrateMode
+                    : MigrateMode::UPDATE,
             ]);
             if (!$migrationMethods->isEmpty()) {
                 $name = $migrationMethods->generateName();
@@ -126,22 +141,38 @@ class ModelEntity extends ModelEntityMeta implements IEntity
 
     public function getClassName()
     {
-        return GiiHelper::getClassName(ClassType::MODEL, $this->moduleId, $this->name);
+        return $this->className ?: GiiHelper::getClassName(ClassType::MODEL, $this->moduleId, $this->name);
+    }
+
+    public function getOverWriteEntity()
+    {
+        $libClassName = str_replace('app\\', 'steroids\\modules\\', $this->getClassName());
+        if (class_exists($libClassName)) {
+            return static::findOne($libClassName);
+        }
+        return null;
+    }
+
+    public function getModelsDir()
+    {
+        return $this->className && class_exists($this->className)
+            ? dirname((new \ReflectionClass($this->className))->getFileName())
+            : GiiHelper::getModuleDir($this->moduleId) . '/models';
     }
 
     public function getPath()
     {
-        return GiiHelper::getModuleDir($this->moduleId) . '/models/' . $this->name . '.php';
+        return $this->getModelsDir() . '/' . $this->name . '.php';
     }
 
     public function getMetaPath()
     {
-        return GiiHelper::getModuleDir($this->moduleId) . '/models/meta/' . $this->name . 'Meta.php';
+        return $this->getModelsDir() . '/meta/' . $this->name . 'Meta.php';
     }
 
     public function getMetaJsPath()
     {
-        return GiiHelper::getModuleDir($this->moduleId) . '/models/meta/' . $this->name . 'Meta.js';
+        return $this->getModelsDir() . '/meta/' . $this->name . 'Meta.js';
     }
 
     /**
@@ -172,6 +203,20 @@ class ModelEntity extends ModelEntityMeta implements IEntity
         return null;
     }
 
+    public function getPublicAttributeItems()
+    {
+        return array_filter($this->attributeItems, function (ModelAttributeEntity $item) {
+            return !$item->isProtected;
+        });
+    }
+
+    public function getPublicRelationItems()
+    {
+        return array_filter($this->relationItems, function (ModelRelationEntity $item) {
+            return !$item->isProtected;
+        });
+    }
+
     /**
      * @param string $indent
      * @param array $useClasses
@@ -179,12 +224,13 @@ class ModelEntity extends ModelEntityMeta implements IEntity
      */
     public function renderMeta($indent = '', &$useClasses = [])
     {
-        $meta = static::exportMeta($this->attributeItems, $useClasses);
+        $category = strpos($this->getClassName(), 'steroids\\') === 0 ? 'steroids' : 'app';
+        $meta = static::exportMeta($this->publicAttributeItems, $useClasses);
         foreach ($meta as $name => $item) {
             foreach ($item as $key => $value) {
                 // Localization
                 if (in_array($key, ['label', 'hint'])) {
-                    $meta[$name][$key] = new ValueExpression('Yii::t(\'app\', ' . GiiHelper::varExport($value) . ')');
+                    $meta[$name][$key] = new ValueExpression('Yii::t(\'' . $category . '\', ' . GiiHelper::varExport($value) . ')');
                     $useClasses[] = '\Yii';
                 }
 
@@ -207,7 +253,7 @@ class ModelEntity extends ModelEntityMeta implements IEntity
     {
         $result = [];
 
-        foreach (static::exportMeta($this->attributeItems) as $attribute => $item) {
+        foreach (static::exportMeta($this->publicAttributeItems) as $attribute => $item) {
             $props = [];
             $type = \Yii::$app->types->getType($this->getAttributeEntity($attribute)->appType);
 
@@ -246,7 +292,7 @@ class ModelEntity extends ModelEntityMeta implements IEntity
     public function renderJsFormatters($indent = '', &$import = [])
     {
         $result = [];
-        foreach (static::exportMeta($this->attributeItems) as $attribute => $item) {
+        foreach (static::exportMeta($this->publicAttributeItems) as $attribute => $item) {
             $props = [];
             $type = \Yii::$app->types->getType($this->getAttributeEntity($attribute)->appType);
 
@@ -300,7 +346,7 @@ class ModelEntity extends ModelEntityMeta implements IEntity
                 }
 
                 // Skip array key
-                if ($key === 'name' || $key === 'prevName') {
+                if ($key === 'name' || $key === 'prevName' || $key === 'isProtected') {
                     continue;
                 }
 
@@ -332,7 +378,7 @@ class ModelEntity extends ModelEntityMeta implements IEntity
 
     public function renderRules(&$useClasses = [])
     {
-        return static::exportRules($this->attributeItems, $this->relationItems, $useClasses);
+        return static::exportRules($this->publicAttributeItems, $this->publicRelationItems, $useClasses);
     }
 
     /**
@@ -353,7 +399,7 @@ class ModelEntity extends ModelEntityMeta implements IEntity
             $rules = $type->giiRules($attributeEntity, $useClasses) ?: [];
             foreach ($rules as $rule) {
                 /** @var array $rule */
-                $attributes = (array) ArrayHelper::remove($rule, 0);
+                $attributes = (array)ArrayHelper::remove($rule, 0);
                 $name = ArrayHelper::remove($rule, 1);
                 $validatorRaw = GiiHelper::varExport($name);
                 if (!empty($rule)) {
@@ -418,7 +464,7 @@ class ModelEntity extends ModelEntityMeta implements IEntity
 
     public function renderBehaviors($indent = '', &$useClasses = [])
     {
-        return static::exportBehaviors($this->attributeItems, $indent, $useClasses);
+        return static::exportBehaviors($this->publicAttributeItems, $indent, $useClasses);
     }
 
     /**
@@ -473,7 +519,7 @@ class ModelEntity extends ModelEntityMeta implements IEntity
     public function getPhpDocProperties()
     {
         $properties = [];
-        foreach ($this->attributeItems as $attributeEntity) {
+        foreach ($this->publicAttributeItems as $attributeEntity) {
             if ($attributeEntity->getDbType()) {
                 $properties[$attributeEntity->name] = $attributeEntity->getPhpDocType();
             }
@@ -484,7 +530,7 @@ class ModelEntity extends ModelEntityMeta implements IEntity
     public function getProperties()
     {
         $properties = [];
-        foreach ($this->attributeItems as $attributeEntity) {
+        foreach ($this->publicAttributeItems as $attributeEntity) {
             $appType = \Yii::$app->types->getType($attributeEntity->appType);
             if (!$appType) {
                 continue;

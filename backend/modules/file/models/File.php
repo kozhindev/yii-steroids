@@ -7,6 +7,7 @@ use steroids\behaviors\TimestampBehavior;
 use steroids\behaviors\UidBehavior;
 use steroids\modules\file\exceptions\FileException;
 use steroids\modules\file\FileModule;
+use steroids\modules\file\structure\Photo;
 use yii\helpers\Url;
 
 /**
@@ -38,6 +39,39 @@ class File extends Model
     public static function tableName()
     {
         return '{{%files}}';
+    }
+
+    /**
+     * @param static|static[] $file
+     * @param string|string[] $processors
+     * @return array|null
+     * @throws \yii\base\Exception
+     */
+    public static function asPhotos($file, $processors = null)
+    {
+        $processors = $processors ?: FileModule::getInstance()->defaultProcessors;
+
+        if (is_array($file)) {
+            return array_map(function ($model) use ($processors) {
+                return static::asPhotos($model, $processors);
+            }, $file);
+        } elseif ($file) {
+            $result = [];
+            foreach ((array)$processors as $processor) {
+                try {
+                    $imageMeta = $file->getImageMeta($processor);
+                } catch (FileException $e) {
+                    return null;
+                }
+                $result[$processor] = new Photo($imageMeta->toFrontend([
+                    'url',
+                    'width',
+                    'height',
+                ]));
+            }
+            return $result;
+        }
+        return null;
     }
 
     /**
@@ -91,7 +125,9 @@ class File extends Model
             'folder',
             'fileName',
             'fileMimeType',
-            'fileSize',
+            'fileSize' => function(File $model) { // fix call filesize() on toFrontend()
+                return $model->fileSize;
+            },
             'createTime',
             'url',
             'downloadUrl',
@@ -299,7 +335,7 @@ class File extends Model
         }
 
         $originalImageMeta = $this->getImageMeta(FileModule::PROCESSOR_NAME_ORIGINAL);
-        $originalImageMeta->checkFixedSize((int) $fixedSize[0], (int) $fixedSize[1]);
+        $originalImageMeta->checkFixedSize((int)$fixedSize[0], (int)$fixedSize[1]);
 
         if ($originalImageMeta->hasErrors()) {
             return false;

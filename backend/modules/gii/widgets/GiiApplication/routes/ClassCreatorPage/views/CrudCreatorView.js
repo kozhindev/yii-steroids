@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Form, Button, Field, FieldList} from 'yii-steroids/frontend/ui/form';
+import {Form, Button, Field, FieldList} from 'yii-steroids/ui/form';
 
 import {html} from 'components';
 import CrudEntityMeta from '../../../../../forms/meta/CrudEntityMeta';
@@ -98,7 +98,7 @@ export default class CrudCreatorView extends React.PureComponent {
                     <Field attribute='createActionCreate'/>
                     <Field attribute='createActionUpdate'/>
                     <Field attribute='createActionView'/>
-                    <div className='mt-4'>
+                    <div className='mt-4 mb-5'>
                         <Button
                             type='submit'
                             label='Save'

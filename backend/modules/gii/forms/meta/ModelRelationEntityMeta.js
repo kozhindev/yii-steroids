@@ -1,4 +1,4 @@
-import Model from 'yii-steroids/frontend/base/Model';
+import Model from 'yii-steroids/base/Model';
 
 import {locale} from 'components';
 
@@ -29,14 +29,12 @@ export default class ModelRelationEntityMeta extends Model {
             'relationKey': {
                 'component': 'InputField',
                 'attribute': 'relationKey',
-                'label': locale.t('Relation Key'),
-                'required': true
+                'label': locale.t('Relation Key')
             },
             'selfKey': {
                 'component': 'InputField',
                 'attribute': 'selfKey',
-                'label': locale.t('Self key'),
-                'required': true
+                'label': locale.t('Self key')
             },
             'viaTable': {
                 'component': 'InputField',

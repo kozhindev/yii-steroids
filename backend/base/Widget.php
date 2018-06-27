@@ -4,6 +4,7 @@ namespace steroids\base;
 
 use yii\base\Widget as BaseWidget;
 use yii\helpers\Html;
+use yii\helpers\Json;
 use yii\web\JsExpression;
 use yii\web\View;
 
@@ -24,7 +25,17 @@ class Widget extends BaseWidget
 
         // Add to scripts load queue
         if ($loadScript) {
+            // Add translations
             $bundleName = $this->getBundleName();
+            $langFile = \Yii::getAlias('@webroot/assets/bundle-' . $bundleName . '-lang.json');
+            if (file_exists($langFile)) {
+                $translations = [];
+                foreach (Json::decode(file_get_contents($langFile)) as $translationString) {
+                    $translations[$translationString] = \Yii::t('steroids', $translationString);
+                }
+                \Yii::$app->frontendState->set('config.locale.translations', $translations);
+            }
+
             \Yii::$app->frontendState->add('config.widget.scripts', \Yii::getAlias('@static/assets/bundle-' . $bundleName . '.js'));
             if ($bundleName !== 'steroids') {
                 $this->view->registerCssFile(\Yii::getAlias('@static/assets/bundle-' . $bundleName . '.css'), ['position' => View::POS_END]);

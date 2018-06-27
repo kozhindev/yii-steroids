@@ -4,7 +4,7 @@
   &__input-attribute .form-control {
     font-weight: bold;
   }
-  &__input-hint  .FieldLayoutView__field {
+  &__input-hint .FieldLayoutView__field {
     padding-left: 30%;
   }
 
@@ -16,15 +16,20 @@
 
   .table tbody tr:nth-of-type(odd) {
     > td {
-      padding-top: 10px;
+      padding-top: 15px;
     }
   }
   .table tbody tr:nth-of-type(even) {
     border-bottom: solid $table-border-width $table-border-color;
 
     > td {
-      padding-bottom: 10px;
+      padding-bottom: 15px;
     }
+  }
+
+  .FieldListView__tr_is-protected {
+    opacity: .4;
+    pointer-events: none;
   }
 
   .FieldListView__additional {

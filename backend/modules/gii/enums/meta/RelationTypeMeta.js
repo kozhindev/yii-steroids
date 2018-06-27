@@ -1,4 +1,4 @@
-import Enum from 'yii-steroids/frontend/base/Enum';
+import Enum from 'yii-steroids/base/Enum';
 
 import {locale} from 'components';
 

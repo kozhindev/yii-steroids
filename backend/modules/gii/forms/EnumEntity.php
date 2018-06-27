@@ -42,6 +42,7 @@ class EnumEntity extends EnumEntityMeta implements IEntity
         return array_merge(
             $this->attributes(),
             [
+                'customColumns',
                 'items',
             ]
         );
@@ -100,10 +101,11 @@ class EnumEntity extends EnumEntityMeta implements IEntity
      */
     public function renderLabels($indent = '')
     {
+        $category = strpos('steroids\\', $this->getClassName()) === 0 ? 'steroids' : 'app';
         $labels = [];
         foreach ($this->items as $itemEntity) {
             $labels[] = new ValueExpression(
-                'self::' . $itemEntity->getConstName() . ' => Yii::t(\'app\', ' . GiiHelper::varExport($itemEntity->label) . ')'
+                'self::' . $itemEntity->getConstName() . ' => Yii::t(\'' . $category . '\', ' . GiiHelper::varExport($itemEntity->label) . ')'
             );
         }
         return GiiHelper::varExport($labels, $indent);
@@ -162,10 +164,12 @@ class EnumEntity extends EnumEntityMeta implements IEntity
         $values = [];
         foreach ($this->items as $itemEntity) {
             if (isset($itemEntity->custom[$name])) {
-                $values[$itemEntity->name] = $itemEntity->custom[$name];
+                $values[] = new ValueExpression(
+                    'self::' . $itemEntity->getConstName() . ' => ' . GiiHelper::varExport($itemEntity->custom[$name]) . ''
+                );
             }
         }
-        return !empty($values) ? GiiHelper::varExport($values, $indent) : '';
+        return GiiHelper::varExport($values, $indent);
     }
 
     /**

@@ -4,6 +4,8 @@ namespace steroids\modules\file;
 
 use steroids\base\Module;
 use steroids\modules\file\models\File;
+use steroids\modules\file\processors\ImageFitWithCrop;
+use steroids\modules\file\processors\ImageResize;
 use steroids\modules\file\uploaders\BaseUploader;
 use yii\helpers\ArrayHelper;
 
@@ -11,6 +13,8 @@ class FileModule extends Module
 {
     const PROCESSOR_NAME_ORIGINAL = 'original';
     const PROCESSOR_NAME_DEFAULT = 'default';
+    const PROCESSOR_NAME_THUMBNAIL = 'thumbnail';
+    const PROCESSOR_NAME_FULL = 'full';
 
     /**
      * Format is jpg or png
@@ -66,6 +70,15 @@ class FileModule extends Module
      */
     public $processors = [];
 
+    /**
+     * Default image processors (used when ImageMeta export)
+     * @var array
+     */
+    public $defaultProcessors = [
+        self::PROCESSOR_NAME_THUMBNAIL,
+        self::PROCESSOR_NAME_FULL,
+    ];
+
     public static function siteMap()
     {
         return [
@@ -101,15 +114,25 @@ class FileModule extends Module
         $this->processors = ArrayHelper::merge(
             [
                 self::PROCESSOR_NAME_ORIGINAL => [
-                    'class' => '\steroids\modules\file\processors\ImageResize',
+                    'class' => ImageResize::class,
                     'width' => 1920,
                     'height' => 1200,
                 ],
                 self::PROCESSOR_NAME_DEFAULT => [
-                    'class' => '\steroids\modules\file\processors\ImageResize',
+                    'class' => ImageResize::class,
                     'width' => 200,
                     'height' => 200,
-                ]
+                ],
+                self::PROCESSOR_NAME_THUMBNAIL => [
+                    'class' => ImageFitWithCrop::class,
+                    'width' => 400,
+                    'height' => 300,
+                ],
+                self::PROCESSOR_NAME_FULL => [
+                    'class' => ImageResize::class,
+                    'width' => 1900,
+                    'height' => 1200,
+                ],
             ],
             $this->processors
         );

@@ -68,7 +68,7 @@ class PutUploader extends BaseUploader
         if ($this->contentRange) {
             // Check file exists and correct size
             if ($this->contentRange['start'] > 0 && !is_file($filePath)) {
-                $this->addError('files', \Yii::t('app', 'Not found file for append content.'));
+                $this->addError('files', \Yii::t('steroids', 'Not found file for append content.'));
                 return false;
             }
 
@@ -76,7 +76,7 @@ class PutUploader extends BaseUploader
 
             // Check file size on server
             if ($this->contentRange['start'] > $backendFileSize) {
-                $this->addError('files', \Yii::t('app', 'Incorrect content range size for append content.'));
+                $this->addError('files', \Yii::t('steroids', 'Incorrect content range size for append content.'));
                 return false;
             }
 
@@ -91,7 +91,7 @@ class PutUploader extends BaseUploader
 
         // Check file size
         if ($file['bytesTotal'] && $file['bytesTotal'] > $this->maxFileSize) {
-            $this->addError('maxFileSize', \Yii::t('app', 'The uploaded file is too large. Max size: {size} Mb', [
+            $this->addError('maxFileSize', \Yii::t('steroids', 'The uploaded file is too large. Max size: {size} Mb', [
                 'size' => round(($this->maxFileSize / 1024) / 1024),
             ]));
             return false;
@@ -99,7 +99,7 @@ class PutUploader extends BaseUploader
 
         // Check request max size
         if ($file['bytesTotal'] && $file['bytesTotal'] > $this->maxRequestSize) {
-            $this->addError('maxRequestSize', \Yii::t('app', 'Summary uploaded files size is too large. Available size: {size} Mb', [
+            $this->addError('maxRequestSize', \Yii::t('steroids', 'Summary uploaded files size is too large. Available size: {size} Mb', [
                 'size' => round(($this->maxRequestSize / 1024) / 1024),
             ]));
             return false;
@@ -107,7 +107,7 @@ class PutUploader extends BaseUploader
 
         // Check mime type from header
         if (is_array($this->mimeTypes) && !in_array($file['type'], $this->mimeTypes)) {
-            $this->addError('files', \Yii::t('app', 'Incorrect file format.'));
+            $this->addError('files', \Yii::t('steroids', 'Incorrect file format.'));
             return false;
         }
 
@@ -121,7 +121,7 @@ class PutUploader extends BaseUploader
         // Check real mime type from file
         $fileType = static::getFileMimeType($filePath);
         if (is_array($this->mimeTypes) && !in_array($fileType, $this->mimeTypes)) {
-            $this->addError('files', \Yii::t('app', 'Incorrect file format.'));
+            $this->addError('files', \Yii::t('steroids', 'Incorrect file format.'));
             return false;
         }
 

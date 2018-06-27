@@ -30,6 +30,7 @@ use steroids\modules\gii\models\Relation;
 use steroids\modules\gii\widgets\GiiApplication\GiiApplication;
 use steroids\widgets\ActiveForm;
 use yii\helpers\ArrayHelper;
+use yii\rbac\Permission;
 use yii\web\BadRequestHttpException;
 use yii\web\Controller;
 
@@ -62,8 +63,10 @@ class GiiController extends Controller
     public static function apiMap()
     {
         return [
-            'api-get-data' => '/api/gii/get-data',
+            'api-get-entities' => '/api/gii/get-entities',
             'api-class-save' => '/api/gii/class-save',
+            'api-get-permissions' => '/api/gii/get-permissions',
+            'api-permissions-save' => '/api/gii/permissions-save',
         ];
     }
 
@@ -75,7 +78,7 @@ class GiiController extends Controller
         return $this->renderContent(GiiApplication::widget());
     }
 
-    public function actionApiGetData()
+    public function actionApiGetEntities()
     {
         return [
             'moduleIds' => array_keys(GiiHelper::findModules()),
@@ -94,6 +97,98 @@ class GiiController extends Controller
                 ];
             }, \Yii::$app->types->getTypes()),
         ];
+    }
+
+    public function actionApiGetPermissions()
+    {
+        $auth = \Yii::$app->authManager;
+        $prefix = \Yii::$app->request->post('prefix');
+
+        // Get permissions and roles
+        $permissions = AuthPermissionSync::getPermissions($prefix);
+        $roles = array_values(ArrayHelper::getColumn($auth->getRoles(), 'name'));
+        usort($roles, function($a, $b) {
+            if ($a === 'admin' || $b === 'guest') {
+                return 1;
+            }
+            if ($a === 'guest' || $b === 'admin') {
+                return -1;
+            }
+            return 0;
+        });
+
+        // Initial values
+        $initialValues = [
+            'prefix' => $prefix,
+        ];
+        foreach ($roles as $role) {
+            foreach ($auth->getPermissionsByRole($role) as $permission) {
+                $initialValues['rules'][$role][$permission->name] = true;
+                foreach ($this->getChildNamesRecursive($permission->name) as $child) {
+                    $initialValues['rules'][$role][$child->name] = true;
+                };
+            }
+        }
+
+        return [
+            'roles' => $roles,
+            'permissions' => array_map(function (Permission $permission) use ($auth) {
+                $children = array_values(ArrayHelper::getColumn($auth->getChildren($permission->name), 'name'));
+                return [
+                    'name' => $permission->name,
+                    'description' => (string) $permission->description,
+                    'children' => !empty($children) ? $children : null,
+                ];
+            }, array_values($permissions)),
+            'initialValues' => $initialValues,
+        ];
+    }
+
+    public function actionApiPermissionsSave()
+    {
+        $prefix = \Yii::$app->request->post('prefix');
+        $data = \Yii::$app->request->post('rules');
+        $allNames = ArrayHelper::getColumn(AuthPermissionSync::getPermissions($prefix), 'name');
+
+        $auth = \Yii::$app->authManager;
+        foreach ($auth->getRoles() as $role) {
+            $rules = ArrayHelper::getValue($data, $role->name, []);
+            $addedNames = [];
+            $prevNames = ArrayHelper::getColumn($auth->getPermissionsByRole($role->name), 'name');
+            $prevNames = array_filter($prevNames, function($name) use ($allNames) {
+                return in_array($name, $allNames);
+            });
+
+            foreach ($rules as $rule => $bool) {
+                if (!$bool || strpos($rule, $prefix . '::') !== 0) {
+                    continue;
+                }
+
+                // Find parent permission and check checked
+                $isParentChecked = false;
+                foreach ($allNames as $permissionName) {
+                    $childNames = ArrayHelper::getColumn($auth->getChildren($permissionName), 'name');
+                    if (in_array($rule, $childNames) && ArrayHelper::getValue($rules, $permissionName)) {
+                        $isParentChecked = true;
+                        break;
+                    }
+                }
+
+                if (!$isParentChecked) {
+                    $addedNames[] = $rule;
+                    $permission = $auth->getPermission($rule);
+
+                    AuthPermissionSync::safeAddChild($role, $permission);
+                }
+            }
+
+            // Remove unchecked
+            foreach (array_diff($prevNames, $addedNames) as $name) {
+                $auth->removeChild($role, $auth->getPermission($name));
+            }
+        }
+
+        \Yii::$app->session->addFlash('success', 'Permissions ' . $prefix . '::* updated');
     }
 
     public function actionApiClassSave()
@@ -135,6 +230,19 @@ class GiiController extends Controller
 
         return ActiveForm::renderAjax($entity);
     }
+
+    protected function getChildNamesRecursive($permissionName)
+    {
+        $auth = \Yii::$app->authManager;
+        $auth->getPermission($permissionName);
+        $names = [];
+        foreach ($auth->getChildren($permissionName) as $child) {
+            $names[] = $child;
+            $names = array_merge($names, $this->getChildNamesRecursive($child->name));
+        }
+        return $names;
+    }
+
 
 
 

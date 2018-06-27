@@ -3,7 +3,6 @@
 namespace steroids\modules\gii;
 
 use steroids\base\Module;
-use steroids\modules\gii\controllers\AccessController;
 use steroids\modules\gii\controllers\GiiController;
 use steroids\modules\gii\controllers\SiteMapController;
 
@@ -30,7 +29,7 @@ class GiiModule extends Module
      */
     public $allowedIPs = ['127.0.0.1', '::1'];
 
-    public $showGiiEntries = false;
+    public $showSteroidsEntries = false;
 
     public static function siteMap()
     {
@@ -38,11 +37,7 @@ class GiiModule extends Module
             'gii' => [
                 'label' => 'Gii',
                 'accessCheck' => [GiiModule::class, 'accessCheck'],
-                'items' => array_merge(
-                    GiiController::coreMenuItems(),
-                    SiteMapController::coreMenuItems(),
-                    AccessController::coreMenuItems()
-                ),
+                'items' => GiiController::coreMenuItems(),
             ],
         ];
     }

@@ -20,7 +20,7 @@ abstract class ModelRelationEntityMeta extends FormModel
     {
         return [
             [['type', 'name', 'relationModel', 'relationKey', 'selfKey', 'viaTable', 'viaRelationKey', 'viaSelfKey'], 'string', 'max' => 255],
-            [['type', 'name', 'relationModel', 'relationKey', 'selfKey'], 'required'],
+            [['type', 'name', 'relationModel'], 'required'],
         ];
     }
 
@@ -28,33 +28,31 @@ abstract class ModelRelationEntityMeta extends FormModel
     {
         return [
             'type' => [
-                'label' => Yii::t('app', 'Type'),
-                'required' => true
+                'label' => Yii::t('steroids', 'Type'),
+                'isRequired' => true
             ],
             'name' => [
-                'label' => Yii::t('app', 'Name'),
-                'required' => true
+                'label' => Yii::t('steroids', 'Name'),
+                'isRequired' => true
             ],
             'relationModel' => [
-                'label' => Yii::t('app', 'Model class'),
-                'required' => true
+                'label' => Yii::t('steroids', 'Model class'),
+                'isRequired' => true
             ],
             'relationKey' => [
-                'label' => Yii::t('app', 'Relation Key'),
-                'required' => true
+                'label' => Yii::t('steroids', 'Relation Key')
             ],
             'selfKey' => [
-                'label' => Yii::t('app', 'Self key'),
-                'required' => true
+                'label' => Yii::t('steroids', 'Self key')
             ],
             'viaTable' => [
-                'label' => Yii::t('app', 'Table name')
+                'label' => Yii::t('steroids', 'Table name')
             ],
             'viaRelationKey' => [
-                'label' => Yii::t('app', 'Relation Key')
+                'label' => Yii::t('steroids', 'Relation Key')
             ],
             'viaSelfKey' => [
-                'label' => Yii::t('app', 'Self key')
+                'label' => Yii::t('steroids', 'Self key')
             ]
         ];
     }

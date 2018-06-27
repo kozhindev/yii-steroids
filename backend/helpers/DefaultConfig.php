@@ -77,6 +77,9 @@ class DefaultConfig
                     'migrate' => [
                         'class' => '\steroids\commands\MigrateCommand',
                     ],
+                    'steroids' => [
+                        'class' => '\steroids\commands\SteroidsCommand',
+                    ],
                 ],
                 'on beforeAction' => function() use ($steroidsConfig) {
                     Yii::setAlias('@tests', STEROIDS_ROOT_DIR . '/tests');
@@ -115,6 +118,15 @@ class DefaultConfig
             'components' => [
                 'authManager' => [
                     'class' => 'steroids\components\AuthManager',
+                ],
+                'i18n' => [
+                    'translations' => [
+                        'steroids*' => [
+                            'class' => 'yii\i18n\PhpMessageSource',
+                            'basePath' => '@steroids/messages',
+                            'sourceLanguage' => 'ru',
+                        ]
+                    ],
                 ],
                 'assetManager' => [
                     'forceCopy' => true,
@@ -179,6 +191,9 @@ class DefaultConfig
                 ],
                 'urlManager' => [
                     'class' => 'steroids\components\UrlManager',
+                ],
+                'view' => [
+                    'class' => 'steroids\components\View',
                 ],
             ],
         ];

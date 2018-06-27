@@ -16,11 +16,11 @@ abstract class ClassTypeMeta extends Enum
     public static function getLabels()
     {
         return [
-            self::MODEL => Yii::t('app', 'Model ActiveRecord'),
-            self::FORM => Yii::t('app', 'Model Form'),
-            self::ENUM => Yii::t('app', 'Enum'),
-            self::CRUD => Yii::t('app', 'Crud Controller'),
-            self::WIDGET => Yii::t('app', 'Widget')
+            self::MODEL => Yii::t('steroids', 'Model ActiveRecord'),
+            self::FORM => Yii::t('steroids', 'Model Form'),
+            self::ENUM => Yii::t('steroids', 'Enum'),
+            self::CRUD => Yii::t('steroids', 'Crud Controller'),
+            self::WIDGET => Yii::t('steroids', 'Widget')
         ];
     }
 

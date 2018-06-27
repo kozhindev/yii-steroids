@@ -47,6 +47,7 @@ class ActiveForm extends Widget
         parent::init();
 
         // Normalize fields
+        $this->fields = array_filter($this->fields);
         foreach ($this->fields as $key => $field) {
             if (is_string($field)) {
                 $this->fields[$key] = ['attribute' => $field];
@@ -88,8 +89,8 @@ class ActiveForm extends Widget
         $submitLabel = $this->submitLabel;
         if (!$submitLabel) {
             $submitLabel = $this->model->isNewRecord
-                ? \Yii::t('app', 'Добавить')
-                : \Yii::t('app', 'Сохранить');
+                ? \Yii::t('steroids', 'Добавить')
+                : \Yii::t('steroids', 'Сохранить');
         }
 
         return $this->renderReact([

@@ -210,16 +210,16 @@ class ImageMeta extends Model
     public function checkFixedSize($width, $height)
     {
         if (!$width || !$height) {
-            $this->addError('id', \Yii::t('app', 'Fixed height or width must be greater than 0'));
+            $this->addError('id', \Yii::t('steroids', 'Fixed height or width must be greater than 0'));
             return;
         }
 
         if ($this->width < $width && $this->height < $height) {
-            $this->addError('id', \Yii::t('app', 'Image is smaller that the given fixed size'));
+            $this->addError('id', \Yii::t('steroids', 'Image is smaller that the given fixed size'));
         }
 
         if ((int) floor($this->width/$this->height) !== (int) floor($width/$height)) {
-            $this->addError('id', \Yii::t('app', 'Image has different height/width ratio than the given size'));
+            $this->addError('id', \Yii::t('steroids', 'Image has different height/width ratio than the given size'));
         }
     }
 
