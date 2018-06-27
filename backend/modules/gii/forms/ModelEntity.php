@@ -93,14 +93,6 @@ class ModelEntity extends ModelEntityMeta implements IEntity
             // Lazy create module
             ModuleEntity::findOrCreate($this->moduleId);
 
-            // Create model, if not exists
-            if (!file_exists($this->getPath())) {
-                GiiHelper::renderFile('model/model', $this->getPath(), [
-                    'modelEntity' => $this,
-                ]);
-                \Yii::$app->session->addFlash('success', 'Added model ' . $this->name);
-            }
-
             // Create/update meta information
             if (GiiHelper::isOverWriteClass($this->getClassName()) && GiiModule::getInstance()->showSteroidsEntries) {
                 // TODO Save lib class
@@ -112,6 +104,14 @@ class ModelEntity extends ModelEntityMeta implements IEntity
                 'modelEntity' => $this,
             ]);
             \Yii::$app->session->addFlash('success', 'Meta  info model ' . $this->name . 'Meta updated');
+
+            // Create model, if not exists
+            if (!file_exists($this->getPath())) {
+                GiiHelper::renderFile('model/model', $this->getPath(), [
+                    'modelEntity' => $this,
+                ]);
+                \Yii::$app->session->addFlash('success', 'Added model ' . $this->name);
+            }
 
             // Create migration
             $migrationMethods = new MigrationMethods([
@@ -155,7 +155,7 @@ class ModelEntity extends ModelEntityMeta implements IEntity
 
     public function getModelsDir()
     {
-        return $this->className
+        return $this->className && class_exists($this->className)
             ? dirname((new \ReflectionClass($this->className))->getFileName())
             : GiiHelper::getModuleDir($this->moduleId) . '/models';
     }
