@@ -6,7 +6,7 @@ import {html} from 'components';
 
 const bem = html.bem('ReCaptchaFieldView');
 
-import './ReCaptchaFieldView.scss'
+import './ReCaptchaFieldView.scss';
 
 export default class ReCaptchaFieldView extends React.PureComponent {
 

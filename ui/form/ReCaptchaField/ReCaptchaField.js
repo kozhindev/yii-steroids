@@ -19,7 +19,6 @@ export default class ReCaptchaField extends React.PureComponent {
     };
 
     render() {
-        {console.log(resource.googleCaptchaSiteKey)}
         const {input, ...props} = this.props;
         const ReCaptchaFieldView = this.props.view || ui.getView('form.ReCaptchaFieldView');
         return (
