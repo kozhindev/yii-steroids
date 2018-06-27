@@ -165,6 +165,10 @@ class ModelAttributeEntity extends ModelAttributeEntityMeta
 
     public function getIsProtected()
     {
+        if (!class_exists($this->modelEntity->getClassName())) {
+            return false;
+        }
+
         $info = new \ReflectionClass($this->modelEntity->getClassName());
         /** @var Model $parentClassName */
         $parentClassName = $info->getParentClass()->getParentClass()->name;
