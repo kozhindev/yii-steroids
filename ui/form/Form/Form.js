@@ -11,6 +11,7 @@ import {http, ui} from 'components';
 import {addSecurityFields} from '../../../actions/fields';
 import AutoSaveHelper from './AutoSaveHelper';
 import SyncAddressBarHelper from './SyncAddressBarHelper';
+import SecurityFields from '../SecurityFields';
 import Field from '../Field';
 import Button from '../Button';
 
@@ -116,6 +117,9 @@ export default class Form extends React.PureComponent {
                         {...field}
                     />
                 ))}
+                {this.props.fields && (
+                    <SecurityFields />
+                )}
                 {this.props.submitLabel && (
                     <Button
                         type='submit'
