@@ -78,6 +78,18 @@ class ActiveForm extends Widget
 
             return ['errors' => $errors];
         }
+
+        if ($model->hasSecurityFields()) {
+            $securityFields = $model->getSecurityFields();
+
+            // Apply form name
+            $formName = $formName !== null ? $formName : $model->formName();
+            if ($formName) {
+                $securityFields = [$formName => $securityFields];
+            }
+
+            $result = ['securityFields' => $securityFields];
+        }
         return $result;
     }
 
