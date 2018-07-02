@@ -8,8 +8,10 @@ import _set from 'lodash-es/set';
 import _isUndefined from 'lodash-es/isUndefined';
 
 import {http, ui} from 'components';
+import {addSecurityFields} from '../../../actions/fields';
 import AutoSaveHelper from './AutoSaveHelper';
 import SyncAddressBarHelper from './SyncAddressBarHelper';
+import SecurityFields from '../SecurityFields';
 import Field from '../Field';
 import Button from '../Button';
 
@@ -115,6 +117,9 @@ export default class Form extends React.PureComponent {
                         {...field}
                     />
                 ))}
+                {this.props.fields && (
+                    <SecurityFields />
+                )}
                 {this.props.submitLabel && (
                     <Button
                         type='submit'
@@ -167,14 +172,19 @@ export default class Form extends React.PureComponent {
 
         return http.post(this.props.action || location.pathname, values)
             .then(response => {
+                if (response.securityFields) {
+                    this.props.dispatch(addSecurityFields(this.props.formId, response.securityFields));
+                }
                 if (response.errors) {
                     throw new SubmissionError(response.errors);
                 }
-                if (this.props.autoSave) {
-                    AutoSaveHelper.remove(this.props.formId);
-                }
-                if (this.props.onComplete) {
-                    this.props.onComplete(values, response);
+                if (!response.securityFields) {
+                    if (this.props.autoSave) {
+                        AutoSaveHelper.remove(this.props.formId);
+                    }
+                    if (this.props.onComplete) {
+                        this.props.onComplete(values, response);
+                    }
                 }
             });
     }

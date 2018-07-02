@@ -29,8 +29,17 @@ export default class LoginFormMeta extends Model {
                 'component': 'InputField',
                 'attribute': 'reCaptcha',
                 'label': locale.t('Я не робот')
-            }
+            },
+            'google2faEnable': {
+                'component': 'CheckboxField',
+                'attribute': 'google2faEnable',
+                'label': locale.t('Google 2FA')
+            },
+            'google2faCode': {
+                'component': 'InputField',
+                'attribute': 'google2faCode',
+                'label': locale.t('Google 2FA Code')
+            },
         };
     }
-
 }
