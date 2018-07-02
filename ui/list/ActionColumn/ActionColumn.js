@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import _get from 'lodash-es/get';
+import _isFunction from 'lodash-es/isFunction';
 import _upperFirst from 'lodash-es/upperFirst';
 
 import {locale} from 'components';
@@ -10,12 +11,18 @@ export default class ActionColumn extends React.PureComponent {
 
     static propTypes = {
         primaryKey: PropTypes.string,
-        actions: PropTypes.arrayOf(PropTypes.object),
+        actions: PropTypes.oneOfType([
+            PropTypes.arrayOf(PropTypes.object),
+            PropTypes.func,
+        ]),
         item: PropTypes.object,
     };
 
     render() {
         const id = _get(this.props.item, this.props.primaryKey);
+        const actions = _isFunction(this.props.actions)
+            ? this.props.actions(this.props.item, this.props.primaryKey)
+            : this.props.actions;
         const defaultActions = {
             view: {
                 rule: 'view',
@@ -33,6 +40,7 @@ export default class ActionColumn extends React.PureComponent {
                 rule: 'delete',
                 icon: 'delete',
                 label: locale.t('Удалить'),
+                confirm: locale.t('Удалить запись?'),
                 url: location.pathname + `/delete/${id}`,
             },
         };
@@ -41,11 +49,13 @@ export default class ActionColumn extends React.PureComponent {
             <Nav
                 {...this.props}
                 layout='icon'
-                items={this.props.actions.map(action => ({
-                    ...defaultActions[action.id],
-                    ...action,
-                    visible: !!this.props.item['can' + _upperFirst(action.id)],
-                }))}
+                items={actions.map(action => {
+                    return {
+                        ...defaultActions[action.id],
+                        ...action,
+                        visible: !!this.props.item['can' + _upperFirst(action.id)],
+                    };
+                })}
             />
         );
     }

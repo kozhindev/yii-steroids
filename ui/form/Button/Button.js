@@ -50,6 +50,7 @@ export default class Button extends React.PureComponent {
         outline: PropTypes.bool,
         url: PropTypes.string,
         to: PropTypes.string,
+        confirm: PropTypes.string,
         onClick: PropTypes.func,
         disabled: PropTypes.bool,
         submitting: PropTypes.bool,
@@ -114,7 +115,12 @@ export default class Button extends React.PureComponent {
         return button;
     }
 
-    _onClick() {
+    _onClick(e) {
+        if (this.props.confirm && !confirm(this.props.confirm)) {
+            e.preventDefault();
+            e.stopPropagation();
+            return;
+        }
         if (this.props.to) {
             this.props.dispatch(push(this.props.to));
         }

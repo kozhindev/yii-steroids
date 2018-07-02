@@ -5,21 +5,13 @@ import domready from 'domready';
 import loadJs from 'load-js';
 import _trimStart from 'lodash-es/trimStart';
 
-import Form from '../ui/form/Form';
-import Grid from '../ui/list/Grid';
-import ModalWrapper from '../ui/modal/ModalWrapper';
-
 export default class WidgetComponent {
 
     constructor() {
         this.scripts = [];
         this.toRender = [];
 
-        this._widgets = {
-            'steroids\\widgets\\ActiveForm': Form,
-            'steroids\\widgets\\GridView': Grid,
-            'steroids\\widgets\\ModalWrapper': ModalWrapper,
-        };
+        this._widgets = {};
 
         setTimeout(() => {
             const scripts = this.scripts.map(url => ({
@@ -32,8 +24,16 @@ export default class WidgetComponent {
         });
     }
 
+    add(widgets) {
+        this._widgets = {
+            ...this._widgets,
+            ...widgets,
+        };
+    }
+
     register(name, func) {
         name = _trimStart(name, '\\');
+
         if (arguments.length === 1) {
             // Decorator
             return func => {
@@ -46,8 +46,10 @@ export default class WidgetComponent {
     }
 
     render(elementId, name, props) {
+        name = _trimStart(name, '\\');
+
         const store = require('components').store;
-        const WidgetComponent = this._widgets[_trimStart(name, '\\')];
+        const WidgetComponent = this._widgets[name];
         if (!WidgetComponent) {
             throw new Error(`Not found widget component '${name}'`);
         }

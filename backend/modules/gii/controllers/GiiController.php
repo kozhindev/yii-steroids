@@ -2,31 +2,17 @@
 
 namespace steroids\modules\gii\controllers;
 
-use steroids\base\FormModel;
 use steroids\base\Type;
 use steroids\modules\gii\enums\ClassType;
 use steroids\modules\gii\forms\CrudEntity;
 use steroids\modules\gii\forms\EnumEntity;
 use steroids\modules\gii\forms\FormEntity;
-use steroids\modules\gii\forms\IEntity;
 use steroids\modules\gii\forms\ModelEntity;
 use steroids\modules\gii\forms\WidgetEntity;
-use steroids\modules\gii\generators\enum\EnumGenerator;
-use steroids\modules\gii\generators\formModel\FormModelGenerator;
-use steroids\modules\gii\generators\model\ModelGenerator;
-use steroids\modules\gii\generators\crud\CrudGenerator;
-use steroids\modules\gii\generators\module\ModuleGenerator;
 use steroids\modules\gii\GiiModule;
 use steroids\modules\gii\helpers\GiiHelper;
 use steroids\modules\gii\models\AuthPermissionSync;
-use steroids\modules\gii\models\ControllerClass;
-use steroids\modules\gii\models\EnumClass;
-use steroids\modules\gii\models\EnumMetaItem;
-use steroids\modules\gii\models\FormModelClass;
 use steroids\modules\gii\models\MetaItem;
-use steroids\modules\gii\models\ModelClass;
-use steroids\modules\gii\models\ModuleClass;
-use steroids\modules\gii\models\Relation;
 use steroids\modules\gii\widgets\GiiApplication\GiiApplication;
 use steroids\widgets\ActiveForm;
 use yii\helpers\ArrayHelper;
