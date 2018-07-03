@@ -36,6 +36,10 @@ export default class FieldLayout extends React.PureComponent {
     };
 
     render() {
+        if (this.props.layout === false) {
+            return this.props.children;
+        }
+
         const FieldLayoutView = this.props.layoutView || ui.getView('form.FieldLayoutView');
         return (
             <FieldLayoutView

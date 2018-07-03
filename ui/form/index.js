@@ -8,6 +8,7 @@ import Field from './Field';
 import FieldLayout from './FieldLayout';
 import FieldList from './FieldList';
 import FieldSet from './FieldSet';
+import FileField from './FileField';
 import Form from './Form';
 import HtmlField from './HtmlField';
 import InputField from './InputField';
@@ -32,6 +33,7 @@ export {
     FieldLayout,
     FieldList,
     FieldSet,
+    FileField,
     Form,
     HtmlField,
     InputField,
