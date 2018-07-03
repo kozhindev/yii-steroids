@@ -95,7 +95,7 @@ export default class Button extends React.PureComponent {
             />
         );
 
-        if (this.context.formId) {
+        if (this.context.formId && this.props.layout !== false) {
             return (
                 <FieldLayout
                     {...this.props}
