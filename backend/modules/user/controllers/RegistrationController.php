@@ -36,6 +36,18 @@ class RegistrationController extends Controller
                     ],
                 ],
             ],
+            'api.user.registration' => [
+                'label' => \Yii::t('steroids', 'Регистрация'),
+                'url' => ['/user/registration/api-index'],
+                'urlRule' => 'api/registration',
+                'items' => [
+                    'email-confirm' => [
+                        'label' => \Yii::t('steroids', 'Подтверждение email'),
+                        'url' => ['/user/registration/api-email-confirm'],
+                        'urlRule' => 'api/registration/email-confirm',
+                    ],
+                ],
+            ],
         ];
     }
 
@@ -83,5 +95,24 @@ class RegistrationController extends Controller
     public function actionAgreement()
     {
         return $this->render($this->view->findOverwriteView('@steroids/modules/user/views/registration/agreement'));
+    }
+
+    public function actionApiIndex()
+    {
+        $model = new RegistrationForm();
+        $model->load(Yii::$app->request->post());
+        $model->register();
+        return ActiveForm::renderAjax($model);
+    }
+
+    public function actionApiEmailConfirm()
+    {
+        $model = new EmailConfirmForm();
+        $model->load(array_merge(
+            Yii::$app->request->get(),
+            Yii::$app->request->post()
+        ));
+        $model->confirm();
+        return ActiveForm::renderAjax($model);
     }
 }
