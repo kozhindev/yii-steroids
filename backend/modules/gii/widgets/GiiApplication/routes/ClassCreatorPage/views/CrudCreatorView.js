@@ -50,23 +50,38 @@ export default class CrudCreatorView extends React.PureComponent {
                             <Field attribute='moduleId'/>
                         </div>
                         <div className='col-3'>
-                            <Field attribute='name'/>
+                            <Field
+                                attribute='name'
+                                placeholder='UsersController'
+                            />
                         </div>
                     </div>
                     <div className='row'>
                         <div className='col-5'>
-                            <Field attribute='queryModel'/>
+                            <Field
+                                attribute='queryModel'
+                                placeholder='app\user\models\User'
+                            />
                         </div>
                         <div className='col-5'>
-                            <Field attribute='searchModel'/>
+                            <Field
+                                attribute='searchModel'
+                                placeholder='app\user\forms\UserSearch'
+                            />
                         </div>
                     </div>
                     <div className='row'>
                         <div className='col-5'>
-                            <Field attribute='title'/>
+                            <Field
+                                attribute='title'
+                                placeholder='Поиск пользователей'
+                            />
                         </div>
                         <div className='col-3'>
-                            <Field attribute='url'/>
+                            <Field
+                                attribute='url'
+                                placeholder='/users'
+                            />
                         </div>
                     </div>
                     <h3 className='mt-4'>

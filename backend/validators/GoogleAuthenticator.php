@@ -13,7 +13,7 @@ class GoogleAuthenticator extends Validator
 {
     public $skipOnEmpty = false;
     public $secretKeyAttribute = 'google2faSecretKey';
-    public $google2faFlag = 'google2faEnable';
+    public $enableAttribute = 'google2faEnable';
 
     public static function verify($secretKey, $code)
     {
@@ -40,7 +40,7 @@ class GoogleAuthenticator extends Validator
     {
         $user = $model->user;
         $secretKeyAttribute = $this->secretKeyAttribute;
-        $google2faFlag = $this->google2faFlag;
+        $google2faFlag = $this->enableAttribute;
 
         if ($user && $user->$google2faFlag) {
             $code = $model->$attribute;
@@ -49,7 +49,7 @@ class GoogleAuthenticator extends Validator
                     $model->addSecurityFields([
                         'label' => $model->getAttributeLabel($attribute),
                         'attribute' => $attribute,
-                        'component' => 'InputField'
+                        'component' => 'InputField',
                     ]);
                 } else {
                     $this->addError($model, $attribute, \Yii::$app->getI18n()->format($this->message, [

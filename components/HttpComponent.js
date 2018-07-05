@@ -38,6 +38,13 @@ export default class HttpComponent {
         }, options);
     }
 
+    delete(method, params = {}, options = {}) {
+        return this._send(method, {
+            method: 'delete',
+            data: params,
+        }, options);
+    }
+
     hoc(requestFunc) {
         return WrappedComponent => class HttpHOC extends React.Component {
 
@@ -84,7 +91,9 @@ export default class HttpComponent {
     _send(method, config, options) {
         const axiosConfig = {
             ...config,
-            url: `${_trimEnd(this.apiUrl, '/')}/${_trimStart(method, '/')}`,
+            url: method !== null
+                ? `${_trimEnd(this.apiUrl, '/')}/${_trimStart(method, '/')}`
+                : location.pathname,
             withCredentials: true,
             headers: {
                 'Content-Type': 'application/json',

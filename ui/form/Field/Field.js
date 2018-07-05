@@ -51,12 +51,8 @@ export default class Field extends React.Component {
             ...props,
         };
 
-        if (!props.component) {
-            const className = _isFunction(model) ? model.name : model;
-            throw new Error('Component is not set for Field "' + className + '.' + this.props.attribute + '".');
-        }
-
-        const ComponentField = _isString(props.component) ? ui.getField('form.' + props.component) : props.component;
+        const component = props.component || 'InputField';
+        const ComponentField = _isString(component) ? ui.getField('form.' + component) : component;
         return <ComponentField {...props}/>;
     }
 

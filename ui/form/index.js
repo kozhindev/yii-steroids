@@ -8,6 +8,7 @@ import Field from './Field';
 import FieldLayout from './FieldLayout';
 import FieldList from './FieldList';
 import FieldSet from './FieldSet';
+import FileField from './FileField';
 import Form from './Form';
 import HtmlField from './HtmlField';
 import InputField from './InputField';
@@ -17,6 +18,8 @@ import RadioListField from './RadioListField';
 import RangeField from './RangeField';
 import ReCaptchaField from './ReCaptchaField';
 import SecurityFields from './SecurityFields';
+import SliderField from './SliderField';
+import SwitcherField from './SwitcherField';
 import TextField from './TextField';
 
 export {
@@ -30,6 +33,7 @@ export {
     FieldLayout,
     FieldList,
     FieldSet,
+    FileField,
     Form,
     HtmlField,
     InputField,
@@ -39,5 +43,7 @@ export {
     RangeField,
     ReCaptchaField,
     SecurityFields,
+    SliderField,
+    SwitcherField,
     TextField,
 };

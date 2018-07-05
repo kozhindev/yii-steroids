@@ -31,7 +31,10 @@ export default class Grid extends React.PureComponent {
             valueView: PropTypes.func,
             valueProps: PropTypes.object,
         })).isRequired,
-        actions: PropTypes.arrayOf(PropTypes.object),
+        actions: PropTypes.oneOfType([
+            PropTypes.arrayOf(PropTypes.object),
+            PropTypes.func,
+        ]),
     };
 
     constructor() {

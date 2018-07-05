@@ -20,6 +20,7 @@ class Model extends ActiveRecord
     use MetaTrait;
     use RelationSaveTrait;
     use SecurityFieldsTrait;
+
     /**
      * @return string
      */
