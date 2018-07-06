@@ -51,7 +51,7 @@ export default class PermissionCheckbox extends React.PureComponent {
             </label>
         );
 
-        const tooltipId = 'tooltip_' + this.props.permission.name.replace(/[^0-9a-z]+/g, '_');
+        const tooltipId = 'tooltip_' + this.props.role + '_' + this.props.permission.name.replace(/[^0-9a-z]+/g, '_');
         return (
             <div
                 key={this.props.permission.name}

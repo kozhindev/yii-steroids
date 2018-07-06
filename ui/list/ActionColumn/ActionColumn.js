@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import _get from 'lodash-es/get';
+import _has from 'lodash-es/has';
 import _isFunction from 'lodash-es/isFunction';
 import _upperFirst from 'lodash-es/upperFirst';
 
@@ -50,10 +51,11 @@ export default class ActionColumn extends React.PureComponent {
                 {...this.props}
                 layout='icon'
                 items={actions.map(action => {
+                    const canKey = 'can' + _upperFirst(action.id);
                     return {
                         ...defaultActions[action.id],
                         ...action,
-                        visible: !!this.props.item['can' + _upperFirst(action.id)],
+                        visible: !_has(this.props.item, canKey) || !!this.props.item[canKey],
                     };
                 })}
             />

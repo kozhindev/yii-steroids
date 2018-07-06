@@ -215,8 +215,8 @@ abstract class CrudController extends Controller
         $attributes[] = $modelClass::primaryKey()[0];
 
         // Append access flags
-        foreach (static::controls() as $action) {
-            $method = 'can' . ucfirst($action);
+        foreach (Crud::normalizeConfig(static::controls(), 'id') as $action) {
+            $method = 'can' . ucfirst($action['id']);
             if (method_exists($modelClass, $method)) {
                 $attributes[$method] = function (Model $model) use ($method) {
                     return $model->$method(Yii::$app->user->model);
@@ -233,6 +233,7 @@ abstract class CrudController extends Controller
 
         return $this->renderContent(Crud::widget([
             'model' => static::$modelClass,
+            'searchModel' => static::$searchModelClass,
             'controls' => static::controls(),
             'searchFields' => $this->searchFields(),
             'columns' => $this->columns(),

@@ -68,14 +68,6 @@ class FormEntity extends ModelEntity implements IEntity
             // Lazy create module
             ModuleEntity::findOrCreate($this->moduleId);
 
-            // Create model, if not exists
-            if (!file_exists($this->getPath())) {
-                GiiHelper::renderFile('form/form', $this->getPath(), [
-                    'formEntity' => $this,
-                ]);
-                \Yii::$app->session->addFlash('success', 'Added form ' . $this->name);
-            }
-
             if (GiiHelper::isOverWriteClass($this->getClassName()) && GiiModule::getInstance()->showSteroidsEntries) {
                 // TODO Save lib class
             }
@@ -86,6 +78,14 @@ class FormEntity extends ModelEntity implements IEntity
                 'formEntity' => $this,
             ]);
             \Yii::$app->session->addFlash('success', 'Meta info form ' . $this->name . 'Meta update');
+
+            // Create model, if not exists
+            if (!file_exists($this->getPath())) {
+                GiiHelper::renderFile('form/form', $this->getPath(), [
+                    'formEntity' => $this,
+                ]);
+                \Yii::$app->session->addFlash('success', 'Added form ' . $this->name);
+            }
 
             return true;
         }

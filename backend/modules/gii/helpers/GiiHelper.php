@@ -77,6 +77,12 @@ class GiiHelper
 
     public static function getModuleDir($moduleId)
     {
+        $appDir = \Yii::getAlias('@app');
+        $moduleDir = $appDir . '/' . str_replace('.', '/', $moduleId);
+        if (file_exists($moduleDir)) {
+            return $moduleDir;
+        }
+
         $module = static::getModuleById($moduleId);
         return dirname((new \ReflectionClass($module))->getFileName());
     }

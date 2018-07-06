@@ -1,17 +1,11 @@
 export default class Model {
 
-    static meta() {
+    static fields() {
         return {};
     }
 
-    static getMetaItem(attribute) {
-        const meta = this.meta();
-        return {
-            appType: 'string',
-            label: '',
-            hint: '',
-            required: false,
-            ...meta[attribute],
-        };
+    static formatters() {
+        return {};
     }
+
 }

@@ -92,7 +92,7 @@ class ModelEntity extends ModelEntityMeta implements IEntity
 
             // Lazy create module
             ModuleEntity::findOrCreate($this->moduleId);
-
+            
             // Create/update meta information
             if (GiiHelper::isOverWriteClass($this->getClassName()) && GiiModule::getInstance()->showSteroidsEntries) {
                 // TODO Save lib class

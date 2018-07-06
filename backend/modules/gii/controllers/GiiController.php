@@ -87,6 +87,8 @@ class GiiController extends Controller
 
     public function actionApiGetPermissions()
     {
+        AuthPermissionSync::syncModels();
+
         $auth = \Yii::$app->authManager;
         $prefix = \Yii::$app->request->post('prefix');
 
