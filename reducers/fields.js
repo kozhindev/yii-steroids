@@ -26,7 +26,7 @@ export default (state = initialState, action) => {
 
         case FIELDS_AFTER_FETCH:
             action.fields.forEach(field => {
-                state[field.fieldId] = {
+                state.props[field.fieldId] = {
                     ...state[field.fieldId],
                     isLoading: false,
                     props: {

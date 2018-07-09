@@ -120,6 +120,7 @@ class Crud extends Widget
                     'columns' => $this->getColumns(),
                     'searchForm' => !empty($this->searchFields) || $this->searchModel
                         ? [
+                            'model' => $this->searchModel,
                             'layout' => 'horizontal',
                             'fields' => $this->getSearchFields(),
                         ]
@@ -129,6 +130,7 @@ class Crud extends Widget
             ),
             'formProps' => ArrayHelper::merge(
                 [
+                    'model' => $this->model,
                     'layout' => 'horizontal',
                     'fields' => $this->getFields(),
                 ],
@@ -190,10 +192,10 @@ class Crud extends Widget
         if (empty($searchFields) && $this->searchModel) {
             /** @var SearchModel $modelClass */
             $modelClass = $this->searchModel;
-            $searchFields = (new $modelClass())->attributes();
+            $searchFields = static::normalizeConfig(array_keys($modelClass::meta()));
         }
 
-        foreach ($this->searchFields as $field) {
+        foreach ($searchFields as $field) {
             if ($this->searchModel) {
                 $attribute = $field['attribute'];
                 $modelClass = is_object($this->searchModel) ? get_class($this->searchModel) : $this->searchModel;

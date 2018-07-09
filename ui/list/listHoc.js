@@ -166,6 +166,7 @@ const getFormId = props => _get(props, 'searchForm.formId', props.listId);
 
         return (
             <Empty
+                text={this.props.emptyText}
                 {...this.props}
                 {...this.props.emptyProps}
                 view={this.props.emptyView}

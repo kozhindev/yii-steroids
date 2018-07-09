@@ -111,6 +111,7 @@ class ActiveForm extends Widget
             'prefix' => $this->model->formName(),
             'layout' => $this->layout,
             'layoutProps' => $this->layoutProps,
+            'model' => get_class($this->model),
             'initialValues' => $this->getInitialValues(),
             'submitLabel' => $submitLabel,
             'fields' => $this->getFieldsConfig(),

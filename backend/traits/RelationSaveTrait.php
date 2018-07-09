@@ -436,7 +436,7 @@ trait RelationSaveTrait
         }
     }
 
-    protected function getRelationIds($relationName)
+    public function getRelationIds($relationName)
     {
         // Get relation
         /** @var ActiveQuery $relation */

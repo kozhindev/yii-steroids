@@ -60,6 +60,7 @@ export default class Crud extends React.PureComponent {
                         componentProps: {
                             listId: this.props.crudId,
                             primaryKey: this.props.primaryKey,
+                            emptyText: locale.t('Нет записей'),
                             ...this.props.listProps,
                             actions: (item, primaryKey) => this.getControls('item', item[primaryKey]),
                         },
@@ -168,7 +169,7 @@ export default class Crud extends React.PureComponent {
                     if (_isFunction(item[patternKey])) {
                         item[key] = item[patternKey].call(null, itemId, item);
                     } else if (_isString(item[patternKey])) {
-                        item[key] = item[patternKey].replace(/\{ID\}/g, itemId);
+                        item[key] = item[patternKey].replace(/__ID__/g, itemId);
                     }
                 });
 
