@@ -99,9 +99,9 @@ trait MetaTrait
             if (is_callable($name)) {
                 $result[$key] = call_user_func($name, $model);
             } elseif (is_array($name)) {
-                $result[$key] = static::anyToFrontend($model->$key, $name);
+                $result[$key] = static::anyToFrontend(ArrayHelper::getValue($model, $key), $name);
             } else {
-                $result[$key] = static::anyToFrontend($model->$name);
+                $result[$key] = static::anyToFrontend(ArrayHelper::getValue($model, $name));
             }
         }
         return $result;
