@@ -1,6 +1,6 @@
 {
   "name": "yii-steroids",
-  "version": "1.2.5",
+  "version": "1.2.6",
   "description": "JavaScript part for php library yii-steroids",
   "main": "index.js",
   "author": "Vladimir Kozhin <hello@kozhindev.com>",
@@ -77,7 +77,8 @@
     "stylelint-webpack-plugin": "^0.10.3",
     "webpack": "^3.11.0",
     "webpack-cli": "=2.0.9",
-    "webpack-dev-server": "^2.11.2"
+    "webpack-dev-server": "^2.11.2",
+    "rc-slider": "^8.6.1"
   },
   "devDependencies": {
     "@storybook/addon-actions": "^3.3.15",

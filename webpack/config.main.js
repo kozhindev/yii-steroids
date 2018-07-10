@@ -122,8 +122,9 @@ module.exports = (config, entry) => {
             },
             modules: [
                 path.resolve(config.cwd, 'node_modules'), // the old 'fallback' option (needed for npm link-ed packages)
+                fs.existsSync(path.resolve(config.cwd, '../node_modules')) ? path.resolve(config.cwd, '../node_modules') : null,
                 path.resolve(config.cwd, 'app'),
-            ],
+            ].filter(Boolean),
         },
         plugins: [
             new ExportTranslationKeysPlugin(),

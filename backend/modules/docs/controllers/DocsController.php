@@ -15,7 +15,7 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 
 
-class DocController extends Controller
+class DocsController extends Controller
 {
     public static function siteMap()
     {
