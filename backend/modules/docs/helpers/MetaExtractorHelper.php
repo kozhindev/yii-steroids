@@ -2,8 +2,6 @@
 
 namespace steroids\modules\docs\helpers;
 
-use app\api\base\BaseApiController;
-use app\api\forms\SailingsForm;
 use Doctrine\Common\Annotations\TokenParser;
 use function PHPSTORM_META\type;
 use yii\base\Model;
@@ -12,9 +10,7 @@ use yii\web\Controller;
 
 class MetaExtractorHelper
 {
-    protected $controllers = [];
     protected $models = [];
-    protected $tags = [];
     protected $paths = [];
     protected $version = '1.0';
 
@@ -24,19 +20,19 @@ class MetaExtractorHelper
             [
                 'swagger' => '2.0',
                 'info' => [
-                    'description' => 'Golden Cruises API',
-                    'version' => '1.0.0',
-                    'title' => 'Golden Cruises API',
+                    'version' => $this->version,
+                    'title' => \Yii::$app->name . ' API',
+                    'description' => \Yii::$app->name . ' API',
                     'termsOfService' => 'http://swagger.io/terms/',
                     'contact' => [
-                        'email' => 'example@gmail.com'
+                        'email' => \Yii::$app->params['adminEmail']
                     ],
                     'license' => [
                         'name' => 'Apache 2.0',
                         'url' => 'http://www.apache.org/licenses/LICENSE-2.0.html'
                     ]
                 ],
-                'host' => 'goldencruises.ru',
+                'host' => \Yii::$app->request->hostName,
                 'basePath' => '/api/' . $this->version,
                 'tags' => [
                     $this->tags
@@ -66,53 +62,10 @@ class MetaExtractorHelper
         $this->models = $docs;
     }
 
-    public function listItems($items)
-    {
-        foreach ($items as $item) {
-            if ($item->url) {
-                $this->listActions($item->url[0], $item->id);
-                continue;
-            }
-            if (!empty($item->items)) {
-                $this->listItems($item->items);
-            }
-        }
-    }
 
     protected function listActions(string $controllerPath, string $controllerId)
     {
-        $contoller = \Yii::$app->createController($controllerPath)[0];
-        $controllerInfo = new \ReflectionClass($contoller);
-        $controllerNamespace = $controllerInfo->getNamespaceName();
-        $controllerClassCode = file_get_contents($controllerInfo->getFileName());
-        $tokenParser = new TokenParser($controllerClassCode);
-        $useStatements = $tokenParser->parseUseStatements($controllerNamespace);
-
-        $actions = array_filter($controllerInfo->getMethods(\ReflectionMethod::IS_PUBLIC), function ($method) {
-            return (preg_match('/^action.{2,}/', $method->name));
-        });
-        $actionNames = array_filter($actions, function ($action) use ($controllerId) {
-            $methodName = strtolower(preg_replace('/(?<!^)[A-Z]/', '-$0', str_replace('action', '', $action->name)));
-            if ($methodName === $controllerId) {
-                return $action->name;
-            }
-        });
-
-        if (!count($actionNames)) {
-            return;
-        }
-
-        $methodName = array_slice($actionNames, 0, 1)[0]->name;
-
-        preg_match('/@return ([a-z]+)/i', $controllerInfo->getMethod($methodName)->getDocComment(), $regularResult);
-        $formName = $regularResult[1];
-        if (!$formName) {
-            return;
-        }
-        $formNameSpase = $useStatements[strtolower($formName)];
         $this->getFieldFromForm($formNameSpase, $methodName);
-        $this->setPaths($methodName, $contoller->id);
-        $this->setTags($contoller->id);
     }
 
     protected function getFieldFromForm(string $formNameSpase, string $methodName)
@@ -139,46 +92,6 @@ class MetaExtractorHelper
             $docs[$field] = $fieldMetaDataModel;
         }
         $this->setModels($docs);
-    }
-
-    protected function setTags($controllerId)
-    {
-        if (!array_search($controllerId, $this->controllers)) {
-            $this->controllers[] = $controllerId;
-            $this->tags = [
-                'name' => $controllerId,
-            ];
-        }
-    }
-
-    protected function setPaths(string $methodName, string $controllerId)
-    {
-        $this->paths = [
-            '/' . $methodName => [
-                'post' => [
-                    'tags' => [
-                        $controllerId
-                    ],
-                    'produces' => [
-                        'application/json'
-                    ],
-                    'responses' => [
-                        '200' => [
-                            'description' => 'successful operation',
-                            'schema' => [
-                                '$ref' => '#/definitions/items'
-                            ],
-                        ],
-                        '400' => [
-                            'description' => 'Invalid username supplied'
-                        ],
-                        '404' => [
-                            'description' => 'User not found'
-                        ],
-                    ]
-                ]
-            ]
-        ];
     }
 
     protected function searcFieldFromModel(Model $model, $field)

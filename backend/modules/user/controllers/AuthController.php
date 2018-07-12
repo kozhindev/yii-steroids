@@ -80,12 +80,15 @@ class AuthController extends Controller
         return $this->goHome();
     }
 
+    /**
+     * @return LoginForm
+     */
     public function actionApiLogin()
     {
         $model = new LoginForm();
         $model->load(\Yii::$app->request->post());
         $model->login();
-        return ActiveForm::renderAjax($model);
+        return $model;
     }
 
     public function actionApiLogout()

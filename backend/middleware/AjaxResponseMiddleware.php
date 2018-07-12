@@ -2,7 +2,9 @@
 
 namespace steroids\middleware;
 
+use steroids\base\FormModel;
 use steroids\base\SearchModel;
+use steroids\widgets\ActiveForm;
 use yii\base\ActionEvent;
 use yii\base\BaseObject;
 use yii\data\BaseDataProvider;
@@ -45,6 +47,8 @@ class AjaxResponseMiddleware extends BaseObject
             // Detect data provider
             if ($event->result instanceof SearchModel) {
                 $data = $event->result->toFrontend();
+            } elseif ($event->result instanceof FormModel) {
+                $data = ActiveForm::renderAjax($event->result, '');
             } elseif ($event->result instanceof BaseDataProvider) {
                 $data = [
                     'meta' => null,

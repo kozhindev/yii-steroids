@@ -2,43 +2,55 @@
 
 namespace steroids\modules\docs\controllers;
 
-use app\core\admin\base\AppAdminModule;
-use app\cruises\models\Sailing;
-use Doctrine\Common\Annotations\TokenParser;
-use Sami\Parser\DocBlockParser;
-use Sami\Parser\ParserContext;
-use Sami\Sami;
-use steroids\modules\docs\helpers\MetaExtractorHelper;
-use yii\base\Model;
-use yii\helpers\Inflector;
+use steroids\modules\docs\widgets\SwaggerUi\SwaggerUi;
 use yii\web\Controller;
-use yii\web\NotFoundHttpException;
-
+use yii\helpers\ArrayHelper;
+use steroids\components\SiteMapItem;
+use steroids\modules\docs\models\SwaggerJson;
+use steroids\modules\docs\extractors\SiteMapDocExtractor;
 
 class DocsController extends Controller
 {
     public static function siteMap()
     {
         return [
-            'doc' => [
+            'docs' => [
                 'label' => 'Документация',
-                'url' => ['/docs/doc/index'],
-                'urlRule' => 'doc',
+                'url' => ['/docs/docs/index'],
+                'urlRule' => 'docs',
+                'items' => [
+                    'json' => [
+                        'visible' => false,
+                        'url' => ['/docs/docs/json'],
+                        'urlRule' => 'docs/swagger.json',
+                    ],
+                ],
             ],
         ];
     }
 
-
     public function actionIndex()
     {
-        $siteMap = \Yii::$app->siteMap->items['api'];
-        $items = array_filter(($siteMap->items), function ($item) {
-            return $item->visible == true;
-        });
-        $metaExtractor = new MetaExtractorHelper();
-        $metaExtractor->listItems($items);
-        $jsonMass = $metaExtractor->getStatic();
-        return $jsonMass;
+        return $this->renderContent(SwaggerUi::widget());
+    }
+
+    public function actionJson()
+    {
+        $swaggerJson = new SwaggerJson([
+            'siteName' => \Yii::$app->name,
+            'hostName' => \Yii::$app->request->hostName,
+            'adminEmail' => ArrayHelper::getValue(\Yii::$app->params, 'adminEmail', ''),
+        ]);
+
+        $extractor = new SiteMapDocExtractor([
+            'items' => array_filter(ArrayHelper::getValue(\Yii::$app->siteMap->getItem('api'), 'items', []), function(SiteMapItem $item) {
+                return $item->getVisible();
+            }),
+            'swaggerJson' => $swaggerJson,
+        ]);
+        $extractor->run();
+
+        return (string) $swaggerJson;
     }
 }
 

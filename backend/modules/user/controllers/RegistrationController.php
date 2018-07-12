@@ -36,15 +36,19 @@ class RegistrationController extends Controller
                     ],
                 ],
             ],
-            'api.user.registration' => [
-                'label' => \Yii::t('steroids', 'Регистрация'),
-                'url' => ['/user/registration/api-index'],
-                'urlRule' => 'api/registration',
+            'api.user' => [
                 'items' => [
-                    'email-confirm' => [
+                    'registration' => [
+                        'label' => \Yii::t('steroids', 'Регистрация'),
+                        'url' => ['/user/registration/api-index'],
+                        'urlRule' => 'api/user/registration',
+                        'items' => [
+                        ],
+                    ],
+                    'registration-email-confirm' => [
                         'label' => \Yii::t('steroids', 'Подтверждение email'),
                         'url' => ['/user/registration/api-email-confirm'],
-                        'urlRule' => 'api/registration/email-confirm',
+                        'urlRule' => 'api/user/email-confirm',
                     ],
                 ],
             ],
@@ -97,22 +101,25 @@ class RegistrationController extends Controller
         return $this->render($this->view->findOverwriteView('@steroids/modules/user/views/registration/agreement'));
     }
 
+    /**
+     * @return RegistrationForm
+     */
     public function actionApiIndex()
     {
         $model = new RegistrationForm();
         $model->load(Yii::$app->request->post());
         $model->register();
-        return ActiveForm::renderAjax($model);
+        return $model;
     }
 
+    /**
+     * @return EmailConfirmForm
+     */
     public function actionApiEmailConfirm()
     {
         $model = new EmailConfirmForm();
-        $model->load(array_merge(
-            Yii::$app->request->get(),
-            Yii::$app->request->post()
-        ));
+        $model->load(Yii::$app->request->post());
         $model->confirm();
-        return ActiveForm::renderAjax($model);
+        return $model;
     }
 }

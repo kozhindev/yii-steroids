@@ -49,10 +49,15 @@ class GiiController extends Controller
     public static function apiMap()
     {
         return [
-            'api-get-entities' => '/api/gii/get-entities',
-            'api-class-save' => '/api/gii/class-save',
-            'api-get-permissions' => '/api/gii/get-permissions',
-            'api-permissions-save' => '/api/gii/permissions-save',
+            'api-gii' => [
+                'visible' => false,
+                'items' => [
+                    'api-get-entities' => '/api/gii/get-entities',
+                    'api-class-save' => '/api/gii/class-save',
+                    'api-get-permissions' => '/api/gii/get-permissions',
+                    'api-permissions-save' => '/api/gii/permissions-save',
+                ],
+            ],
         ];
     }
 
