@@ -30,19 +30,30 @@ class FormModelDocExtractor extends BaseDocExtractor
         $className = $this->className;
         $model = new $className();
 
-        $parameters = [];
+        $required = [];
+        $properties = [];
         foreach ($model->safeAttributes() as $attribute) {
-            $parameters[] = [
-                'name' => $attribute,
-                'in' => 'query',
+            if ($model->isAttributeRequired($attribute)) {
+                $required[] = $attribute;
+            }
+            $properties[$attribute] = [
                 'description' => $model->getAttributeLabel($attribute),
-                'required' => $model->isAttributeRequired($attribute),
                 'type' => 'string', // TODO
             ];
         }
 
         $this->swaggerJson->updatePath($this->url, $this->method, [
-            'parameters' => $parameters,
+            'parameters' => [
+                [
+                    'in' => 'body',
+                    'name' => 'request',
+                    'schema' => [
+                        'type' => 'object',
+                        'required' => $required,
+                        'properties' => $properties,
+                    ],
+                ],
+            ],
             'responses' => [
                 200 => [
                     'description' => 'Successful operation',

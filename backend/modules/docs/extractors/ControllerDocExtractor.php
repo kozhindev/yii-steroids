@@ -42,14 +42,14 @@ class ControllerDocExtractor extends BaseDocExtractor
             return null;
         }
 
-        $url = str_replace($this->swaggerJson->getBasePath(), '', $this->url);
+        $url = preg_replace('/^\/?api\/[^\\/]+\//', '', $this->url);
         $this->swaggerJson->addPath($url, [
             'post' => [
                 'summary' => $this->title,
                 'tags' => [
                     $this->moduleId,
                 ],
-                'produces' => [
+                'consumes' => [
                     'application/json'
                 ],
                 'responses' => [

@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import SwaggerUI from 'swagger-ui';
+import {SwaggerUIBundle} from 'swagger-ui-dist';
 
 import {html, widget} from 'components';
 
@@ -16,14 +16,8 @@ export default class SwaggerUi extends React.PureComponent {
         swaggerUrl: PropTypes.string,
     };
 
-    constructor() {
-        super(...arguments);
-
-        this._container = null;
-    }
-
     componentDidMount() {
-        SwaggerUI({
+        SwaggerUIBundle({
             dom_id: '#' + CONTAINER_ID,
             url: this.props.swaggerUrl,
         });

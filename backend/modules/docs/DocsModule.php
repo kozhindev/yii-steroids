@@ -7,5 +7,5 @@ use steroids\base\Module;
 
 class DocsModule extends Module
 {
-    public $layout = '@app/core/admin/layouts/web';
+    public $layout = '@steroids/modules/gii/layouts/blank';
 }

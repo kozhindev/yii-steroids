@@ -41,14 +41,14 @@ class RegistrationController extends Controller
                     'registration' => [
                         'label' => \Yii::t('steroids', 'Регистрация'),
                         'url' => ['/user/registration/api-index'],
-                        'urlRule' => 'api/user/registration',
+                        'urlRule' => '/api/<version>/user/registration',
                         'items' => [
                         ],
                     ],
                     'registration-email-confirm' => [
                         'label' => \Yii::t('steroids', 'Подтверждение email'),
                         'url' => ['/user/registration/api-email-confirm'],
-                        'urlRule' => 'api/user/email-confirm',
+                        'urlRule' => '/api/<version>/user/email-confirm',
                     ],
                 ],
             ],

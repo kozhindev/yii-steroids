@@ -112,10 +112,7 @@ class SwaggerJson extends BaseObject
             ],
             'host' => $this->hostName,
             'basePath' => $this->getBasePath(),
-            'schemes' => [
-                'https',
-                'http'
-            ],
+            'schemes' => \Yii::$app->request->isSecureConnection ? 'https' : 'http',
             'tags' => $this->tags,
             'paths' => $this->paths,
             'definitions' => $this->definitions ?: (object)[],

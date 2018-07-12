@@ -16,6 +16,22 @@ class LoginForm extends LoginFormMeta
      */
     public $user;
 
+    public $responseModel;
+
+    public function responseModelClass()
+    {
+        return UserModule::getInstance()->modelsMap['User'];
+    }
+
+    public function responseFields()
+    {
+        return [
+            'id',
+            'role',
+            'name',
+        ];
+    }
+
     /**
      * @return array
      */
@@ -24,7 +40,7 @@ class LoginForm extends LoginFormMeta
         return array_merge(parent::rules(), [
             ['password', function ($attribute) {
                 /** @var User $modelClass */
-                $modelClass = UserModule::getInstance()->modelsMap['User'];
+                $modelClass = $this->responseModel();
 
                 $this->user = $modelClass::find()
                     ->where([

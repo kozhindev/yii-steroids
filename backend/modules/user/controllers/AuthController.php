@@ -37,12 +37,12 @@ class AuthController extends Controller
                     'login' => [
                         'label' => \Yii::t('steroids', 'Вход'),
                         'url' => ['/user/auth/api-login'],
-                        'urlRule' => 'api/user/login',
+                        'urlRule' => '/api/<version>/user/login',
                     ],
                     'logout' => [
                         'label' => \Yii::t('steroids', 'Выход'),
                         'url' => ['/user/auth/api-logout'],
-                        'urlRule' => 'api/user/logout',
+                        'urlRule' => '/api/<version>/user/logout',
                     ],
                 ],
             ],

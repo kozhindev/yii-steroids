@@ -30,12 +30,12 @@ class RecoveryController extends Controller
                     'recovery-send' => [
                         'label' => \Yii::t('steroids', 'Восстановление пароля'),
                         'url' => ['/user/recovery/api-index'],
-                        'urlRule' => 'api/user/recovery-send',
+                        'urlRule' => '/api/<version>/user/recovery-send',
                     ],
                     'recovery-change' => [
                         'label' => \Yii::t('steroids', 'Смена пароля'),
                         'url' => ['/user/recovery/api-change'],
-                        'urlRule' => 'api/user/recovery-change',
+                        'urlRule' => '/api/<version>/user/recovery-change',
                     ],
                 ],
             ],
