@@ -7,7 +7,7 @@ import {html, widget} from 'components';
 import './SwaggerUi.scss';
 
 const bem = html.bem('SwaggerUi');
-const CONTAINER_ID = 'SwaggerUi'
+const CONTAINER_ID = 'SwaggerUi';
 
 @widget.register('\\steroids\\modules\\docs\\widgets\\SwaggerUi\\SwaggerUi')
 export default class SwaggerUi extends React.PureComponent {
