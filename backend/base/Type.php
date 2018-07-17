@@ -89,6 +89,21 @@ abstract class Type extends BaseObject
     }
 
     /**
+     * @param string $modelClass
+     * @param string $attribute
+     * @param string $property
+     */
+    public function prepareSwaggerProperty($modelClass, $attribute, &$property)
+    {
+        $property = array_merge(
+            [
+                'type' => 'string',
+            ],
+            $property
+        );
+    }
+
+    /**
      * @param ModelAttributeEntity $attributeEntity
      * @param string[] $useClasses
      * @return array

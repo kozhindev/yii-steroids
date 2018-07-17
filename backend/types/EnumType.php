@@ -45,6 +45,22 @@ class EnumType extends Type
             $props
         );
     }
+    /**
+     * @inheritdoc
+     */
+    public function prepareSwaggerProperty($modelClass, $attribute, &$property)
+    {
+        /** @var Enum $enumClass */
+        $enumClass = ArrayHelper::getValue($this->getOptions($modelClass, $attribute), self::OPTION_CLASS_NAME);
+
+        $property = array_merge(
+            [
+                'type' => 'string',
+                'enum' => $enumClass ? $enumClass::getKeys() : null,
+            ],
+            $property
+        );
+    }
 
     /**
      * @param Model|FormModel|string $modelClass

@@ -23,6 +23,20 @@ class DateType extends Type
             $props
         );
     }
+    
+    /**
+     * @inheritdoc
+     */
+    public function prepareSwaggerProperty($modelClass, $attribute, &$property)
+    {
+        $property = array_merge(
+            [
+                'type' => 'string',
+                'format' => 'date',
+            ],
+            $property
+        );
+    }
 
     /**
      * @inheritdoc

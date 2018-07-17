@@ -23,6 +23,19 @@ class PasswordType extends Type
             $props
         );
     }
+    /**
+     * @inheritdoc
+     */
+    public function prepareSwaggerProperty($modelClass, $attribute, &$property)
+    {
+        $property = array_merge(
+            [
+                'type' => 'string',
+                'format' => 'password',
+            ],
+            $property
+        );
+    }
 
     /**
      * @inheritdoc

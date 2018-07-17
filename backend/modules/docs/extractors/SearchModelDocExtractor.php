@@ -10,7 +10,20 @@ use steroids\base\SearchModel;
  */
 class SearchModelDocExtractor extends BaseDocExtractor
 {
+    /**
+     * @var SearchModel
+     */
     public $className;
+
+    /**
+     * @var string
+     */
+    public $url;
+
+    /**
+     * @var string
+     */
+    public $method;
 
     public function run()
     {

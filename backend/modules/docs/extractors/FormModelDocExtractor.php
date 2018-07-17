@@ -3,6 +3,9 @@
 namespace steroids\modules\docs\extractors;
 
 use steroids\base\FormModel;
+use steroids\base\Model;
+use steroids\base\Type;
+use yii\helpers\ArrayHelper;
 
 /**
  * @property-read string $definitionName
@@ -10,7 +13,7 @@ use steroids\base\FormModel;
 class FormModelDocExtractor extends BaseDocExtractor
 {
     /**
-     * @var FormModel
+     * @var FormModel|Model
      */
     public $className;
 
@@ -31,32 +34,62 @@ class FormModelDocExtractor extends BaseDocExtractor
         $model = new $className();
 
         $required = [];
-        $properties = [];
+        $requestProperties = [];
         foreach ($model->safeAttributes() as $attribute) {
+            if (!$model->canSetProperty($attribute)) {
+                continue;
+            }
             if ($model->isAttributeRequired($attribute)) {
                 $required[] = $attribute;
             }
-            $properties[$attribute] = [
+            $requestProperties[$attribute] = [
                 'description' => $model->getAttributeLabel($attribute),
-                'type' => 'string', // TODO
             ];
+
+            /** @var Type $appType */
+            $appType = \Yii::$app->types->getTypeByModel($model, $attribute);
+            $appType->prepareSwaggerProperty($className, $attribute, $requestProperties[$attribute]);
+        }
+
+        $responseProperties = [];
+        foreach ($model->fields() as $key => $attribute) {
+            if (is_int($key) && is_string($attribute)) {
+                $key = $attribute;
+            }
+
+            if (is_string($attribute)) {
+                if (!$model->canGetProperty($attribute)) {
+                    continue;
+                }
+                $responseProperties[$key] = [
+                    'description' => $model->getAttributeLabel($attribute),
+                ];
+
+                /** @var Type $appType */
+                $appType = \Yii::$app->types->getTypeByModel($model, $attribute);
+                $appType->prepareSwaggerProperty($className, $attribute, $responseProperties[$key]);
+            }
         }
 
         $this->swaggerJson->updatePath($this->url, $this->method, [
-            'parameters' => [
+            'parameters' => empty($requestProperties) ? null : [
                 [
                     'in' => 'body',
                     'name' => 'request',
                     'schema' => [
                         'type' => 'object',
                         'required' => $required,
-                        'properties' => $properties,
+                        'properties' => $requestProperties,
                     ],
                 ],
             ],
             'responses' => [
                 200 => [
                     'description' => 'Successful operation',
+                    'schema' => empty($responseProperties) ? null : [
+                        'type' => 'object',
+                        'properties' => $responseProperties,
+                    ],
                 ],
                 400 => [
                     'description' => 'Validation errors',

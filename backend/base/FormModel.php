@@ -20,6 +20,11 @@ class FormModel extends \yii\base\Model
         return '';
     }
 
+    public function fields()
+    {
+        return [];
+    }
+
     /**
      * @inheritdoc
      */

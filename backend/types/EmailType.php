@@ -27,6 +27,20 @@ class EmailType extends Type
     /**
      * @inheritdoc
      */
+    public function prepareSwaggerProperty($modelClass, $attribute, &$property)
+    {
+        $property = array_merge(
+            [
+                'type' => 'string',
+                'format' => 'email',
+            ],
+            $property
+        );
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function giiDbType($attributeEntity)
     {
         return Schema::TYPE_STRING;
