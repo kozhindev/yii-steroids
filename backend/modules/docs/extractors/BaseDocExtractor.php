@@ -3,6 +3,7 @@
 namespace steroids\modules\docs\extractors;
 
 use steroids\base\FormModel;
+use steroids\base\Model;
 use steroids\base\SearchModel;
 use steroids\modules\docs\helpers\ExtractorHelper;
 use steroids\modules\docs\models\SwaggerJson;
@@ -20,7 +21,7 @@ abstract class BaseDocExtractor extends BaseObject
         if (ExtractorHelper::isPrimitiveType($type)) {
             // TODO
         } else if (class_exists($type)) {
-            if (is_subclass_of($type, FormModel::class)) {
+            if (is_subclass_of($type, FormModel::class) || is_subclass_of($type, Model::class)) {
                 return new FormModelDocExtractor([
                     'swaggerJson' => $this->swaggerJson,
                     'className' => $type,
