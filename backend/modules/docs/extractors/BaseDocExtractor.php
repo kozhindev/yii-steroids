@@ -21,16 +21,16 @@ abstract class BaseDocExtractor extends BaseObject
         if (ExtractorHelper::isPrimitiveType($type)) {
             // TODO
         } else if (class_exists($type)) {
-            if (is_subclass_of($type, FormModel::class) || is_subclass_of($type, Model::class)) {
-                return new FormModelDocExtractor([
+            if (is_subclass_of($type, SearchModel::class)) {
+                return new SearchModelDocExtractor([
                     'swaggerJson' => $this->swaggerJson,
                     'className' => $type,
                     'url' => $url,
                     'method' => 'post',
                 ]);
             }
-            if (is_subclass_of($type, SearchModel::class)) {
-                return new SearchModelDocExtractor([
+            if (is_subclass_of($type, FormModel::class) || is_subclass_of($type, Model::class)) {
+                return new FormModelDocExtractor([
                     'swaggerJson' => $this->swaggerJson,
                     'className' => $type,
                     'url' => $url,

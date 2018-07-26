@@ -8,23 +8,8 @@ use steroids\base\SearchModel;
 /**
  * @property-read string $definitionName
  */
-class SearchModelDocExtractor extends BaseDocExtractor
+class SearchModelDocExtractor extends FormModelDocExtractor
 {
-    /**
-     * @var SearchModel
-     */
-    public $className;
-
-    /**
-     * @var string
-     */
-    public $url;
-
-    /**
-     * @var string
-     */
-    public $method;
-
     public function run()
     {
         /** @var SearchModel $searchModel */
@@ -35,38 +20,60 @@ class SearchModelDocExtractor extends BaseDocExtractor
         $modelClassName = $searchModel->createQuery()->modelClass;
         $model = new $modelClassName();
 
-        $responses = [
-            200 => [
-                'description' => 'Successful operation',
-                'schema' => [
-                    'ref' => '#/definitions/' . $this->definitionName,
+        $required = [];
+        $requestProperties = $this->getRequestProperties($searchModel, $required);
+        $responseProperties = $this->getResponseProperties($model, $searchModel->fields());
+
+        $this->swaggerJson->updatePath($this->url, $this->method, [
+            'parameters' => empty($requestProperties) ? null : [
+                [
+                    'in' => 'body',
+                    'name' => 'request',
+                    'schema' => [
+                        'type' => 'object',
+                        'required' => $required,
+                        'properties' => $requestProperties,
+                    ],
                 ],
             ],
-            400 => [
-                'description' => 'Successful operation',
+            'responses' => [
+                200 => [
+                    'description' => 'Successful operation',
+                    'schema' => empty($responseProperties) ? null : [
+                        'type' => 'object',
+                        'properties' => [
+                            'meta' => [
+                                'description' => 'Additional meta information',
+                                'type' => 'object',
+                            ],
+                            'total' => [
+                                'description' => 'Total items count',
+                                'type' => 'number',
+                            ],
+                            'items' => [
+                                'description' => 'Fined items',
+                                'type' => 'array',
+                                'items' => [
+                                    'type' => 'object',
+                                    'properties' => $responseProperties,
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+                400 => [
+                    'description' => 'Validation errors',
+                    'schema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'errors' => [
+                                'type' => 'object',
+                            ],
+                        ],
+                    ],
+                ],
             ],
-        ];
-        foreach ($searchModel->fields() as $key => $value) {
-            if (is_int($key) && is_string($value)) {
-                $key = $value;
-            }
-
-            /*if (is_string($value)) {
-
-            } elseif (is_callable($value)) {
-                // TODO
-            }
-
-
-            $fieldMetaDataForm = $this->searcFieldFromModel($formClass, $field);
-            if ($fieldMetaData !== null) {
-                $docs[$field] = $fieldMetaDataForm;
-                continue;
-            }
-            $fieldMetaDataModel = $this->searcFieldFromModel($model, $field);
-            $docs[$field] = $fieldMetaDataModel;*/
-        }
-        //$this->setModels($docs);
+        ]);
     }
 
     /**

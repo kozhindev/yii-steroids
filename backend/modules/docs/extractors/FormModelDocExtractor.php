@@ -34,42 +34,8 @@ class FormModelDocExtractor extends BaseDocExtractor
         $model = new $className();
 
         $required = [];
-        $requestProperties = [];
-        foreach ($model->safeAttributes() as $attribute) {
-            if (!$model->canSetProperty($attribute)) {
-                continue;
-            }
-            if ($model->isAttributeRequired($attribute)) {
-                $required[] = $attribute;
-            }
-            $requestProperties[$attribute] = [
-                'description' => $model->getAttributeLabel($attribute),
-            ];
-
-            /** @var Type $appType */
-            $appType = \Yii::$app->types->getTypeByModel($model, $attribute);
-            $appType->prepareSwaggerProperty($className, $attribute, $requestProperties[$attribute]);
-        }
-
-        $responseProperties = [];
-        foreach ($model->fields() as $key => $attribute) {
-            if (is_int($key) && is_string($attribute)) {
-                $key = $attribute;
-            }
-
-            if (is_string($attribute)) {
-                if (!$model->canGetProperty($attribute)) {
-                    continue;
-                }
-                $responseProperties[$key] = [
-                    'description' => $model->getAttributeLabel($attribute),
-                ];
-
-                /** @var Type $appType */
-                $appType = \Yii::$app->types->getTypeByModel($model, $attribute);
-                $appType->prepareSwaggerProperty($className, $attribute, $responseProperties[$key]);
-            }
-        }
+        $requestProperties = $this->getRequestProperties($model, $required);
+        $responseProperties = $this->getResponseProperties($model, $model->fields());
 
         $this->swaggerJson->updatePath($this->url, $this->method, [
             'parameters' => empty($requestProperties) ? null : [
@@ -113,6 +79,67 @@ class FormModelDocExtractor extends BaseDocExtractor
     public function getDefinitionName()
     {
         return (new \ReflectionClass($this->className))->getShortName();
+    }
+
+    /**
+     * @param Model|FormModel $model
+     * @param array $required
+     * @return array
+     */
+    protected function getRequestProperties($model, &$required)
+    {
+        $meta = $model::meta();
+
+        $requestProperties = [];
+        foreach ($model->safeAttributes() as $attribute) {
+            if (!$model->canSetProperty($attribute)) {
+                continue;
+            }
+            if ($model->isAttributeRequired($attribute)) {
+                $required[] = $attribute;
+            }
+            $requestProperties[$attribute] = [
+                'description' => $model->getAttributeLabel($attribute),
+                'example' => ArrayHelper::getValue($meta, [$attribute, 'example']),
+            ];
+
+            /** @var Type $appType */
+            $appType = \Yii::$app->types->getTypeByModel($model, $attribute);
+            $appType->prepareSwaggerProperty(get_class($model), $attribute, $requestProperties[$attribute]);
+        }
+        return $requestProperties;
+    }
+
+    /**
+     * @param Model|FormModel $model
+     * @param array $fields
+     * @return array
+     */
+    protected function getResponseProperties($model, $fields)
+    {
+        $meta = $model::meta();
+
+        $responseProperties = [];
+        foreach ($fields as $key => $attribute) {
+            if (is_int($key) && is_string($attribute)) {
+                $key = $attribute;
+            }
+
+            if (is_string($attribute)) {
+                if (!$model->canGetProperty($attribute)) {
+                    continue;
+                }
+                $responseProperties[$key] = [
+                    'description' => $model->getAttributeLabel($attribute),
+                    'example' => ArrayHelper::getValue($meta, [$attribute, 'example']),
+                ];
+
+                /** @var Type $appType */
+                $appType = \Yii::$app->types->getTypeByModel($model, $attribute);
+                $appType->prepareSwaggerProperty(get_class($model), $attribute, $responseProperties[$key]);
+            }
+        }
+        return $responseProperties;
     }
 }
 
