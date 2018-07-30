@@ -43,6 +43,7 @@ class ControllerDocExtractor extends BaseDocExtractor
         }
 
         $url = preg_replace('/^\/?api\/[^\\/]+\//', '', $this->url);
+        $url = preg_replace('/<([^>:]+)(:[^>]+)?>/', '{$1}', $url);
         $this->swaggerJson->addPath($url, [
             'post' => [
                 'summary' => $this->title,
