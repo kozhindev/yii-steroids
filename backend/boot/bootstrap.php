@@ -28,6 +28,6 @@ $envConfig = DefaultConfig::safeLoadConfig(STEROIDS_APP_DIR . '/config/env/' . Y
 $mainConfig = DefaultConfig::safeLoadConfig(STEROIDS_ROOT_DIR . '/app/config/main.php');
 
 // Load web/console config
-$appConfig = DefaultConfig::safeLoadConfig(STEROIDS_ROOT_DIR . '/app/config/' . (STEROIDS_IS_CLI ? 'console' : 'web') . '.php');
+$appConfig = DefaultConfig::safeLoadConfig(STEROIDS_ROOT_DIR . '/app/config/' . (STEROIDS_IS_CLI && !YII_ENV_TEST ? 'console' : 'web') . '.php');
 
 return ArrayHelper::merge($mainConfig, $appConfig, $envConfig, $config);

@@ -54,6 +54,11 @@ trait MetaTrait
      */
     public static function anyToFrontend($model, $fields = null)
     {
+        // Scalar
+        if (!is_object($model)) {
+            return $model;
+        }
+
         $fields = $fields ? (array)$fields : ['*'];
 
         // Detect empty
@@ -69,14 +74,14 @@ trait MetaTrait
         }
 
         // Detect single type
-        if (!($model instanceof Model)) {
+        /*if (!($model instanceof Model)) {
             // Detect Yii Object
             if ($model instanceof BaseObject) {
                 return $model->toArray($fields);
             }
 
             return $model;
-        }
+        }*/
 
         // Detect *
         foreach ($fields as $key => $name) {

@@ -42,28 +42,33 @@ class ControllerDocExtractor extends BaseDocExtractor
             return null;
         }
 
-        $url = preg_replace('/^\/?api\/[^\\/]+\//', '', $this->url);
+        $httpMethod = 'get';
+        if (preg_match('/^([A-Z]+) .+/', $this->url, $match)) {
+            $httpMethod = strtolower($match[1]);
+        }
+
+        $url = $this->url;
+        $url = preg_replace('/^' . $httpMethod . ' /i', '', $url);
+        $url = preg_replace('/^\/?api\/[^\\/]+\//', '', $url);
         $url = preg_replace('/<([^>:]+)(:[^>]+)?>/', '{$1}', $url);
-        $this->swaggerJson->addPath($url, [
-            'post' => [
-                'summary' => $this->title,
-                'tags' => [
-                    $this->moduleId,
+        $this->swaggerJson->addPath($url, $httpMethod, [
+            'summary' => $this->title,
+            'tags' => [
+                $this->moduleId,
+            ],
+            'consumes' => [
+                'application/json'
+            ],
+            'responses' => [
+                200 => [
+                    'description' => 'Successful operation',
                 ],
-                'consumes' => [
-                    'application/json'
-                ],
-                'responses' => [
-                    200 => [
-                        'description' => 'Successful operation',
-                    ],
-                ],
-            ]
+            ],
         ]);
 
         if (preg_match('/@return ([a-z0-9_]+)/i', $method->getDocComment(), $match)) {
             $type = ExtractorHelper::resolveType($match[1], get_class($controller));
-            $extractor = $this->createTypeExtractor($type, $url);
+            $extractor = $this->createTypeExtractor($type, $url, $httpMethod);
             if ($extractor) {
                 $extractor->run();
             }
@@ -117,4 +122,3 @@ class ControllerDocExtractor extends BaseDocExtractor
     }
 
 }
-

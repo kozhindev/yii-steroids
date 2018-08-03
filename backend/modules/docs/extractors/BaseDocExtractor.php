@@ -16,7 +16,7 @@ abstract class BaseDocExtractor extends BaseObject
      */
     public $swaggerJson;
 
-    public function createTypeExtractor($type, $url)
+    public function createTypeExtractor($type, $url, $method)
     {
         if (ExtractorHelper::isPrimitiveType($type)) {
             // TODO
@@ -26,7 +26,7 @@ abstract class BaseDocExtractor extends BaseObject
                     'swaggerJson' => $this->swaggerJson,
                     'className' => $type,
                     'url' => $url,
-                    'method' => 'post',
+                    'method' => $method,
                 ]);
             }
             if (is_subclass_of($type, FormModel::class) || is_subclass_of($type, Model::class)) {
@@ -34,7 +34,7 @@ abstract class BaseDocExtractor extends BaseObject
                     'swaggerJson' => $this->swaggerJson,
                     'className' => $type,
                     'url' => $url,
-                    'method' => 'post',
+                    'method' => $method,
                 ]);
             }
         }

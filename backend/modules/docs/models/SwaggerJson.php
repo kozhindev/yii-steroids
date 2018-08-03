@@ -24,10 +24,11 @@ class SwaggerJson extends BaseObject
 
     /**
      * @param string $url
+     * @param string $method
      * @param array $params
      * @throws InvalidConfigException
      */
-    public function addPath($url, $params)
+    public function addPath($url, $method, $params)
     {
         // Normalize
         $url = '/' . ltrim($url, '/');
@@ -39,7 +40,7 @@ class SwaggerJson extends BaseObject
         }
 
         // Add
-        $this->paths[$url] = $params;
+        $this->paths[$url][$method] = $params;
     }
 
     /**

@@ -90,7 +90,7 @@ class ActiveForm extends Widget
 
             $result = ['securityFields' => $securityFields];
         }
-        return $result;
+        return array_merge($result, $model->toFrontend());
     }
 
     /**
