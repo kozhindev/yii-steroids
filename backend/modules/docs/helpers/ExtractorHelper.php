@@ -3,6 +3,7 @@
 namespace steroids\modules\docs\helpers;
 
 use Doctrine\Common\Annotations\TokenParser;
+use yii\base\Model;
 use yii\helpers\ArrayHelper;
 
 abstract class ExtractorHelper
@@ -72,5 +73,48 @@ abstract class ExtractorHelper
             'object',
         ];
         return in_array(static::normalizePrimitiveType($string), $list);
+    }
+
+    public static function isModelAttribute($model, $attribute)
+    {
+        $className = is_object($model) ? get_class($model) : $model;
+        if (is_subclass_of($className, Model::class)) {
+            /** @var Model $modelInstance */
+            $modelInstance = new $className();
+            return in_array($attribute, $modelInstance->attributes());
+        }
+        return false;
+    }
+
+    /**
+     * @param string|object $object
+     * @param string $attribute
+     * @return null
+     * @throws \ReflectionException
+     */
+    public static function findPhpDocType($object, $attribute)
+    {
+        $className = is_object($object) ? get_class($object) : $object;
+
+        // Find is class php doc
+        $classInfo = new \ReflectionClass($className);
+        if (preg_match('/@property(-[a-z]+)? +([^ \n]+) \$' . preg_quote($attribute) . '/', $classInfo->getDocComment(), $matchClass)) {
+            return static::resolveType($matchClass[1], $className);
+        }
+
+        // Find in class property php doc
+        $propertyInfo = $classInfo->hasProperty($attribute) ? $classInfo->getProperty($attribute) : null;
+        if ($propertyInfo && preg_match('/@(var|type) +([^ \n]+)/', $propertyInfo->getDocComment(), $matchProperty)) {
+            return static::resolveType($matchProperty[2], $className);
+        }
+
+        // Find in getter method
+        $getter = 'get' . ucfirst($attribute);
+        $methodInfo = $classInfo->hasMethod($getter) ? $classInfo->getMethod($getter) : null;
+        if ($methodInfo && preg_match('/@return +([^ \n]+)/', $methodInfo->getDocComment(), $matchMethod)) {
+            return static::resolveType($matchMethod[1], $className);
+        }
+
+        return null;
     }
 }

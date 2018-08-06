@@ -5,6 +5,7 @@ namespace steroids\modules\docs\extractors;
 use steroids\base\FormModel;
 use steroids\base\Model;
 use steroids\base\Type;
+use steroids\modules\docs\helpers\ExtractorHelper;
 use yii\helpers\ArrayHelper;
 
 /**
@@ -35,7 +36,7 @@ class FormModelDocExtractor extends BaseDocExtractor
 
         $required = [];
         $requestProperties = $this->getRequestProperties($model, $required);
-        $responseProperties = $this->getResponseProperties($model, $model->fields());
+        $responseProperties = $this->getResponseProperties($this->className, $model->fields());
 
         $this->swaggerJson->updatePath($this->url, $this->method, [
             'parameters' => empty($requestProperties) ? null : [
@@ -111,32 +112,49 @@ class FormModelDocExtractor extends BaseDocExtractor
     }
 
     /**
-     * @param Model|FormModel $model
+     * @param string|Model|FormModel $rootModelClass
      * @param array $fields
      * @return array
+     * @throws \ReflectionException
      */
-    protected function getResponseProperties($model, $fields)
+    protected function getResponseProperties($rootModelClass, $fields)
     {
-        $meta = $model::meta();
-
         $responseProperties = [];
-        foreach ($fields as $key => $attribute) {
-            if (is_int($key) && is_string($attribute)) {
-                $key = $attribute;
+        foreach ($fields as $key => $attributes) {
+            if (is_int($key) && is_string($attributes)) {
+                $key = $attributes;
             }
 
-            if (is_string($attribute)) {
-                if (!$model->canGetProperty($attribute)) {
-                    continue;
-                }
-                $responseProperties[$key] = [
-                    'description' => $model->getAttributeLabel($attribute),
-                    'example' => ArrayHelper::getValue($meta, [$attribute, 'example']),
-                ];
+            if (is_string($attributes)) {
+                $attributes = explode('.', $attributes);
+            }
 
-                /** @var Type $appType */
-                $appType = \Yii::$app->types->getTypeByModel($model, $attribute);
-                $appType->prepareSwaggerProperty(get_class($model), $attribute, $responseProperties[$key]);
+            if (is_array($attributes)) {
+                $modelClass = $rootModelClass;
+                foreach ($attributes as $attribute) {
+                    $phpType = ExtractorHelper::findPhpDocType($modelClass, $attribute);
+                    if (class_exists($phpType)) {
+                        $modelClass = $phpType;
+                        continue;
+                    }
+
+                    $responseProperties[$key] = [
+                        'type' => 'string',
+                    ];
+
+                    if (ExtractorHelper::isModelAttribute($modelClass, $attribute)) {
+                        /** @var Model|FormModel $model */
+                        $model = new $modelClass();
+                        $responseProperties[$key] = array_merge($responseProperties[$key], [
+                            'description' => $model->getAttributeLabel($attribute),
+                            'example' => ArrayHelper::getValue($modelClass::meta(), [$attribute, 'example']),
+                        ]);
+
+                        /** @var Type $appType */
+                        $appType = \Yii::$app->types->getTypeByModel($model, $attribute);
+                        $appType->prepareSwaggerProperty(get_class($model), $attribute, $responseProperties[$key]);
+                    }
+                }
             }
         }
         return $responseProperties;

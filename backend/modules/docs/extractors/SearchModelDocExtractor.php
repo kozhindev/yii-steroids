@@ -22,7 +22,7 @@ class SearchModelDocExtractor extends FormModelDocExtractor
 
         $required = [];
         $requestProperties = $this->getRequestProperties($searchModel, $required);
-        $responseProperties = $this->getResponseProperties($model, $searchModel->fields());
+        $responseProperties = $this->getResponseProperties($modelClassName, $searchModel->fields());
 
         $this->swaggerJson->updatePath($this->url, $this->method, [
             'parameters' => empty($requestProperties) ? null : [
