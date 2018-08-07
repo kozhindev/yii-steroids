@@ -58,10 +58,11 @@ class GiiHelper
             $moduleNamespace[] = $part;
         }
 
-        $moduleClass = implode('\\', $moduleNamespace) . '\\' . ucfirst(end($moduleNamespace)) . 'Module';
-        $moduleId = array_search($moduleClass, static::findModules());
-        if (!$moduleId && preg_match('/^app\\\\([^\\\\]+)/', $moduleClass, $matches)) {
-            $moduleId = $matches[1];
+        if ($moduleNamespace[0] === 'app') {
+            $moduleId = implode('.', array_slice($moduleNamespace, 1));
+        } else {
+            $moduleClass = implode('\\', $moduleNamespace) . '\\' . ucfirst(end($moduleNamespace)) . 'Module';
+            $moduleId = array_search($moduleClass, static::findModules());
         }
 
         return [

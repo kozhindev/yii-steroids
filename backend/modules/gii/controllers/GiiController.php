@@ -80,7 +80,8 @@ class GiiController extends Controller
                 'model' => ModelEntity::findAll(),
                 'widget' => WidgetEntity::findAll(),
             ],
-            'appTypes' => array_map(function (Type $appType) {
+            'appTypes' => array_map(function ($appType) {
+                /** @type Type $appType */
                 return [
                     'name' => $appType->name,
                     'title' => ucfirst($appType->name),
