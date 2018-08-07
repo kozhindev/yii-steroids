@@ -619,6 +619,11 @@ class SiteMap extends Component
                     continue;
                 }
 
+                // Skip dirs
+                if (is_dir($controllersPath . '/' . $file)) {
+                    continue;
+                }
+
                 $controllerClass = $namespace . '\\' . basename($file, '.php');
                 if (!class_exists($controllerClass)) {
                     throw new Exception('Not found class "' . $controllerClass . '" on scan site map.');
