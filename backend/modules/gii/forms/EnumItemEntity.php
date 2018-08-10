@@ -55,6 +55,11 @@ class EnumItemEntity extends EnumItemEntityMeta
         return $items;
     }
 
+    public function fields()
+    {
+        return $this->attributes();
+    }
+
     public function getConstName() {
         return strtoupper($this->name);
     }

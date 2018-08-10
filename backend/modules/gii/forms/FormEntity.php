@@ -36,11 +36,11 @@ class FormEntity extends ModelEntity implements IEntity
         $entity->className = $className;
         $entity->attributes = GiiHelper::parseClassName($className);
 
-        if (is_subclass_of($className, SearchModel::class)) {
+        if (method_exists($className, 'createQuery')) {
             /** @var SearchModel $searchModel */
             $searchModel = new $className();
             $query = $searchModel->createQuery();
-            if ($query) {
+            if (property_exists(get_class($query), 'modelClass')) {
                 $entity->queryModel = $query->modelClass;
             }
         }
