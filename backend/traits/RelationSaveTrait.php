@@ -18,7 +18,32 @@ trait RelationSaveTrait
      */
     public function listenRelationIds($relationNames)
     {
+        $relationNames = (array)$relationNames;
+        foreach ($relationNames as &$path) {
+            // Normalize (remove Ids suffix)
+            if (is_string($path)) {
+                $path = implode('.', array_map(function ($name) {
+                    return $this->getRelationNameByIdsAttribute($name);
+                }, explode('.', $path)));
+            }
+        }
+
         $this->listenRelation($relationNames, true);
+
+        // Fetch ids from database
+        foreach ($relationNames as $path) {
+            if (!is_string($path)) {
+                continue;
+            }
+
+            $names = explode('.', $path);
+            $relationName = array_shift($names);
+            $model = count($names) > 0 ? ArrayHelper::getValue($this, $names) : $this;
+            if ($model && $model instanceof Model) {
+                $idsProperty = $this->getIdsAttributeByRelationName($relationName);
+                $model->$idsProperty = $model->getRelationIds($relationName);
+            }
+        }
     }
 
     /**
@@ -57,9 +82,25 @@ trait RelationSaveTrait
                 continue;
             }
 
-            $idsProperty = ArrayHelper::getValue($params, 'idsProperty', $relationName . 'Ids');
+            $idsProperty = ArrayHelper::getValue($params, 'idsProperty', $this->getIdsAttributeByRelationName($relationName));
             $this->$idsProperty = ArrayHelper::getValue($data, array_filter([$formName, $idsProperty]));
         }
+    }
+
+    protected function getIdsAttributeByRelationName($relationName)
+    {
+        foreach (static::meta() as $attribute => $params) {
+            if (ArrayHelper::getValue($params, 'relationName') === $relationName) {
+                return $attribute;
+            }
+        }
+        return $relationName . 'Ids';
+    }
+
+    protected function getRelationNameByIdsAttribute($idsAttribute)
+    {
+        return ArrayHelper::getValue(static::meta(), [$idsAttribute, 'relationName'])
+            ?: preg_replace('/Ids$/', '', $idsAttribute);
     }
 
     protected function loadRelationData($data, $formName = null)
@@ -216,7 +257,7 @@ trait RelationSaveTrait
                 continue;
             }
 
-            $idsProperty = ArrayHelper::getValue($params, 'idsProperty', $relationName . 'Ids');
+            $idsProperty = ArrayHelper::getValue($params, 'idsProperty', $this->getIdsAttributeByRelationName($relationName));
 
             // Get relation and check it
             $relation = $this->getRelation($relationName);
