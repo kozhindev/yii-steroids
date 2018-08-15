@@ -12,11 +12,11 @@ export default class ClassTypeMeta extends Enum {
 
     static getLabels() {
         return {
-            [this.MODEL]: locale.t('Model ActiveRecord'),
-            [this.FORM]: locale.t('Model Form'),
-            [this.ENUM]: locale.t('Enum'),
-            [this.CRUD]: locale.t('Crud Controller'),
-            [this.WIDGET]: locale.t('Widget'),
+            [this.MODEL]: __('Model ActiveRecord'),
+            [this.FORM]: __('Model Form'),
+            [this.ENUM]: __('Enum'),
+            [this.CRUD]: __('Crud Controller'),
+            [this.WIDGET]: __('Widget'),
         };
     }
 }

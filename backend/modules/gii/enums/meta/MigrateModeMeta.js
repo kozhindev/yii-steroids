@@ -10,9 +10,9 @@ export default class MigrateModeMeta extends Enum {
 
     static getLabels() {
         return {
-            [this.UPDATE]: locale.t('Update'),
-            [this.CREATE]: locale.t('Create'),
-            [this.NONE]: locale.t('None'),
+            [this.UPDATE]: __('Update'),
+            [this.CREATE]: __('Create'),
+            [this.NONE]: __('None'),
         };
     }
 }

@@ -1,7 +1,5 @@
 import Model from 'yii-steroids/base/Model';
 
-import {locale} from 'components';
-
 export default class WidgetEntityMeta extends Model {
 
     static className = 'steroids\\modules\\gii\\forms\\WidgetEntity';
@@ -11,45 +9,45 @@ export default class WidgetEntityMeta extends Model {
             'moduleId': {
                 'component': 'InputField',
                 'attribute': 'moduleId',
-                'label': locale.t('Module ID'),
+                'label': __('Module ID'),
                 'required': true
             },
             'name': {
                 'component': 'InputField',
                 'attribute': 'name',
-                'label': locale.t('Class name'),
+                'label': __('Class name'),
                 'required': true
             },
             'parentName': {
                 'component': 'InputField',
                 'attribute': 'parentName',
-                'label': locale.t('Parent widget name'),
-                'hint': locale.t('For create child view')
+                'label': __('Parent widget name'),
+                'hint': __('For create child view')
             },
             'withPropTypes': {
                 'component': 'CheckboxField',
                 'attribute': 'withPropTypes',
-                'label': locale.t('With PropTypes')
+                'label': __('With PropTypes')
             },
             'withConnect': {
                 'component': 'CheckboxField',
                 'attribute': 'withConnect',
-                'label': locale.t('With connect()')
+                'label': __('With connect()')
             },
             'withGrid': {
                 'component': 'CheckboxField',
                 'attribute': 'withGrid',
-                'label': locale.t('With Grid')
+                'label': __('With Grid')
             },
             'withForm': {
                 'component': 'CheckboxField',
                 'attribute': 'withForm',
-                'label': locale.t('With Form')
+                'label': __('With Form')
             },
             'withRouter': {
                 'component': 'CheckboxField',
                 'attribute': 'withRouter',
-                'label': locale.t('With Router')
+                'label': __('With Router')
             }
         };
     }

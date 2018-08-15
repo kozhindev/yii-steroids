@@ -189,7 +189,7 @@ class GiiHelper
     public static function locale($text)
     {
         $text = Html::encode($text);
-        $text = new JsExpression('locale.t(\'' . $text . '\')');
+        $text = new JsExpression('__(\'' . $text . '\')');
         return $text;
     }
 

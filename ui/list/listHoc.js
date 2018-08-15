@@ -218,7 +218,7 @@ const getFormId = props => _get(props, 'searchForm.formId', props.listId);
 
         return (
             <Form
-                submitLabel={locale.t('Найти')}
+                submitLabel={__('Найти')}
                 {...this.props.searchForm}
                 formId={getFormId(this.props)}
                 onSubmit={() => this.props.dispatch(refresh())}

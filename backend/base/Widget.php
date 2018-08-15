@@ -31,7 +31,7 @@ class Widget extends BaseWidget
             if (file_exists($langFile)) {
                 $translations = [];
                 foreach (Json::decode(file_get_contents($langFile)) as $translationString) {
-                    $translations[$translationString] = \Yii::t('steroids', $translationString);
+                    $translations[$translationString] = \Yii::t('app', $translationString);
                 }
                 \Yii::$app->frontendState->set('config.locale.translations', $translations);
             }

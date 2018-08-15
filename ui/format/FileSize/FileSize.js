@@ -17,17 +17,17 @@ export default class FileSize extends React.Component {
 
         const thresh = 1000;
         if (Math.abs(bytes) < thresh) {
-            return bytes + ' ' + locale.t('B');
+            return bytes + ' ' + __('B');
         }
         const units = [
-            locale.t('kB'),
-            locale.t('MB'),
-            locale.t('GB'),
-            locale.t('TB'),
-            locale.t('PB'),
-            locale.t('EB'),
-            locale.t('ZB'),
-            locale.t('YB'),
+            __('kB'),
+            __('MB'),
+            __('GB'),
+            __('TB'),
+            __('PB'),
+            __('EB'),
+            __('ZB'),
+            __('YB'),
         ];
         let u = -1;
         do {

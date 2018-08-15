@@ -10,9 +10,9 @@ export default class RelationTypeMeta extends Enum {
 
     static getLabels() {
         return {
-            [this.HAS_ONE]: locale.t('Has One'),
-            [this.HAS_MANY]: locale.t('Has Many'),
-            [this.MANY_MANY]: locale.t('Many-Many'),
+            [this.HAS_ONE]: __('Has One'),
+            [this.HAS_MANY]: __('Has Many'),
+            [this.MANY_MANY]: __('Many-Many'),
         };
     }
 }

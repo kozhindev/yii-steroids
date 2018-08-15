@@ -32,7 +32,7 @@ export default class CrudFormView extends React.Component {
                 <Form
                     {...this.props.formProps}
                     initialValues={this.props.initialValues}
-                    submitLabel={isNewRecord ? locale.t('Добавить') : locale.t('Сохранить')}
+                    submitLabel={isNewRecord ? __('Добавить') : __('Сохранить')}
                 />
             </div>
         );

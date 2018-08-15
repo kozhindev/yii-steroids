@@ -11,66 +11,66 @@ export default class CrudEntityMeta extends Model {
             'moduleId': {
                 'component': 'InputField',
                 'attribute': 'moduleId',
-                'label': locale.t('Module ID'),
+                'label': __('Module ID'),
                 'required': true
             },
             'name': {
                 'component': 'InputField',
                 'attribute': 'name',
-                'label': locale.t('Class name'),
+                'label': __('Class name'),
                 'required': true
             },
             'queryModel': {
                 'component': 'InputField',
                 'attribute': 'queryModel',
-                'label': locale.t('Query model'),
+                'label': __('Query model'),
                 'required': true
             },
             'searchModel': {
                 'component': 'InputField',
                 'attribute': 'searchModel',
-                'label': locale.t('Search model')
+                'label': __('Search model')
             },
             'title': {
                 'component': 'InputField',
                 'attribute': 'title',
-                'label': locale.t('Title'),
+                'label': __('Title'),
                 'required': true
             },
             'url': {
                 'component': 'InputField',
                 'attribute': 'url',
-                'label': locale.t('Url')
+                'label': __('Url')
             },
             'createActionIndex': {
                 'component': 'CheckboxField',
                 'attribute': 'createActionIndex',
-                'label': locale.t('Index action'),
+                'label': __('Index action'),
             },
             'withDelete': {
                 'component': 'CheckboxField',
                 'attribute': 'withDelete',
-                'label': locale.t('With Delete'),
+                'label': __('With Delete'),
             },
             'withSearch': {
                 'component': 'CheckboxField',
                 'attribute': 'withSearch',
-                'label': locale.t('With Search'),
+                'label': __('With Search'),
             },
             'createActionCreate': {
                 'component': 'CheckboxField',
                 'attribute': 'createActionCreate',
-                'label': locale.t('Create action'),
+                'label': __('Create action'),
             },
             'createActionUpdate': {
                 'component': 'CheckboxField',
                 'attribute': 'createActionUpdate',
-                'label': locale.t('Update action'),
+                'label': __('Update action'),
             },
             'createActionView': {
                 'component': 'CheckboxField',
                 'attribute': 'createActionView',
-                'label': locale.t('View action'),
+                'label': __('View action'),
             }
         };
     }

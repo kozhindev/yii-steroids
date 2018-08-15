@@ -96,7 +96,7 @@ export default class DropDownField extends React.PureComponent {
                 {...this.props}
                 searchInputProps={{
                     type: 'search',
-                    placeholder: this.props.searchPlaceholder || locale.t('Начните вводить символы для поиска...'),
+                    placeholder: this.props.searchPlaceholder || __('Начните вводить символы для поиска...'),
                     onChange: this._onSearch,
                     tabIndex: -1
                 }}

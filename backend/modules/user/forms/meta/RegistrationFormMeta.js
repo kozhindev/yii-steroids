@@ -1,7 +1,5 @@
 import Model from 'yii-steroids/base/Model';
 
-import {locale} from 'components';
-
 export default class RegistrationFormMeta extends Model {
 
     static className = 'steroids\\modules\\user\\forms\\RegistrationForm';
@@ -12,25 +10,25 @@ export default class RegistrationFormMeta extends Model {
                 'component': 'InputField',
                 'attribute': 'email',
                 'type': 'email',
-                'label': locale.t('Email'),
+                'label': __('Email'),
                 'required': true
             },
             'password': {
                 'component': 'PasswordField',
                 'attribute': 'password',
-                'label': locale.t('Пароль'),
+                'label': __('Пароль'),
                 'required': true
             },
             'passwordAgain': {
                 'component': 'PasswordField',
                 'attribute': 'passwordAgain',
-                'label': locale.t('Повтор пароля'),
+                'label': __('Повтор пароля'),
                 'required': true
             },
             'name': {
                 'component': 'InputField',
                 'attribute': 'name',
-                'label': locale.t('Имя')
+                'label': __('Имя')
             }
         };
     }

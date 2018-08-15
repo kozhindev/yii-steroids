@@ -60,7 +60,7 @@ export default class Crud extends React.PureComponent {
                         componentProps: {
                             listId: this.props.crudId,
                             primaryKey: this.props.primaryKey,
-                            emptyText: locale.t('Нет записей'),
+                            emptyText: __('Нет записей'),
                             ...this.props.listProps,
                             actions: (item, primaryKey) => this.getControls('item', item[primaryKey]),
                         },
@@ -102,7 +102,7 @@ export default class Crud extends React.PureComponent {
         const defaultItems = {
             index: {
                 actionType: 'list',
-                label: locale.t('К списку'),
+                label: __('К списку'),
                 icon: 'keyboard_arrow_left',
                 to: '/',
                 color: 'secondary',
@@ -111,7 +111,7 @@ export default class Crud extends React.PureComponent {
             },
             create: {
                 actionType: 'list',
-                label: locale.t('Добавить'),
+                label: __('Добавить'),
                 icon: 'add_circle',
                 to: '/create',
                 color: 'success',
@@ -119,14 +119,14 @@ export default class Crud extends React.PureComponent {
                 visible: actionId === 'index' && available.indexOf('create') !== -1 && actionType === 'list',
             },
             view: {
-                label: locale.t('Просмотр'),
+                label: __('Просмотр'),
                 color: 'secondary',
                 outline: true,
                 to: `/${itemId}`,
                 visible: available.indexOf('view') !== -1,
             },
             update: {
-                label: locale.t('Редактировать'),
+                label: __('Редактировать'),
                 color: 'secondary',
                 outline: true,
                 to: `/${itemId}/update`,
@@ -134,8 +134,8 @@ export default class Crud extends React.PureComponent {
             },
             delete: {
                 icon: 'delete',
-                label: locale.t('Удалить'),
-                confirm: locale.t('Удалить запись?'),
+                label: __('Удалить'),
+                confirm: __('Удалить запись?'),
                 color: 'danger',
                 outline: true,
                 visible: available.indexOf('delete') !== -1,

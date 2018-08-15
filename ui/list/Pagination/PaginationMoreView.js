@@ -20,7 +20,7 @@ export default class PaginationMoreView extends React.Component {
                 <Button
                     color='secondary'
                     outline
-                    label={locale.t('Загрузить еще...')}
+                    label={__('Загрузить еще...')}
                     {...this.props.buttonProps}
                     onClick={this.props.onSelectNext}
                 />

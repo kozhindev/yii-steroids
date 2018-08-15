@@ -28,20 +28,20 @@ export default class ActionColumn extends React.PureComponent {
             view: {
                 rule: 'view',
                 icon: 'visibility',
-                label: locale.t('Просмотреть'),
+                label: __('Просмотреть'),
                 url: location.pathname + `/view/${id}`,
             },
             update: {
                 rule: 'update',
                 icon: 'mode_edit',
-                label: locale.t('Редактировать'),
+                label: __('Редактировать'),
                 url: location.pathname + `/update/${id}`,
             },
             delete: {
                 rule: 'delete',
                 icon: 'delete',
-                label: locale.t('Удалить'),
-                confirm: locale.t('Удалить запись?'),
+                label: __('Удалить'),
+                confirm: __('Удалить запись?'),
                 url: location.pathname + `/delete/${id}`,
             },
         };

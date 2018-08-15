@@ -41,7 +41,7 @@ export default class EnumFormatter extends React.Component {
                 rowHeight={this.props.photoRowHeight}
                 backdropClosesModal={true}
                 enableImageSelection={false}
-                imageCountSeparator={locale.t(' из ')}
+                imageCountSeparator={__(' из ')}
             />
         );
     }
