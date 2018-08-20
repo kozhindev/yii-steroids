@@ -96,7 +96,7 @@ class ExportTranslationKeysPlugin {
                     }
 
                     // Find module name
-                    var reg = bundlePath.match('/app/(.+?)/.*');
+                    var reg = bundlePath.match('/app/(.+?)/.*') || bundlePath.match('\\\\app\\\\(.+?)\\\\.*');
                     const moduleName = reg && reg[1];
 
                     // Find bundle name
