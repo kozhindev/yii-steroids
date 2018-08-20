@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Link} from 'yii-steroids/frontend/ui/nav';
+import {Link} from 'yii-steroids/ui/nav';
 
 import {html} from 'components';
 import ClassTypeMeta from '../../../enums/meta/ClassTypeMeta';

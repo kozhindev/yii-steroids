@@ -109,6 +109,11 @@ class SiteMapItem extends BaseObject
      */
     public $modelClass;
 
+    /**
+     * @var string
+     */
+    public $controllerRoute;
+
     private $_modelLabel;
 
     /**
@@ -237,6 +242,11 @@ class SiteMapItem extends BaseObject
                         $url[$key] = SiteMap::paramGet($key);
                     }
                 }
+            }
+
+            // Normalize route
+            if ($url[0] && strpos($url[0], '/') === false) {
+                $url[0] = $this->controllerRoute . '/' . $url[0];
             }
 
             return $url;

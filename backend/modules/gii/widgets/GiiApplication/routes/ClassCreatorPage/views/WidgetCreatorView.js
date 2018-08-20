@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Form, Button, Field} from 'yii-steroids/frontend/ui/form';
+import {Form, Button, Field} from 'yii-steroids/ui/form';
 
 import {html} from 'components';
 import WidgetEntityMeta from '../../../../../forms/meta/WidgetEntityMeta';
@@ -60,7 +60,7 @@ export default class WidgetCreatorView extends React.PureComponent {
                     <Field attribute='withGrid'/>
                     <Field attribute='withForm'/>
                     <Field attribute='withRouter'/>
-                    <div className='mt-4'>
+                    <div className='mt-4 mb-5'>
                         <Button
                             type='submit'
                             label='Save'

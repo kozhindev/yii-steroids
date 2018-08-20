@@ -29,15 +29,15 @@ abstract class EnumEntityMeta extends FormModel
     {
         return [
             'moduleId' => [
-                'label' => Yii::t('app', 'Module ID'),
+                'label' => Yii::t('steroids', 'Module ID'),
                 'required' => true
             ],
             'name' => [
-                'label' => Yii::t('app', 'Class name'),
+                'label' => Yii::t('steroids', 'Class name'),
                 'required' => true
             ],
             'isCustomValues' => [
-                'label' => Yii::t('app', 'Use custom values'),
+                'label' => Yii::t('steroids', 'Use custom values'),
                 'appType' => 'boolean'
             ]
         ];

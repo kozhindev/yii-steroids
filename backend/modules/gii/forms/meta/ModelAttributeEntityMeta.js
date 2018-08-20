@@ -1,4 +1,4 @@
-import Model from 'yii-steroids/frontend/base/Model';
+import Model from 'yii-steroids/base/Model';
 
 import {locale} from 'components';
 
@@ -11,50 +11,50 @@ export default class ModelAttributeEntityMeta extends Model {
             'name': {
                 'component': 'InputField',
                 'attribute': 'name',
-                'label': locale.t('Attribute'),
+                'label': __('Attribute'),
                 'required': true
             },
             'prevName': {
                 'component': 'InputField',
                 'attribute': 'prevName',
-                'label': locale.t('Previous name'),
+                'label': __('Previous name'),
                 'type': 'hidden'
             },
             'label': {
                 'component': 'InputField',
                 'attribute': 'label',
-                'label': locale.t('Label')
+                'label': __('Label')
             },
             'hint': {
                 'component': 'InputField',
                 'attribute': 'hint',
-                'label': locale.t('Hint')
+                'label': __('Hint')
             },
             'example': {
                 'component': 'InputField',
                 'attribute': 'example',
-                'label': locale.t('Example value')
+                'label': __('Example value')
             },
             'appType': {
                 'component': 'InputField',
                 'attribute': 'appType',
-                'label': locale.t('Type'),
+                'label': __('Type'),
                 'required': true
             },
             'defaultValue': {
                 'component': 'InputField',
                 'attribute': 'defaultValue',
-                'label': locale.t('Default value')
+                'label': __('Default value')
             },
             'isRequired': {
                 'component': 'CheckboxField',
                 'attribute': 'isRequired',
-                'label': locale.t('Required'),
+                'label': __('Required'),
             },
             'isPublishToFrontend': {
                 'component': 'CheckboxField',
                 'attribute': 'isPublishToFrontend',
-                'label': locale.t('Publish'),
+                'label': __('Publish'),
             }
         };
     }

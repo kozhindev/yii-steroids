@@ -20,7 +20,7 @@ class CompareDateValidator extends Validator
         parent::init();
 
         if ($this->message === null) {
-            $this->message = \Yii::t('app', 'Должно выполняться условие для `{attribute}`: {left} {operator} {right}');
+            $this->message = \Yii::t('steroids', 'Должно выполняться условие для `{attribute}`: {left} {operator} {right}');
         }
 
         if (empty($this->operator)) {

@@ -44,6 +44,19 @@ class DoubleType extends IntegerType
     }
 
     /**
+     * @inheritdoc
+     */
+    public function prepareSwaggerProperty($modelClass, $attribute, &$property)
+    {
+        $property = array_merge(
+            [
+                'type' => 'number',
+            ],
+            $property
+        );
+    }
+
+    /**
      * @return array
      */
     public function giiOptions()

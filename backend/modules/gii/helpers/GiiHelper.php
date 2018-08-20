@@ -11,6 +11,7 @@ use yii\db\Schema;
 use yii\helpers\FileHelper;
 use yii\helpers\Html;
 use yii\helpers\Json;
+use yii\helpers\StringHelper;
 use yii\web\JsExpression;
 
 class GiiHelper
@@ -29,7 +30,11 @@ class GiiHelper
         }
 
         $path = dirname(__DIR__) . '/templates/' . $template . '.php';
-        file_put_contents($savePath, \Yii::$app->view->renderPhpFile($path, $params));
+        if (file_put_contents($savePath, \Yii::$app->view->renderPhpFile($path, $params)) !== false) {
+            $mask = @umask(0);
+            @chmod($savePath, 0666);
+            @umask($mask);
+        }
     }
 
     /**
@@ -52,18 +57,33 @@ class GiiHelper
             }
             $moduleNamespace[] = $part;
         }
-        
-        $moduleClass = implode('\\', $moduleNamespace) . '\\' . ucfirst(end($moduleNamespace)) . 'Module';
-        $moduleId = array_search($moduleClass, static::findModules());
+
+        if ($moduleNamespace[0] === 'app') {
+            $moduleId = implode('.', array_slice($moduleNamespace, 1));
+        } else {
+            $moduleClass = implode('\\', $moduleNamespace) . '\\' . ucfirst(end($moduleNamespace)) . 'Module';
+            $moduleId = array_search($moduleClass, static::findModules());
+        }
 
         return [
             'moduleId' => $moduleId,
-            'name' => (new \ReflectionClass($className))->getShortName(),
+            'name' => StringHelper::basename($className),
         ];
+    }
+
+    public static function isOverWriteClass($className)
+    {
+        return class_exists(str_replace('app\\', 'steroids\\modules\\', $className));
     }
 
     public static function getModuleDir($moduleId)
     {
+        $appDir = \Yii::getAlias('@app');
+        $moduleDir = $appDir . '/' . str_replace('.', '/', $moduleId);
+        if (file_exists($moduleDir)) {
+            return $moduleDir;
+        }
+
         $module = static::getModuleById($moduleId);
         return dirname((new \ReflectionClass($module))->getFileName());
     }
@@ -92,12 +112,16 @@ class GiiHelper
     public static function getClassName($classType, $moduleId, $name)
     {
         $info = new \ReflectionClass(static::getModuleById($moduleId));
-
-        return implode('\\', [
+        $className = implode('\\', [
             $info->getNamespaceName(),
             str_replace('*', $name, str_replace('/', '\\', ClassType::getDir($classType))),
             $name
         ]);
+
+        if (class_exists($appClassName = str_replace('steroids\\modules\\', 'app\\', $className))) {
+            return $appClassName;
+        }
+        return $className;
     }
 
     public static function findModules()
@@ -108,7 +132,10 @@ class GiiHelper
             if ($id === 'debug') {
                 unset($classes[$id]);
             }
-            if ($id === 'gii' && !GiiModule::getInstance()->showGiiEntries) {
+            if (strpos($className, 'steroids\\modules\\') === 0
+                && !file_exists(\Yii::getAlias('@app') . '/' . $id)
+                && !GiiModule::getInstance()->showSteroidsEntries
+            ) {
                 unset($classes[$id]);
             }
         }
@@ -129,8 +156,15 @@ class GiiHelper
                 $name = basename($file, '.php');
 
                 $className = static::getClassName($classType, $moduleId, $name);
+                if (strpos($className, 'steroids\\modules\\') === 0
+                    && !class_exists(str_replace('steroids\\modules\\', 'app\\', $className))
+                    && !GiiModule::getInstance()->showSteroidsEntries
+                ) {
+                    continue;
+                }
+
                 $info = new \ReflectionClass($className);
-                if (preg_match('/Meta$/', $info->getParentClass()->name)) {
+                if ($info->getParentClass() && preg_match('/Meta$/', $info->getParentClass()->name)) {
                     $classes[] = [
                         'moduleId' => $moduleId,
                         'name' => $name,
@@ -155,7 +189,7 @@ class GiiHelper
     public static function locale($text)
     {
         $text = Html::encode($text);
-        $text = new JsExpression('locale.t(\'' . $text . '\')');
+        $text = new JsExpression('__(\'' . $text . '\')');
         return $text;
     }
 
@@ -201,5 +235,38 @@ class GiiHelper
         $code = str_replace("'true'", "true", $code);
         $code = str_replace("'false'", "false", $code);
         return $code;
+    }
+
+    public static function getRelativePath($from, $to)
+    {
+        // some compatibility fixes for Windows paths
+        $from = is_dir($from) ? rtrim($from, '\/') . '/' : $from;
+        $to = is_dir($to) ? rtrim($to, '\/') . '/' : $to;
+        $from = str_replace('\\', '/', $from);
+        $to = str_replace('\\', '/', $to);
+
+        $from = explode('/', $from);
+        $to = explode('/', $to);
+        $relPath = $to;
+
+        foreach ($from as $depth => $dir) {
+            // find first non-matching dir
+            if ($dir === $to[$depth]) {
+                // ignore this directory
+                array_shift($relPath);
+            } else {
+                // get number of remaining dirs to $from
+                $remaining = count($from) - $depth;
+                if ($remaining > 1) {
+                    // add traversals up to first matching dir
+                    $padLength = (count($relPath) + $remaining - 1) * -1;
+                    $relPath = array_pad($relPath, $padLength, '..');
+                    break;
+                } else {
+                    $relPath[0] = './' . $relPath[0];
+                }
+            }
+        }
+        return implode('/', $relPath);
     }
 }

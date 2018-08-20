@@ -23,6 +23,21 @@ class PrimaryKeyType extends Type
     }
 
     /**
+     * @param string $modelClass
+     * @param string $attribute
+     * @param string $property
+     */
+    public function prepareSwaggerProperty($modelClass, $attribute, &$property)
+    {
+        $property = array_merge(
+            [
+                'type' => 'number',
+            ],
+            $property
+        );
+    }
+
+    /**
      * @inheritdoc
      */
     public function giiDbType($attributeEntity)

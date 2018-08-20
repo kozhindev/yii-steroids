@@ -8,7 +8,7 @@ use yii\db\Schema;
 class PasswordType extends Type
 {
     public $min = YII_ENV_DEV ? 1 : 3;
-    public $max = 32;
+    public $max = 255;
 
     /**
      * @inheritdoc
@@ -21,6 +21,19 @@ class PasswordType extends Type
                 'attribute' => $attribute,
             ],
             $props
+        );
+    }
+    /**
+     * @inheritdoc
+     */
+    public function prepareSwaggerProperty($modelClass, $attribute, &$property)
+    {
+        $property = array_merge(
+            [
+                'type' => 'string',
+                'format' => 'password',
+            ],
+            $property
         );
     }
 

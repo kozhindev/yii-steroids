@@ -11,7 +11,7 @@ echo "<?php\n";
 
 namespace <?= $modelEntity->getNamespace() ?>;
 
-use <?= $modelEntity->getClassName() ?>Meta;
+use <?= $modelEntity->getNamespace() ?>\meta\<?= $modelEntity->name ?>Meta;
 
 class <?= $modelEntity->name ?> extends <?= $modelEntity->name . "Meta\n" ?>
 {

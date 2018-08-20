@@ -7,8 +7,11 @@ use steroids\modules\gii\forms\FormEntity;
 /* @var $formEntity FormEntity */
 
 $useClasses = [];
-if (count($formEntity->relationItems) > 0) {
+if (count($formEntity->publicRelationItems) > 0) {
     $useClasses[] = 'yii\db\ActiveQuery';
+}
+foreach ($formEntity->publicRelationItems as $relationEntity) {
+    $useClasses[] = $relationEntity->relationModel;
 }
 $rules = $formEntity->renderRules($useClasses);
 $behaviors = $formEntity->renderBehaviors('            ', $useClasses);
@@ -26,7 +29,7 @@ use <?= $relationClassName ?>;
 
 abstract class <?= $formEntity->name ?>Meta extends FormModel
 {
-<?php foreach ($formEntity->attributeItems as $attributeEntity) { ?>
+<?php foreach ($formEntity->publicAttributeItems as $attributeEntity) { ?>
     public $<?= $attributeEntity->name ?>;
 <?php } ?>
 
@@ -51,14 +54,14 @@ abstract class <?= $formEntity->name ?>Meta extends FormModel
         ];
     }
 <?php } ?>
-<?php foreach ($formEntity->relationItems as $relationEntity) { ?>
+<?php foreach ($formEntity->publicRelationItems as $relationEntity) { ?>
 
     /**
     * @return ActiveQuery
     */
     public function get<?= ucfirst($relationEntity->name) ?>()
     {
-        return $this-><?= $relationEntity->type ?>(<?= $relationEntity->relationModelEntry->name ?>::class);
+        return $this-><?= $relationEntity->isHasOne ? 'hasOne' : 'hasMany' ?>(<?= $relationEntity->relationModelEntry->name ?>::class);
     }
 <?php } ?>
 

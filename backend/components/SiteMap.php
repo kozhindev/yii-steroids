@@ -21,6 +21,8 @@ use yii\web\Request;
  */
 class SiteMap extends Component
 {
+    const VERBS = ['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'];
+
     /**
      * @var SiteMapItem[]
      */
@@ -29,15 +31,22 @@ class SiteMap extends Component
 
     /**
      * Recursive scan all items and return url rules for `UrlManager` component
-     * @param  array $items
+     * @param  SiteMapItem[] $items
      * @return array
      */
     public static function itemsToRules($items)
     {
         $rules = [];
         foreach ($items as $item) {
-            $url = ArrayHelper::getValue($item, 'url');
+            $url = $item->getNormalizedUrl();
             $urlRule = ArrayHelper::getValue($item, 'urlRule');
+
+            // Detect verb
+            $verb = null;
+            if (preg_match('/^(' . implode('|', self::VERBS) . ',?) .+/', $urlRule, $match)) {
+                $verb = explode(',', $match[1]);
+                $urlRule = str_replace($match[1] . ' ', '', $urlRule);
+            }
 
             if ($url && $urlRule && is_array($url)) {
                 $defaults = $url;
@@ -47,10 +56,14 @@ class SiteMap extends Component
                     $rules[] = [
                         'pattern' => Yii::getAlias($urlRule),
                         'route' => $route,
+                        'verb' => $verb,
                     ];
                 } elseif (is_array($urlRule)) {
                     if (!isset($urlRule['route'])) {
                         $urlRule['route'] = $route;
+                    }
+                    if (!isset($urlRule['verb']) && $verb) {
+                        $urlRule['verb'] = $verb;
                     }
                     $rules[] = $urlRule;
                 }
@@ -221,6 +234,26 @@ class SiteMap extends Component
             /** @type SiteMapItem $itemModel */
             return $itemModel->toArray();
         }, $itemModels);
+    }
+
+    /**
+     * @param string $key
+     * @param int $level
+     * @return array
+     * @throws InvalidConfigException
+     */
+    public function getNavItem($key = null, $level = 0)
+    {
+        $item = $this->getItem($key);
+        if ($item !== null) {
+            return array_merge(
+                $item->toArray(),
+                [
+                    'items' => ArrayHelper::getValue($this->sliceTreeItems([$item], $level), '0.items'),
+                ]
+            );
+        }
+        return null;
     }
 
     /**
@@ -485,6 +518,10 @@ class SiteMap extends Component
             // Merge item with group (as key)
             if (is_string($id) && isset($baseItems[$id])) {
                 foreach ($item as $key => $value) {
+                    if ($key === 'url' && !$baseItems[$id]->controllerRoute && $controllerRoute) {
+                        $baseItems[$id]->controllerRoute = $controllerRoute;
+                    }
+                    
                     if ($key === 'items') {
                         $baseItems[$id]->$key = $this->mergeItems($baseItems[$id]->$key, $value, $append, $controllerRoute, $baseItems[$id]);
                     } elseif (is_array($baseItems[$id]) && is_array($value)) {
@@ -506,18 +543,13 @@ class SiteMap extends Component
                         $item['url'] = [$controllerRoute . '/' . $id];
                     }
 
-                    // Normalize route
-                    $route = ArrayHelper::getValue($item, 'url.0');
-                    if ($route && strpos($route, '/') === false) {
-                        $item['url'][0] = $controllerRoute . '/' . $route;
-                    }
-
                     $item = new SiteMapItem(array_merge(
                         $item,
                         [
                             'id' => $id,
                             'owner' => $this,
                             'parent' => $parentItem,
+                            'controllerRoute' => isset($item['url']) ? $controllerRoute : null,
                         ]
                     ));
                     $item->items = $this->mergeItems([], $item->items, true, $controllerRoute, $item);
@@ -584,6 +616,11 @@ class SiteMap extends Component
             foreach (scandir($controllersPath) as $file) {
                 // Skip dot folders
                 if (substr($file, 0, 1) === '.') {
+                    continue;
+                }
+
+                // Skip dirs
+                if (is_dir($controllersPath . '/' . $file)) {
                     continue;
                 }
 

@@ -1,4 +1,4 @@
-import Model from 'yii-steroids/frontend/base/Model';
+import Model from 'yii-steroids/base/Model';
 
 import {locale} from 'components';
 
@@ -11,47 +11,45 @@ export default class ModelRelationEntityMeta extends Model {
             'type': {
                 'component': 'InputField',
                 'attribute': 'type',
-                'label': locale.t('Type'),
+                'label': __('Type'),
                 'required': true
             },
             'name': {
                 'component': 'InputField',
                 'attribute': 'name',
-                'label': locale.t('Name'),
+                'label': __('Name'),
                 'required': true
             },
             'relationModel': {
                 'component': 'InputField',
                 'attribute': 'relationModel',
-                'label': locale.t('Model class'),
+                'label': __('Model class'),
                 'required': true
             },
             'relationKey': {
                 'component': 'InputField',
                 'attribute': 'relationKey',
-                'label': locale.t('Relation Key'),
-                'required': true
+                'label': __('Relation Key')
             },
             'selfKey': {
                 'component': 'InputField',
                 'attribute': 'selfKey',
-                'label': locale.t('Self key'),
-                'required': true
+                'label': __('Self key')
             },
             'viaTable': {
                 'component': 'InputField',
                 'attribute': 'viaTable',
-                'label': locale.t('Table name')
+                'label': __('Table name')
             },
             'viaRelationKey': {
                 'component': 'InputField',
                 'attribute': 'viaRelationKey',
-                'label': locale.t('Relation Key')
+                'label': __('Relation Key')
             },
             'viaSelfKey': {
                 'component': 'InputField',
                 'attribute': 'viaSelfKey',
-                'label': locale.t('Self key')
+                'label': __('Self key')
             }
         };
     }

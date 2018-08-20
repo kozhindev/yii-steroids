@@ -4,6 +4,7 @@ namespace steroids\modules\gii\models;
 
 use steroids\components\AuthManager;
 use steroids\components\SiteMapItem;
+use steroids\modules\gii\forms\ModelEntity;
 use yii\base\BaseObject;
 use yii\helpers\ArrayHelper;
 use yii\rbac\Permission;
@@ -70,7 +71,7 @@ class AuthPermissionSync extends BaseObject
         $addedNames = [];
 
         // Models
-        foreach (ModelClass::findAll() as $modelClass) {
+        foreach (ModelEntity::findAll() as $modelClass) {
             $modelPermission = self::findOrCreate([
                 self::PREFIX_MODEL,
                 $modelClass->className,
@@ -100,18 +101,18 @@ class AuthPermissionSync extends BaseObject
             }
 
             // Attributes
-            foreach ($modelClass->metaClass->metaWithChild as $metaItem) {
+            foreach ($modelClass->attributeItems as $attributeEntity) {
                 $attributePermission = self::findOrCreate([
                     self::PREFIX_MODEL,
                     $modelClass->className,
-                    $metaItem->name,
+                    $attributeEntity->name,
                 ]);
                 $addedNames[] = $attributePermission->name;
                 static::safeAddChild($modelPermission, $attributePermission);
 
                 // Attribute rules
                 foreach (self::$defaultAttributeRules as $rule) {
-                    if (in_array($metaItem->appType, static::$readOnlyTypes)
+                    if (in_array($attributeEntity->appType, static::$readOnlyTypes)
                         && in_array($rule, [AuthManager::RULE_MODEL_CREATE, AuthManager::RULE_MODEL_UPDATE])) {
                         continue;
                     }
@@ -119,7 +120,7 @@ class AuthPermissionSync extends BaseObject
                     $rulePermission = self::findOrCreate([
                         self::PREFIX_MODEL,
                         $modelClass->className,
-                        $metaItem->name,
+                        $attributeEntity->name,
                         $rule,
                     ]);
                     $addedNames[] = $rulePermission->name;

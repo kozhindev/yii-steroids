@@ -38,49 +38,49 @@ abstract class CrudEntityMeta extends FormModel
     {
         return [
             'moduleId' => [
-                'label' => Yii::t('app', 'Module ID'),
+                'label' => Yii::t('steroids', 'Module ID'),
                 'required' => true
             ],
             'name' => [
-                'label' => Yii::t('app', 'Class name'),
+                'label' => Yii::t('steroids', 'Class name'),
                 'required' => true
             ],
             'queryModel' => [
-                'label' => Yii::t('app', 'Query model'),
+                'label' => Yii::t('steroids', 'Query model'),
                 'required' => true
             ],
             'searchModel' => [
-                'label' => Yii::t('app', 'Search model')
+                'label' => Yii::t('steroids', 'Search model')
             ],
             'title' => [
-                'label' => Yii::t('app', 'Title'),
+                'label' => Yii::t('steroids', 'Title'),
                 'required' => true
             ],
             'url' => [
-                'label' => Yii::t('app', 'Url')
+                'label' => Yii::t('steroids', 'Url')
             ],
             'createActionIndex' => [
-                'label' => Yii::t('app', 'Index action'),
+                'label' => Yii::t('steroids', 'Index action'),
                 'appType' => 'boolean'
             ],
             'withDelete' => [
-                'label' => Yii::t('app', 'With Delete'),
+                'label' => Yii::t('steroids', 'With Delete'),
                 'appType' => 'boolean'
             ],
             'withSearch' => [
-                'label' => Yii::t('app', 'With Search'),
+                'label' => Yii::t('steroids', 'With Search'),
                 'appType' => 'boolean'
             ],
             'createActionCreate' => [
-                'label' => Yii::t('app', 'Create action'),
+                'label' => Yii::t('steroids', 'Create action'),
                 'appType' => 'boolean'
             ],
             'createActionUpdate' => [
-                'label' => Yii::t('app', 'Update action'),
+                'label' => Yii::t('steroids', 'Update action'),
                 'appType' => 'boolean'
             ],
             'createActionView' => [
-                'label' => Yii::t('app', 'View action'),
+                'label' => Yii::t('steroids', 'View action'),
                 'appType' => 'boolean'
             ]
         ];

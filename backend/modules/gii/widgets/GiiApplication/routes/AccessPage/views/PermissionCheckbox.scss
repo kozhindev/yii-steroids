@@ -1,0 +1,32 @@
+$state-info-bg: #d9edf7;
+
+.PermissionCheckbox {
+  &__checkbox {
+    display: inline-block;
+    text-align: center;
+
+    &:nth-child(2) {
+      border-left: solid 1px #aaa;
+    }
+
+    &, > label {
+      width: 28px;
+      height: 28px;
+    }
+
+    > label {
+      text-align: center;
+      cursor: pointer;
+
+      &:hover {
+        background-color: $state-info-bg;
+      }
+
+      > input {
+        margin-top: 9px;
+        cursor: pointer;
+      }
+    }
+  }
+
+}

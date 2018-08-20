@@ -3,6 +3,7 @@
 namespace steroids\helpers;
 
 use Yii;
+use yii\db\mysql\Schema;
 use yii\helpers\ArrayHelper;
 
 // Define steroids constants
@@ -77,6 +78,9 @@ class DefaultConfig
                     'migrate' => [
                         'class' => '\steroids\commands\MigrateCommand',
                     ],
+                    'steroids' => [
+                        'class' => '\steroids\commands\SteroidsCommand',
+                    ],
                 ],
                 'on beforeAction' => function() use ($steroidsConfig) {
                     Yii::setAlias('@tests', STEROIDS_ROOT_DIR . '/tests');
@@ -116,6 +120,15 @@ class DefaultConfig
                 'authManager' => [
                     'class' => 'steroids\components\AuthManager',
                 ],
+                'i18n' => [
+                    'translations' => [
+                        'steroids*' => [
+                            'class' => 'yii\i18n\PhpMessageSource',
+                            'basePath' => '@steroids/messages',
+                            'sourceLanguage' => 'ru',
+                        ]
+                    ],
+                ],
                 'assetManager' => [
                     'forceCopy' => true,
                     'bundles' => [
@@ -150,7 +163,9 @@ class DefaultConfig
                     'class' => 'yii\db\Connection',
                     'charset' => 'utf8',
                     'on afterOpen' => function ($event) {
-                        $event->sender->createCommand("SET time_zone='" . date('P') . "'")->execute();
+                        if ($event->sender->schema instanceof Schema) {
+                            $event->sender->createCommand("SET time_zone='" . date('P') . "'")->execute();
+                        }
                     },
                 ],
                 'formatter' => [
@@ -179,6 +194,9 @@ class DefaultConfig
                 ],
                 'urlManager' => [
                     'class' => 'steroids\components\UrlManager',
+                ],
+                'view' => [
+                    'class' => 'steroids\components\View',
                 ],
             ],
         ];

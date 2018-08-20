@@ -7,6 +7,7 @@ use steroids\components\AuthManager;
 use steroids\exceptions\ModelDeleteException;
 use steroids\exceptions\ModelSaveException;
 use steroids\traits\MetaTrait;
+use steroids\traits\SecurityFieldsTrait;
 use yii\base\InvalidConfigException;
 use yii\db\ActiveRecord;
 use yii\web\NotFoundHttpException;
@@ -18,6 +19,7 @@ class Model extends ActiveRecord
 {
     use MetaTrait;
     use RelationSaveTrait;
+    use SecurityFieldsTrait;
 
     /**
      * @return string
@@ -31,20 +33,6 @@ class Model extends ActiveRecord
         }
         return lcfirst(substr(strrchr(static::className(), "\\"), 1)) . ucfirst($pk);
     }
-
-    /**
-     * @param Model[] $models
-     * @param array|null $fields
-     * @return array
-     */
-    /*public static function listToFrontend($models, $fields = null)
-    {
-        $result = [];
-        foreach ((array)$models as $model) {
-            $result[] = $model->toFrontend($fields);
-        }
-        return $result;
-    }*/
 
     /**
      * @return string

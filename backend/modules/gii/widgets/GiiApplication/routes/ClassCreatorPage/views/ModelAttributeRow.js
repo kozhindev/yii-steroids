@@ -11,6 +11,7 @@ let appTypeSelector = null;
 @connect(
     (state, props) => ({
         appType: (appTypeSelector = appTypeSelector || formValueSelector(props.formId))(state, props.prefix + 'appType'),
+        isProtected: (appTypeSelector = appTypeSelector || formValueSelector(props.formId))(state, props.prefix + 'isProtected'),
     })
 )
 export default class ModelAttributeRow extends React.PureComponent {
@@ -31,12 +32,16 @@ export default class ModelAttributeRow extends React.PureComponent {
         disabled: PropTypes.bool,
         className: PropTypes.string,
         appType: PropTypes.string,
+        isProtected: PropTypes.bool,
     };
 
     render() {
         return [
             (
-                <tr key='l1'>
+                <tr
+                    key='l1'
+                    className={bem.element('tr', {'is-protected': this.props.isProtected})}
+                >
                     {this.renderItems(true)}
                     {this.props.showRemove && (
                         <td className={bem.element('table-cell', 'remove')}>
@@ -53,7 +58,10 @@ export default class ModelAttributeRow extends React.PureComponent {
                 </tr>
             ),
             (
-                <tr key='l2'>
+                <tr
+                    key='l2'
+                    className={bem.element('tr', {'is-protected': this.props.isProtected})}
+                >
                     {this.renderItems(false)}
                     <td
                         colSpan={3}

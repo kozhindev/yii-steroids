@@ -5,6 +5,7 @@ namespace steroids\base;
 use steroids\traits\MetaTrait;
 use steroids\traits\RelationSaveTrait;
 use steroids\traits\RelationSimilarTrait;
+use steroids\traits\SecurityFieldsTrait;
 use yii\base\InvalidConfigException;
 
 class FormModel extends \yii\base\Model
@@ -12,10 +13,16 @@ class FormModel extends \yii\base\Model
     use MetaTrait;
     use RelationSaveTrait;
     use RelationSimilarTrait;
+    use SecurityFieldsTrait;
 
     public function formName()
     {
         return '';
+    }
+
+    public function fields()
+    {
+        return [];
     }
 
     /**

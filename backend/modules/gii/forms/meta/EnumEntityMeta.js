@@ -1,4 +1,4 @@
-import Model from 'yii-steroids/frontend/base/Model';
+import Model from 'yii-steroids/base/Model';
 
 import {locale} from 'components';
 
@@ -11,19 +11,19 @@ export default class EnumEntityMeta extends Model {
             'moduleId': {
                 'component': 'InputField',
                 'attribute': 'moduleId',
-                'label': locale.t('Module ID'),
+                'label': __('Module ID'),
                 'required': true
             },
             'name': {
                 'component': 'InputField',
                 'attribute': 'name',
-                'label': locale.t('Class name'),
+                'label': __('Class name'),
                 'required': true
             },
             'isCustomValues': {
                 'component': 'CheckboxField',
                 'attribute': 'isCustomValues',
-                'label': locale.t('Use custom values'),
+                'label': __('Use custom values'),
             }
         };
     }

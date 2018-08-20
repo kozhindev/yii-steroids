@@ -14,9 +14,9 @@ abstract class MigrateModeMeta extends Enum
     public static function getLabels()
     {
         return [
-            self::UPDATE => Yii::t('app', 'Update'),
-            self::CREATE => Yii::t('app', 'Create'),
-            self::NONE => Yii::t('app', 'None')
+            self::UPDATE => Yii::t('steroids', 'Update'),
+            self::CREATE => Yii::t('steroids', 'Create'),
+            self::NONE => Yii::t('steroids', 'None')
         ];
     }
 }

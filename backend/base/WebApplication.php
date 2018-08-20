@@ -24,11 +24,12 @@ class WebApplication extends Application
      */
     protected function bootstrap()
     {
-        $versionFilePath = STEROIDS_ROOT_DIR . '/version.txt';
+        $versionFilePath = STEROIDS_ROOT_DIR . '/public/version.txt';
         if (file_exists($versionFilePath)) {
             $this->version = trim(file_get_contents($versionFilePath));
         }
 
+        Yii::setAlias('@bower', Yii::getAlias('@vendor') . '/bower-asset');
         Yii::setAlias('@static', $this->getRequest()->getBaseUrl() . '/static/' . $this->version);
 
         parent::bootstrap();

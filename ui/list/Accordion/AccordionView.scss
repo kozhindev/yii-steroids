@@ -1,0 +1,14 @@
+.AccordionView {
+  width: 100%;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+  }
+
+  &__header-icon {
+    top: 0;
+  }
+}

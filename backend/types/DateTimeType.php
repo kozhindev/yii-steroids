@@ -24,6 +24,20 @@ class DateTimeType extends DateType
     /**
      * @inheritdoc
      */
+    public function prepareSwaggerProperty($modelClass, $attribute, &$property)
+    {
+        $property = array_merge(
+            [
+                'type' => 'string',
+                'format' => 'date-time',
+            ],
+            $property
+        );
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function renderValue($model, $attribute, $item, $options = [])
     {
         $format = ArrayHelper::remove($item, self::OPTION_FORMAT);

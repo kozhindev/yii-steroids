@@ -7,7 +7,7 @@ use steroids\modules\gii\forms\FormEntity;
 /* @var $formEntity FormEntity */
 
 $useClasses = [];
-if (count($formEntity->relationItems) > 0) {
+if (count($formEntity->publicRelationItems) > 0) {
     $useClasses[] = 'yii\db\ActiveQuery';
 }
 $rules = $formEntity->renderRules($useClasses);
@@ -19,15 +19,15 @@ echo "<?php\n";
 
 namespace <?= $formEntity->getNamespace() ?>\meta;
 
-use steroids\base\FormModel;
+use steroids\base\SearchModel;
 <?php foreach (array_unique($useClasses) as $relationClassName) { ?>
 use <?= $relationClassName ?>;
 <?php } ?>
 use <?= $formEntity->queryModelEntity->getClassName() ?>;
 
-abstract class <?= $formEntity->name ?>Meta extends FormModel
+abstract class <?= $formEntity->name ?>Meta extends SearchModel
 {
-<?php foreach ($formEntity->attributeItems as $metaItem) { ?>
+<?php foreach ($formEntity->publicAttributeItems as $metaItem) { ?>
     public $<?= $metaItem->name ?>;
 <?php } ?>
 
@@ -57,7 +57,7 @@ abstract class <?= $formEntity->name ?>Meta extends FormModel
     {
         return <?= $formEntity->queryModelEntity->name ?>::find();
     }
-<?php foreach ($formEntity->relationItems as $relationEntity) { ?>
+<?php foreach ($formEntity->publicRelationItems as $relationEntity) { ?>
 
     /**
     * @return ActiveQuery

@@ -47,6 +47,7 @@ class ActiveForm extends Widget
         parent::init();
 
         // Normalize fields
+        $this->fields = array_filter($this->fields);
         foreach ($this->fields as $key => $field) {
             if (is_string($field)) {
                 $this->fields[$key] = ['attribute' => $field];
@@ -77,7 +78,19 @@ class ActiveForm extends Widget
 
             return ['errors' => $errors];
         }
-        return $result;
+
+        if ($model->hasSecurityFields()) {
+            $securityFields = $model->getSecurityFields();
+
+            // Apply form name
+            $formName = $formName !== null ? $formName : $model->formName();
+            if ($formName) {
+                $securityFields = [$formName => $securityFields];
+            }
+
+            $result = ['securityFields' => $securityFields];
+        }
+        return array_merge($result, $model->toFrontend());
     }
 
     /**
@@ -88,8 +101,8 @@ class ActiveForm extends Widget
         $submitLabel = $this->submitLabel;
         if (!$submitLabel) {
             $submitLabel = $this->model->isNewRecord
-                ? \Yii::t('app', 'Добавить')
-                : \Yii::t('app', 'Сохранить');
+                ? \Yii::t('steroids', 'Добавить')
+                : \Yii::t('steroids', 'Сохранить');
         }
 
         return $this->renderReact([
@@ -98,6 +111,7 @@ class ActiveForm extends Widget
             'prefix' => $this->model->formName(),
             'layout' => $this->layout,
             'layoutProps' => $this->layoutProps,
+            'model' => get_class($this->model),
             'initialValues' => $this->getInitialValues(),
             'submitLabel' => $submitLabel,
             'fields' => $this->getFieldsConfig(),

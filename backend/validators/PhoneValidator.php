@@ -20,7 +20,7 @@ class PhoneValidator extends Validator
         parent::init();
 
         if ($this->message === null) {
-            $this->message = \Yii::t('app', 'Неправильный формат телефона, ожидается формат +79001234567');
+            $this->message = \Yii::t('steroids', 'Неправильный формат телефона, ожидается формат +79001234567');
         }
     }
 

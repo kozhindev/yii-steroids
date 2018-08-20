@@ -4,6 +4,8 @@ namespace steroids\traits;
 
 use steroids\base\FormModel;
 use steroids\base\Model;
+use yii\base\BaseObject;
+use yii\base\InvalidConfigException;
 use yii\helpers\ArrayHelper;
 
 trait MetaTrait
@@ -45,76 +47,78 @@ trait MetaTrait
     }
 
     /**
-     * @param array|null $fields
-     * @return array
+     * @param Model|Model[]|mixed|null $model
+     * @param null $fields
+     * @return array|null
+     * @throws InvalidConfigException
      */
-    public function toFrontend($fields = null)
+    public static function anyToFrontend($model, $fields = null)
     {
+        // Scalar
+        if (!is_object($model)) {
+            return $model;
+        }
+
         $fields = $fields ? (array)$fields : ['*'];
+
+        // Detect empty
+        if (!$model) {
+            return is_array($model) ? [] : null;
+        }
+
+        // Detect array
+        if (is_array($model)) {
+            return array_map(function($item) use ($fields) {
+                return static::anyToFrontend($item, $fields);
+            }, $model);
+        }
+
+        // Detect single type
+        /*if (!($model instanceof Model)) {
+            // Detect Yii Object
+            if ($model instanceof BaseObject) {
+                return $model->toArray($fields);
+            }
+
+            return $model;
+        }*/
 
         // Detect *
         foreach ($fields as $key => $name) {
             if ($name === '*') {
                 unset($fields[$key]);
-                $fields = array_merge($fields, $this->fields());
+                $fields = array_merge($fields, $model->fields());
                 break;
             }
         }
 
-        $entry = [];
+        // Export
+        $result = [];
         foreach ($fields as $key => $name) {
-            if (is_int($key)) {
-                $key = $name;
+            $key = is_int($key) ? $name : $key;
+
+            if (!is_string($key)) {
+                throw new InvalidConfigException('Wrong fields format for model "' . get_class($model) . '"');
             }
 
-            if (is_array($name)) {
-                // Relations
-                $relation = $this->getRelation($key, false);
-                if ($relation) {
-                    if ($relation->multiple) {
-                        $entry[$key] = [];
-                        foreach ($this->$key as $childModel) {
-                            /** @type Model $childModel */
-                            $entry[$key][] = $childModel->toFrontend($name);
-                        }
-                    } else {
-                        $entry[$key] = $this->$key ? $this->$key->toFrontend($name) : null;
-                    }
-                } else {
-                    $child = $this->$key;
-                    if (is_array($child)) {
-                        $entry[$key] = [];
-                        foreach ($child as $childModel) {
-                            if (is_object($childModel) && method_exists($childModel, 'toFrontend')) {
-                                /** @type Model $childModel */
-                                $entry[$key][] = $childModel->toFrontend($name);
-                            }
-                        }
-                    } else {
-                        $entry[$key] = is_object($child) && method_exists($child, 'toFrontend')
-                            ? $child->toFrontend($name)
-                            : null;
-                    }
-                }
+            if (is_callable($name)) {
+                $result[$key] = call_user_func($name, $model);
+            } elseif (is_array($name)) {
+                $result[$key] = static::anyToFrontend(ArrayHelper::getValue($model, $key), $name);
             } else {
-                // Attributes
-                $value = ArrayHelper::getValue($this, $name);
-                $key = is_string($key) ? $key : $name;
-                if (is_array($value)) {
-                    $entry[$key] = [];
-                    foreach ($value as $valueItem) {
-                        if (is_object($valueItem) && method_exists($valueItem, 'toFrontend')) {
-                            /** @type Model $childModel */
-                            $entry[$key][] = $valueItem->toFrontend();
-                        }
-                    }
-                } else {
-                    $entry[$key] = is_object($value) && method_exists($value, 'toFrontend')
-                        ? $value->toFrontend()
-                        : $value;
-                }
+                $result[$key] = static::anyToFrontend(ArrayHelper::getValue($model, $name));
             }
         }
-        return $entry;
+        return $result;
+    }
+
+    /**
+     * @param array|string|null $fields
+     * @return array
+     * @throws InvalidConfigException
+     */
+    public function toFrontend($fields = null)
+    {
+        return static::anyToFrontend($this, $fields);
     }
 }

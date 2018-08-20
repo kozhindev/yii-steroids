@@ -24,18 +24,18 @@ abstract class CrudItemEntityMeta extends FormModel
     {
         return [
             'name' => [
-                'label' => Yii::t('app', 'Name'),
+                'label' => Yii::t('steroids', 'Name'),
             ],
             'showInForm' => [
-                'label' => Yii::t('app', 'Show in Form'),
+                'label' => Yii::t('steroids', 'Show in Form'),
                 'appType' => 'boolean'
             ],
             'showInTable' => [
-                'label' => Yii::t('app', 'Show in Table'),
+                'label' => Yii::t('steroids', 'Show in Table'),
                 'appType' => 'boolean'
             ],
             'showInView' => [
-                'label' => Yii::t('app', 'Show in View'),
+                'label' => Yii::t('steroids', 'Show in View'),
                 'appType' => 'boolean'
             ]
         ];

@@ -25,6 +25,16 @@ class SearchModel extends FormModel
     public $sort;
 
     /**
+     * @var string|Model
+     */
+    public $model;
+
+    /**
+     * @var array
+     */
+    public $fields = [];
+
+    /**
      * @var ArrayDataProvider
      */
     public $dataProvider;
@@ -79,9 +89,8 @@ class SearchModel extends FormModel
      */
     public function createQuery()
     {
-        /** @var Model $className */
-        $className = get_parent_class(static::className());
-        return method_exists($className, 'find') ? $className::find() : null;
+        $modelClass = $this->model;
+        return $modelClass::find();
     }
 
     public function formName()
@@ -99,7 +108,7 @@ class SearchModel extends FormModel
 
     public function fields()
     {
-        return [];
+        return $this->fields;
     }
 
     public function getDataProvider()
@@ -118,8 +127,7 @@ class SearchModel extends FormModel
         return [
             'meta' => !empty($this->meta) ? $this->meta : null,
             'total' => $this->dataProvider->getTotalCount(),
-            'items' => array_map(function ($model) use ($fields) {
-                /** @type Model $model */
+            'items' => array_map(function (Model $model) use ($fields) {
                 return $model->toFrontend($fields);
             }, $this->dataProvider->models),
         ];

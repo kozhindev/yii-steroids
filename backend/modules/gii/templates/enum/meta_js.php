@@ -10,9 +10,7 @@ $labels = $enumEntity->renderJsLabels('        ');
 $cssClasses = $enumEntity->renderJsCssClasses('        ');
 
 ?>
-import Enum from 'yii-steroids/frontend/base/Enum';
-
-import {locale} from 'components';
+import Enum from 'yii-steroids/base/Enum';
 
 export default class <?= $enumEntity->name ?>Meta extends Enum {
 

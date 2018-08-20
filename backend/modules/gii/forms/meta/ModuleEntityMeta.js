@@ -1,6 +1,4 @@
-import Model from 'yii-steroids/frontend/base/Model';
-
-import {locale} from 'components';
+import Model from 'yii-steroids/base/Model';
 
 export default class ModuleEntityMeta extends Model {
 
@@ -11,7 +9,7 @@ export default class ModuleEntityMeta extends Model {
             'id': {
                 'component': 'InputField',
                 'attribute': 'id',
-                'label': locale.t('Module ID'),
+                'label': __('Module ID'),
                 'required': true
             },
         };
