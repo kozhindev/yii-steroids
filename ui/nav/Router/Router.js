@@ -8,12 +8,13 @@ import _get from 'lodash-es/get';
 import {store} from 'components';
 import {registerRoutes} from '../../../actions/routing';
 
+export default
 @connect(
     state => ({
         pathname: _get(state, 'routing.location.pathname'),
     })
 )
-export default class Router extends React.PureComponent {
+class Router extends React.PureComponent {
 
     static propTypes = {
         wrapperView: PropTypes.func,

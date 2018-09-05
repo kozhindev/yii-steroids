@@ -4,10 +4,11 @@ import PropTypes from 'prop-types';
 import {ui} from 'components';
 import fieldHoc from '../fieldHoc';
 
+export default
 @fieldHoc({
     componentId: 'form.PasswordField',
 })
-export default class PasswordField extends React.PureComponent {
+class PasswordField extends React.PureComponent {
 
     static propTypes = {
         label: PropTypes.oneOfType([

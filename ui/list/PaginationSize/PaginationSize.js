@@ -6,8 +6,9 @@ import _get from 'lodash-es/get';
 import {ui} from 'components';
 import {setPageSize} from '../../../actions/list';
 
+export default
 @connect()
-export default class PaginationSize extends React.PureComponent {
+class PaginationSize extends React.PureComponent {
 
     static propTypes = {
         listId: PropTypes.string,

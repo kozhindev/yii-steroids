@@ -13,6 +13,7 @@ const bem = html.bem('PermissionRow');
 const FORM_ID = 'AccessRulesEditor';
 const selector = formValueSelector(FORM_ID);
 
+export default
 @connect(
     (state, props) => {
         // Count child checked items
@@ -35,7 +36,7 @@ const selector = formValueSelector(FORM_ID);
         };
     }
 )
-export default class PermissionRow extends React.PureComponent {
+class PermissionRow extends React.PureComponent {
 
     static propTypes = {
         roles: PropTypes.arrayOf(PropTypes.string),

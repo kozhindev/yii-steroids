@@ -9,11 +9,12 @@ import fieldHoc from '../fieldHoc';
 import InputField from '../InputField';
 import DateField from '../DateField';
 
+export default
 @fieldHoc({
     componentId: 'form.RangeField',
     attributes: ['from', 'to'],
 })
-export default class RangeField extends React.PureComponent {
+class RangeField extends React.PureComponent {
 
     static propTypes = {
         label: PropTypes.oneOfType([

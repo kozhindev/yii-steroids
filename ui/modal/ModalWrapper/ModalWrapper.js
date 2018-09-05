@@ -8,12 +8,13 @@ import {ui} from 'components';
 import {closeModal} from '../../../actions/modal';
 import {getOpened} from '../../../reducers/modal';
 
+export default
 @connect(
     state => ({
         opened: getOpened(state),
     })
 )
-export default class ModalWrapper extends React.PureComponent {
+class ModalWrapper extends React.PureComponent {
 
     static propTypes = {
         opened: PropTypes.arrayOf(PropTypes.shape({

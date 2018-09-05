@@ -6,8 +6,9 @@ import _get from 'lodash-es/get';
 import {ui} from 'components';
 import {setPage} from '../../../actions/list';
 
+export default
 @connect()
-export default class Pagination extends React.PureComponent {
+class Pagination extends React.PureComponent {
 
     static propTypes = {
         listId: PropTypes.string,

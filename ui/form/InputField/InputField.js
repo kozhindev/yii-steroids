@@ -4,10 +4,11 @@ import PropTypes from 'prop-types';
 import {ui} from 'components';
 import fieldHoc from '../fieldHoc';
 
+export default
 @fieldHoc({
     componentId: 'form.InputField',
 })
-export default class InputField extends React.PureComponent {
+class InputField extends React.PureComponent {
 
     static propTypes = {
         label: PropTypes.oneOfType([

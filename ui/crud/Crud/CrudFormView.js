@@ -7,13 +7,14 @@ import Form from '../../form/Form/Form';
 
 const bem = html.bem('CrudFormView');
 
+export default
 @http.hoc(props => {
     const id = _get(props, 'match.params.id');
     return id
         ? http.get(null).then(initialValues => ({initialValues}))
         : Promise.resolve({initialValues: {}});
 })
-export default class CrudFormView extends React.Component {
+class CrudFormView extends React.Component {
 
     static propTypes = {
         formProps: PropTypes.object,

@@ -4,9 +4,18 @@
     "react"
   ],
   "plugins": [
-    "transform-decorators-legacy",
-    "transform-class-properties",
-    "transform-object-rest-spread",
-    "transform-export-extensions"
+    [
+      "@babel/plugin-proposal-decorators",
+      {
+        "legacy": true,
+        "decoratorsBeforeExport": true
+      }
+    ],
+    [
+      "@babel/plugin-proposal-class-properties",
+      {
+        "loose": true
+      }
+    ]
   ]
 }

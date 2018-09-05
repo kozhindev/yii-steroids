@@ -6,10 +6,11 @@ import MomentLocaleUtils from 'react-day-picker/moment';
 import {ui, locale} from 'components';
 import fieldHoc from '../fieldHoc';
 
+export default
 @fieldHoc({
     componentId: 'form.DateField',
 })
-export default class DateField extends React.PureComponent {
+class DateField extends React.PureComponent {
 
     static propTypes = {
         label: PropTypes.oneOfType([

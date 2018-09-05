@@ -4,10 +4,11 @@ import PropTypes from 'prop-types';
 import {ui} from 'components';
 import fieldHoc from '../fieldHoc';
 
+export default
 @fieldHoc({
     componentId: 'form.SliderField',
 })
-export default class SliderField extends React.PureComponent {
+class SliderField extends React.PureComponent {
 
     static propTypes = {
         label: PropTypes.oneOfType([

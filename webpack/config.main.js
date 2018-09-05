@@ -2,7 +2,7 @@ const webpack = require('webpack');
 const path = require('path');
 const fs = require('fs');
 const _ = require('lodash');
-const ExtractTextPlugin = require("extract-text-webpack-plugin");
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const ExportTranslationKeysPlugin = require('./plugins/ExportTranslationKeysPlugin');
 
 const utils = require('./utils');
@@ -11,11 +11,12 @@ const getConfigDefault = require('./config.default');
 module.exports = (config, entry) => {
     config = _.merge(getConfigDefault(), config);
 
-    const webpackVersion = 3;
+    const webpackVersion = 4;
 
     // For split chunks
+    let indexEntry = null;
     if (webpackVersion === 4) {
-        const indexEntry = entry.index;
+        indexEntry = entry.index;
         delete entry.index;
         // TODO
     }
@@ -47,16 +48,16 @@ module.exports = (config, entry) => {
                             options: {
                                 cacheDirectory: true,
                                 plugins: [
-                                    'transform-decorators-legacy',
-                                    'transform-class-properties',
-                                    'transform-object-rest-spread',
-                                    'transform-export-extensions',
+                                    //'transform-object-rest-spread',
+                                    //'transform-export-extensions',
+                                    ['@babel/plugin-proposal-decorators', {legacy: true}],
+                                    '@babel/plugin-proposal-class-properties',
                                     utils.isProduction() && 'transform-runtime',
                                     !utils.isProduction() && 'react-hot-loader/babel',
                                 ].filter(Boolean),
                                 presets: [
-                                    'env',
-                                    'react',
+                                    '@babel/preset-env',
+                                    '@babel/preset-react',
                                     webpackVersion === 4 && utils.isProduction() && 'minify'
                                 ].filter(Boolean),
                             }
@@ -78,17 +79,19 @@ module.exports = (config, entry) => {
                 },
                 less: {
                     test: /\.less$/,
-                    use: ExtractTextPlugin.extract({
-                        fallback: 'style-loader',
-                        use: ['css-loader', 'less-loader']
-                    }),
+                    use: [
+                        utils.isProduction() ? MiniCssExtractPlugin.loder : 'style-loader',
+                        'css-loader',
+                        'less-loader',
+                    ],
                 },
                 sass: {
                     test: /\.scss$/,
-                    use: ExtractTextPlugin.extract({
-                        fallback: 'style-loader',
-                        use: ['css-loader', 'sass-loader']
-                    }),
+                    use: [
+                        utils.isProduction() ? MiniCssExtractPlugin.loder : 'style-loader',
+                        'css-loader',
+                        'sass-loader',
+                    ],
                 },
                 font: {
                     test: /(\/|\\)fonts(\/|\\).*\.(ttf|otf|eot|svg|woff(2)?)(\?[a-z0-9]+)?$/,
@@ -133,12 +136,12 @@ module.exports = (config, entry) => {
                     NODE_ENV: '"production"'
                 }
             }),
-            new ExtractTextPlugin({
-                //filename: `${config.staticPath}assets/bundle-style.css`,
-                filename:  (getPath) => {
+            new MiniCssExtractPlugin({
+                filename: `${config.staticPath}assets/bundle-[name].css`,
+                /*filename:  (getPath) => {
                     return `${config.staticPath}assets/bundle-` + getPath('[name].css');
-                },
-                allChunks: true
+                },*/
+                //allChunks: true
             }),
             utils.isProduction() && new webpack.optimize.OccurrenceOrderPlugin(),
             !utils.isProduction() && new webpack.ProgressPlugin(),
@@ -156,7 +159,7 @@ module.exports = (config, entry) => {
                 splitChunks: {
                     cacheGroups: {
                         index: {
-                            test: indexEntry,
+                            test: indexEntry[0],
                             name: 'index',
                             chunks: 'initial',
                             enforce: true

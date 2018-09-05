@@ -8,10 +8,11 @@ import fieldHoc from '../fieldHoc';
 import DateField from '../DateField';
 import InputField from '../InputField';
 
+export default
 @fieldHoc({
     componentId: 'form.DateTimeField',
 })
-export default class DateTimeField extends React.PureComponent {
+class DateTimeField extends React.PureComponent {
 
     static propTypes = {
         label: PropTypes.oneOfType([

@@ -4,13 +4,14 @@ import PropTypes from 'prop-types';
 import {ui} from 'components';
 import fieldHoc from '../fieldHoc';
 
+export default
 @fieldHoc({
     componentId: 'form.CheckboxField',
     layoutProps: {
         label: false,
     }
 })
-export default class CheckboxField extends React.PureComponent {
+class CheckboxField extends React.PureComponent {
 
     static propTypes = {
         label: PropTypes.oneOfType([

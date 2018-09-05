@@ -9,8 +9,9 @@ import './SwaggerUi.scss';
 const bem = html.bem('SwaggerUi');
 const CONTAINER_ID = 'SwaggerUi';
 
+export default
 @widget.register('\\steroids\\modules\\docs\\widgets\\SwaggerUi\\SwaggerUi')
-export default class SwaggerUi extends React.PureComponent {
+class SwaggerUi extends React.PureComponent {
 
     static propTypes = {
         swaggerUrl: PropTypes.string,

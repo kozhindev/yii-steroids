@@ -6,12 +6,13 @@ import {ui, locale} from 'components';
 import fieldHoc from '../fieldHoc';
 import dataProviderHoc from '../dataProviderHoc';
 
+export default
 @fieldHoc({
     componentId: 'form.DropDownField',
 })
 @dataProviderHoc()
 @enhanceWithClickOutside
-export default class DropDownField extends React.PureComponent {
+class DropDownField extends React.PureComponent {
 
     static propTypes = {
         label: PropTypes.oneOfType([

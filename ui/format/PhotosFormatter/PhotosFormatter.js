@@ -7,8 +7,9 @@ import {locale} from 'components';
 
 import viewHoc from '../viewHoc';
 
+export default
 @viewHoc()
-export default class EnumFormatter extends React.Component {
+class PhotosFormatter extends React.Component {
 
     static propTypes = {
         attribute: PropTypes.string,

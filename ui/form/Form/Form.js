@@ -18,6 +18,7 @@ import Button from '../Button';
 let valuesSelector = null;
 let invalidSelector = null;
 
+export default
 @connect(
     (state, props) => {
         valuesSelector = valuesSelector || getFormValues(props.formId);
@@ -32,7 +33,7 @@ let invalidSelector = null;
     }
 )
 @reduxForm()
-export default class Form extends React.PureComponent {
+class Form extends React.PureComponent {
 
     static propTypes = {
         formId: PropTypes.string.isRequired,

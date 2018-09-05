@@ -12,12 +12,13 @@ import {refresh} from '../../../actions/list';
 import {getCurrentRoute} from '../../../reducers/routing';
 import Grid from '../../list/Grid';
 
+export default
 @connect(
     state => ({
         route: getCurrentRoute(state),
     })
 )
-export default class Crud extends React.PureComponent {
+class Crud extends React.PureComponent {
 
     static propTypes = {
         crudId: PropTypes.string.isRequired,

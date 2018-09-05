@@ -18,7 +18,7 @@ import Form from '../form/Form';
 let formValuesSelectors = {};
 const getFormId = props => _get(props, 'searchForm.formId', props.listId);
 
-@connect(
+export default () => WrappedComponent => @connect(
     (state, props) => {
         const formId = getFormId(props);
         if (formId && !formValuesSelectors[formId]) {
@@ -31,7 +31,7 @@ const getFormId = props => _get(props, 'searchForm.formId', props.listId);
         };
     }
 )
-    export default () => WrappedComponent => class ListHoc extends React.PureComponent {
+class ListHoc extends React.PureComponent {
 
     static WrappedComponent = WrappedComponent;
 

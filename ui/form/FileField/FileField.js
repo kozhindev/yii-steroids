@@ -7,11 +7,12 @@ import {locale, ui} from 'components';
 import fieldHoc from '../fieldHoc';
 import fileHoc from '../fileHoc';
 
+export default
 @fieldHoc({
     componentId: 'form.FileField',
 })
 @fileHoc()
-export default class FileField extends React.PureComponent {
+class FileField extends React.PureComponent {
 
     static propTypes = {
         label: PropTypes.oneOfType([

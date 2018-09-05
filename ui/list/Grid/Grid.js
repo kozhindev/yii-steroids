@@ -7,8 +7,9 @@ import listHoc from '../listHoc';
 import ActionColumn from '../ActionColumn';
 import Format from '../../format/Format';
 
+export default
 @listHoc()
-export default class Grid extends React.PureComponent {
+class Grid extends React.PureComponent {
 
     static propTypes = {
         primaryKey: PropTypes.string,

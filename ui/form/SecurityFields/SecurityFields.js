@@ -6,13 +6,14 @@ import formIdHoc from '../formIdHoc';
 import Field from '../Field';
 import {getSecurityFields} from '../../../reducers/fields';
 
+export default
 @formIdHoc()
 @connect(
     (state, props) => ({
         securityFields: getSecurityFields(state, props.formId),
     })
 )
-export default class SecurityFields extends React.PureComponent {
+class SecurityFields extends React.PureComponent {
 
     static propTypes = {
         formId: PropTypes.string,

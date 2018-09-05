@@ -17,6 +17,7 @@ const FORM_ID = 'EnumCreatorView';
 
 let selector = null;
 
+export default
 @connect(
     state => {
         if (!selector) {
@@ -29,7 +30,7 @@ let selector = null;
         };
     }
 )
-export default class EnumCreatorView extends React.PureComponent {
+class EnumCreatorView extends React.PureComponent {
 
     static propTypes = {
         entity: PropTypes.shape({

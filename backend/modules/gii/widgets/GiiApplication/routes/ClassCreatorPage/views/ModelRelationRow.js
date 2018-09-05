@@ -10,12 +10,13 @@ import RelationTypeMeta from '../../../../../enums/meta/RelationTypeMeta';
 const bem = html.bem('FieldListView');
 let relationTypeSelector = null;
 
+export default
 @connect(
     (state, props) => ({
         relationType: (relationTypeSelector = relationTypeSelector || formValueSelector(props.formId))(state, props.prefix + 'type'),
     })
 )
-export default class ModelRelationRow extends React.PureComponent {
+class ModelRelationRow extends React.PureComponent {
 
     static propTypes = {
         label: PropTypes.oneOfType([
