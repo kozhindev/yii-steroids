@@ -47,23 +47,10 @@ class ExportTranslationKeysPlugin {
                 parser.plugin(`call ${name}`, function exportTranslationKeysPlugin(expr) {
                     let param;
                     let defaultValue;
-                    switch (expr.arguments.length) {
-                        case 2:
-                            param = this.evaluateExpression(expr.arguments[1]);
-                            if (!param.isString()) return;
-                            param = param.string;
-                            defaultValue = this.evaluateExpression(expr.arguments[0]);
-                            if (!defaultValue.isString()) return;
-                            defaultValue = defaultValue.string;
-                            break;
-                        case 1:
-                            param = this.evaluateExpression(expr.arguments[0]);
-                            if (!param.isString()) return;
-                            defaultValue = param = param.string;
-                            break;
-                        default:
-                            return;
-                    }
+                    param = this.evaluateExpression(expr.arguments[0]);
+                    if (!param.isString()) return;
+                    defaultValue = param = param.string;
+
                     let result = localization ? localization(param) : defaultValue;
 
                     if (typeof result === 'undefined') {
@@ -116,10 +103,12 @@ class ExportTranslationKeysPlugin {
 
         compiler.plugin('done', (stats) => {
             Object.keys(translationKeys).forEach(bundleName => {
-                const fileName = 'bundle-' + translationKeys[bundleName].moduleName + '-' + translationKeys[bundleName].bundleName;
-                const filePath = stats.compilation.outputOptions.path + '/assets/' + fileName + '-lang.json';
-                const arrayKeys = JSON.stringify(_.uniq(translationKeys[bundleName].translationKeys));
-                fs.writeFileSync(filePath, arrayKeys);
+                if (translationKeys[bundleName].moduleName) {
+                    const fileName = 'bundle-' + translationKeys[bundleName].moduleName + '-' + translationKeys[bundleName].bundleName;
+                    const filePath = stats.compilation.outputOptions.path + '/assets/' + fileName + '-lang.json';
+                    const arrayKeys = JSON.stringify(_.uniq(translationKeys[bundleName].translationKeys));
+                    fs.writeFileSync(filePath, arrayKeys);
+                }
             });
 
         });
