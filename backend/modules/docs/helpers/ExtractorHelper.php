@@ -16,9 +16,23 @@ abstract class ExtractorHelper
      */
     public static function resolveType($type, $inClassName)
     {
-        return !static::isPrimitiveType($type)
+        $isArray = static::isArrayType($type);
+        if ($isArray) {
+            $type = preg_replace('/\[\]$/', '', $type);
+        }
+
+        $result = !static::isPrimitiveType($type)
             ? static::resolveClassName($type, $inClassName)
             : static::normalizePrimitiveType($type);
+        if ($isArray) {
+            $result .= '[]';
+        }
+        return $result;
+    }
+
+    public static function getSingleType($type)
+    {
+        return preg_replace('/\[\]$/', '', $type);
     }
 
     /**
@@ -98,7 +112,7 @@ abstract class ExtractorHelper
 
         // Find is class php doc
         $classInfo = new \ReflectionClass($className);
-        if (preg_match('/@property(-[a-z]+)? +([^ |\n]+) \$' . preg_quote($attribute) . '/', $classInfo->getDocComment(), $matchClass)) {
+        if (preg_match('/@property(-read)? +([^ |\n]+) \$' . preg_quote($attribute) . '/', $classInfo->getDocComment(), $matchClass)) {
             return static::resolveType($matchClass[2], $className);
         }
 
@@ -116,6 +130,11 @@ abstract class ExtractorHelper
         }
 
         return null;
+    }
+
+    public static function isArrayType($type)
+    {
+        return preg_match('/\[\]$/', $type);
     }
 
     public static function findCallableType($object, $callable)

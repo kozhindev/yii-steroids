@@ -54,6 +54,13 @@ trait MetaTrait
      */
     public static function anyToFrontend($model, $fields = null)
     {
+        // Detect array
+        if (is_array($model)) {
+            return array_map(function($item) use ($fields) {
+                return static::anyToFrontend($item, $fields);
+            }, $model);
+        }
+
         // Scalar
         if (!is_object($model)) {
             return $model;
@@ -64,13 +71,6 @@ trait MetaTrait
         // Detect empty
         if (!$model) {
             return is_array($model) ? [] : null;
-        }
-
-        // Detect array
-        if (is_array($model)) {
-            return array_map(function($item) use ($fields) {
-                return static::anyToFrontend($item, $fields);
-            }, $model);
         }
 
         // Detect single type

@@ -136,7 +136,6 @@ class FormModelDocExtractor extends BaseDocExtractor
                     // TODO
                     // TODO
                     // TODO
-                    // TODO
                 }
 
                 continue;
@@ -146,6 +145,20 @@ class FormModelDocExtractor extends BaseDocExtractor
                 $modelClass = $rootModelClass;
                 foreach ($attributes as $attribute) {
                     $phpType = ExtractorHelper::findPhpDocType($modelClass, $attribute);
+                    if (ExtractorHelper::isArrayType($phpType)) {
+                        $oneModelClass = ExtractorHelper::getSingleType($phpType);
+                        $oneModel = new $oneModelClass();
+
+                        $responseProperties[$key] = [
+                            'type' => 'array',
+                            'items' => [
+                                'type' => 'object',
+                                'properties' => $this->getResponseProperties($oneModelClass, $oneModel->fields()),
+                            ],
+                        ];
+                        continue;
+                    }
+
                     if ($phpType && class_exists($phpType)) {
                         $modelClass = $phpType;
                         continue;
@@ -158,14 +171,20 @@ class FormModelDocExtractor extends BaseDocExtractor
                     if (ExtractorHelper::isModelAttribute($modelClass, $attribute)) {
                         /** @var Model|FormModel $model */
                         $model = new $modelClass();
-                        $responseProperties[$key] = array_merge($responseProperties[$key], [
-                            'description' => $model->getAttributeLabel($attribute),
-                            'example' => ArrayHelper::getValue($modelClass::meta(), [$attribute, 'example']),
-                        ]);
+                        if ($model instanceof Model || $model instanceof FormModel) {
+                            $responseProperties[$key] = array_merge($responseProperties[$key], [
+                                'description' => $model->getAttributeLabel($attribute),
+                                'example' => ArrayHelper::getValue($modelClass::meta(), [$attribute, 'example']),
+                            ]);
 
-                        /** @var Type $appType */
-                        $appType = \Yii::$app->types->getTypeByModel($model, $attribute);
-                        $appType->prepareSwaggerProperty(get_class($model), $attribute, $responseProperties[$key]);
+                            /** @var Type $appType */
+                            $appType = \Yii::$app->types->getTypeByModel($model, $attribute);
+                            $appType->prepareSwaggerProperty(get_class($model), $attribute, $responseProperties[$key]);
+                        } else {
+                            // TODO
+                            // TODO
+                            // TODO
+                        }
                     }
                 }
             }
