@@ -35,7 +35,7 @@ class FormModelDocExtractor extends BaseDocExtractor
         $model = new $className();
 
         $required = [];
-        $requestProperties = $model instanceof FormModel ? $this->getRequestProperties($model, $required) : [];
+        $requestProperties = strtoupper($this->method) === 'GET' && $model instanceof Model ? [] : $this->getRequestProperties($model, $required);
         $responseProperties = $this->getResponseProperties($this->className, $model->fields());
 
         $this->swaggerJson->updatePath($this->url, $this->method, [
