@@ -98,21 +98,36 @@ abstract class ExtractorHelper
 
         // Find is class php doc
         $classInfo = new \ReflectionClass($className);
-        if (preg_match('/@property(-[a-z]+)? +([^ \n]+) \$' . preg_quote($attribute) . '/', $classInfo->getDocComment(), $matchClass)) {
-            return static::resolveType($matchClass[1], $className);
+        if (preg_match('/@property(-[a-z]+)? +([^ |\n]+) \$' . preg_quote($attribute) . '/', $classInfo->getDocComment(), $matchClass)) {
+            return static::resolveType($matchClass[2], $className);
         }
 
         // Find in class property php doc
         $propertyInfo = $classInfo->hasProperty($attribute) ? $classInfo->getProperty($attribute) : null;
-        if ($propertyInfo && preg_match('/@(var|type) +([^ \n]+)/', $propertyInfo->getDocComment(), $matchProperty)) {
+        if ($propertyInfo && preg_match('/@(var|type) +([^ |\n]+)/', $propertyInfo->getDocComment(), $matchProperty)) {
             return static::resolveType($matchProperty[2], $className);
         }
 
         // Find in getter method
         $getter = 'get' . ucfirst($attribute);
         $methodInfo = $classInfo->hasMethod($getter) ? $classInfo->getMethod($getter) : null;
-        if ($methodInfo && preg_match('/@return +([^ \n]+)/', $methodInfo->getDocComment(), $matchMethod)) {
+        if ($methodInfo && preg_match('/@return +([^ |\n]+)/', $methodInfo->getDocComment(), $matchMethod)) {
             return static::resolveType($matchMethod[1], $className);
+        }
+
+        return null;
+    }
+
+    public static function findCallableType($object, $callable)
+    {
+        $className = is_object($object) ? get_class($object) : $object;
+
+        if (is_array($callable) && count($callable) === 2 && is_object($callable[0]) && is_string($callable[1])) {
+            $classInfo = new \ReflectionClass(get_class($callable[0]));
+            $methodInfo = $classInfo->hasMethod($callable[1]) ? $classInfo->getMethod($callable[1]) : null;
+            if ($methodInfo && preg_match('/@return +([^ |\n]+)/', $methodInfo->getDocComment(), $matchMethod)) {
+                return static::resolveType($matchMethod[1], $className);
+            }
         }
 
         return null;
