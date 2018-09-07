@@ -156,19 +156,21 @@ module.exports = (config, entry) => {
         webpackConfig = _.merge(webpackConfig, {
             mode: utils.isProduction() ? 'production' : 'development',
             optimization: {
-                splitChunks: {
-                    cacheGroups: {
-                        index: {
-                            test: indexEntry[0],
-                            name: 'index',
-                            chunks: 'initial',
-                            enforce: true
-                        }
-                    }
-                },
                 minimize: utils.isProduction(),
             }
         });
+        if (indexEntry) {
+            webpackConfig.optimization.splitChunks = {
+                cacheGroups: {
+                    index: {
+                        test: indexEntry[0],
+                        name: 'index',
+                        chunks: 'initial',
+                        enforce: true
+                    }
+                }
+            };
+        }
     }
 
     // Merge with custom

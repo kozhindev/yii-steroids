@@ -129,11 +129,24 @@ class FormModelDocExtractor extends BaseDocExtractor
                 $attributes = explode('.', $attributes);
             }
 
+            if (is_callable($attributes)) {
+                $callablePhpType = ExtractorHelper::findCallableType($rootModelClass, $attributes);
+                if (class_exists($callablePhpType)) {
+                    //$callableModel = new $callablePhpType();
+                    // TODO
+                    // TODO
+                    // TODO
+                    // TODO
+                }
+
+                continue;
+            }
+
             if (is_array($attributes)) {
                 $modelClass = $rootModelClass;
                 foreach ($attributes as $attribute) {
                     $phpType = ExtractorHelper::findPhpDocType($modelClass, $attribute);
-                    if (class_exists($phpType)) {
+                    if ($phpType && class_exists($phpType)) {
                         $modelClass = $phpType;
                         continue;
                     }

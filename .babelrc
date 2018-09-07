@@ -1,14 +1,13 @@
 {
   "presets": [
-    "env",
-    "react"
+    "@babel/preset-env",
+    "@babel/preset-react"
   ],
   "plugins": [
     [
       "@babel/plugin-proposal-decorators",
       {
-        "legacy": true,
-        "decoratorsBeforeExport": true
+        "legacy": true
       }
     ],
     [

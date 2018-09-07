@@ -3,6 +3,7 @@ const fs = require('fs');
 const _ = require('lodash');
 const utils = require('./utils');
 const getConfigDefault = require('./config.default');
+const mergeConfigs = require('@storybook/core/dist/server/mergeConfigs').default;
 
 module.exports = (config) => {
     config = _.merge(getConfigDefault(), config);
@@ -89,5 +90,15 @@ module.exports = (config) => {
         })
         .filter(Boolean);
 
-    return webpackConfig;
+    return storybookConfig => {
+        const finalConfig = mergeConfigs(storybookConfig, webpackConfig);
+
+        // No exclude yii-steroids package - it's es6 code
+        finalConfig.module.rules[0].exclude = /node_modules(\/|\\+)(?!yii-steroids)/;
+
+        // Add decorators
+        finalConfig.module.rules[0].use[0].options.plugins.unshift(['@babel/plugin-proposal-decorators', {legacy: true}]);
+
+        return finalConfig;
+    };
 };
