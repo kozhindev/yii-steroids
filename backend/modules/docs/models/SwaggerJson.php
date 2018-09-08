@@ -2,12 +2,15 @@
 
 namespace steroids\modules\docs\models;
 
-use yii\base\BaseObject;
+use steroids\modules\docs\events\SwaggerExportEvent;
+use yii\base\Component;
 use yii\base\InvalidConfigException;
 use yii\helpers\ArrayHelper;
 
-class SwaggerJson extends BaseObject
+class SwaggerJson extends Component
 {
+    const EVENT_EXPORT = 'export';
+
     public $version = '1.0.0';
     public $siteName;
     public $hostName;
@@ -98,7 +101,7 @@ class SwaggerJson extends BaseObject
      */
     public function toArray()
     {
-        return [
+        $json = [
             'swagger' => '2.0',
             'info' => [
                 'version' => $this->version,
@@ -118,6 +121,13 @@ class SwaggerJson extends BaseObject
             'paths' => $this->paths,
             'definitions' => $this->definitions ?: (object)[],
         ];
+
+        $event = new SwaggerExportEvent([
+            'json' => $json,
+        ]);
+        $this->trigger(self::EVENT_EXPORT, $event);
+
+        return $event->json;
     }
 
     public function getBasePath()
