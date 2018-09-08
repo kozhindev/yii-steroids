@@ -45,7 +45,7 @@ class AjaxResponseMiddleware extends BaseObject
         if (($contentType === 'application/json' && isset($request->parsers[$contentType])) || $response->format === Response::FORMAT_JSON) {
 
             // Detect data provider
-            if ($event->result instanceof SearchModel) {
+            if ($event->result instanceof SearchModel || $event->result instanceof Model) {
                 $data = $event->result->toFrontend();
             } elseif ($event->result instanceof FormModel) {
                 $data = ActiveForm::renderAjax($event->result, '');
