@@ -3,6 +3,7 @@
 namespace steroids\middleware;
 
 use steroids\base\FormModel;
+use steroids\base\Model;
 use steroids\base\SearchModel;
 use steroids\widgets\ActiveForm;
 use yii\base\ActionEvent;
