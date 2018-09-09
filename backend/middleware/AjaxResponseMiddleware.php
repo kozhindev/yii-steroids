@@ -45,7 +45,6 @@ class AjaxResponseMiddleware extends BaseObject
 
         if (($contentType === 'application/json' && isset($request->parsers[$contentType]))
             || $response->format === Response::FORMAT_JSON
-            || $request->isAjax
             || is_array($event->result)) {
 
             // Detect data provider
