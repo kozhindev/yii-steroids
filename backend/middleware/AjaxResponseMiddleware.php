@@ -45,7 +45,8 @@ class AjaxResponseMiddleware extends BaseObject
 
         if (($contentType === 'application/json' && isset($request->parsers[$contentType]))
             || $response->format === Response::FORMAT_JSON
-            || is_array($event->result)) {
+            || is_array($event->result)
+            || $event->result instanceof \yii\base\Model) {
 
             // Detect data provider
             if ($event->result instanceof SearchModel || $event->result instanceof Model) {
