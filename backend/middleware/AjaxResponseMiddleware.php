@@ -3,6 +3,7 @@
 namespace steroids\middleware;
 
 use steroids\base\FormModel;
+use steroids\base\Model;
 use steroids\base\SearchModel;
 use steroids\widgets\ActiveForm;
 use yii\base\ActionEvent;
@@ -42,10 +43,13 @@ class AjaxResponseMiddleware extends BaseObject
             $contentType = $rawContentType;
         }
 
-        if (($contentType === 'application/json' && isset($request->parsers[$contentType])) || $response->format === Response::FORMAT_JSON) {
+        if (($contentType === 'application/json' && isset($request->parsers[$contentType]))
+            || $response->format === Response::FORMAT_JSON
+            || is_array($event->result)
+            || $event->result instanceof \yii\base\Model) {
 
             // Detect data provider
-            if ($event->result instanceof SearchModel) {
+            if ($event->result instanceof SearchModel || $event->result instanceof Model) {
                 $data = $event->result->toFrontend();
             } elseif ($event->result instanceof FormModel) {
                 $data = ActiveForm::renderAjax($event->result, '');

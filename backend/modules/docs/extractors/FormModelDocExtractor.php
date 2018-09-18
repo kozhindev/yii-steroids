@@ -35,28 +35,23 @@ class FormModelDocExtractor extends BaseDocExtractor
         $model = new $className();
 
         $required = [];
-        $requestProperties = $this->getRequestProperties($model, $required);
-        $responseProperties = $this->getResponseProperties($this->className, $model->fields());
+        $requestSchema = SwaggerTypeExtractor::getInstance()->extractModel($this->className, $this->getRequestFields($model, $required));
+        $responseSchema = SwaggerTypeExtractor::getInstance()->extractModel($this->className, $model->fields());
 
         $this->swaggerJson->updatePath($this->url, $this->method, [
-            'parameters' => empty($requestProperties) ? null : [
+            'parameters' => empty($requestSchema) ? null : [
                 [
                     'in' => 'body',
                     'name' => 'request',
-                    'schema' => [
-                        'type' => 'object',
+                    'schema' => array_merge($requestSchema, [
                         'required' => $required,
-                        'properties' => $requestProperties,
-                    ],
+                    ]),
                 ],
             ],
             'responses' => [
                 200 => [
                     'description' => 'Successful operation',
-                    'schema' => empty($responseProperties) ? null : [
-                        'type' => 'object',
-                        'properties' => $responseProperties,
-                    ],
+                    'schema' => $responseSchema,
                 ],
                 400 => [
                     'description' => 'Validation errors',
@@ -87,90 +82,30 @@ class FormModelDocExtractor extends BaseDocExtractor
      * @param array $required
      * @return array
      */
-    protected function getRequestProperties($model, &$required)
+    protected function getRequestFields($model, &$required)
     {
-        $meta = $model::meta();
-
-        $requestProperties = [];
-        foreach ($model->safeAttributes() as $attribute) {
-            if (!$model->canSetProperty($attribute)) {
-                continue;
-            }
-            if ($model->isAttributeRequired($attribute)) {
-                $required[] = $attribute;
-            }
-            $requestProperties[$attribute] = [
-                'description' => $model->getAttributeLabel($attribute),
-                'example' => ArrayHelper::getValue($meta, [$attribute, 'example']),
-            ];
-
-            /** @var Type $appType */
-            $appType = \Yii::$app->types->getTypeByModel($model, $attribute);
-            $appType->prepareSwaggerProperty(get_class($model), $attribute, $requestProperties[$attribute]);
-        }
-        return $requestProperties;
-    }
-
-    /**
-     * @param string|Model|FormModel $rootModelClass
-     * @param array $fields
-     * @return array
-     * @throws \ReflectionException
-     */
-    protected function getResponseProperties($rootModelClass, $fields)
-    {
-        $responseProperties = [];
-        foreach ($fields as $key => $attributes) {
-            if (is_int($key) && is_string($attributes)) {
-                $key = $attributes;
-            }
-
-            if (is_string($attributes)) {
-                $attributes = explode('.', $attributes);
-            }
-
-            if (is_callable($attributes)) {
-                $callablePhpType = ExtractorHelper::findCallableType($rootModelClass, $attributes);
-                if (class_exists($callablePhpType)) {
-                    //$callableModel = new $callablePhpType();
-                    // TODO
-                    // TODO
-                    // TODO
-                    // TODO
+        $requestFields = [];
+        if (strtoupper($this->method) !== 'GET' || !($model instanceof Model)) {
+            foreach ($model->safeAttributes() as $attribute) {
+                // Skip read only params
+                if (!$model->canSetProperty($attribute)) {
+                    continue;
                 }
 
-                continue;
-            }
-
-            if (is_array($attributes)) {
-                $modelClass = $rootModelClass;
-                foreach ($attributes as $attribute) {
-                    $phpType = ExtractorHelper::findPhpDocType($modelClass, $attribute);
-                    if ($phpType && class_exists($phpType)) {
-                        $modelClass = $phpType;
-                        continue;
-                    }
-
-                    $responseProperties[$key] = [
-                        'type' => 'string',
-                    ];
-
-                    if (ExtractorHelper::isModelAttribute($modelClass, $attribute)) {
-                        /** @var Model|FormModel $model */
-                        $model = new $modelClass();
-                        $responseProperties[$key] = array_merge($responseProperties[$key], [
-                            'description' => $model->getAttributeLabel($attribute),
-                            'example' => ArrayHelper::getValue($modelClass::meta(), [$attribute, 'example']),
-                        ]);
-
-                        /** @var Type $appType */
-                        $appType = \Yii::$app->types->getTypeByModel($model, $attribute);
-                        $appType->prepareSwaggerProperty(get_class($model), $attribute, $responseProperties[$key]);
-                    }
+                // Skip params from url
+                if (stripos($this->url, '{' . $attribute . '}') !== false) {
+                    continue;
                 }
+
+                // Store required attributes
+                if ($model->isAttributeRequired($attribute)) {
+                    $required[] = $attribute;
+                }
+                $requestFields[] = $attribute;
             }
         }
-        return $responseProperties;
+        return $requestFields;
     }
+
 }
 
