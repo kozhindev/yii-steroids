@@ -21,25 +21,23 @@ class SearchModelDocExtractor extends FormModelDocExtractor
         $model = new $modelClassName();
 
         $required = [];
-        $requestProperties = $this->getRequestProperties($searchModel, $required);
-        $responseProperties = $this->getResponseProperties($modelClassName, $searchModel->fields());
+        $requestSchema = SwaggerTypeExtractor::getInstance()->extractModel($this->className, $this->getRequestFields($model, $required));
+        $responseSchema = SwaggerTypeExtractor::getInstance()->extractModel($modelClassName, $searchModel->fields());
 
         $this->swaggerJson->updatePath($this->url, $this->method, [
-            'parameters' => empty($requestProperties) ? null : [
+            'parameters' => empty($requestSchema) ? null : [
                 [
                     'in' => 'body',
                     'name' => 'request',
-                    'schema' => [
-                        'type' => 'object',
+                    'schema' => array_merge($requestSchema, [
                         'required' => $required,
-                        'properties' => $requestProperties,
-                    ],
+                    ]),
                 ],
             ],
             'responses' => [
                 200 => [
                     'description' => 'Successful operation',
-                    'schema' => empty($responseProperties) ? null : [
+                    'schema' => empty($responseSchema) ? null : [
                         'type' => 'object',
                         'properties' => [
                             'meta' => [
@@ -53,10 +51,7 @@ class SearchModelDocExtractor extends FormModelDocExtractor
                             'items' => [
                                 'description' => 'Fined items',
                                 'type' => 'array',
-                                'items' => [
-                                    'type' => 'object',
-                                    'properties' => $responseProperties,
-                                ],
+                                'items' => $responseSchema,
                             ],
                         ],
                     ],

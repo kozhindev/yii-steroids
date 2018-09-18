@@ -91,7 +91,7 @@ abstract class Type extends BaseObject
     /**
      * @param string $modelClass
      * @param string $attribute
-     * @param string $property
+     * @param array $property
      */
     public function prepareSwaggerProperty($modelClass, $attribute, &$property)
     {
