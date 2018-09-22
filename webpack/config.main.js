@@ -4,22 +4,27 @@ const fs = require('fs');
 const _ = require('lodash');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const ExportTranslationKeysPlugin = require('./plugins/ExportTranslationKeysPlugin');
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 const utils = require('./utils');
 const getConfigDefault = require('./config.default');
 
+function recursiveIssuer(m) {
+    if (m.issuer) {
+        return recursiveIssuer(m.issuer);
+    } else if (m.name) {
+        return m.name;
+    } else {
+        return false;
+    }
+}
+
 module.exports = (config, entry) => {
     config = _.merge(getConfigDefault(), config);
 
-    const webpackVersion = 4;
-
     // For split chunks
-    let indexEntry = null;
-    if (webpackVersion === 4) {
-        indexEntry = entry.index;
-        delete entry.index;
-        // TODO
-    }
+    const indexEntry = entry.index;
+    //delete entry.index;
 
     // Init default webpack config
     let webpackConfig = {
@@ -58,7 +63,7 @@ module.exports = (config, entry) => {
                                 presets: [
                                     '@babel/preset-env',
                                     '@babel/preset-react',
-                                    webpackVersion === 4 && utils.isProduction() && 'minify'
+                                    utils.isProduction() && 'minify'
                                 ].filter(Boolean),
                             }
                         },
@@ -80,7 +85,7 @@ module.exports = (config, entry) => {
                 less: {
                     test: /\.less$/,
                     use: [
-                        utils.isProduction() ? MiniCssExtractPlugin.loder : 'style-loader',
+                        MiniCssExtractPlugin.loader,
                         'css-loader',
                         'less-loader',
                     ],
@@ -88,7 +93,7 @@ module.exports = (config, entry) => {
                 sass: {
                     test: /\.scss$/,
                     use: [
-                        utils.isProduction() ? MiniCssExtractPlugin.loder : 'style-loader',
+                        MiniCssExtractPlugin.loader,
                         'css-loader',
                         'sass-loader',
                     ],
@@ -130,6 +135,7 @@ module.exports = (config, entry) => {
             ].filter(Boolean),
         },
         plugins: [
+            utils.isAnalyze() && new BundleAnalyzerPlugin(),
             new ExportTranslationKeysPlugin(),
             utils.isProduction() && new webpack.DefinePlugin({
                 'process.env': {
@@ -138,40 +144,49 @@ module.exports = (config, entry) => {
             }),
             new MiniCssExtractPlugin({
                 filename: `${config.staticPath}assets/bundle-[name].css`,
-                /*filename:  (getPath) => {
-                    return `${config.staticPath}assets/bundle-` + getPath('[name].css');
-                },*/
-                //allChunks: true
+                chunkFilename: `${config.staticPath}assets/bundle-[id].css`,
             }),
+            new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/), // Skip moment locale files (0.3 mb!)
             utils.isProduction() && new webpack.optimize.OccurrenceOrderPlugin(),
             !utils.isProduction() && new webpack.ProgressPlugin(),
             !utils.isProduction() && new webpack.NamedModulesPlugin(),
-            !utils.isProduction() && new webpack.HotModuleReplacementPlugin(),
-            webpackVersion === 3 && new webpack.optimize.CommonsChunkPlugin({name: 'index', filename: `${config.staticPath}assets/bundle-index.js`}),
-            webpackVersion === 3 && utils.isProduction() && new webpack.optimize.UglifyJsPlugin({compress: {warnings: false}, sourceMap: false})
         ].filter(Boolean),
     };
 
-    if (webpackVersion === 4) {
-        webpackConfig = _.merge(webpackConfig, {
-            mode: utils.isProduction() ? 'production' : 'development',
-            optimization: {
-                minimize: utils.isProduction(),
-            }
-        });
-        if (indexEntry) {
-            webpackConfig.optimization.splitChunks = {
-                cacheGroups: {
-                    index: {
-                        test: indexEntry[0],
-                        name: 'index',
-                        chunks: 'initial',
-                        enforce: true
-                    }
-                }
-            };
+    webpackConfig = _.merge(webpackConfig, {
+        mode: utils.isProduction() ? 'production' : 'development',
+        optimization: {
+            runtimeChunk: 'single',
+            minimize: utils.isProduction(),
         }
+    });
+    if (indexEntry) {
+        webpackConfig.optimization.splitChunks = {
+            cacheGroups: {
+                common: {
+                    name: 'common',
+                    chunks: 'initial',
+                    test: /\.js$/,
+                    minChunks: 2
+                }
+            }
+        };
     }
+
+    // Extracting CSS based on entry
+    webpackConfig.optimization.splitChunks = webpackConfig.optimization.splitChunks || {cacheGroups: {}};
+    Object.keys(entry).forEach(name => {
+        // Skip styles
+        if (/^style-/.test(name)) {
+            return;
+        }
+
+        webpackConfig.optimization.splitChunks.cacheGroups[name] = {
+            name: name,
+            test: m => m.constructor.name === 'CssModule' && recursiveIssuer(m) === name,
+            chunks: 'all'
+        };
+    });
 
     // Merge with custom
     webpackConfig = _.merge(webpackConfig, config.webpack);
@@ -187,18 +202,6 @@ module.exports = (config, entry) => {
             return item;
         })
         .filter(Boolean);
-
-    // Add hot replace to each bundles
-    if (!utils.isProduction()) {
-        Object.keys(webpackConfig.entry).map(key => {
-            webpackConfig.entry[key] = []
-                .concat([
-                    `webpack-dev-server/client?http://${config.host}:${config.port}`,
-                    'webpack/hot/dev-server',
-                ])
-                .concat(webpackConfig.entry[key])
-        });
-    }
 
     return webpackConfig;
 };
