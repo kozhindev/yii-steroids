@@ -7,7 +7,6 @@ import _isEqual from 'lodash-es/isEqual';
 import _isFunction from 'lodash-es/isFunction';
 import _merge from 'lodash-es/merge';
 
-import {locale} from 'components';
 import {init, lazyFetch, refresh, destroy} from '../../actions/list';
 import {getList} from '../../reducers/list';
 import Empty from './Empty';

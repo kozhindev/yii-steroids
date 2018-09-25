@@ -1,7 +1,5 @@
 import Enum from 'yii-steroids/base/Enum';
 
-import {locale} from 'components';
-
 export default class RelationTypeMeta extends Enum {
 
     static HAS_ONE = 'has_one';

@@ -2,8 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import _round from 'lodash-es/round';
 
-import {locale} from 'components';
-
 export default class Money extends React.Component {
 
     static propTypes = {

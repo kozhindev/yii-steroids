@@ -6,6 +6,7 @@ use steroids\base\FormModel;
 use steroids\base\Model;
 use steroids\base\Widget;
 use yii\base\InvalidConfigException;
+use yii\db\ActiveRecordInterface;
 use yii\helpers\ArrayHelper;
 
 class ActiveForm extends Widget
@@ -99,10 +100,13 @@ class ActiveForm extends Widget
     public function run()
     {
         $submitLabel = $this->submitLabel;
-        if (!$submitLabel) {
+        if (!$submitLabel && $this->model instanceof ActiveRecordInterface) {
             $submitLabel = $this->model->isNewRecord
                 ? \Yii::t('steroids', 'Добавить')
                 : \Yii::t('steroids', 'Сохранить');
+        }
+        if (!$submitLabel) {
+            $submitLabel = \Yii::t('steroids', 'Отправить');
         }
 
         return $this->renderReact([

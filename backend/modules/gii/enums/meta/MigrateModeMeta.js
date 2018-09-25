@@ -1,7 +1,5 @@
 import Enum from 'yii-steroids/base/Enum';
 
-import {locale} from 'components';
-
 export default class MigrateModeMeta extends Enum {
 
     static UPDATE = 'update';

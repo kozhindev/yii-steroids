@@ -1,7 +1,5 @@
 import Model from 'yii-steroids/base/Model';
 
-import {locale} from 'components';
-
 export default class CrudItemEntityMeta extends Model {
 
     static className = 'steroids\\modules\\gii\\forms\\CrudItemEntity';

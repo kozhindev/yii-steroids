@@ -3,8 +3,6 @@ import PropTypes from 'prop-types';
 import Gallery from 'react-grid-gallery';
 import _get from 'lodash-es/get';
 
-import {locale} from 'components';
-
 import viewHoc from '../viewHoc';
 
 export default

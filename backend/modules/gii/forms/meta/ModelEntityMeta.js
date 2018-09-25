@@ -1,6 +1,5 @@
 import Model from 'yii-steroids/base/Model';
 
-import {locale} from 'components';
 import MigrateModeMeta from '../../enums/meta/MigrateModeMeta';
 
 export default class ModelEntityMeta extends Model {
