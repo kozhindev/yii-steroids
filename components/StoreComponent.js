@@ -40,7 +40,7 @@ export default class StoreComponent {
             ...asyncReducers,
         };
 
-        this.store.replaceReducer(reducers(store.asyncReducers));
+        this.store.replaceReducer(reducers(this._asyncReducers));
     }
 
     errorHandler(error) {
