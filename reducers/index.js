@@ -18,4 +18,7 @@ export {
     routing,
 };
 
-export default combineReducers(module.exports);
+export default asyncReducers => combineReducers({
+    ...module.exports,
+    ...asyncReducers,
+});

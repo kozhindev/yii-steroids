@@ -14,7 +14,7 @@ export default class StoreComponent {
 
         this.history = createHistory(_get(initialState, 'config.store.history', {}));
         this.store = createStore(
-            reducers,
+            reducers(),
             initialState,
             compose(
                 applyMiddleware(({getState}) => next => action => this._prepare(action, next, getState)),
@@ -22,6 +22,8 @@ export default class StoreComponent {
                 window.__REDUX_DEVTOOLS_EXTENSION__ ? window.__REDUX_DEVTOOLS_EXTENSION__() : f => f
             )
         );
+
+        this._asyncReducers = {};
     }
 
     dispatch(action) {
@@ -30,6 +32,15 @@ export default class StoreComponent {
 
     getState() {
         return this.store.getState();
+    }
+
+    addReducers(asyncReducers) {
+        this._asyncReducers = {
+            ...this._asyncReducers,
+            ...asyncReducers,
+        };
+
+        this.store.replaceReducer(reducers(store.asyncReducers));
     }
 
     errorHandler(error) {

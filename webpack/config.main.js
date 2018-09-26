@@ -156,7 +156,9 @@ module.exports = (config, entry) => {
     webpackConfig = _.merge(webpackConfig, {
         mode: utils.isProduction() ? 'production' : 'development',
         optimization: {
-            runtimeChunk: 'single',
+            runtimeChunk: {
+                name: 'common',
+            },
             minimize: utils.isProduction(),
         }
     });
@@ -166,8 +168,8 @@ module.exports = (config, entry) => {
                 common: {
                     name: 'common',
                     chunks: 'initial',
-                    test: /\.js$/,
-                    minChunks: 2
+                    minChunks: 2,
+                    minSize: 0,
                 }
             }
         };
