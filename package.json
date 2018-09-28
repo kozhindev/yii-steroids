@@ -63,6 +63,7 @@
     "react-grid-gallery": "^0.4.8",
     "react-hot-loader": "^4.0.0",
     "react-mde": "^4.0.3",
+    "react-modal": "^3.6.1",
     "react-quill": "^1.2.6",
     "react-redux": "^5.0.7",
     "react-router": "^4.3.1",
