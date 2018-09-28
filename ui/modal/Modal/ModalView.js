@@ -19,7 +19,6 @@ export default class ModalView extends React.PureComponent {
             <div className={bem.block()}>
                 <Modal
                     isOpen={true}
-                    onRequestClose={this.props.onClose}
                     className={bem.element('modal')}
                     overlayClassName={bem.element('overlay')}
                     ariaHideApp={false}
