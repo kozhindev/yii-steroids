@@ -13,9 +13,9 @@ function recursiveIssuer(m) {
     if (m.issuer) {
         return recursiveIssuer(m.issuer);
     } else if (m.name) {
-        return m.name;
+        return m;
     } else {
-        return false;
+        return null;
     }
 }
 
@@ -57,13 +57,17 @@ module.exports = (config, entry) => {
                                     //'transform-export-extensions',
                                     ['@babel/plugin-proposal-decorators', {legacy: true}],
                                     '@babel/plugin-proposal-class-properties',
-                                    utils.isProduction() && 'transform-runtime',
+                                    utils.isProduction() && '@babel/plugin-transform-runtime',
                                     !utils.isProduction() && 'react-hot-loader/babel',
                                 ].filter(Boolean),
                                 presets: [
                                     '@babel/preset-env',
                                     '@babel/preset-react',
-                                    utils.isProduction() && 'minify'
+                                    utils.isProduction() && ['minify', {
+                                        builtIns: false,
+                                        evaluate: false,
+                                        mangle: false,
+                                    }],
                                 ].filter(Boolean),
                             }
                         },
@@ -137,11 +141,6 @@ module.exports = (config, entry) => {
         plugins: [
             utils.isAnalyze() && new BundleAnalyzerPlugin(),
             new ExportTranslationKeysPlugin(),
-            utils.isProduction() && new webpack.DefinePlugin({
-                'process.env': {
-                    NODE_ENV: '"production"'
-                }
-            }),
             new MiniCssExtractPlugin({
                 filename: `${config.staticPath}assets/bundle-[name].css`,
                 chunkFilename: `${config.staticPath}assets/bundle-[id].css`,
@@ -149,8 +148,13 @@ module.exports = (config, entry) => {
             new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/), // Skip moment locale files (0.3 mb!)
             utils.isProduction() && new webpack.optimize.OccurrenceOrderPlugin(),
             !utils.isProduction() && new webpack.ProgressPlugin(),
-            !utils.isProduction() && new webpack.NamedModulesPlugin(),
+            new webpack.NamedModulesPlugin(),
+            new webpack.NamedChunksPlugin(),
         ].filter(Boolean),
+        performance: {
+            maxEntrypointSize: 12000000,
+            maxAssetSize: 12000000,
+        },
     };
 
     webpackConfig = _.merge(webpackConfig, {
@@ -162,18 +166,6 @@ module.exports = (config, entry) => {
             minimize: utils.isProduction(),
         }
     });
-    if (indexEntry) {
-        webpackConfig.optimization.splitChunks = {
-            cacheGroups: {
-                common: {
-                    name: 'common',
-                    chunks: 'initial',
-                    minChunks: 2,
-                    minSize: 0,
-                }
-            }
-        };
-    }
 
     // Extracting CSS based on entry
     webpackConfig.optimization.splitChunks = webpackConfig.optimization.splitChunks || {cacheGroups: {}};
@@ -185,10 +177,32 @@ module.exports = (config, entry) => {
 
         webpackConfig.optimization.splitChunks.cacheGroups[name] = {
             name: name,
-            test: m => m.constructor.name === 'CssModule' && recursiveIssuer(m) === name,
-            chunks: 'all'
+            test: m => {
+                const issuer = recursiveIssuer(m);
+                return m.constructor.name === 'CssModule' && issuer && issuer.name === name;
+            },
+            chunks: 'all',
         };
     });
+    if (indexEntry) {
+        webpackConfig.optimization.splitChunks = {
+            cacheGroups: {
+                commonJs: {
+                    name: 'common',
+                    chunks: 'initial',
+                    test: /\.js$/,
+                    minChunks: 2,
+                    minSize: 0,
+                },
+                commonStyle: {
+                    name: 'common',
+                    chunks: 'initial',
+                    test: /\.(scss|less|css)$/,
+                    minChunks: 10000, // Bigger value for disable common.css (i love webpack, bly@t.. %)
+                }
+            }
+        };
+    }
 
     // Merge with custom
     webpackConfig = _.merge(webpackConfig, config.webpack);

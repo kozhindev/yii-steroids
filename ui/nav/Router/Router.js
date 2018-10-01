@@ -55,6 +55,7 @@ class Router extends React.PureComponent {
                         component={null}
                     />
                 ))}
+                {this.props.children}
             </Switch>
         );
 
