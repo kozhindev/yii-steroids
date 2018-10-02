@@ -24,6 +24,11 @@ class GoogleAuthenticatorMfaValidator extends MultiFactorAuthValidator
     public $enableAttribute = 'google2faEnable';
 
     /**
+     * @var string
+     */
+    public $securityAttribute = 'google2faCode';
+
+    /**
      * @param string $secretKey
      * @param string $code
      * @return bool
@@ -75,9 +80,10 @@ class GoogleAuthenticatorMfaValidator extends MultiFactorAuthValidator
         if (!static::verify($this->identity->{$this->secretKeyAttribute}, $code)) {
             if ($code === null) {
                 $model->addSecurityFields([
-                    'label' => $model->getAttributeLabel($attribute),
-                    'attribute' => $attribute,
+                    'label' => \Yii::t('steroids', 'Введите код подтверждения'),
+                    'attribute' => $this->securityAttribute,
                     'component' => 'InputField',
+                    'placeholder' => '000 000',
                 ]);
             } else {
                 $this->addError($model, $attribute, \Yii::$app->getI18n()->format($this->message, [

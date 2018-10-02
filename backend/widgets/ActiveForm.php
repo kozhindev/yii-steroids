@@ -77,7 +77,7 @@ class ActiveForm extends Widget
                 $errors = [$formName => $errors];
             }
 
-            return ['errors' => $errors];
+            $result['errors'] = $errors;
         }
 
         if ($model->hasSecurityFields()) {
@@ -89,7 +89,7 @@ class ActiveForm extends Widget
                 $securityFields = [$formName => $securityFields];
             }
 
-            $result = ['securityFields' => $securityFields];
+            $result['securityFields'] = $securityFields;
         }
         return array_merge($result, $model->toFrontend());
     }

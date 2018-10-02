@@ -53,7 +53,7 @@ class ReCaptchaMfaValidator extends MultiFactorAuthValidator
     public function beforeValidate($model)
     {
         // Only for guests
-        return !$this->identity;
+        return \Yii::$app->user->isGuest;
     }
 
     /**

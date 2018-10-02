@@ -46,6 +46,10 @@ class GeetestMfaValidator extends MultiFactorAuthValidator
             throw new InvalidConfigException('Wrong validator config: captchaId and captchaPrivateKey is required.');
         }
 
+        // Set timeouts for geetest lib
+        \GeetestLib::$connectTimeout = 10;
+        \GeetestLib::$socketTimeout = 10;
+
         if ($this->message === null) {
             $this->message = \Yii::t('steroids', 'Проверка не пройдена');
         }
@@ -57,7 +61,7 @@ class GeetestMfaValidator extends MultiFactorAuthValidator
     public function beforeValidate($model)
     {
         // Only for guests
-        return !$this->identity;
+        return \Yii::$app->user->isGuest;
     }
 
     /**
@@ -76,7 +80,7 @@ class GeetestMfaValidator extends MultiFactorAuthValidator
             $model->addSecurityFields([
                 'component' => 'GeetestField',
                 'attribute' => $this->securityAttribute,
-                'geetestParams' => $geetestSdk->get_response_str(),
+                'geetestParams' => $geetestSdk->get_response(),
             ]);
         } else {
             if (\Yii::$app->session->get($this->sessionKey) == 1) {

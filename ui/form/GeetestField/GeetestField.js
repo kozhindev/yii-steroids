@@ -20,7 +20,7 @@ class GeetestField extends React.PureComponent {
         geetestParams: PropTypes.shape({
             gt: PropTypes.string.isRequired,
             challenge: PropTypes.string.isRequired,
-            success: PropTypes.bool.isRequired,
+            success: PropTypes.number.isRequired,
         }).isRequired,
     };
 
