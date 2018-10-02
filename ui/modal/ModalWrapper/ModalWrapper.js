@@ -1,10 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
-import _isFunction from 'lodash/isFunction';
-import {Modal} from 'reactstrap';
 
-import {ui} from 'components';
+import Modal from '../Modal/Modal';
 import {closeModal} from '../../../actions/modal';
 import {getOpened} from '../../../reducers/modal';
 
@@ -15,14 +13,11 @@ export default
     })
 )
 class ModalWrapper extends React.PureComponent {
-
     static propTypes = {
         opened: PropTypes.arrayOf(PropTypes.shape({
             modal: PropTypes.func,
             props: PropTypes.object,
         })),
-        className: PropTypes.string,
-        view: PropTypes.func,
     };
 
     render() {
@@ -36,29 +31,16 @@ class ModalWrapper extends React.PureComponent {
     renderModal(item) {
         const Body = item.modal;
 
-        // Find real component class (not wrapped by redux.connect())
-        const BodyComponent = Body.WrappedComponent || Body;
-
-        const modalProps = _isFunction(BodyComponent.getModalProps) ? BodyComponent.getModalProps(item.props) : {};
-
-        const ModalView = this.props.view || ui.getView('modal.ModalView');
         return (
             <Modal
-                {...modalProps}
                 key={item.id}
-                isOpen={true}
-                toggle={() => this.closeModal(item)}
+                onClose={() => this.closeModal(item)}
+                {...item.props}
             >
-                <ModalView
-                    {...this.props}
+                <Body
                     {...item.props}
                     onClose={() => this.closeModal(item)}
-                >
-                    <Body
-                        {...item.props}
-                        onClose={() => this.closeModal(item)}
-                    />
-                </ModalView>
+                />
             </Modal>
         );
     }
@@ -69,5 +51,4 @@ class ModalWrapper extends React.PureComponent {
         }
         this.props.dispatch(closeModal(item.id));
     }
-
 }
