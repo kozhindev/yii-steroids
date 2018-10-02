@@ -1,7 +1,8 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
 
-import {resource, locale} from 'components';
+import {resource, locale, ui} from 'components';
 import fieldHoc from '../fieldHoc';
 
 export default
