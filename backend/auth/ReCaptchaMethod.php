@@ -8,12 +8,17 @@ use yii\helpers\ArrayHelper;
 use yii\helpers\Json;
 use yii\validators\Validator;
 
-class ReCaptchaValidator extends Validator
+class ReCaptchaMethod extends Validator
 {
-    const SITE_VERIFY_URL = 'https://www.google.com/recaptcha/api/siteverify';
-    const SESSION_KEY = 'recaptcha-response';
+    /**
+     * @var string
+     */
+    public $url = 'https://www.google.com/recaptcha/api/siteverify';
 
-    public $skipOnEmpty = false;
+    /**
+     * @var string
+     */
+    public $sessionKey = 'recaptcha-response';
 
     /**
      * @var bool
@@ -33,7 +38,9 @@ class ReCaptchaValidator extends Validator
     }
 
     /**
-     * @inheritdoc
+     * @param mixed $value
+     * @return array|null
+     * @throws Exception
      */
     protected function validateValue($value)
     {
@@ -43,12 +50,12 @@ class ReCaptchaValidator extends Validator
 
             // Try previous key
             if (!$this->isValid) {
-                $this->isValid = $this->sendRequest(Yii::$app->session->get(self::SESSION_KEY));
+                $this->isValid = $this->sendRequest(Yii::$app->session->get($this->sessionKey));
             }
 
             // Save key
             if ($this->isValid) {
-                Yii::$app->session->set(self::SESSION_KEY, $value);
+                Yii::$app->session->set($this->sessionKey, $value);
             }
         }
 
@@ -56,8 +63,8 @@ class ReCaptchaValidator extends Validator
     }
 
     /**
-     * @param string $value
-     * @return mixed
+     * @param $value
+     * @return bool
      * @throws Exception
      */
     protected function sendRequest($value)
@@ -66,7 +73,7 @@ class ReCaptchaValidator extends Validator
             return false;
         }
 
-        $url = self::SITE_VERIFY_URL . '?' . http_build_query([
+        $url = $this->url . '?' . http_build_query([
                 'secret' => ArrayHelper::getValue(Yii::$app->params, 'googleReCaptcha.secret'),
                 'response' => $value,
                 'remoteip' => Yii::$app->request->userIP,

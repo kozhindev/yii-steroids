@@ -115,6 +115,7 @@ class DefaultConfig
                 'urlManager',
                 'siteMap',
                 'frontendState',
+                'multiFactorAuth',
             ],
             'components' => [
                 'authManager' => [
@@ -185,6 +186,9 @@ class DefaultConfig
                 ],
                 'mailer' => [
                     'class' => 'yii\swiftmailer\Mailer',
+                ],
+                'multiFactorAuth' => [
+                    'class' => 'steroids\components\MultiFactorAuthManager',
                 ],
                 'types' => [
                     'class' => 'steroids\components\Types',

@@ -2,14 +2,13 @@
 
 namespace steroids\validators;
 
-
 use PragmaRX\Google2FA\Google2FA;
 use steroids\modules\user\forms\LoginForm;
 use yii\validators\Validator;
 use yii\web\Response;
 use yii\widgets\ActiveForm;
 
-class GoogleAuthenticator extends Validator
+class GoogleAuthenticatorMethod extends Validator
 {
     public $skipOnEmpty = false;
     public $secretKeyAttribute = 'google2faSecretKey';
