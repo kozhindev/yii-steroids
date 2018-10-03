@@ -65,7 +65,7 @@ class GoogleAuthenticatorMfaValidator extends MultiFactorAuthValidator
             // Only for user with enabled google 2fa
             return $model->hasAttribute($this->enableAttribute)
                 && $model->hasAttribute($this->secretKeyAttribute)
-                && $model->{$this->enableAttribute};
+                && $model->getAttribute($this->enableAttribute);
         }
 
         return false;
@@ -76,18 +76,20 @@ class GoogleAuthenticatorMfaValidator extends MultiFactorAuthValidator
      */
     public function validateAttribute($model, $attribute)
     {
-        $code = $model->$attribute;
-        if (!static::verify($this->identity->{$this->secretKeyAttribute}, $code)) {
-            if ($code === null) {
-                $model->requireSecurityComponent([
-                    'component' => 'GoogleAuthenticatorSecurity',
-                    'attribute' => $this->securityAttribute,
-                ]);
-            } else {
-                $this->addError($model, $attribute, \Yii::$app->getI18n()->format($this->message, [
+        $code = \Yii::$app->request->post($this->securityAttribute);
+        if (!$code) {
+            $model->requireSecurityComponent([
+                'component' => 'GoogleAuthenticatorField',
+                'attribute' => $this->securityAttribute,
+            ]);
+        } elseif (!static::verify($this->identity->{$this->secretKeyAttribute}, $code)) {
+            $model->requireSecurityComponent([
+                'component' => 'GoogleAuthenticatorField',
+                'attribute' => $this->securityAttribute,
+                'error' => \Yii::$app->getI18n()->format($this->message, [
                     'attribute' => $model->getAttributeLabel($attribute),
-                ], \Yii::$app->language));
-            }
+                ], \Yii::$app->language),
+            ]);
         }
     }
 }

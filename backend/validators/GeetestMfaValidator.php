@@ -78,7 +78,7 @@ class GeetestMfaValidator extends MultiFactorAuthValidator
 
             // Add field
             $model->requireSecurityComponent([
-                'component' => 'GeetestSecurity',
+                'component' => 'GeetestField',
                 'attribute' => $this->securityAttribute,
                 'geetestParams' => $geetestSdk->get_response(),
             ]);

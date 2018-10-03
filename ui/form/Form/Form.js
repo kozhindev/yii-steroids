@@ -181,7 +181,10 @@ class Form extends React.PureComponent {
         return http.post(this.props.action || location.pathname, values)
             .then(response => {
                 if (response.security) {
-                    this.props.dispatch(addSecurity(this.props.formId, response.security));
+                    this.props.dispatch(addSecurity(this.props.formId, {
+                        ...response.security,
+                        onSuccess: data => this._onSubmit({...values, ...data}),
+                    }));
                 }
                 if (response.errors) {
                     throw new SubmissionError(response.errors);

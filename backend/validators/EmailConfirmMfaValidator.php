@@ -112,7 +112,7 @@ class EmailConfirmMfaValidator extends MultiFactorAuthValidator
             );
 
             // Send to mail
-            $email = $this->identity->{$this->emailAttribute};
+            $email = $this->identity->getAttribute($this->emailAttribute);
             \Yii::$app->mailer
                 ->compose($this->mailView, [
                     'user' => $this->identity,

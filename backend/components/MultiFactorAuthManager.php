@@ -101,7 +101,7 @@ class MultiFactorAuthManager extends Component implements BootstrapInterface
                     $validator->validateAttribute($model, $attribute);
 
                     if ($model->isSecurityRequired()) {
-                        $model->addError($attribute, \Yii::t('steroids', 'Требуется дополнительная аутентификация'));
+                        $model->addError('', \Yii::t('steroids', 'Требуется дополнительная аутентификация'));
                     }
                     break;
                 }
