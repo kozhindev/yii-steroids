@@ -81,6 +81,7 @@ class GoogleAuthenticatorMfaValidator extends MultiFactorAuthValidator
             $model->requireSecurityComponent([
                 'component' => 'GoogleAuthenticatorField',
                 'attribute' => $this->securityAttribute,
+                'error' => '',
             ]);
         } elseif (!static::verify($this->identity->{$this->secretKeyAttribute}, $code)) {
             $model->requireSecurityComponent([

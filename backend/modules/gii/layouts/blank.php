@@ -10,6 +10,7 @@ use yii\web\View;
 /* @var $content string */
 
 Yii::$app->frontendState->register($this);
+$this->registerJsFile('@static/assets/bundle-common.js', ['position' => View::POS_BEGIN]);
 $this->registerJsFile('@static/assets/bundle-index.js', ['position' => View::POS_BEGIN]);
 
 

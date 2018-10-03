@@ -39,7 +39,7 @@ class SearchModelDocExtractor extends FormModelDocExtractor
             ],
         ];
 
-        $requestSchema['properties'] = [
+        $requestSchema['properties'] = array_merge($requestSchema['properties'], [
             'page' => [
                 'description' => 'Page',
                 'type' => 'number',
@@ -48,7 +48,7 @@ class SearchModelDocExtractor extends FormModelDocExtractor
                 'description' => 'Page size',
                 'type' => 'number',
             ],
-        ];
+        ]);
 
         $this->swaggerJson->updatePath($this->url, $this->method, [
             'parameters' => [
