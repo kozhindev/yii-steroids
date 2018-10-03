@@ -6,6 +6,7 @@ export default class UiComponent {
     constructor() {
         this.fields = {};
         this.formatters = {};
+        this.security = {};
 
         this._components = {};
     }
@@ -40,6 +41,18 @@ export default class UiComponent {
 
     getFormatterProps(path) {
         return this._getPropsConfig('formatters', path);
+    }
+
+    addSecurity(components) {
+        this._add('security', components);
+    }
+
+    getSecurity(path) {
+        return this._getComponent('security', path);
+    }
+
+    getSecurityProps(path) {
+        return this._getPropsConfig('security', path);
     }
 
     _add(group, items) {

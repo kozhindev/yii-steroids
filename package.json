@@ -1,6 +1,6 @@
 {
   "name": "yii-steroids",
-  "version": "1.5.2",
+  "version": "1.5.3",
   "description": "JavaScript part for php library yii-steroids",
   "main": "index.js",
   "author": "Vladimir Kozhin <hello@kozhindev.com>",
@@ -83,7 +83,8 @@
     "swagger-ui-dist": "^3.18.2",
     "webpack": "^4.17.2",
     "webpack-cli": "^3.1.0",
-    "webpack-dev-server": "^3.1.7"
+    "webpack-dev-server": "^3.1.7",
+    "webpack-bundle-analyzer": "^3.0.2"
   },
   "devDependencies": {
     "@storybook/addon-actions": "^4.0.0-alpha.20",

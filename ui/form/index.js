@@ -19,7 +19,6 @@ import PasswordField from './PasswordField';
 import RadioListField from './RadioListField';
 import RangeField from './RangeField';
 import ReCaptchaField from './ReCaptchaField';
-import SecurityFields from './SecurityFields';
 import SliderField from './SliderField';
 import SwitcherField from './SwitcherField';
 import TextField from './TextField';
@@ -46,7 +45,6 @@ export {
     RadioListField,
     RangeField,
     ReCaptchaField,
-    SecurityFields,
     SliderField,
     SwitcherField,
     TextField,

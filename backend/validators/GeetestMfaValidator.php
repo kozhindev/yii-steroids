@@ -77,8 +77,8 @@ class GeetestMfaValidator extends MultiFactorAuthValidator
             \Yii::$app->session->set($this->sessionKey, $geetestSdk->pre_process($this->captchaUserId));
 
             // Add field
-            $model->addSecurityFields([
-                'component' => 'GeetestField',
+            $model->requireSecurityComponent([
+                'component' => 'GeetestSecurity',
                 'attribute' => $this->securityAttribute,
                 'geetestParams' => $geetestSdk->get_response(),
             ]);

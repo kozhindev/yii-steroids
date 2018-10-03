@@ -79,11 +79,9 @@ class GoogleAuthenticatorMfaValidator extends MultiFactorAuthValidator
         $code = $model->$attribute;
         if (!static::verify($this->identity->{$this->secretKeyAttribute}, $code)) {
             if ($code === null) {
-                $model->addSecurityFields([
-                    'label' => \Yii::t('steroids', 'Введите код подтверждения'),
+                $model->requireSecurityComponent([
+                    'component' => 'GoogleAuthenticatorSecurity',
                     'attribute' => $this->securityAttribute,
-                    'component' => 'InputField',
-                    'placeholder' => '000 000',
                 ]);
             } else {
                 $this->addError($model, $attribute, \Yii::$app->getI18n()->format($this->message, [

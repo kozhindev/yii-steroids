@@ -46,8 +46,8 @@ export default (state = initialState, action) => {
             return {
                 ...state,
                 security: {
-                    ...state.props,
-                    [action.formId]: action.fields,
+                    ...state.security,
+                    [action.formId]: action.params,
                 },
             };
     }
@@ -57,4 +57,4 @@ export default (state = initialState, action) => {
 
 export const getFieldProps = (state, fieldId) => _get(state, ['fields', 'props', fieldId, 'props']);
 export const isFieldLoading = (state, fieldId) => !!_get(state, ['fields', 'props', fieldId, 'isLoading']);
-export const getSecurityFields = (state, formId) => _get(state, ['fields', 'security', formId]);
+export const getSecurity = (state, formId) => _get(state, ['fields', 'security', formId]);

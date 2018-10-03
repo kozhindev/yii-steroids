@@ -8,10 +8,10 @@ import _set from 'lodash-es/set';
 import _isUndefined from 'lodash-es/isUndefined';
 
 import {http, ui} from 'components';
-import {addSecurityFields} from '../../../actions/fields';
+import {addSecurity} from '../../../actions/fields';
 import AutoSaveHelper from './AutoSaveHelper';
 import SyncAddressBarHelper from './SyncAddressBarHelper';
-import SecurityFields from '../SecurityFields';
+import {getSecurity} from '../../../reducers/fields';
 import Field from '../Field';
 import Button from '../Button';
 
@@ -27,6 +27,7 @@ export default
         return {
             form: props.formId,
             formValues: valuesSelector(state),
+            security: getSecurity(state, props.formId),
             isInvalid: invalidSelector(state),
             formRegisteredFields: _get(state, `form.${props.formId}.registeredFields`),
         };
@@ -71,6 +72,12 @@ class Form extends React.PureComponent {
         })),
         submitLabel: PropTypes.string,
         syncWithAddressBar: PropTypes.bool,
+        security: PropTypes.shape({
+            component: PropTypes.oneOfType([
+                PropTypes.string,
+                PropTypes.node
+            ]),
+        }),
     };
 
     static childContextTypes = {
@@ -104,33 +111,6 @@ class Form extends React.PureComponent {
         };
     }
 
-    render() {
-        const FormView = this.props.view || ui.getView('form.FormView');
-        return (
-            <FormView
-                {...this.props}
-                onSubmit={this.props.handleSubmit(this._onSubmit)}
-            >
-                {this.props.children}
-                {this.props.fields && this.props.fields.map((field, index) => (
-                    <Field
-                        key={index}
-                        {...field}
-                    />
-                ))}
-                {this.props.fields && (
-                    <SecurityFields />
-                )}
-                {this.props.submitLabel && (
-                    <Button
-                        type='submit'
-                        label={this.props.submitLabel}
-                    />
-                )}
-            </FormView>
-        );
-    }
-
     componentWillMount() {
         // Restore values from query, when autoSave flag is set
         if (this.props.autoSave) {
@@ -158,6 +138,33 @@ class Form extends React.PureComponent {
         }
     }
 
+    render() {
+        const FormView = this.props.view || ui.getView('form.FormView');
+        return (
+            <FormView
+                {...this.props}
+                onSubmit={this.props.handleSubmit(this._onSubmit)}
+            >
+                {this.props.children}
+                {this.props.fields && this.props.fields.map((field, index) => (
+                    <Field
+                        key={index}
+                        {...field}
+                    />
+                ))}
+                {this.props.security && (
+                    <Field {...this.props.security}/>
+                )}
+                {this.props.submitLabel && (
+                    <Button
+                        type='submit'
+                        label={this.props.submitLabel}
+                    />
+                )}
+            </FormView>
+        );
+    }
+
     _onSubmit(values) {
         // Append non touched fields to values object
         Object.keys(this.props.formRegisteredFields || {}).forEach(key => {
@@ -173,13 +180,13 @@ class Form extends React.PureComponent {
 
         return http.post(this.props.action || location.pathname, values)
             .then(response => {
-                if (response.securityFields) {
-                    this.props.dispatch(addSecurityFields(this.props.formId, response.securityFields));
+                if (response.security) {
+                    this.props.dispatch(addSecurity(this.props.formId, response.security));
                 }
                 if (response.errors) {
                     throw new SubmissionError(response.errors);
                 }
-                if (!response.securityFields) {
+                if (!response.security) {
                     if (this.props.autoSave) {
                         AutoSaveHelper.remove(this.props.formId);
                     }

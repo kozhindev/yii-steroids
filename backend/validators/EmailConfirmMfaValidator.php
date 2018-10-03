@@ -125,8 +125,8 @@ class EmailConfirmMfaValidator extends MultiFactorAuthValidator
             \Yii::$app->session->set($this->sessionKey, $key);
 
             // Add field
-            $model->addSecurityFields([
-                'component' => 'BlankField',
+            $model->requireSecurityComponent([
+                'component' => 'EmailSecurity',
                 'attribute' => $this->linkKey,
                 'text' => \Yii::t('steroids', 'На вашу почту {email} отправлено письмо с ссылкой для подтверждения.', [
                     'email' => $email,

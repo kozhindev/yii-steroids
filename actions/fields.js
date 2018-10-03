@@ -40,8 +40,8 @@ export const fetch = (fieldId, model, attribute, params = {}) => dispatch => {
     }, 10);
 };
 
-export const addSecurityFields = (formId, fields) => ({
+export const addSecurity = (formId, params) => ({
     type: FIELDS_ADD_SECURITY,
     formId,
-    fields,
+    params,
 });

@@ -80,16 +80,8 @@ class ActiveForm extends Widget
             $result['errors'] = $errors;
         }
 
-        if ($model->hasSecurityFields()) {
-            $securityFields = $model->getSecurityFields();
-
-            // Apply form name
-            $formName = $formName !== null ? $formName : $model->formName();
-            if ($formName) {
-                $securityFields = [$formName => $securityFields];
-            }
-
-            $result['securityFields'] = $securityFields;
+        if ($model->isSecurityRequired()) {
+            $result['security'] = $model->getSecurityComponent();
         }
         return array_merge($result, $model->toFrontend());
     }

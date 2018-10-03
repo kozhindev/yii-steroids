@@ -7,7 +7,7 @@ use steroids\components\AuthManager;
 use steroids\exceptions\ModelDeleteException;
 use steroids\exceptions\ModelSaveException;
 use steroids\traits\MetaTrait;
-use steroids\traits\SecurityFieldsTrait;
+use steroids\traits\SecurityTrait;
 use yii\base\InvalidConfigException;
 use yii\db\ActiveRecord;
 use yii\web\NotFoundHttpException;
@@ -19,7 +19,7 @@ class Model extends ActiveRecord
 {
     use MetaTrait;
     use RelationSaveTrait;
-    use SecurityFieldsTrait;
+    use SecurityTrait;
 
     /**
      * @return string
