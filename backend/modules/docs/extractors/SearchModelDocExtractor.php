@@ -18,14 +18,40 @@ class SearchModelDocExtractor extends FormModelDocExtractor
 
         /** @var Model $modelClassName */
         $modelClassName = $searchModel->createQuery()->modelClass;
-        $model = new $modelClassName();
 
         $required = [];
-        $requestSchema = SwaggerTypeExtractor::getInstance()->extractModel($this->className, $this->getRequestFields($model, $required));
+        $requestSchema = SwaggerTypeExtractor::getInstance()->extractModel($this->className, $this->getRequestFields($searchModel, $required));
         $responseSchema = SwaggerTypeExtractor::getInstance()->extractModel($modelClassName, $searchModel->fields());
 
+        $responseProperties = [
+            'meta' => [
+                'description' => 'Additional meta information',
+                'type' => 'object',
+            ],
+            'total' => [
+                'description' => 'Total items count',
+                'type' => 'number',
+            ],
+            'items' => [
+                'description' => 'Fined items',
+                'type' => 'array',
+                'items' => $responseSchema,
+            ],
+        ];
+
+        $requestSchema['properties'] = [
+            'page' => [
+                'description' => 'Page',
+                'type' => 'number',
+            ],
+            'pageSize' => [
+                'description' => 'Page size',
+                'type' => 'number',
+            ],
+        ];
+
         $this->swaggerJson->updatePath($this->url, $this->method, [
-            'parameters' => empty($requestSchema) ? null : [
+            'parameters' => [
                 [
                     'in' => 'body',
                     'name' => 'request',
@@ -39,32 +65,21 @@ class SearchModelDocExtractor extends FormModelDocExtractor
                     'description' => 'Successful operation',
                     'schema' => empty($responseSchema) ? null : [
                         'type' => 'object',
-                        'properties' => [
-                            'meta' => [
-                                'description' => 'Additional meta information',
-                                'type' => 'object',
-                            ],
-                            'total' => [
-                                'description' => 'Total items count',
-                                'type' => 'number',
-                            ],
-                            'items' => [
-                                'description' => 'Fined items',
-                                'type' => 'array',
-                                'items' => $responseSchema,
-                            ],
-                        ],
+                        'properties' => $responseProperties,
                     ],
                 ],
                 400 => [
                     'description' => 'Validation errors',
                     'schema' => [
                         'type' => 'object',
-                        'properties' => [
-                            'errors' => [
-                                'type' => 'object',
-                            ],
-                        ],
+                        'properties' => array_merge(
+                            $responseProperties,
+                            [
+                                'errors' => [
+                                    'type' => 'object',
+                                ],
+                            ]
+                        ),
                     ],
                 ],
             ],

@@ -124,13 +124,17 @@ class SearchModel extends FormModel
     public function toFrontend($fields = null)
     {
         $fields = $fields ?: $this->fields();
-        return [
+        $result = [
             'meta' => !empty($this->meta) ? $this->meta : null,
             'total' => $this->dataProvider->getTotalCount(),
             'items' => array_map(function (Model $model) use ($fields) {
                 return $model->toFrontend($fields);
             }, $this->dataProvider->models),
         ];
+        if ($this->hasErrors()) {
+            $result['errors'] = $this->getErrors();
+        }
+        return $result;
     }
 
     /**
