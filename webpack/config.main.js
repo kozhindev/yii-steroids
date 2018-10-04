@@ -149,7 +149,8 @@ module.exports = (config, entry) => {
             utils.isProduction() && new webpack.optimize.OccurrenceOrderPlugin(),
             !utils.isProduction() && new webpack.ProgressPlugin(),
             new webpack.NamedModulesPlugin(),
-            new webpack.NamedChunksPlugin(),
+            new webpack.NamedChunksPlugin(),,
+            !utils.isProduction() && new webpack.HotModuleReplacementPlugin()
         ].filter(Boolean),
         performance: {
             maxEntrypointSize: 12000000,
@@ -218,6 +219,18 @@ module.exports = (config, entry) => {
             return item;
         })
         .filter(Boolean);
+
+    // Add hot replace to each bundles
+    if (!utils.isProduction()) {
+        Object.keys(webpackConfig.entry).map(key => {
+            webpackConfig.entry[key] = []
+                .concat([
+                    `webpack-dev-server/client?http://${config.host}:${config.port}`,
+                    'webpack/hot/dev-server',
+                ])
+                .concat(webpackConfig.entry[key])
+        });
+    }
 
     return webpackConfig;
 };

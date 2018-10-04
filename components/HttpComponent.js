@@ -9,39 +9,64 @@ export default class HttpComponent {
     constructor() {
         this.apiUrl = '//' + location.host;
         this._lazyRequests = {};
-
-        axios.interceptors.request.use((config) => {
-            // Add CSRF header
-            const metaToken = document.querySelector('meta[name=csrf-token]');
-            if (metaToken) {
-                config.headers['X-CSRF-Token'] = metaToken.getAttribute('content');
-            }
-
-            // Add XMLHttpRequest header for detect ajax requests
-            config.headers['X-Requested-With'] = 'XMLHttpRequest';
-
-            return config;
-        });
+        this._axios = null;
     }
 
-    get(method, params = {}, options = {}) {
-        return this._send(method, {
+    getAxiosConfig() {
+        const config = {
+            withCredentials: true,
+            headers: {
+                // Add XMLHttpRequest header for detect ajax requests
+                'X-Requested-With': 'XMLHttpRequest',
+
+                // Add Content-Type
+                'Content-Type': 'application/json',
+            }
+        };
+
+        // Add CSRF header
+        const metaToken = document.querySelector('meta[name=csrf-token]');
+        if (metaToken) {
+            config.headers['X-CSRF-Token'] = metaToken.getAttribute('content');
+        }
+
+        return config;
+    }
+
+    getAxiosInstance() {
+        if (!this._axios) {
+            this._axios = axios.create(this.getAxiosConfig());
+        }
+        return this._axios;
+    }
+
+    get(url, params = {}, options = {}) {
+        return this._send(url, {
             method: 'get',
             params: params,
         }, options);
     }
 
-    post(method, params = {}, options = {}) {
-        return this._send(method, {
+    post(url, params = {}, options = {}) {
+        return this._send(url, {
             method: 'post',
             data: params,
         }, options);
     }
 
-    delete(method, params = {}, options = {}) {
-        return this._send(method, {
+    delete(url, params = {}, options = {}) {
+        return this._send(url, {
             method: 'delete',
             data: params,
+        }, options);
+    }
+
+    send(method, url, params) {
+        method = method.toLowerCase();
+
+        return this._send(url, {
+            method,
+            [method === 'get' ? 'params' : 'data']: params,
         }, options);
     }
 
@@ -94,10 +119,6 @@ export default class HttpComponent {
             url: method !== null
                 ? `${_trimEnd(this.apiUrl, '/')}/${_trimStart(method, '/')}`
                 : location.pathname,
-            withCredentials: true,
-            headers: {
-                'Content-Type': 'application/json',
-            },
         };
 
         if (options.lazy) {
@@ -121,7 +142,7 @@ export default class HttpComponent {
     _sendAxios(config) {
         const store = require('components').store;
 
-        return axios(config)
+        return this.getAxiosInstance()(config)
             .then(response => response.data)
             .then(response => {
                 // Flash

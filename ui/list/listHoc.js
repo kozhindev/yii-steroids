@@ -44,6 +44,7 @@ class ListHoc extends React.PureComponent {
         listId: PropTypes.string.isRequired,
         primaryKey: PropTypes.string,
         action: PropTypes.string,
+        actionMethod: PropTypes.string,
         loadMore: PropTypes.bool,
         defaultPageSize: PropTypes.number,
         defaultSort: PropTypes.object,
@@ -99,6 +100,7 @@ class ListHoc extends React.PureComponent {
 
     static defaultProps = {
         ...WrappedComponent.defaultProps,
+        actionMethod: 'post',
         paginationSizeView: false,
         primaryKey: 'id',
         defaultPageSize: 20,

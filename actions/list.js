@@ -41,7 +41,7 @@ export const fetch = (listId, params) => (dispatch, getState) => {
             listId,
             type: LIST_BEFORE_FETCH,
         },
-        http.post(list.action || location.pathname, {
+        http.send(list.actionMethod, list.action || location.pathname, {
             ...list.query,
             page: list.page,
             pageSize: list.pageSize,
