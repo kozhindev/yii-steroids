@@ -14,6 +14,7 @@ const lazyTimers = {};
 
 export const init = (listId, props) => dispatch => dispatch({
     action: props.action || props.action === '' ? props.action : null,
+    actionMethod: props.actionMethod || 'post',
     page: 1,
     pageSize: props.defaultPageSize,
     sort: props.defaultSort || null,
