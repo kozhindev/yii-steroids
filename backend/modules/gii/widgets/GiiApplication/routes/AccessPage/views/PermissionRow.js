@@ -13,7 +13,7 @@ const bem = html.bem('PermissionRow');
 const FORM_ID = 'AccessRulesEditor';
 const selector = formValueSelector(FORM_ID);
 
-@connect(
+const WrappedPermissionRow = @connect(
     (state, props) => {
         // Count child checked items
         let checkedCount = 0;
@@ -35,7 +35,7 @@ const selector = formValueSelector(FORM_ID);
         };
     }
 )
-export default class PermissionRow extends React.PureComponent {
+class PermissionRow extends React.PureComponent {
 
     static propTypes = {
         roles: PropTypes.arrayOf(PropTypes.string),
@@ -69,8 +69,6 @@ export default class PermissionRow extends React.PureComponent {
     }
 
     render() {
-        const WrappedPermissionRow = exports.default;
-
         if (!this.props.visible) {
             return (
                 <div>
@@ -219,4 +217,6 @@ export default class PermissionRow extends React.PureComponent {
         });
     }
 
-}
+};
+
+export default WrappedPermissionRow;

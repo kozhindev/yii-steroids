@@ -5,11 +5,12 @@ import {ui} from 'components';
 import fieldHoc from '../fieldHoc';
 import dataProviderHoc from '../dataProviderHoc';
 
+export default
 @fieldHoc({
     componentId: 'form.RadioListField',
 })
 @dataProviderHoc()
-export default class RadioListField extends React.PureComponent {
+class RadioListField extends React.PureComponent {
 
     static propTypes = {
         label: PropTypes.oneOfType([

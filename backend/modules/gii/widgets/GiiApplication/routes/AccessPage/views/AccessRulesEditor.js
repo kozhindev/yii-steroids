@@ -10,6 +10,7 @@ import './AccessRulesEditor.scss';
 const bem = html.bem('AccessRulesEditor');
 const FORM_ID = 'AccessRulesEditor';
 
+export default
 @http.hoc(props => (
     http.post('/api/gii/get-permissions', {
         prefix: props.rulePrefix,
@@ -20,7 +21,7 @@ const FORM_ID = 'AccessRulesEditor';
             initialValues: data.initialValues,
         }))
 ))
-export default class AccessRulesEditor extends React.PureComponent {
+class AccessRulesEditor extends React.PureComponent {
 
     static propTypes = {
         roles: PropTypes.arrayOf(PropTypes.string),

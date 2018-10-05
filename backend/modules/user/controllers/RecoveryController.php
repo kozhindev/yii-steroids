@@ -25,6 +25,20 @@ class RecoveryController extends Controller
                     ],
                 ],
             ],
+            'api.user' => [
+                'items' => [
+                    'recovery-send' => [
+                        'label' => \Yii::t('steroids', 'Восстановление пароля'),
+                        'url' => ['/user/recovery/api-index'],
+                        'urlRule' => '/api/<version>/user/recovery-send',
+                    ],
+                    'recovery-change' => [
+                        'label' => \Yii::t('steroids', 'Смена пароля'),
+                        'url' => ['/user/recovery/api-change'],
+                        'urlRule' => '/api/<version>/user/recovery-change',
+                    ],
+                ],
+            ],
         ];
     }
 
@@ -62,5 +76,30 @@ class RecoveryController extends Controller
         return $this->render($this->view->findOverwriteView('@steroids/modules/user/views/recovery/reset'), [
             'model' => $model,
         ]);
+    }
+
+    /**
+     * @return PasswordResetRequestForm
+     */
+    public function actionApiIndex()
+    {
+        $model = new PasswordResetRequestForm();
+        $model->load(Yii::$app->request->post());
+        $model->send();
+        return $model;
+    }
+
+    /**
+     * @param string $token
+     * @return PasswordResetChangeForm
+     */
+    public function actionApiChange($token)
+    {
+        $model = new PasswordResetChangeForm([
+            'token' => $token,
+        ]);
+        $model->load(Yii::$app->request->post());
+        $model->reset();
+        return $model;
     }
 }

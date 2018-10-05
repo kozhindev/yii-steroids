@@ -5,10 +5,11 @@ import {submit} from 'redux-form';
 import {ui} from 'components';
 import fieldHoc from '../fieldHoc';
 
+export default
 @fieldHoc({
     componentId: 'form.TextField',
 })
-export default class TextField extends React.PureComponent {
+class TextField extends React.PureComponent {
 
     static propTypes = {
         label: PropTypes.oneOfType([

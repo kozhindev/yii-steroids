@@ -5,11 +5,12 @@ import {ui} from 'components';
 import fieldHoc from '../fieldHoc';
 import dataProviderHoc from '../dataProviderHoc';
 
+export default
 @fieldHoc({
     componentId: 'form.CheckboxListField',
 })
 @dataProviderHoc()
-export default class CheckboxListField extends React.PureComponent {
+class CheckboxListField extends React.PureComponent {
 
     static propTypes = {
         label: PropTypes.oneOfType([

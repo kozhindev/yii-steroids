@@ -4,10 +4,11 @@ import PropTypes from 'prop-types';
 import {resource, ui} from 'components';
 import fieldHoc from '../fieldHoc';
 
+export default
 @fieldHoc({
     componentId: 'form.ReCaptchaField',
 })
-export default class ReCaptchaField extends React.PureComponent {
+class ReCaptchaField extends React.PureComponent {
 
     static propTypes = {
         metaItem: PropTypes.object,

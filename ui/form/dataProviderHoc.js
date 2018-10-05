@@ -181,7 +181,7 @@ export default () => WrappedComponent => class DataProviderHoc extends React.Pur
      */
     _onOpen() {
         this.setState({
-            isOpened: true,
+            isOpened: !this.state.isOpened,
             items: this.state.sourceItems,
         });
     }

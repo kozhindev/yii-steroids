@@ -2,11 +2,13 @@
 
 namespace steroids\widgets;
 
+use steroids\base\SearchModel;
 use Yii;
 use steroids\base\FormModel;
 use steroids\base\Model;
 use steroids\base\Widget;
 use yii\helpers\ArrayHelper;
+use yii\helpers\Url;
 
 class Crud extends Widget
 {
@@ -75,6 +77,12 @@ class Crud extends Widget
             if (is_string($value)) {
                 $config[$key] = [$name => $value];
             }
+            if (is_callable($value) && is_string($key)) {
+                $config[$key] = [
+                    $name => $key,
+                    'value' => $value,
+                ];
+            }
             if (is_array($value) && !isset($value[$name]) && is_string($key)) {
                 $config[$key][$name] = $key;
             }
@@ -110,8 +118,9 @@ class Crud extends Widget
                     'action' => '',
                     'actions' => $this->controls,
                     'columns' => $this->getColumns(),
-                    'searchForm' => !empty($this->searchFields)
+                    'searchForm' => !empty($this->searchFields) || $this->searchModel
                         ? [
+                            'model' => $this->searchModel,
                             'layout' => 'horizontal',
                             'fields' => $this->getSearchFields(),
                         ]
@@ -121,6 +130,7 @@ class Crud extends Widget
             ),
             'formProps' => ArrayHelper::merge(
                 [
+                    'model' => $this->model,
                     'layout' => 'horizontal',
                     'fields' => $this->getFields(),
                 ],
@@ -134,54 +144,13 @@ class Crud extends Widget
      */
     protected function getControls()
     {
-        $defaultButtons = [
-            'create' => [
-                'icon' => 'add_circle',
-                'label' => Yii::t('steroids', 'Добавить'),
-                'options' => [
-                    'class' => 'btn btn-outline-success',
-                ],
-            ],
-            'index' => [
-                'icon' => 'keyboard_arrow_left',
-                'label' => 'К списку',
-                'options' => [
-                    'class' => 'btn btn-outline-secondary',
-                ],
-            ],
-            'view' => [
-                'label' => 'Просмотр',
-                'options' => [
-                    'class' => 'btn btn-outline-secondary',
-                ],
-            ],
-            'update' => [
-                'label' => 'Редактировать',
-                'options' => [
-                    'class' => 'btn btn-outline-secondary',
-                ],
-            ],
-            'delete' => [
-                'icon' => 'delete',
-                'label' => 'Удалить',
-                'position' => 'right',
-                'options' => [
-                    'class' => 'btn btn-outline-danger',
-                    'data-confirm' => 'Удалить запись?',
-                    'data-method' => 'post',
-                ],
-            ],
-        ];
-
-        $buttons = [];
-        $controls = ArrayHelper::index($this->controls, 'id');
-        foreach (array_keys($controls) as $actionId) {
-            $buttons[] = array_merge(
-                ArrayHelper::getValue($defaultButtons, $actionId, []),
-                ArrayHelper::getValue($controls, $actionId, [])
-            );
+        $controls = array_values($this->controls);
+        foreach ($controls as &$item) {
+            if (isset($item['url']) && is_array($item['url'])) {
+                $item['url'] = Url::to($item['url']);
+            }
         }
-        return $buttons;
+        return $controls;
     }
 
     /**
@@ -208,6 +177,9 @@ class Crud extends Widget
             $type = \Yii::$app->types->getTypeByModel($modelClass, $attribute);
             $type->prepareFormatterProps($model, $attribute, $column, $import);
 
+            // Skip value func
+            unset($column['value']);
+
             $config[] = $column;
         }
         return $config;
@@ -216,7 +188,14 @@ class Crud extends Widget
     protected function getSearchFields()
     {
         $config = [];
-        foreach ($this->searchFields as $field) {
+        $searchFields = $this->searchFields;
+        if (empty($searchFields) && $this->searchModel) {
+            /** @var SearchModel $modelClass */
+            $modelClass = $this->searchModel;
+            $searchFields = static::normalizeConfig(array_keys($modelClass::meta()));
+        }
+
+        foreach ($searchFields as $field) {
             if ($this->searchModel) {
                 $attribute = $field['attribute'];
                 $modelClass = is_object($this->searchModel) ? get_class($this->searchModel) : $this->searchModel;

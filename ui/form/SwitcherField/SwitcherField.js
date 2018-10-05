@@ -5,11 +5,12 @@ import {ui} from 'components';
 import fieldHoc from '../fieldHoc';
 import dataProviderHoc from '../dataProviderHoc';
 
+export default
 @fieldHoc({
     componentId: 'form.SwitcherField',
 })
 @dataProviderHoc()
-export default class SwitcherField extends React.PureComponent {
+class SwitcherField extends React.PureComponent {
 
     static propTypes = {
         label: PropTypes.oneOfType([

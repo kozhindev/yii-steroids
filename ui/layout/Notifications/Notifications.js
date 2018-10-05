@@ -6,12 +6,13 @@ import {ui} from 'components';
 import {setFlashes, setClosing, closeNotification} from '../../../actions/notifications';
 import {getNotifications} from '../../../reducers/notifications';
 
+export default
 @connect(
     state => ({
         notifications: getNotifications(state),
     })
 )
-export default class Notifications extends React.PureComponent {
+class Notifications extends React.PureComponent {
 
     static propTypes = {
         initialFlashes: PropTypes.object,

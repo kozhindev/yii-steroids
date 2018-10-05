@@ -10,20 +10,33 @@ import UiComponent from './UiComponent';
 import WidgetComponent from './WidgetComponent';
 
 // Create instances
-export const clientStorage = new ClientStorageComponent();
-export const html = new HtmlComponent();
-export const http = new HttpComponent();
-export const locale = new LocaleComponent();
-export const resource = new ResourceComponent();
-export const store = new StoreComponent();
-export const ui = new UiComponent();
-export const widget = new WidgetComponent();
+const clientStorage = new ClientStorageComponent();
+const html = new HtmlComponent();
+const http = new HttpComponent();
+const locale = new LocaleComponent();
+const resource = new ResourceComponent();
+const store = new StoreComponent();
+const ui = new UiComponent();
+const widget = new WidgetComponent();
 
 // Apply configuration
 const customConfig = store.getState().config || {};
-Object.keys(exports).forEach(name => {
-    _merge(
-        exports[name],
-        customConfig[name] || {}
-    );
-});
+_merge(clientStorage, customConfig.clientStorage);
+_merge(html, customConfig.html);
+_merge(http, customConfig.http);
+_merge(locale, customConfig.locale);
+_merge(resource, customConfig.resource);
+_merge(store, customConfig.store);
+_merge(ui, customConfig.ui);
+_merge(widget, customConfig.widget);
+
+export {
+    clientStorage,
+    html,
+    http,
+    locale,
+    resource,
+    store,
+    ui,
+    widget,
+};

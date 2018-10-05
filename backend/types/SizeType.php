@@ -17,4 +17,17 @@ class SizeType extends Type
             [$attributeEntity->name, 'number'],
         ];
     }
+
+    /**
+     * @inheritdoc
+     */
+    public function prepareSwaggerProperty($modelClass, $attribute, &$property)
+    {
+        $property = array_merge(
+            [
+                'type' => 'number',
+            ],
+            $property
+        );
+    }
 }

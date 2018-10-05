@@ -5,8 +5,9 @@ import _get from 'lodash-es/get';
 import {ui} from 'components';
 import listHoc from '../listHoc';
 
+export default
 @listHoc()
-export default class Accordion extends React.PureComponent {
+class Accordion extends React.PureComponent {
 
     static propTypes = {
         primaryKey: PropTypes.string,

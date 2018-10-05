@@ -17,7 +17,7 @@ class PutUploader extends BaseUploader
             $fileName = rawurldecode(preg_replace('/(^[^"]+")|("$)/', '', $_SERVER['HTTP_CONTENT_DISPOSITION']));
         }
         if (!$fileName) {
-            throw new FileException('Not found file name in request.');
+            $fileName = \Yii::$app->request->get('name') ?: \Yii::$app->security->generateRandomString(10);
         }
 
         // Parse the Content-Range header, which has the following form:

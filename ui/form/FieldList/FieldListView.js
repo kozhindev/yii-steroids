@@ -88,7 +88,7 @@ export default class FieldListView extends React.PureComponent {
                         className={bem.element('link-add')}
                         onClick={this.props.onAdd}
                     >
-                        {locale.t('Добавить ещё')}
+                        {__('Добавить ещё')}
                     </a>
                 )}
             </div>

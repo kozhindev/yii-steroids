@@ -15,9 +15,10 @@ import './GiiApplication.scss';
 
 const bem = html.bem('GiiApplication');
 
+export default
 @widget.register('\\steroids\\modules\\gii\\widgets\\GiiApplication\\GiiApplication')
 @connect()
-export default class GiiApplication extends React.PureComponent {
+class GiiApplication extends React.PureComponent {
 
     static propTypes = {
         roles: PropTypes.arrayOf(PropTypes.string),

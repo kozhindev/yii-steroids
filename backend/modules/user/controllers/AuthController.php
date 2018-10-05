@@ -32,6 +32,20 @@ class AuthController extends Controller
                     ],
                 ],
             ],
+            'api.user' => [
+                'items' => [
+                    'login' => [
+                        'label' => \Yii::t('steroids', 'Вход'),
+                        'url' => ['/user/auth/api-login'],
+                        'urlRule' => '/api/<version>/user/login',
+                    ],
+                    'logout' => [
+                        'label' => \Yii::t('steroids', 'Выход'),
+                        'url' => ['/user/auth/api-logout'],
+                        'urlRule' => '/api/<version>/user/logout',
+                    ],
+                ],
+            ],
         ];
     }
 
@@ -64,6 +78,24 @@ class AuthController extends Controller
         Yii::$app->user->logout();
         $this->trigger(self::EVENT_AFTER_LOGOUT);
         return $this->goHome();
+    }
+
+    /**
+     * @return LoginForm
+     */
+    public function actionApiLogin()
+    {
+        $model = new LoginForm();
+        $model->load(\Yii::$app->request->post());
+        $model->login();
+        return $model;
+    }
+
+    public function actionApiLogout()
+    {
+        $this->trigger(self::EVENT_BEFORE_LOGOUT);
+        Yii::$app->user->logout();
+        $this->trigger(self::EVENT_AFTER_LOGOUT);
     }
 
 }

@@ -1,7 +1,5 @@
 import Model from 'yii-steroids/base/Model';
 
-import {locale} from 'components';
-
 export default class EnumItemEntityMeta extends Model {
 
     static className = 'steroids\\modules\\gii\\forms\\EnumItemEntity';
@@ -11,28 +9,28 @@ export default class EnumItemEntityMeta extends Model {
             'name': {
                 'component': 'InputField',
                 'attribute': 'name',
-                'label': locale.t('Name'),
+                'label': __('Name'),
                 'required': true
             },
             'value': {
                 'component': 'InputField',
                 'attribute': 'value',
-                'label': locale.t('Value')
+                'label': __('Value')
             },
             'label': {
                 'component': 'InputField',
                 'attribute': 'label',
-                'label': locale.t('Label')
+                'label': __('Label')
             },
             'cssClass': {
                 'component': 'InputField',
                 'attribute': 'cssClass',
-                'label': locale.t('CSS Class')
+                'label': __('CSS Class')
             },
             'custom': {
                 'component': 'CheckboxField',
                 'attribute': 'custom',
-                'label': locale.t('Custom values'),
+                'label': __('Custom values'),
             }
         };
     }

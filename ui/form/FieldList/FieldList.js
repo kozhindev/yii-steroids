@@ -10,11 +10,12 @@ import fieldHoc from '../fieldHoc';
 import './FieldListView.scss';
 import tableNavigationHandler from './tableNavigationHandler';
 
+export default
 @fieldHoc({
     componentId: 'form.FieldList',
     list: true,
 })
-export default class FieldList extends React.PureComponent {
+class FieldList extends React.PureComponent {
 
     static propTypes = {
         label: PropTypes.oneOfType([

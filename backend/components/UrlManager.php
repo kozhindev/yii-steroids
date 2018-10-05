@@ -2,7 +2,7 @@
 
 namespace steroids\components;
 
-use steroids\base\WebApplication;
+use yii\web\Application;
 use yii\base\BootstrapInterface;
 use yii\web\UrlNormalizer;
 use yii\web\UrlNormalizerRedirectException;
@@ -38,7 +38,7 @@ class UrlManager extends \codemix\localeurls\UrlManager implements BootstrapInte
 
     public function bootstrap($app)
     {
-        if ($this->enableLocaleUrls && $app instanceof WebApplication && !YII_ENV_TEST) {
+        if ($this->enableLocaleUrls && $app instanceof Application && !YII_ENV_TEST) {
             // Set Application language before request
 
             $request = \Yii::$app->request;

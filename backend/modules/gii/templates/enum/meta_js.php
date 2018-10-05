@@ -12,8 +12,6 @@ $cssClasses = $enumEntity->renderJsCssClasses('        ');
 ?>
 import Enum from 'yii-steroids/base/Enum';
 
-import {locale} from 'components';
-
 export default class <?= $enumEntity->name ?>Meta extends Enum {
 
 <?php foreach ($enumEntity->items as $itemEntity) { ?>

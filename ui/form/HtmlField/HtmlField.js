@@ -5,10 +5,11 @@ import _merge from 'lodash-es/merge';
 import {ui} from 'components';
 import fieldHoc from '../fieldHoc';
 
+export default
 @fieldHoc({
     componentId: 'form.HtmlField',
 })
-export default class HtmlField extends React.PureComponent {
+class HtmlField extends React.PureComponent {
 
     static propTypes = {
         label: PropTypes.oneOfType([

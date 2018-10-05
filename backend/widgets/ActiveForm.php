@@ -6,6 +6,7 @@ use steroids\base\FormModel;
 use steroids\base\Model;
 use steroids\base\Widget;
 use yii\base\InvalidConfigException;
+use yii\db\ActiveRecordInterface;
 use yii\helpers\ArrayHelper;
 
 class ActiveForm extends Widget
@@ -76,21 +77,13 @@ class ActiveForm extends Widget
                 $errors = [$formName => $errors];
             }
 
-            return ['errors' => $errors];
+            $result['errors'] = $errors;
         }
 
-        if ($model->hasSecurityFields()) {
-            $securityFields = $model->getSecurityFields();
-
-            // Apply form name
-            $formName = $formName !== null ? $formName : $model->formName();
-            if ($formName) {
-                $securityFields = [$formName => $securityFields];
-            }
-
-            $result = ['securityFields' => $securityFields];
+        if ($model->isSecurityRequired()) {
+            $result['security'] = $model->getSecurityComponent();
         }
-        return $result;
+        return array_merge($result, $model->toFrontend());
     }
 
     /**
@@ -99,10 +92,13 @@ class ActiveForm extends Widget
     public function run()
     {
         $submitLabel = $this->submitLabel;
-        if (!$submitLabel) {
+        if (!$submitLabel && $this->model instanceof ActiveRecordInterface) {
             $submitLabel = $this->model->isNewRecord
                 ? \Yii::t('steroids', 'Добавить')
                 : \Yii::t('steroids', 'Сохранить');
+        }
+        if (!$submitLabel) {
+            $submitLabel = \Yii::t('steroids', 'Отправить');
         }
 
         return $this->renderReact([
@@ -111,6 +107,7 @@ class ActiveForm extends Widget
             'prefix' => $this->model->formName(),
             'layout' => $this->layout,
             'layoutProps' => $this->layoutProps,
+            'model' => get_class($this->model),
             'initialValues' => $this->getInitialValues(),
             'submitLabel' => $submitLabel,
             'fields' => $this->getFieldsConfig(),

@@ -58,10 +58,11 @@ class GiiHelper
             $moduleNamespace[] = $part;
         }
 
-        $moduleClass = implode('\\', $moduleNamespace) . '\\' . ucfirst(end($moduleNamespace)) . 'Module';
-        $moduleId = array_search($moduleClass, static::findModules());
-        if (!$moduleId && preg_match('/^app\\\\([^\\\\]+)/', $moduleClass, $matches)) {
-            $moduleId = $matches[1];
+        if ($moduleNamespace[0] === 'app') {
+            $moduleId = implode('.', array_slice($moduleNamespace, 1));
+        } else {
+            $moduleClass = implode('\\', $moduleNamespace) . '\\' . ucfirst(end($moduleNamespace)) . 'Module';
+            $moduleId = array_search($moduleClass, static::findModules());
         }
 
         return [
@@ -77,6 +78,12 @@ class GiiHelper
 
     public static function getModuleDir($moduleId)
     {
+        $appDir = \Yii::getAlias('@app');
+        $moduleDir = $appDir . '/' . str_replace('.', '/', $moduleId);
+        if (file_exists($moduleDir)) {
+            return $moduleDir;
+        }
+
         $module = static::getModuleById($moduleId);
         return dirname((new \ReflectionClass($module))->getFileName());
     }
@@ -182,7 +189,7 @@ class GiiHelper
     public static function locale($text)
     {
         $text = Html::encode($text);
-        $text = new JsExpression('locale.t(\'' . $text . '\')');
+        $text = new JsExpression('__(\'' . $text . '\')');
         return $text;
     }
 

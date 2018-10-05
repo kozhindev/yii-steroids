@@ -3,17 +3,27 @@
 namespace steroids\validators;
 
 use Yii;
+use steroids\base\MultiFactorAuthValidator;
 use yii\base\Exception;
-use yii\helpers\ArrayHelper;
+use yii\base\InvalidConfigException;
 use yii\helpers\Json;
-use yii\validators\Validator;
 
-class ReCaptchaValidator extends Validator
+class ReCaptchaMfaValidator extends MultiFactorAuthValidator
 {
-    const SITE_VERIFY_URL = 'https://www.google.com/recaptcha/api/siteverify';
-    const SESSION_KEY = 'recaptcha-response';
+    /**
+     * @var string
+     */
+    public $url = 'https://www.google.com/recaptcha/api/siteverify';
 
-    public $skipOnEmpty = false;
+    /**
+     * @var string
+     */
+    public $sessionKey = 'mfa-recaptcha-response';
+
+    /**
+     * @var string
+     */
+    public $secret;
 
     /**
      * @var bool
@@ -22,10 +32,15 @@ class ReCaptchaValidator extends Validator
 
     /**
      * @inheritdoc
+     * @throws InvalidConfigException
      */
     public function init()
     {
         parent::init();
+
+        if (!$this->secret) {
+            throw new InvalidConfigException('Wrong validator config: secret code is required.');
+        }
 
         if ($this->message === null) {
             $this->message = Yii::t('steroids', 'Проверка не пройдена');
@@ -35,6 +50,17 @@ class ReCaptchaValidator extends Validator
     /**
      * @inheritdoc
      */
+    public function beforeValidate($model)
+    {
+        // Only for guests
+        return \Yii::$app->user->isGuest;
+    }
+
+    /**
+     * @param mixed $value
+     * @return array|null
+     * @throws Exception
+     */
     protected function validateValue($value)
     {
         if ($this->isValid === null) {
@@ -43,12 +69,12 @@ class ReCaptchaValidator extends Validator
 
             // Try previous key
             if (!$this->isValid) {
-                $this->isValid = $this->sendRequest(Yii::$app->session->get(self::SESSION_KEY));
+                $this->isValid = $this->sendRequest(Yii::$app->session->get($this->sessionKey));
             }
 
             // Save key
             if ($this->isValid) {
-                Yii::$app->session->set(self::SESSION_KEY, $value);
+                Yii::$app->session->set($this->sessionKey, $value);
             }
         }
 
@@ -56,8 +82,8 @@ class ReCaptchaValidator extends Validator
     }
 
     /**
-     * @param string $value
-     * @return mixed
+     * @param $value
+     * @return bool
      * @throws Exception
      */
     protected function sendRequest($value)
@@ -66,8 +92,8 @@ class ReCaptchaValidator extends Validator
             return false;
         }
 
-        $url = self::SITE_VERIFY_URL . '?' . http_build_query([
-                'secret' => ArrayHelper::getValue(Yii::$app->params, 'googleReCaptcha.secret'),
+        $url = $this->url . '?' . http_build_query([
+                'secret' => $this->secret,
                 'response' => $value,
                 'remoteip' => Yii::$app->request->userIP,
             ]);

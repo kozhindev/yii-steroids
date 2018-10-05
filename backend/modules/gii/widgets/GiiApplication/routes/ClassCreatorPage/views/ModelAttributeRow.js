@@ -8,13 +8,14 @@ import {html} from 'components';
 const bem = html.bem('FieldListView');
 let appTypeSelector = null;
 
+export default
 @connect(
     (state, props) => ({
         appType: (appTypeSelector = appTypeSelector || formValueSelector(props.formId))(state, props.prefix + 'appType'),
         isProtected: (appTypeSelector = appTypeSelector || formValueSelector(props.formId))(state, props.prefix + 'isProtected'),
     })
 )
-export default class ModelAttributeRow extends React.PureComponent {
+class ModelAttributeRow extends React.PureComponent {
 
     static propTypes = {
         label: PropTypes.oneOfType([

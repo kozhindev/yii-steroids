@@ -5,6 +5,7 @@ namespace steroids\base;
 use steroids\widgets\ActiveForm;
 use steroids\widgets\Crud;
 use Yii;
+use yii\helpers\ArrayHelper;
 use yii\helpers\Url;
 use yii\web\Controller;
 
@@ -207,7 +208,14 @@ abstract class CrudController extends Controller
 
     protected function getListAttributes()
     {
-        $attributes = $this->columns();
+        $attributes = [];
+        foreach (Crud::normalizeConfig($this->columns()) as $column) {
+            if (isset($column['value']) && is_callable($column['value'])) {
+                $attributes[$column['attribute']] = $column['value'];
+            } else {
+                $attributes[] = $column['attribute'];
+            }
+        }
 
         // Append primary key
         /** @var Model $modelClass */
@@ -215,8 +223,8 @@ abstract class CrudController extends Controller
         $attributes[] = $modelClass::primaryKey()[0];
 
         // Append access flags
-        foreach (static::controls() as $action) {
-            $method = 'can' . ucfirst($action);
+        foreach (Crud::normalizeConfig(static::controls(), 'id') as $action) {
+            $method = 'can' . ucfirst($action['id']);
             if (method_exists($modelClass, $method)) {
                 $attributes[$method] = function (Model $model) use ($method) {
                     return $model->$method(Yii::$app->user->model);
@@ -233,6 +241,7 @@ abstract class CrudController extends Controller
 
         return $this->renderContent(Crud::widget([
             'model' => static::$modelClass,
+            'searchModel' => static::$searchModelClass,
             'controls' => static::controls(),
             'searchFields' => $this->searchFields(),
             'columns' => $this->columns(),

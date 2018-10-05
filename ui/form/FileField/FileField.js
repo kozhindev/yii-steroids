@@ -7,11 +7,12 @@ import {locale, ui} from 'components';
 import fieldHoc from '../fieldHoc';
 import fileHoc from '../fileHoc';
 
+export default
 @fieldHoc({
     componentId: 'form.FileField',
 })
 @fileHoc()
-export default class FileField extends React.PureComponent {
+class FileField extends React.PureComponent {
 
     static propTypes = {
         label: PropTypes.oneOfType([
@@ -67,8 +68,8 @@ export default class FileField extends React.PureComponent {
                 buttonComponent={this.props.buttonComponent}
                 buttonProps={{
                     label: this.props.imagesOnly
-                        ? (this.props.multiple ? locale.t('Прикрепить фотографии') : locale.t('Прикрепить фото'))
-                        : (this.props.multiple ? locale.t('Прикрепить файлы') : locale.t('Прикрепить файл')),
+                        ? (this.props.multiple ? __('Прикрепить фотографии') : __('Прикрепить фото'))
+                        : (this.props.multiple ? __('Прикрепить файлы') : __('Прикрепить файл')),
                     size: this.props.size,
                     disabled: this.props.disabled,
                     onClick: this.props.onBrowse,

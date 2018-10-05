@@ -25,12 +25,13 @@ class ButtonInternal extends React.PureComponent {
 
 }
 
+export default
 @connect(
     (state, props) => ({
         submitting: props.formId ? isSubmitting('myForm')(state) : !!props.submitting,
     })
 )
-export default class Button extends React.PureComponent {
+class Button extends React.PureComponent {
 
     static propTypes = {
         label: PropTypes.string,

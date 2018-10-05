@@ -2,6 +2,7 @@
 
 namespace steroids\base;
 
+use steroids\components\MultiFactorAuthManager;
 use steroids\components\Types;
 use steroids\components\UrlManager;
 use Yii;
@@ -16,6 +17,7 @@ use yii\web\Application;
  * @property-read SiteMap $siteMap
  * @property-read Types $types
  * @property-read UrlManager $urlManager
+ * @property-read MultiFactorAuthManager $multiFactorAuth
  */
 class WebApplication extends Application
 {

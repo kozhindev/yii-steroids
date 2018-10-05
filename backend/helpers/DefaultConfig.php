@@ -3,6 +3,7 @@
 namespace steroids\helpers;
 
 use Yii;
+use yii\db\mysql\Schema;
 use yii\helpers\ArrayHelper;
 
 // Define steroids constants
@@ -114,6 +115,7 @@ class DefaultConfig
                 'urlManager',
                 'siteMap',
                 'frontendState',
+                'multiFactorAuth',
             ],
             'components' => [
                 'authManager' => [
@@ -162,7 +164,9 @@ class DefaultConfig
                     'class' => 'yii\db\Connection',
                     'charset' => 'utf8',
                     'on afterOpen' => function ($event) {
-                        $event->sender->createCommand("SET time_zone='" . date('P') . "'")->execute();
+                        if ($event->sender->schema instanceof Schema) {
+                            $event->sender->createCommand("SET time_zone='" . date('P') . "'")->execute();
+                        }
                     },
                 ],
                 'formatter' => [
@@ -182,6 +186,9 @@ class DefaultConfig
                 ],
                 'mailer' => [
                     'class' => 'yii\swiftmailer\Mailer',
+                ],
+                'multiFactorAuth' => [
+                    'class' => 'steroids\components\MultiFactorAuthManager',
                 ],
                 'types' => [
                     'class' => 'steroids\components\Types',

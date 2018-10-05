@@ -1,7 +1,5 @@
 import Model from 'yii-steroids/base/Model';
 
-import {locale} from 'components';
-
 export default class CrudItemEntityMeta extends Model {
 
     static className = 'steroids\\modules\\gii\\forms\\CrudItemEntity';
@@ -11,22 +9,22 @@ export default class CrudItemEntityMeta extends Model {
             'name': {
                 'component': 'InputField',
                 'attribute': 'name',
-                'label': locale.t('Name'),
+                'label': __('Name'),
             },
             'showInForm': {
                 'component': 'CheckboxField',
                 'attribute': 'showInForm',
-                'label': locale.t('Show in Form'),
+                'label': __('Show in Form'),
             },
             'showInTable': {
                 'component': 'CheckboxField',
                 'attribute': 'showInTable',
-                'label': locale.t('Show in Table'),
+                'label': __('Show in Table'),
             },
             'showInView': {
                 'component': 'CheckboxField',
                 'attribute': 'showInView',
-                'label': locale.t('Show in View'),
+                'label': __('Show in View'),
             }
         };
     }

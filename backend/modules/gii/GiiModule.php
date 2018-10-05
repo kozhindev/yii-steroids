@@ -4,11 +4,10 @@ namespace steroids\modules\gii;
 
 use steroids\base\Module;
 use steroids\modules\gii\controllers\GiiController;
-use steroids\modules\gii\controllers\SiteMapController;
 
 class GiiModule extends Module
 {
-    public $layout = '@app/core/admin/layouts/web';
+    public $layout = '@steroids/modules/gii/layouts/blank';
 
     /**
      * @var integer the permission to be set for newly generated code files.

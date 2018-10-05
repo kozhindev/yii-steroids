@@ -7,13 +7,14 @@ import Form from '../../form/Form/Form';
 
 const bem = html.bem('CrudFormView');
 
+export default
 @http.hoc(props => {
     const id = _get(props, 'match.params.id');
     return id
         ? http.get(null).then(initialValues => ({initialValues}))
         : Promise.resolve({initialValues: {}});
 })
-export default class CrudFormView extends React.Component {
+class CrudFormView extends React.Component {
 
     static propTypes = {
         formProps: PropTypes.object,
@@ -32,7 +33,7 @@ export default class CrudFormView extends React.Component {
                 <Form
                     {...this.props.formProps}
                     initialValues={this.props.initialValues}
-                    submitLabel={isNewRecord ? locale.t('Добавить') : locale.t('Сохранить')}
+                    submitLabel={isNewRecord ? __('Добавить') : __('Сохранить')}
                 />
             </div>
         );

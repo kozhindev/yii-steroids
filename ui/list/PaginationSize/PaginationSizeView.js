@@ -23,7 +23,7 @@ export default class PaginationSizeView extends React.Component {
         return (
             <div className={bem(bem.block(), 'my-3')}>
                 <div className={bem.element('label')}>
-                    {locale.t('Выводить по')}:
+                    {__('Выводить по')}:
                 </div>
                 <ul className={bem(
                     bem.element('sizes'),

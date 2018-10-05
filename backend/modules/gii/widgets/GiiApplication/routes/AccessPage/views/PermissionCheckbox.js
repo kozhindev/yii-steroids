@@ -11,8 +11,9 @@ import './PermissionCheckbox.scss';
 const bem = html.bem('PermissionCheckbox');
 const FORM_ID = 'AccessRulesEditor';
 
+export default
 @connect()
-export default class PermissionCheckbox extends React.PureComponent {
+class PermissionCheckbox extends React.PureComponent {
 
     static propTypes = {
         role: PropTypes.string,
@@ -51,7 +52,7 @@ export default class PermissionCheckbox extends React.PureComponent {
             </label>
         );
 
-        const tooltipId = 'tooltip_' + this.props.permission.name.replace(/[^0-9a-z]+/g, '_');
+        const tooltipId = 'tooltip_' + this.props.role + '_' + this.props.permission.name.replace(/[^0-9a-z]+/g, '_');
         return (
             <div
                 key={this.props.permission.name}

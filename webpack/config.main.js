@@ -2,23 +2,29 @@ const webpack = require('webpack');
 const path = require('path');
 const fs = require('fs');
 const _ = require('lodash');
-const ExtractTextPlugin = require("extract-text-webpack-plugin");
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const ExportTranslationKeysPlugin = require('./plugins/ExportTranslationKeysPlugin');
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 const utils = require('./utils');
 const getConfigDefault = require('./config.default');
 
+function recursiveIssuer(m) {
+    if (m.issuer) {
+        return recursiveIssuer(m.issuer);
+    } else if (m.name) {
+        return m;
+    } else {
+        return null;
+    }
+}
+
 module.exports = (config, entry) => {
     config = _.merge(getConfigDefault(), config);
 
-    const webpackVersion = 3;
-
     // For split chunks
-    if (webpackVersion === 4) {
-        const indexEntry = entry.index;
-        delete entry.index;
-        // TODO
-    }
+    const indexEntry = entry.index;
+    //delete entry.index;
 
     // Init default webpack config
     let webpackConfig = {
@@ -47,17 +53,21 @@ module.exports = (config, entry) => {
                             options: {
                                 cacheDirectory: true,
                                 plugins: [
-                                    'transform-decorators-legacy',
-                                    'transform-class-properties',
-                                    'transform-object-rest-spread',
-                                    'transform-export-extensions',
-                                    utils.isProduction() && 'transform-runtime',
+                                    //'transform-object-rest-spread',
+                                    //'transform-export-extensions',
+                                    ['@babel/plugin-proposal-decorators', {legacy: true}],
+                                    '@babel/plugin-proposal-class-properties',
+                                    utils.isProduction() && '@babel/plugin-transform-runtime',
                                     !utils.isProduction() && 'react-hot-loader/babel',
                                 ].filter(Boolean),
                                 presets: [
-                                    'env',
-                                    'react',
-                                    webpackVersion === 4 && utils.isProduction() && 'minify'
+                                    '@babel/preset-env',
+                                    '@babel/preset-react',
+                                    utils.isProduction() && ['minify', {
+                                        builtIns: false,
+                                        evaluate: false,
+                                        mangle: false,
+                                    }],
                                 ].filter(Boolean),
                             }
                         },
@@ -78,17 +88,19 @@ module.exports = (config, entry) => {
                 },
                 less: {
                     test: /\.less$/,
-                    use: ExtractTextPlugin.extract({
-                        fallback: 'style-loader',
-                        use: ['css-loader', 'less-loader']
-                    }),
+                    use: [
+                        MiniCssExtractPlugin.loader,
+                        'css-loader',
+                        'less-loader',
+                    ],
                 },
                 sass: {
                     test: /\.scss$/,
-                    use: ExtractTextPlugin.extract({
-                        fallback: 'style-loader',
-                        use: ['css-loader', 'sass-loader']
-                    }),
+                    use: [
+                        MiniCssExtractPlugin.loader,
+                        'css-loader',
+                        'sass-loader',
+                    ],
                 },
                 font: {
                     test: /(\/|\\)fonts(\/|\\).*\.(ttf|otf|eot|svg|woff(2)?)(\?[a-z0-9]+)?$/,
@@ -122,49 +134,75 @@ module.exports = (config, entry) => {
             },
             modules: [
                 path.resolve(config.cwd, 'node_modules'), // the old 'fallback' option (needed for npm link-ed packages)
+                fs.existsSync(path.resolve(config.cwd, '../node_modules')) ? path.resolve(config.cwd, '../node_modules') : null,
                 path.resolve(config.cwd, 'app'),
-            ],
+            ].filter(Boolean),
         },
         plugins: [
+            utils.isAnalyze() && new BundleAnalyzerPlugin(),
             new ExportTranslationKeysPlugin(),
-            utils.isProduction() && new webpack.DefinePlugin({
-                'process.env': {
-                    NODE_ENV: '"production"'
-                }
+            new MiniCssExtractPlugin({
+                filename: `${config.staticPath}assets/bundle-[name].css`,
+                chunkFilename: `${config.staticPath}assets/bundle-[id].css`,
             }),
-            new ExtractTextPlugin({
-                //filename: `${config.staticPath}assets/bundle-style.css`,
-                filename:  (getPath) => {
-                    return `${config.staticPath}assets/bundle-` + getPath('[name].css');
-                },
-                allChunks: true
-            }),
+            new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/), // Skip moment locale files (0.3 mb!)
             utils.isProduction() && new webpack.optimize.OccurrenceOrderPlugin(),
             !utils.isProduction() && new webpack.ProgressPlugin(),
-            !utils.isProduction() && new webpack.NamedModulesPlugin(),
-            !utils.isProduction() && new webpack.HotModuleReplacementPlugin(),
-            webpackVersion === 3 && new webpack.optimize.CommonsChunkPlugin({name: 'index', filename: `${config.staticPath}assets/bundle-index.js`}),
-            webpackVersion === 3 && utils.isProduction() && new webpack.optimize.UglifyJsPlugin({compress: {warnings: false}, sourceMap: false})
+            new webpack.NamedModulesPlugin(),
+            new webpack.NamedChunksPlugin(),,
+            !utils.isProduction() && new webpack.HotModuleReplacementPlugin()
         ].filter(Boolean),
+        performance: {
+            maxEntrypointSize: 12000000,
+            maxAssetSize: 12000000,
+        },
     };
 
-    if (webpackVersion === 4) {
-        webpackConfig = _.merge(webpackConfig, {
-            mode: utils.isProduction() ? 'production' : 'development',
-            optimization: {
-                splitChunks: {
-                    cacheGroups: {
-                        index: {
-                            test: indexEntry,
-                            name: 'index',
-                            chunks: 'initial',
-                            enforce: true
-                        }
-                    }
+    webpackConfig = _.merge(webpackConfig, {
+        mode: utils.isProduction() ? 'production' : 'development',
+        optimization: {
+            runtimeChunk: {
+                name: 'common',
+            },
+            minimize: utils.isProduction(),
+        }
+    });
+
+    // Extracting CSS based on entry
+    webpackConfig.optimization.splitChunks = webpackConfig.optimization.splitChunks || {cacheGroups: {}};
+    Object.keys(entry).forEach(name => {
+        // Skip styles
+        if (/^style-/.test(name)) {
+            return;
+        }
+
+        webpackConfig.optimization.splitChunks.cacheGroups[name] = {
+            name: name,
+            test: m => {
+                const issuer = recursiveIssuer(m);
+                return m.constructor.name === 'CssModule' && issuer && issuer.name === name;
+            },
+            chunks: 'all',
+        };
+    });
+    if (indexEntry) {
+        webpackConfig.optimization.splitChunks = {
+            cacheGroups: {
+                commonJs: {
+                    name: 'common',
+                    chunks: 'initial',
+                    test: /\.js$/,
+                    minChunks: 2,
+                    minSize: 0,
                 },
-                minimize: utils.isProduction(),
+                commonStyle: {
+                    name: 'common',
+                    chunks: 'initial',
+                    test: /\.(scss|less|css)$/,
+                    minChunks: 10000, // Bigger value for disable common.css (i love webpack, bly@t.. %)
+                }
             }
-        });
+        };
     }
 
     // Merge with custom

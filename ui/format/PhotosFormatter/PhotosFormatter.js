@@ -1,15 +1,17 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Gallery from 'react-grid-gallery';
-
-import {locale} from 'components';
+import _get from 'lodash-es/get';
 
 import viewHoc from '../viewHoc';
 
+export default
 @viewHoc()
-export default class EnumFormatter extends React.Component {
+class PhotosFormatter extends React.Component {
 
     static propTypes = {
+        attribute: PropTypes.string,
+        item: PropTypes.object,
         photos: PropTypes.arrayOf(PropTypes.shape({
             uid: PropTypes.number,
             src: PropTypes.string,
@@ -26,17 +28,19 @@ export default class EnumFormatter extends React.Component {
     };
 
     render() {
-        if (!this.props.photos || this.props.photos.length === 0) {
+        const photos = this.props.photos || _get(this.props.item, this.props.attribute) || [];
+        if (photos.length === 0) {
             return null;
         }
+
         return (
             <Gallery
-                images={this.props.photos}
+                images={photos}
                 margin={3}
                 rowHeight={this.props.photoRowHeight}
                 backdropClosesModal={true}
                 enableImageSelection={false}
-                imageCountSeparator={locale.t(' из ')}
+                imageCountSeparator={__(' из ')}
             />
         );
     }

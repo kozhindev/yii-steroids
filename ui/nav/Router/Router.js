@@ -3,17 +3,18 @@ import PropTypes from 'prop-types';
 import {Route, Switch} from 'react-router';
 import {connect} from 'react-redux';
 import {ConnectedRouter} from 'react-router-redux';
-import {matchPath} from 'react-router';
 import _get from 'lodash-es/get';
 
 import {store} from 'components';
+import {registerRoutes} from '../../../actions/routing';
 
+export default
 @connect(
     state => ({
         pathname: _get(state, 'routing.location.pathname'),
     })
 )
-export default class Router extends React.PureComponent {
+class Router extends React.PureComponent {
 
     static propTypes = {
         wrapperView: PropTypes.func,
@@ -31,6 +32,10 @@ export default class Router extends React.PureComponent {
         this._renderItem = this._renderItem.bind(this);
     }
 
+    componentDidMount() {
+        this.props.dispatch(registerRoutes(this.props.routes));
+    }
+
     componentWillReceiveProps(nextProps) {
         // Fix end slash on switch to base route
         if (window.history && nextProps.pathname === '/' && location.pathname.match(/\/$/)) {
@@ -39,18 +44,6 @@ export default class Router extends React.PureComponent {
     }
 
     render() {
-        // Find current route
-        let currentRoute = null;
-        this.props.routes.forEach(route => {
-            const match = matchPath(this.props.pathname, route);
-            if (match) {
-                currentRoute = {
-                    id: route.id,
-                    ...match,
-                };
-            }
-        });
-
         const WrapperComponent = this.props.wrapperView;
         const routes = (
             <Switch>
@@ -62,18 +55,14 @@ export default class Router extends React.PureComponent {
                         component={null}
                     />
                 ))}
+                {this.props.children}
             </Switch>
         );
 
         return (
-            <ConnectedRouter
-                history={store.history}
-            >
+            <ConnectedRouter history={store.history}>
                 {WrapperComponent && (
-                    <WrapperComponent
-                        {...this.props.wrapperProps}
-                        route={currentRoute}
-                    >
+                    <WrapperComponent {...this.props.wrapperProps}>
                         {routes}
                     </WrapperComponent>
                 )

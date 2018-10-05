@@ -6,8 +6,9 @@ import _isObject from 'lodash-es/isObject';
 
 import viewHoc from '../viewHoc';
 
+export default
 @viewHoc()
-export default class EnumFormatter extends React.Component {
+class EnumFormatter extends React.Component {
 
     static propTypes = {
         value: PropTypes.string,

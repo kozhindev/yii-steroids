@@ -16,6 +16,22 @@ class LoginForm extends LoginFormMeta
      */
     public $user;
 
+    /*public $responseModel;
+
+    public function responseModelClass()
+    {
+        return UserModule::getInstance()->modelsMap['User'];
+    }
+
+    public function responseFields()
+    {
+        return [
+            'id',
+            'role',
+            'name',
+        ];
+    }*/
+
     /**
      * @return array
      */

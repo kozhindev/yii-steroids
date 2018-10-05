@@ -6,12 +6,13 @@ import {ui, locale} from 'components';
 import fieldHoc from '../fieldHoc';
 import dataProviderHoc from '../dataProviderHoc';
 
+export default
 @fieldHoc({
     componentId: 'form.DropDownField',
 })
 @dataProviderHoc()
 @enhanceWithClickOutside
-export default class DropDownField extends React.PureComponent {
+class DropDownField extends React.PureComponent {
 
     static propTypes = {
         label: PropTypes.oneOfType([
@@ -96,7 +97,7 @@ export default class DropDownField extends React.PureComponent {
                 {...this.props}
                 searchInputProps={{
                     type: 'search',
-                    placeholder: this.props.searchPlaceholder || locale.t('Начните вводить символы для поиска...'),
+                    placeholder: this.props.searchPlaceholder || __('Начните вводить символы для поиска...'),
                     onChange: this._onSearch,
                     tabIndex: -1
                 }}

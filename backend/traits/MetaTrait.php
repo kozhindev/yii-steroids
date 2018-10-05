@@ -54,13 +54,6 @@ trait MetaTrait
      */
     public static function anyToFrontend($model, $fields = null)
     {
-        $fields = $fields ? (array)$fields : ['*'];
-
-        // Detect empty
-        if (!$model) {
-            return is_array($model) ? [] : null;
-        }
-
         // Detect array
         if (is_array($model)) {
             return array_map(function($item) use ($fields) {
@@ -68,15 +61,27 @@ trait MetaTrait
             }, $model);
         }
 
+        // Scalar
+        if (!is_object($model)) {
+            return $model;
+        }
+
+        $fields = $fields ? (array)$fields : ['*'];
+
+        // Detect empty
+        if (!$model) {
+            return is_array($model) ? [] : null;
+        }
+
         // Detect single type
-        if (!($model instanceof Model)) {
+        /*if (!($model instanceof Model)) {
             // Detect Yii Object
             if ($model instanceof BaseObject) {
                 return $model->toArray($fields);
             }
 
             return $model;
-        }
+        }*/
 
         // Detect *
         foreach ($fields as $key => $name) {
@@ -99,9 +104,9 @@ trait MetaTrait
             if (is_callable($name)) {
                 $result[$key] = call_user_func($name, $model);
             } elseif (is_array($name)) {
-                $result[$key] = static::anyToFrontend($model->$key, $name);
+                $result[$key] = static::anyToFrontend(ArrayHelper::getValue($model, $key), $name);
             } else {
-                $result[$key] = static::anyToFrontend($model->$name);
+                $result[$key] = static::anyToFrontend(ArrayHelper::getValue($model, $name));
             }
         }
         return $result;

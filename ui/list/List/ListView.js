@@ -20,7 +20,7 @@ export default class ListView extends React.Component {
     render() {
         if (this.props.reverse) {
             return (
-                <div className={bem(bem.block(), this.props.className)}>
+                <div className={bem(bem.block({loading: this.props.isLoading}), this.props.className)}>
                     {this.props.searchForm}
                     {this.props.paginationSize}
                     {this.props.pagination}

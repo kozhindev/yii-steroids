@@ -120,7 +120,7 @@ class EnumEntity extends EnumEntityMeta implements IEntity
         $lines = [];
         foreach ($this->items as $itemEntity) {
             $lines[] = $indent . '    [this.' . $itemEntity->getConstName() . ']: '
-                . 'locale.t(' . GiiHelper::varExport($itemEntity->label) . '),';
+                . '__(' . GiiHelper::varExport($itemEntity->label) . '),';
         }
         return "{\n" . implode("\n", $lines) . "\n" . $indent . '}';
     }

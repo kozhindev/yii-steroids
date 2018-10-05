@@ -18,4 +18,8 @@ module.exports = {
         return process.argv.slice(2).filter(a => a.match(/(--)?production/) !== null).length > 0;
     },
 
+    isAnalyze() {
+        return !this.isProduction() && process.argv.slice(2).filter(a => a.match(/(--)?analyze/) !== null).length > 0;
+    },
+
 };

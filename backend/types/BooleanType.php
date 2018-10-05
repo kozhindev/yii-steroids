@@ -34,6 +34,19 @@ class BooleanType extends Type
     /**
      * @inheritdoc
      */
+    public function prepareSwaggerProperty($modelClass, $attribute, &$property)
+    {
+        $property = array_merge(
+            [
+                'type' => 'boolean',
+            ],
+            $property
+        );
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function giiRules($attributeEntity, &$useClasses = [])
     {
         return [

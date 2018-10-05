@@ -1,4 +1,5 @@
 import Button from './Button';
+import BlankField from './BlankField';
 import CheckboxField from './CheckboxField';
 import CheckboxListField from './CheckboxListField';
 import DateField from './DateField';
@@ -10,6 +11,7 @@ import FieldList from './FieldList';
 import FieldSet from './FieldSet';
 import FileField from './FileField';
 import Form from './Form';
+import GeetestField from './GeetestField';
 import HtmlField from './HtmlField';
 import InputField from './InputField';
 import NumberField from './NumberField';
@@ -17,13 +19,13 @@ import PasswordField from './PasswordField';
 import RadioListField from './RadioListField';
 import RangeField from './RangeField';
 import ReCaptchaField from './ReCaptchaField';
-import SecurityFields from './SecurityFields';
 import SliderField from './SliderField';
 import SwitcherField from './SwitcherField';
 import TextField from './TextField';
 
 export {
     Button,
+    BlankField,
     CheckboxField,
     CheckboxListField,
     DateField,
@@ -35,6 +37,7 @@ export {
     FieldSet,
     FileField,
     Form,
+    GeetestField,
     HtmlField,
     InputField,
     NumberField,
@@ -42,7 +45,6 @@ export {
     RadioListField,
     RangeField,
     ReCaptchaField,
-    SecurityFields,
     SliderField,
     SwitcherField,
     TextField,

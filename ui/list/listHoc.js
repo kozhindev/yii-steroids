@@ -7,7 +7,6 @@ import _isEqual from 'lodash-es/isEqual';
 import _isFunction from 'lodash-es/isFunction';
 import _merge from 'lodash-es/merge';
 
-import {locale} from 'components';
 import {init, lazyFetch, refresh, destroy} from '../../actions/list';
 import {getList} from '../../reducers/list';
 import Empty from './Empty';
@@ -18,7 +17,7 @@ import Form from '../form/Form';
 let formValuesSelectors = {};
 const getFormId = props => _get(props, 'searchForm.formId', props.listId);
 
-@connect(
+export default () => WrappedComponent => @connect(
     (state, props) => {
         const formId = getFormId(props);
         if (formId && !formValuesSelectors[formId]) {
@@ -31,7 +30,7 @@ const getFormId = props => _get(props, 'searchForm.formId', props.listId);
         };
     }
 )
-    export default () => WrappedComponent => class ListHoc extends React.PureComponent {
+class ListHoc extends React.PureComponent {
 
     static WrappedComponent = WrappedComponent;
 
@@ -45,6 +44,7 @@ const getFormId = props => _get(props, 'searchForm.formId', props.listId);
         listId: PropTypes.string.isRequired,
         primaryKey: PropTypes.string,
         action: PropTypes.string,
+        actionMethod: PropTypes.string,
         loadMore: PropTypes.bool,
         defaultPageSize: PropTypes.number,
         defaultSort: PropTypes.object,
@@ -100,6 +100,7 @@ const getFormId = props => _get(props, 'searchForm.formId', props.listId);
 
     static defaultProps = {
         ...WrappedComponent.defaultProps,
+        actionMethod: 'post',
         paginationSizeView: false,
         primaryKey: 'id',
         defaultPageSize: 20,
@@ -166,6 +167,7 @@ const getFormId = props => _get(props, 'searchForm.formId', props.listId);
 
         return (
             <Empty
+                text={this.props.emptyText}
                 {...this.props}
                 {...this.props.emptyProps}
                 view={this.props.emptyView}
@@ -217,7 +219,7 @@ const getFormId = props => _get(props, 'searchForm.formId', props.listId);
 
         return (
             <Form
-                submitLabel={locale.t('Найти')}
+                submitLabel={__('Найти')}
                 {...this.props.searchForm}
                 formId={getFormId(this.props)}
                 onSubmit={() => this.props.dispatch(refresh())}

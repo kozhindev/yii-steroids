@@ -92,7 +92,7 @@ class ModelEntity extends ModelEntityMeta implements IEntity
 
             // Lazy create module
             ModuleEntity::findOrCreate($this->moduleId);
-
+            
             // Create/update meta information
             if (GiiHelper::isOverWriteClass($this->getClassName()) && GiiModule::getInstance()->showSteroidsEntries) {
                 // TODO Save lib class
@@ -266,7 +266,6 @@ class ModelEntity extends ModelEntityMeta implements IEntity
                 $text = ArrayHelper::getValue($item, $key);
                 if ($text) {
                     $props[$key] = GiiHelper::locale($text);
-                    $import[] = 'import {locale} from \'components\';';
                 }
             }
 
@@ -305,7 +304,6 @@ class ModelEntity extends ModelEntityMeta implements IEntity
                 $text = ArrayHelper::getValue($item, $key);
                 if ($text) {
                     $props[$key] = GiiHelper::locale($text);
-                    $import[] = 'import {locale} from \'components\';';
                 }
             }
 

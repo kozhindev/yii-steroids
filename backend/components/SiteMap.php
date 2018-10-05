@@ -21,6 +21,8 @@ use yii\web\Request;
  */
 class SiteMap extends Component
 {
+    const VERBS = ['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'];
+
     /**
      * @var SiteMapItem[]
      */
@@ -39,6 +41,13 @@ class SiteMap extends Component
             $url = $item->getNormalizedUrl();
             $urlRule = ArrayHelper::getValue($item, 'urlRule');
 
+            // Detect verb
+            $verb = null;
+            if (preg_match('/^(' . implode('|', self::VERBS) . ',?) .+/', $urlRule, $match)) {
+                $verb = explode(',', $match[1]);
+                $urlRule = str_replace($match[1] . ' ', '', $urlRule);
+            }
+
             if ($url && $urlRule && is_array($url)) {
                 $defaults = $url;
                 $route = array_shift($defaults);
@@ -47,10 +56,14 @@ class SiteMap extends Component
                     $rules[] = [
                         'pattern' => Yii::getAlias($urlRule),
                         'route' => $route,
+                        'verb' => $verb,
                     ];
                 } elseif (is_array($urlRule)) {
                     if (!isset($urlRule['route'])) {
                         $urlRule['route'] = $route;
+                    }
+                    if (!isset($urlRule['verb']) && $verb) {
+                        $urlRule['verb'] = $verb;
                     }
                     $rules[] = $urlRule;
                 }
@@ -603,6 +616,11 @@ class SiteMap extends Component
             foreach (scandir($controllersPath) as $file) {
                 // Skip dot folders
                 if (substr($file, 0, 1) === '.') {
+                    continue;
+                }
+
+                // Skip dirs
+                if (is_dir($controllersPath . '/' . $file)) {
                     continue;
                 }
 

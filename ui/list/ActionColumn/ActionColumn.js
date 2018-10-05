@@ -1,10 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import _get from 'lodash-es/get';
+import _has from 'lodash-es/has';
 import _isFunction from 'lodash-es/isFunction';
 import _upperFirst from 'lodash-es/upperFirst';
 
-import {locale} from 'components';
 import Nav from '../../nav/Nav';
 
 export default class ActionColumn extends React.PureComponent {
@@ -27,20 +27,20 @@ export default class ActionColumn extends React.PureComponent {
             view: {
                 rule: 'view',
                 icon: 'visibility',
-                label: locale.t('Просмотреть'),
+                label: __('Просмотреть'),
                 url: location.pathname + `/view/${id}`,
             },
             update: {
                 rule: 'update',
                 icon: 'mode_edit',
-                label: locale.t('Редактировать'),
+                label: __('Редактировать'),
                 url: location.pathname + `/update/${id}`,
             },
             delete: {
                 rule: 'delete',
                 icon: 'delete',
-                label: locale.t('Удалить'),
-                confirm: locale.t('Удалить запись?'),
+                label: __('Удалить'),
+                confirm: __('Удалить запись?'),
                 url: location.pathname + `/delete/${id}`,
             },
         };
@@ -50,10 +50,11 @@ export default class ActionColumn extends React.PureComponent {
                 {...this.props}
                 layout='icon'
                 items={actions.map(action => {
+                    const canKey = 'can' + _upperFirst(action.id);
                     return {
                         ...defaultActions[action.id],
                         ...action,
-                        visible: !!this.props.item['can' + _upperFirst(action.id)],
+                        visible: !_has(this.props.item, canKey) || !!this.props.item[canKey],
                     };
                 })}
             />
