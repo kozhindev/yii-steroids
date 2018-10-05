@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 
-import Modal from '../Modal/Modal';
 import {closeModal} from '../../../actions/modal';
 import {getOpened} from '../../../reducers/modal';
 
@@ -29,19 +28,17 @@ class ModalWrapper extends React.PureComponent {
     }
 
     renderModal(item) {
-        const Body = item.modal;
+        const ModalComponent = item.modal;
 
         return (
-            <Modal
+            <ModalComponent
                 key={item.id}
-                onClose={() => this.closeModal(item)}
                 {...item.props}
-            >
-                <Body
-                    {...item.props}
-                    onClose={() => this.closeModal(item)}
-                />
-            </Modal>
+                modalProps={{
+                    onClose: () => this.closeModal(item),
+                }}
+                onClose={() => this.closeModal(item)}
+            />
         );
     }
 

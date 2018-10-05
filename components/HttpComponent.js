@@ -61,7 +61,7 @@ export default class HttpComponent {
         }, options);
     }
 
-    send(method, url, params) {
+    send(method, url, params = {}, options = {}) {
         method = method.toLowerCase();
 
         return this._send(url, {
