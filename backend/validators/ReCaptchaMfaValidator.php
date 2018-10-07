@@ -26,6 +26,11 @@ class ReCaptchaMfaValidator extends MultiFactorAuthValidator
     public $secret;
 
     /**
+     * @var string
+     */
+    public $securityAttribute = 'reCaptcha';
+
+    /**
      * @var bool
      */
     protected $isValid;
@@ -54,6 +59,27 @@ class ReCaptchaMfaValidator extends MultiFactorAuthValidator
     {
         // Only for guests
         return \Yii::$app->user->isGuest;
+    }
+
+    public function validateAttribute($model, $attribute)
+    {
+        $code = \Yii::$app->request->post($this->securityAttribute);
+        if (!$code) {
+            $model->requireSecurityComponent([
+                'component' => 'ReCaptchaField',
+                'attribute' => $this->securityAttribute,
+                'error' => '',
+            ]);
+        } elseif ($this->validateValue($code)) {
+            $model->requireSecurityComponent([
+                'component' => 'ReCaptchaField',
+                'attribute' => $this->securityAttribute,
+                'error' => \Yii::$app->getI18n()->format($this->message, [
+                    'attribute' => $model->getAttributeLabel($attribute),
+                ], \Yii::$app->language),
+
+            ]);
+        }
     }
 
     /**
