@@ -12,9 +12,19 @@ export const LIST_TOGGLE_ALL = 'LIST_TOGGLE_ALL';
 
 const lazyTimers = {};
 
+const defaultFetchHandler = list => {
+    return http.send(list.actionMethod, list.action || location.pathname, {
+        ...list.query,
+        page: list.page,
+        pageSize: list.pageSize,
+        sort: list.sort,
+    });
+};
+
 export const init = (listId, props) => dispatch => dispatch({
     action: props.action || props.action === '' ? props.action : null,
     actionMethod: props.actionMethod || 'post',
+    onFetch: props.onFetch,
     page: 1,
     pageSize: props.defaultPageSize,
     sort: props.defaultSort || null,
@@ -36,23 +46,19 @@ export const fetch = (listId, params) => (dispatch, getState) => {
         return;
     }
 
+    const onFetch = list.onFetch || defaultFetchHandler;
+
     return dispatch([
         {
             ...params,
             listId,
             type: LIST_BEFORE_FETCH,
         },
-        http.send(list.actionMethod, list.action || location.pathname, {
-            ...list.query,
-            page: list.page,
-            pageSize: list.pageSize,
-            sort: list.sort,
-        })
-            .then(result => ({
-                ...result,
-                listId,
-                type: LIST_AFTER_FETCH,
-            })),
+        onFetch(list).then(response => ({
+            ...response.data,
+            listId,
+            type: LIST_AFTER_FETCH,
+        })),
     ]);
 };
 
