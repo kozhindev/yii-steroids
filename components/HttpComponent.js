@@ -44,21 +44,24 @@ export default class HttpComponent {
         return this._send(url, {
             method: 'get',
             params: params,
-        }, options);
+        }, options)
+            .then(response => response.data);
     }
 
     post(url, params = {}, options = {}) {
         return this._send(url, {
             method: 'post',
             data: params,
-        }, options);
+        }, options)
+            .then(response => response.data);
     }
 
     delete(url, params = {}, options = {}) {
         return this._send(url, {
             method: 'delete',
             data: params,
-        }, options);
+        }, options)
+            .then(response => response.data);
     }
 
     send(method, url, params = {}, options = {}) {
@@ -67,7 +70,7 @@ export default class HttpComponent {
         return this._send(url, {
             method,
             [method === 'get' ? 'params' : 'data']: params,
-        }, options);
+        }, options, true);
     }
 
     hoc(requestFunc) {
@@ -140,28 +143,30 @@ export default class HttpComponent {
     }
 
     _sendAxios(config) {
-        const store = require('components').store;
-
         return this.getAxiosInstance()(config)
-            .then(response => response.data)
             .then(response => {
-                // Flash
-                if (response.flashes) {
-                    store.dispatch(setFlashes(response.flashes));
-                }
-
-                // Ajax redirect
-                if (response.redirectUrl) {
-                    if (location.href === response.redirectUrl.split('#')[0]) {
-                        window.location.href = response.redirectUrl;
-                        window.location.reload();
-                    } else {
-                        window.location.href = response.redirectUrl;
-                    }
-                }
-
+                this.afterRequest(response);
                 return response;
             });
+    }
+
+    afterRequest(response) {
+        const store = require('components').store;
+
+        // Flash
+        if (response.data.flashes) {
+            store.dispatch(setFlashes(response.data.flashes));
+        }
+
+        // Ajax redirect
+        if (response.data.redirectUrl) {
+            if (location.href === response.data.redirectUrl.split('#')[0]) {
+                window.location.href = response.data.redirectUrl;
+                window.location.reload();
+            } else {
+                window.location.href = response.data.redirectUrl;
+            }
+        }
     }
 
 }

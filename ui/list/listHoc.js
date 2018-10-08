@@ -45,6 +45,7 @@ class ListHoc extends React.PureComponent {
         primaryKey: PropTypes.string,
         action: PropTypes.string,
         actionMethod: PropTypes.string,
+        onFetch: PropTypes.func,
         loadMore: PropTypes.bool,
         defaultPageSize: PropTypes.number,
         defaultSort: PropTypes.object,
