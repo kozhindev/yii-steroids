@@ -18,7 +18,8 @@ const defaultFetchHandler = list => {
         page: list.page,
         pageSize: list.pageSize,
         sort: list.sort,
-    });
+    })
+        .then(response => response.data);
 };
 
 export const init = (listId, props) => dispatch => dispatch({
@@ -54,8 +55,8 @@ export const fetch = (listId, params) => (dispatch, getState) => {
             listId,
             type: LIST_BEFORE_FETCH,
         },
-        onFetch(list).then(response => ({
-            ...response.data,
+        onFetch(list).then(data => ({
+            ...data,
             listId,
             type: LIST_AFTER_FETCH,
         })),

@@ -206,7 +206,7 @@ export default () => WrappedComponent => class DataProviderHoc extends React.Pur
 
         this.setState({query});
 
-        if (this.dataProvider) {
+        if (this.props.dataProvider) {
             if (this._delayTimer) {
                 clearTimeout(this._delayTimer);
             }
@@ -243,6 +243,11 @@ export default () => WrappedComponent => class DataProviderHoc extends React.Pur
      * @private
      */
     _searchDataProvider(query = '') {
+        if (query.length < this.props.autoCompleteMinLength) {
+            return;
+        }
+
+
         const searchHandler = this.props.dataProvider.onSearch || http.post;
         const result = searchHandler(this.props.dataProvider.action, {
             query,

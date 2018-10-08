@@ -33,6 +33,8 @@ export default class SyncAddressBarHelper {
                 } else {
                     values[key] = 1;
                 }
+            } else if (value === null) {
+                delete values[key];
             }
         });
 
