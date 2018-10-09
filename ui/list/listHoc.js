@@ -47,6 +47,7 @@ class ListHoc extends React.PureComponent {
         actionMethod: PropTypes.string,
         onFetch: PropTypes.func,
         loadMore: PropTypes.bool,
+        defaultPage: PropTypes.number,
         defaultPageSize: PropTypes.number,
         defaultSort: PropTypes.object,
         query: PropTypes.object,
@@ -104,6 +105,7 @@ class ListHoc extends React.PureComponent {
         actionMethod: 'post',
         paginationSizeView: false,
         primaryKey: 'id',
+        defaultPage: 1,
         defaultPageSize: 20,
         loadMore: true,
         reverse: false,
@@ -119,7 +121,7 @@ class ListHoc extends React.PureComponent {
         const nextQuery = _merge({}, _get(nextProps, 'list.query'), _get(nextProps, 'formValues'));
         if (!_isEqual(prevQuery, nextQuery) || (!this.props.list && nextProps.list)) {
             this.props.dispatch(lazyFetch(this.props.listId, {
-                page: 1,
+                page: this.props.defaultPage,
                 query: nextQuery,
             }));
         }

@@ -93,7 +93,7 @@ class Pagination extends React.PureComponent {
                 // TODO
                 location.href = location.pathname + '?' + this.props.pageParam + '=' + page;
             } else {
-                this.props.dispatch(setPage(this.props.listId, page));
+                this.props.dispatch(setPage(this.props.listId, page, this.props.loadMore));
             }
         }
     }
