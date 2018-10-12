@@ -1,12 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import {change} from 'redux-form';
 import _remove from 'lodash-es/remove';
 import _filter from 'lodash-es/filter';
 import _isArray from 'lodash-es/isArray';
 import _isFunction from 'lodash-es/isFunction';
 import _isObject from 'lodash-es/isObject';
 
-import {http} from 'components';
+import {http, store} from 'components';
 
 export default () => WrappedComponent => class DataProviderHoc extends React.PureComponent {
 
@@ -284,13 +285,19 @@ export default () => WrappedComponent => class DataProviderHoc extends React.Pur
         const id = item.id;
 
         if (this.props.multiple) {
-            const values = this.props.input.value || [];
+            const values = [].concat(this.props.input.value || []);
             if (values.indexOf(id) !== -1) {
                 _remove(values, value => value === id);
             } else {
                 values.push(id);
             }
-            this.props.input.onChange([].concat(values));
+            this.props.input.onChange(values);
+
+            // Fix bug. Without this calls component Form is not get differect values
+            // in componentWillReceiveProps and onChange handlers is not called.
+            if (this.props.formId) {
+                store.dispatch(change(this.props.formId, this.props.input.name, values));
+            }
         } else {
             this.props.input.onChange(this.props.input.value !== id ? id : null);
             this._onClose();
