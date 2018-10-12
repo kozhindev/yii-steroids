@@ -88,9 +88,11 @@ class FieldHoc extends React.PureComponent {
         }
 
         if (!this.props.formId) {
-            this.state = {
-                value: _get(this.props, 'input.value'),
-            };
+            const state = {};
+            this.props._config.attributes.forEach(attribute => {
+                state['value' + attribute] = _get(this.props, ['input', 'value', attribute].filter(Boolean));
+            });
+            this.state = state;
             this._fieldId = FieldHoc.generateUniqueId();
         } else {
             this._fieldId = FieldHoc.getFieldId(this.props);
@@ -173,9 +175,7 @@ class FieldHoc extends React.PureComponent {
         if (this.props.formId) {
             return _get(this.props, 'formValue' + _upperFirst(attribute));
         } else {
-            return attribute
-                ? _get(this.state.value, attribute)
-                : this.state.value;
+            return this.state['value' + attribute];
         }
     }
 
@@ -184,12 +184,7 @@ class FieldHoc extends React.PureComponent {
             this.props.dispatch(change(this.props.formId, FieldHoc.getName(this.props, attribute), value));
         } else {
             this.setState({
-                value: attribute
-                    ? {
-                        ...this.state.value,
-                        [attribute]: value,
-                    }
-                    : value,
+                ['value' + attribute]: value,
             });
         }
     }
