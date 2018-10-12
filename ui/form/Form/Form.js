@@ -44,7 +44,10 @@ class Form extends React.PureComponent {
             PropTypes.func,
         ]),
         action: PropTypes.string,
-        layout: PropTypes.oneOf(['default', 'inline', 'horizontal']),
+        layout: PropTypes.oneOfType([
+            PropTypes.oneOf(['default', 'inline', 'horizontal']),
+            PropTypes.string,
+        ]),
         layoutProps: PropTypes.object,
         size: PropTypes.oneOf(['sm', 'md', 'lg']),
         onSubmit: PropTypes.func,
@@ -87,7 +90,10 @@ class Form extends React.PureComponent {
             PropTypes.string,
             PropTypes.func,
         ]),
-        layout: PropTypes.oneOf(['default', 'inline', 'horizontal']),
+        layout: PropTypes.oneOfType([
+            PropTypes.oneOf(['default', 'inline', 'horizontal']),
+            PropTypes.string,
+        ]),
         layoutProps: PropTypes.object,
         size: PropTypes.oneOf(['sm', 'md', 'lg']),
     };

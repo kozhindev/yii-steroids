@@ -61,7 +61,10 @@ class ListHoc extends React.PureComponent {
                 PropTypes.string,
                 PropTypes.func,
             ]),
-            layout: PropTypes.oneOf(['default', 'inline', 'horizontal']),
+            layout: PropTypes.oneOfType([
+                PropTypes.oneOf(['default', 'inline', 'horizontal']),
+                PropTypes.string,
+            ]),
             layoutProps: PropTypes.object,
             initialValues: PropTypes.object,
             fields: PropTypes.arrayOf(PropTypes.shape({
