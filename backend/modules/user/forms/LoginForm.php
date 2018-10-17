@@ -2,9 +2,9 @@
 
 namespace steroids\modules\user\forms;
 
-use steroids\validators\GoogleAuthenticator;
+use steroids\validators\GoogleAuthenticatorMfaValidator;
 use Yii;
-use steroids\validators\ReCaptchaValidator;
+use steroids\validators\ReCaptchaMfaValidator;
 use steroids\modules\user\forms\meta\LoginFormMeta;
 use steroids\modules\user\models\User;
 use steroids\modules\user\UserModule;
@@ -60,10 +60,10 @@ class LoginForm extends LoginFormMeta
                     $this->addError($attribute, \Yii::t('steroids', 'Email не подтвержден. Проверьте почту или восстановите пароль'));
                 }
             }],
-            ['reCaptcha', ReCaptchaValidator::class, 'when' => function () {
+            ['reCaptcha', ReCaptchaMfaValidator::class, 'when' => function () {
                 return UserModule::getInstance()->enableCaptcha;
             }],
-            ['google2faCode', GoogleAuthenticator::class],
+            ['google2faCode', GoogleAuthenticatorMfaValidator::class],
         ]);
     }
 
