@@ -3,6 +3,8 @@ import _trimStart from 'lodash-es/trimStart';
 import _trimEnd from 'lodash-es/trimEnd';
 import {setFlashes} from '../actions/notifications';
 import axios from 'axios';
+import _isFunction from 'lodash-es/isFunction';
+import _isObject from 'lodash-es/isObject';
 
 export default class HttpComponent {
 
@@ -85,11 +87,20 @@ export default class HttpComponent {
                     data: null,
                 };
 
+                this._isRendered = false;
+                this._cancels = [];
                 this._fetch = this._fetch.bind(this);
+                this._createCancelToken = this._createCancelToken.bind(this);
             }
 
             componentDidMount() {
+                this._isRendered = true;
                 this._fetch();
+            }
+
+            componentWillUnmount() {
+                this._isRendered = false;
+                this._cancels.forEach(cancel => cancel('Canceled on unmount component'));
             }
 
             render() {
@@ -102,15 +113,33 @@ export default class HttpComponent {
                 );
             }
 
+            _createCancelToken() {
+                return new axios.CancelToken(cancel => {
+                    this._cancels.push(cancel);
+                });
+            }
+
             _fetch(params) {
-                return requestFunc({
+                const result = requestFunc({
                     ...this.props,
                     ...params,
-                })
-                    .then(data => {
-                        this.setState({data});
-                        return data;
-                    });
+                    createCancelToken: this._createCancelToken,
+                });
+
+                if (_isObject(result)) {
+                    if (_isFunction(result.then)) {
+                        return result.then(data => {
+                            if (this._isRendered) {
+                                this.setState({data});
+                            }
+                            return data;
+                        });
+                    } else {
+                        this.setState({data: result});
+                    }
+                }
+
+                return result;
             }
 
         };
@@ -123,6 +152,10 @@ export default class HttpComponent {
                 ? `${_trimEnd(this.apiUrl, '/')}/${_trimStart(method, '/')}`
                 : location.pathname,
         };
+
+        if (options.cancelToken) {
+            axiosConfig.cancelToken = options.cancelToken;
+        }
 
         if (options.lazy) {
             if (this._lazyRequests[method]) {
