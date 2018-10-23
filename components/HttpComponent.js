@@ -146,11 +146,16 @@ export default class HttpComponent {
     }
 
     _send(method, config, options) {
+        if (method === null) {
+            method = location.pathname;
+        }
+        if (method.indexOf('://') === -1) {
+            method = `${_trimEnd(this.apiUrl, '/')}/${_trimStart(method, '/')}`;
+        }
+
         const axiosConfig = {
             ...config,
-            url: method !== null
-                ? `${_trimEnd(this.apiUrl, '/')}/${_trimStart(method, '/')}`
-                : location.pathname,
+            url: method,
         };
 
         if (options.cancelToken) {
