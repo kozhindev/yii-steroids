@@ -57,17 +57,41 @@ class RegistrationController extends Controller
 
     public function actionIndex()
     {
-        $model = new RegistrationForm();
-        if ($model->load(Yii::$app->request->post()) && $model->register()) {
-            return $this->redirect(UserModule::getInstance()->registrationRedirectUrl ?: ['success']);
-        }
-        if (Yii::$app->request->isAjax) {
-            return ActiveForm::renderAjax($model);
-        }
+        $formData = Yii::$app->request->post();
 
-        return $this->render($this->view->findOverwriteView('@steroids/modules/user/views/registration/registration'), [
-            'model' => $model,
+        return Yii::$app->authEnhancer->run([
+            'model' => new RegistrationForm(),
+            'request' => Yii::$app->request,
+            'data' => $formData,
+            'providers' => ['email'],
+            'onBeforeAuth' => function($workflow) {
+                $contextUser = $workflow->model->register();
+
+                return [
+                    'contextUser' => $contextUser,
+                ];
+            },
+            'onAfterAuth' => function() {
+                return $this->redirect(UserModule::getInstance()->registrationRedirectUrl ?: ['success']);
+            },
+            'showForm' => function($model) {
+                return $this->render($this->view->findOverwriteView('@steroids/modules/user/views/registration/registration'), [
+                    'model' => $model,
+                ]);
+            }
         ]);
+
+//        $model = new RegistrationForm();
+//        if ($model->load(Yii::$app->request->post()) && $model->register()) {
+//            return $this->redirect(UserModule::getInstance()->registrationRedirectUrl ?: ['success']);
+//        }
+//        if (Yii::$app->request->isAjax) {
+//            return ActiveForm::renderAjax($model);
+//        }
+//
+//        return $this->render($this->view->findOverwriteView('@steroids/modules/user/views/registration/registration'), [
+//            'model' => $model,
+//        ]);
     }
 
     public function actionEmailConfirm()
