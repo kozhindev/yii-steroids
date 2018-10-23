@@ -1,6 +1,6 @@
 <?php
 
-namespace steroids\auth;
+namespace steroids\auth\providers;
 
 use steroids\base\FormModel;
 use yii\web\IdentityInterface;
@@ -14,7 +14,8 @@ class BaseTwoFactorProvider extends FormModel
     /**
      * @var bool
      */
-    public $enable = false;
+    // @todo
+    public $enable = true;
 
     public function start()
     {

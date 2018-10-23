@@ -2,7 +2,10 @@
 
 namespace steroids\auth;
 
+use steroids\auth\providers\BaseTwoFactorProvider;
+use steroids\auth\providers\EmailRegistrationProvider;
 use yii\base\Component;
+use yii\web\IdentityInterface;
 
 class BaseTwoFactorWorkflow extends Component
 {
@@ -14,6 +17,30 @@ class BaseTwoFactorWorkflow extends Component
      */
     public function getProvider($name)
     {
-        return new BaseTwoFactorProvider();
+        switch ($name) {
+            case 'email':
+                return new EmailRegistrationProvider();
+            default:
+                return null;
+        }
+    }
+
+    public function getProviderForModel($model)
+    {
+        foreach ($this->providers as $providerName) {
+            $provider = $this->getProvider($providerName);
+
+            if (!$provider || !$provider->enable) {
+                continue;
+            }
+
+            if ($model instanceof IdentityInterface && !$provider->isEnableFor($model)) {
+                continue;
+            }
+
+            return $provider;
+        }
+
+        return null;
     }
 }
