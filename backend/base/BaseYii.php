@@ -10,13 +10,6 @@ use steroids\components\Types;
 
 require(STEROIDS_VENDOR_DIR . '/yiisoft/yii2/BaseYii.php');
 
-/**
- * @property-read AuthManager $authManager
- * @property-read FrontendState $frontendState
- * @property-read SiteMap $siteMap
- * @property-read Types $types
- * @property-read TwoFactorModelWorkflow $authEnhancer
- */
 class BaseYii extends \yii\BaseYii
 {
 }

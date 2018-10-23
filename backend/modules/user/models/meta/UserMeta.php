@@ -16,10 +16,10 @@ use \Yii;
  * @property string $sessionKey
  * @property string $language
  * @property string $lastLoginIp
- * @property string $emailConfirmKey
+ * @property string $confirmKey
  * @property string $createTime
  * @property string $updateTime
- * @property string $emailConfirmTime
+ * @property string $confirmTime
  * @property string $blockedTime
  * @property string $lastLoginTime
  * @property string $name
@@ -45,10 +45,10 @@ abstract class UserMeta extends Model
             ['email', 'required'],
             ['phone', 'string', 'max' => 32],
             ['passwordHash', 'string'],
-            [['sessionKey', 'emailConfirmKey'], 'string', 'max' => '32'],
+            [['sessionKey', 'confirmKey'], 'string', 'max' => '32'],
             ['language', 'string', 'max' => '10'],
             ['lastLoginIp', 'string', 'max' => '45'],
-            [['emailConfirmTime', 'blockedTime', 'lastLoginTime'], 'date', 'format' => 'php:Y-m-d H:i'],
+            [['confirmTime', 'blockedTime', 'lastLoginTime'], 'date', 'format' => 'php:Y-m-d H:i'],
         ];
     }
 
@@ -97,7 +97,7 @@ abstract class UserMeta extends Model
                 'label' => Yii::t('steroids', 'IP последнего входа'),
                 'stringLength' => '45'
             ],
-            'emailConfirmKey' => [
+            'confirmKey' => [
                 'label' => Yii::t('steroids', 'Ключ подтверждения почты'),
                 'stringLength' => '32'
             ],
@@ -110,7 +110,7 @@ abstract class UserMeta extends Model
                 'appType' => 'autoTime',
                 'touchOnUpdate' => true
             ],
-            'emailConfirmTime' => [
+            'confirmTime' => [
                 'label' => Yii::t('steroids', 'Дата подтверждения почты'),
                 'appType' => 'dateTime'
             ],

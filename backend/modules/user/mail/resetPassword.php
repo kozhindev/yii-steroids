@@ -2,7 +2,7 @@
 
 namespace app\views;
 
-use app\core\models\User;
+use steroids\modules\user\models\User;
 use Yii;
 use yii\helpers\Html;
 use yii\mail\BaseMessage;
@@ -13,7 +13,7 @@ use yii\web\View;
 /* @var $user User */
 
 $message->setSubject(\Yii::t('steroids', 'Смена пароля на сайте') . ' ' . Yii::$app->name);
-$link = Yii::$app->urlManager->createAbsoluteUrl(['/user/recovery/change', 'token' => $user->emailConfirmKey]);
+$link = Yii::$app->urlManager->createAbsoluteUrl(['/user/recovery/change', 'token' => $user->confirmKey]);
 ?>
 <h2>
     <?= \Yii::t('steroids', 'Здравствуйте, {username}.', [

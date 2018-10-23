@@ -55,9 +55,9 @@ export default class UserMeta extends Model {
                 'attribute': 'lastLoginIp',
                 'label': __('IP последнего входа')
             },
-            'emailConfirmKey': {
+            'confirmKey': {
                 'component': 'InputField',
-                'attribute': 'emailConfirmKey',
+                'attribute': 'confirmKey',
                 'label': __('Ключ подтверждения почты')
             },
             'createTime': {
@@ -70,9 +70,9 @@ export default class UserMeta extends Model {
                 'attribute': 'updateTime',
                 'label': __('Дата обновления')
             },
-            'emailConfirmTime': {
+            'confirmTime': {
                 'component': 'DateTimeField',
-                'attribute': 'emailConfirmTime',
+                'attribute': 'confirmTime',
                 'label': __('Дата подтверждения почты')
             },
             'blockedTime': {
@@ -122,7 +122,7 @@ export default class UserMeta extends Model {
             'lastLoginIp': {
                 'label': __('IP последнего входа')
             },
-            'emailConfirmKey': {
+            'confirmKey': {
                 'label': __('Ключ подтверждения почты')
             },
             'createTime': {
@@ -131,7 +131,7 @@ export default class UserMeta extends Model {
             'updateTime': {
                 'label': __('Дата обновления')
             },
-            'emailConfirmTime': {
+            'confirmTime': {
                 'label': __('Дата подтверждения почты')
             },
             'blockedTime': {

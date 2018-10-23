@@ -56,7 +56,7 @@ class LoginForm extends LoginFormMeta
                 }
             }],
             ['login', function ($attribute) {
-                if ($this->user && $this->user->emailConfirmKey) {
+                if ($this->user && $this->user->confirmKey) {
                     $this->addError($attribute, \Yii::t('steroids', 'Email не подтвержден. Проверьте почту или восстановите пароль'));
                 }
             }],

@@ -1,8 +1,8 @@
 import Model from 'yii-steroids/base/Model';
 
-export default class RegistrationFormMeta extends Model {
+export default class RegistrationEmailFormMeta extends Model {
 
-    static className = 'steroids\\modules\\user\\forms\\RegistrationForm';
+    static className = 'steroids\\modules\\user\\forms\\RegistrationEmailForm';
 
     static fields() {
         return {

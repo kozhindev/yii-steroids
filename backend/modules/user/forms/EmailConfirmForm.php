@@ -11,7 +11,7 @@ class EmailConfirmForm extends EmailConfirmFormMeta
     /**
      * @var User
      */
-    protected $user;
+    public $user;
 
     public function rules()
     {
@@ -22,7 +22,7 @@ class EmailConfirmForm extends EmailConfirmFormMeta
 
                 $this->user = $modelClass::findOne([
                     'email' => $this->email,
-                    'emailConfirmKey' => $this->$attribute,
+                    'confirmKey' => $this->$attribute,
                 ]);
                 if (!$this->user) {
                     $this->addError($attribute, \Yii::t('steroids', 'Код подтверждения неверен или устарел.'));
@@ -34,8 +34,6 @@ class EmailConfirmForm extends EmailConfirmFormMeta
     public function confirm()
     {
         if ($this->validate()) {
-            $this->user->emailConfirmKey = null;
-            $this->user->saveOrPanic();
             return \Yii::$app->user->login($this->user, 3600 * 24 * 30);
         }
 

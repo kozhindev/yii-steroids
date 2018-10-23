@@ -17,18 +17,6 @@ class BaseTwoFactorProvider extends FormModel
     // @todo
     public $enable = true;
 
-    public function start()
-    {
-
-    }
-
-    public function end()
-    {
-        $this->load($this->data);
-        if ($this->validate()) {
-            $this->endInternal();
-        }
-    }
 
     public function endInternal()
     {

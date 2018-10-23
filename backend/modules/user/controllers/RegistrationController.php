@@ -2,10 +2,12 @@
 
 namespace steroids\modules\user\controllers;
 
-use steroids\modules\user\forms\EmailConfirmForm;
-use steroids\modules\user\forms\RegistrationForm;
-use steroids\modules\user\UserModule;
+use steroids\modules\user\forms\meta\RegistrationPhoneFormMeta;
+use steroids\modules\user\forms\RegistrationPhoneForm;
 use Yii;
+use steroids\modules\user\forms\EmailConfirmForm;
+use steroids\modules\user\forms\RegistrationEmailForm;
+use steroids\modules\user\UserModule;
 use yii\web\Controller;
 use steroids\widgets\ActiveForm;
 
@@ -19,10 +21,17 @@ class RegistrationController extends Controller
                 'url' => ['/user/registration/index'],
                 'urlRule' => 'user/registration',
                 'items' => [
-                    'email-confirm' => [
-                        'label' => \Yii::t('steroids', 'Подтверждение email'),
-                        'url' => ['/user/registration/email-confirm'],
-                        'urlRule' => 'user/registration/email-confirm',
+                    'email' => [
+                        'label' => \Yii::t('steroids', 'Регистрация по email'),
+                        'url' => ['/user/registration/email'],
+                        'urlRule' => 'user/registration/email',
+                        'items' => [
+                            'email-confirm' => [
+                                'label' => \Yii::t('steroids', 'Подтверждение email'),
+                                'url' => ['/user/registration/email-confirm'],
+                                'urlRule' => 'user/registration/email-confirm',
+                            ],
+                        ],
                     ],
                     'success' => [
                         'label' => \Yii::t('steroids', 'Вы зарегистрировались'),
@@ -57,80 +66,83 @@ class RegistrationController extends Controller
 
     public function actionIndex()
     {
-        $formData = Yii::$app->request->post();
-
-        return Yii::$app->authEnhancer->run([
-            'model' => new RegistrationForm(),
-            'request' => Yii::$app->request,
-            'data' => $formData,
-            'providers' => ['email'],
-            'onBeforeAuth' => function($workflow) {
-                $contextUser = $workflow->model->register();
-
-                return [
-                    'contextUser' => $contextUser,
-                ];
-            },
-            'onAfterAuth' => function() {
-                return $this->redirect(UserModule::getInstance()->registrationRedirectUrl ?: ['success']);
-            },
-            'showForm' => function($model) {
-                return $this->render($this->view->findOverwriteView('@steroids/modules/user/views/registration/registration'), [
-                    'model' => $model,
-                ]);
-            }
-        ]);
-
-//        $model = new RegistrationForm();
-//        if ($model->load(Yii::$app->request->post()) && $model->register()) {
-//            return $this->redirect(UserModule::getInstance()->registrationRedirectUrl ?: ['success']);
-//        }
-//        if (Yii::$app->request->isAjax) {
-//            return ActiveForm::renderAjax($model);
-//        }
-//
-//        return $this->render($this->view->findOverwriteView('@steroids/modules/user/views/registration/registration'), [
-//            'model' => $model,
-//        ]);
     }
 
-    public function actionEmailConfirm()
+    public function actionEmail()
     {
-        $model = new EmailConfirmForm();
-        $model->load(array_merge(
-            Yii::$app->request->get(),
-            Yii::$app->request->post()
-        ));
+        $registrationFormClass = UserModule::getInstance()->modelsMap['RegistrationEmailForm'];
 
-        if ($model->confirm()) {
-            \Yii::$app->session->setFlash('success', \Yii::t('steroids', 'Email успешно подтверджен!'));
-            return $this->goHome();
+        /** @var RegistrationEmailForm $model */
+        $model = new $registrationFormClass();
+        if ($model->load(Yii::$app->request->post()) && $model->register()) {
+            \Yii::$app->authEnhancer->emailProvider->start($model->user);
+
+            return $this->redirect(UserModule::getInstance()->registrationRedirectUrl ?: ['success']);
         }
         if (Yii::$app->request->isAjax) {
             return ActiveForm::renderAjax($model);
         }
 
-        return $this->render($this->view->findOverwriteView('@steroids/modules/user/views/registration/email-confirm'), [
+        return $this->render(Yii::$app->view->findOverwriteView('@steroids/modules/user/views/registration/registration'), [
+            'model' => $model,
+        ]);
+    }
+
+    public function actionEmailConfirm()
+    {
+        $confirmFormClass = UserModule::getInstance()->modelsMap['EmailConfirmForm'];
+
+        /** @var EmailConfirmForm $model */
+        $model = new $confirmFormClass();
+        if ($model->load(Yii::$app->request->get()) && $model->confirm()) {
+            \Yii::$app->authEnhancer->emailProvider->end($model->user);
+
+            \Yii::$app->session->setFlash('success', \Yii::t('steroids', 'Email успешно подтверджен!'));
+            return $this->goHome();
+        }
+
+        return $this->render(Yii::$app->view->findOverwriteView('@steroids/modules/user/views/registration/email-failure'), [
+            'model' => $model,
+        ]);
+    }
+
+    public function actionSms()
+    {
+        $registrationFormClass = UserModule::getInstance()->modelsMap['RegistrationPhoneForm'];
+
+        /** @var RegistrationPhoneForm $model */
+        $model = new $registrationFormClass();
+        if ($model->load(Yii::$app->request->post()) && $model->register()) {
+            \Yii::$app->authEnhancer->phoneProvider->start($model->user);
+
+            // TODO Redirect to form with code
+            // TODO return $this->redirect(UserModule::getInstance()->registrationRedirectUrl ?: ['success']);
+        }
+        if (Yii::$app->request->isAjax) {
+            return ActiveForm::renderAjax($model);
+        }
+
+        return $this->render(Yii::$app->view->findOverwriteView('@steroids/modules/user/views/registration/registration'), [
             'model' => $model,
         ]);
     }
 
     public function actionSuccess()
     {
-        return $this->render($this->view->findOverwriteView('@steroids/modules/user/views/registration/success'));
+        return $this->render(Yii::$app->view->findOverwriteView('@steroids/modules/user/views/registration/success'));
     }
 
     public function actionAgreement()
     {
-        return $this->render($this->view->findOverwriteView('@steroids/modules/user/views/registration/agreement'));
+        return $this->render(Yii::$app->view->findOverwriteView('@steroids/modules/user/views/registration/agreement'));
     }
 
     /**
-     * @return RegistrationForm
+     * @return RegistrationEmailForm
      */
     public function actionApiIndex()
     {
-        $model = new RegistrationForm();
+        $model = new RegistrationEmailForm();
         $model->load(Yii::$app->request->post());
         $model->register();
         return $model;

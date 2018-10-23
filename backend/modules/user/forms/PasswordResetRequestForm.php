@@ -30,7 +30,7 @@ class PasswordResetRequestForm extends PasswordResetRequestFormMeta
                 'email' => $this->email,
             ]);
             if ($user) {
-                $user->emailConfirmKey = \Yii::$app->security->generateRandomString();
+                $user->confirmKey = \Yii::$app->security->generateRandomString();
                 $user->saveOrPanic();
 
                 \Yii::$app->mailer->compose(\Yii::$app->view->findOverwriteView('@steroids/modules/user/mail/resetPassword'), [

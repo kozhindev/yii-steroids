@@ -3,7 +3,7 @@
 namespace steroids\auth;
 
 use steroids\auth\providers\BaseTwoFactorProvider;
-use steroids\auth\providers\EmailRegistrationProvider;
+use steroids\auth\providers\EmailConfirmationProvider;
 use yii\base\Component;
 use yii\web\IdentityInterface;
 
@@ -19,7 +19,7 @@ class BaseTwoFactorWorkflow extends Component
     {
         switch ($name) {
             case 'email':
-                return new EmailRegistrationProvider();
+                return new EmailConfirmationProvider();
             default:
                 return null;
         }

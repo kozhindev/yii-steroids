@@ -2,6 +2,8 @@
 
 namespace steroids\auth;
 
+use steroids\auth\providers\EmailConfirmationProvider;
+use steroids\auth\providers\PhoneConfirmationProvider;
 use steroids\base\FormModel;
 use steroids\base\Model;
 use yii\web\IdentityInterface;
@@ -11,6 +13,8 @@ use Yii;
 
 /**
  * @property-read Session $session
+ * @property-read EmailConfirmationProvider $emailProvider
+ * @property-read PhoneConfirmationProvider $phoneProvider
  */
 class TwoFactorModelWorkflow extends BaseTwoFactorWorkflow
 {
@@ -73,6 +77,10 @@ class TwoFactorModelWorkflow extends BaseTwoFactorWorkflow
         } else {
             return call_user_func($this->showForm, $this->model);
         }
+    }
+
+    public function getEmailProvider() {
+
     }
 
 //    public function run($config)

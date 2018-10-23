@@ -23,7 +23,7 @@ class PasswordResetChangeForm extends PasswordResetChangeFormMeta
                 $modelClass = UserModule::getInstance()->modelsMap['User'];
 
                 $this->user = $modelClass::findOne([
-                    'emailConfirmKey' => $this->$attribute,
+                    'confirmKey' => $this->$attribute,
                 ]);
                 if (!$this->user) {
                     $this->addError($attribute, Yii::t('steroids', 'Код подтверждения неверен или устарел.'));
@@ -44,7 +44,7 @@ class PasswordResetChangeForm extends PasswordResetChangeFormMeta
         }
 
         $this->user->passwordHash = Yii::$app->security->generatePasswordHash($this->newPassword);
-        $this->user->emailConfirmKey = null;
+        $this->user->confirmKey = null;
         $this->user->saveOrPanic();
 
         return true;

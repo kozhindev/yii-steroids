@@ -3,6 +3,9 @@
 namespace steroids\modules\user;
 
 use steroids\base\Module;
+use steroids\modules\user\forms\EmailConfirmForm;
+use steroids\modules\user\forms\RegistrationEmailForm;
+use steroids\modules\user\forms\RegistrationPhoneForm;
 use steroids\modules\user\models\User;
 
 class UserModule extends Module
@@ -27,10 +30,15 @@ class UserModule extends Module
     public function init()
     {
         parent::init();
-        $this->modelsMap = $this->modelsMap ?: [];
 
-        $this->modelsMap = array_merge([
-            'User' => User::class,
-        ], $this->modelsMap);
+        $this->modelsMap = array_merge(
+            [
+                'User' => User::class,
+                'RegistrationEmailForm' => RegistrationEmailForm::class,
+                'EmailConfirmForm' => EmailConfirmForm::class,
+                'RegistrationPhoneForm' => RegistrationPhoneForm::class,
+            ],
+            $this->modelsMap ?: []
+        );
     }
 }
