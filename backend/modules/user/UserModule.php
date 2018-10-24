@@ -4,6 +4,7 @@ namespace steroids\modules\user;
 
 use steroids\base\Module;
 use steroids\modules\user\forms\EmailConfirmForm;
+use steroids\modules\user\forms\PhoneConfirmForm;
 use steroids\modules\user\forms\RegistrationEmailForm;
 use steroids\modules\user\forms\RegistrationPhoneForm;
 use steroids\modules\user\models\User;
@@ -37,6 +38,7 @@ class UserModule extends Module
                 'RegistrationEmailForm' => RegistrationEmailForm::class,
                 'EmailConfirmForm' => EmailConfirmForm::class,
                 'RegistrationPhoneForm' => RegistrationPhoneForm::class,
+                'PhoneConfirmForm' => PhoneConfirmForm::class,
             ],
             $this->modelsMap ?: []
         );

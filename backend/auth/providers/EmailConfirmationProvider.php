@@ -49,6 +49,7 @@ class EmailConfirmationProvider extends BaseProvider
     public function end($user)
     {
         $user->confirmKey = null;
+        $user->confirmTime = date('Y-m-d H:i');
         $user->saveOrPanic();
     }
 }

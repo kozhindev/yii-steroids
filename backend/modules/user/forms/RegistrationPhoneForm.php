@@ -12,6 +12,13 @@ class RegistrationPhoneForm extends RegistrationPhoneFormMeta
      */
     public $user;
 
+    public function rules()
+    {
+        return array_merge(parent::rules(), [
+            ['phone', 'unique', 'targetClass' => User::class],
+        ]);
+    }
+
     public function register()
     {
         if ($this->validate()) {

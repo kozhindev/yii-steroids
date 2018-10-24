@@ -2,7 +2,6 @@
 
 namespace steroids\modules\user\controllers;
 
-use steroids\modules\user\forms\meta\RegistrationPhoneFormMeta;
 use steroids\modules\user\forms\PhoneConfirmForm;
 use steroids\modules\user\forms\RegistrationPhoneForm;
 use Yii;
@@ -19,7 +18,7 @@ class RegistrationController extends Controller
         return [
             'user.registration' => [
                 'label' => \Yii::t('steroids', 'Регистрация'),
-                'url' => ['/user/registration/index'],
+                'url' => ['/user/registration/email'],
                 'urlRule' => 'user/registration',
                 'items' => [
                     'email' => [
@@ -41,8 +40,8 @@ class RegistrationController extends Controller
                         'items' => [
                             'sms-confirm' => [
                                 'label' => \Yii::t('steroids', 'Подтверждение телефона'),
-                                'url' => ['/user/registration/sms-confirm'],
-                                'urlRule' => 'user/registration/sms-confirm',
+                                'url' => ['/user/registration/sms-code'],
+                                'urlRule' => 'user/registration/sms-code',
                             ],
                         ],
                     ],
@@ -142,7 +141,7 @@ class RegistrationController extends Controller
 
     public function actionSmsCode()
     {
-        $registrationFormClass = UserModule::getInstance()->modelsMap['RegistrationPhoneForm'];
+        $registrationFormClass = UserModule::getInstance()->modelsMap['PhoneConfirmForm'];
 
         /** @var PhoneConfirmForm $model */
         $model = new $registrationFormClass();

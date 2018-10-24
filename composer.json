@@ -6,6 +6,7 @@
     "require": {
         "php": ">=7.1.0",
         "ext-mbstring": "*",
+        "ext-curl": "*",
         "lib-pcre": "*",
         "yidas/yii2-composer-bower-skip": "~2.0.5",
         "yiisoft/yii2": "~2.0.15",

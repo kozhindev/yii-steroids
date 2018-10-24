@@ -22,7 +22,6 @@ export default class UserMeta extends Model {
                 'attribute': 'email',
                 'type': 'email',
                 'label': __('Email'),
-                'required': true
             },
             'phone': {
                 'component': 'InputField',

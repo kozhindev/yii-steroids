@@ -42,7 +42,6 @@ abstract class UserMeta extends Model
         return [
             [['login', 'email', 'role', 'name'], 'string', 'max' => 255],
             ['email', 'email'],
-            ['email', 'required'],
             ['phone', 'string', 'max' => 32],
             ['passwordHash', 'string'],
             [['sessionKey', 'confirmKey'], 'string', 'max' => '32'],

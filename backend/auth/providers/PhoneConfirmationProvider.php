@@ -23,6 +23,18 @@ class PhoneConfirmationProvider extends BaseProvider
      */
     public $sms = 'sms';
 
+    public function init()
+    {
+        parent::init();
+
+        // Init SMS Component
+        if (is_array($this->sms)) {
+            $this->sms = \Yii::createObject($this->sms);
+        } elseif (is_string($this->sms)) {
+            $this->sms = \Yii::$app->get($this->sms);
+        }
+    }
+
     /**
      * @param int $length
      * @return string
@@ -34,20 +46,6 @@ class PhoneConfirmationProvider extends BaseProvider
             $result .= mt_rand(0, 9);
         }
         return $result;
-    }
-
-    /**
-     * @return BaseSmsGateway
-     * @throws \yii\base\InvalidConfigException
-     */
-    public function getSms()
-    {
-        if (is_array($this->sms)) {
-            $this->sms = \Yii::createObject($this->sms);
-        } elseif (is_string($this->sms)) {
-            return \Yii::$app->get($this->sms);
-        }
-        return $this->sms;
     }
 
     /**
@@ -94,6 +92,7 @@ class PhoneConfirmationProvider extends BaseProvider
         \Yii::$app->session->remove(self::SESSION_PHONE_KEY);
 
         $user->confirmKey = null;
+        $user->confirmTime = date('Y-m-d H:i');
         $user->saveOrPanic();
     }
 }
