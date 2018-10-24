@@ -118,6 +118,9 @@ class DefaultConfig
                 'multiFactorAuth',
             ],
             'components' => [
+                'authEnhancer' => [
+                    'class' => 'steroids\auth\AuthEnhancer',
+                ],
                 'authManager' => [
                     'class' => 'steroids\components\AuthManager',
                 ],
@@ -195,6 +198,9 @@ class DefaultConfig
                 ],
                 'siteMap' => [
                     'class' => 'steroids\components\SiteMap',
+                ],
+                'sms' => [
+                    'class' => 'steroids\sms\SmsRu',
                 ],
                 'urlManager' => [
                     'class' => 'steroids\components\UrlManager',
