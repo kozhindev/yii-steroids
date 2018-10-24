@@ -3,9 +3,9 @@
 namespace steroids\auth\providers;
 
 use steroids\modules\user\models\User;
-use yii\base\BaseObject;
+use steroids\modules\user\UserModule;
 
-class EmailConfirmationProvider extends BaseObject
+class EmailConfirmationProvider extends BaseProvider
 {
     /**
      * @param User $user
@@ -24,6 +24,22 @@ class EmailConfirmationProvider extends BaseObject
             ])
             ->setTo($user->email)
             ->send();
+    }
+
+    /**
+     * @param string $email
+     * @param string $code
+     * @return User|null
+     * @throws \yii\base\Exception
+     */
+    public function check($email, $code)
+    {
+        /** @var User $modelClass */
+        $modelClass = UserModule::getInstance()->modelsMap['User'];
+        return $modelClass::findOne([
+            'email' => $email,
+            'confirmKey' => $code,
+        ]);
     }
 
     /**

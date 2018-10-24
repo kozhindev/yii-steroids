@@ -2,12 +2,11 @@
 
 namespace steroids\modules\user\forms;
 
-use steroids\auth\providers\EmailConfirmationProvider;
-use steroids\modules\user\forms\meta\EmailConfirmFormMeta;
+use steroids\auth\providers\PhoneConfirmationProvider;
+use steroids\modules\user\forms\meta\PhoneConfirmFormMeta;
 use steroids\modules\user\models\User;
-use steroids\modules\user\UserModule;
 
-class EmailConfirmForm extends EmailConfirmFormMeta
+class PhoneConfirmForm extends PhoneConfirmFormMeta
 {
     /**
      * @var User
@@ -15,7 +14,7 @@ class EmailConfirmForm extends EmailConfirmFormMeta
     public $user;
 
     /**
-     * @var EmailConfirmationProvider
+     * @var PhoneConfirmationProvider
      */
     public $provider;
 
@@ -23,7 +22,7 @@ class EmailConfirmForm extends EmailConfirmFormMeta
     {
         return array_merge(parent::rules(), [
             ['code', function ($attribute) {
-                $this->user = $this->provider->check($this->email, $this->$attribute);
+                $this->user = $this->provider->check($this->$attribute);
                 if (!$this->user) {
                     $this->addError($attribute, \Yii::t('steroids', 'Код подтверждения неверен или устарел.'));
                 }

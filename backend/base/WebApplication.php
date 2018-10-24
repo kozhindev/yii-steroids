@@ -2,7 +2,7 @@
 
 namespace steroids\base;
 
-use steroids\auth\TwoFactorModelWorkflow;
+use steroids\auth\AuthEnhancer;
 use steroids\components\MultiFactorAuthManager;
 use steroids\components\Types;
 use steroids\components\UrlManager;
@@ -20,7 +20,7 @@ use yii\web\Application;
  * @property-read Types $types
  * @property-read UrlManager $urlManager
  * @property-read MultiFactorAuthManager $multiFactorAuth
- * @property-read TwoFactorModelWorkflow $authEnhancer
+ * @property-read AuthEnhancer $authEnhancer
  * @property-read View $view
  */
 class WebApplication extends Application

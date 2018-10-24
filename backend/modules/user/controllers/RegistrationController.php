@@ -3,6 +3,7 @@
 namespace steroids\modules\user\controllers;
 
 use steroids\modules\user\forms\meta\RegistrationPhoneFormMeta;
+use steroids\modules\user\forms\PhoneConfirmForm;
 use steroids\modules\user\forms\RegistrationPhoneForm;
 use Yii;
 use steroids\modules\user\forms\EmailConfirmForm;
@@ -30,6 +31,18 @@ class RegistrationController extends Controller
                                 'label' => \Yii::t('steroids', 'Подтверждение email'),
                                 'url' => ['/user/registration/email-confirm'],
                                 'urlRule' => 'user/registration/email-confirm',
+                            ],
+                        ],
+                    ],
+                    'sms' => [
+                        'label' => \Yii::t('steroids', 'Регистрация по телефону'),
+                        'url' => ['/user/registration/sms'],
+                        'urlRule' => 'user/registration/sms',
+                        'items' => [
+                            'sms-confirm' => [
+                                'label' => \Yii::t('steroids', 'Подтверждение телефона'),
+                                'url' => ['/user/registration/sms-confirm'],
+                                'urlRule' => 'user/registration/sms-confirm',
                             ],
                         ],
                     ],
@@ -83,7 +96,7 @@ class RegistrationController extends Controller
             return ActiveForm::renderAjax($model);
         }
 
-        return $this->render(Yii::$app->view->findOverwriteView('@steroids/modules/user/views/registration/registration'), [
+        return $this->render(Yii::$app->view->findOverwriteView('@steroids/modules/user/views/registration/registration-email'), [
             'model' => $model,
         ]);
     }
@@ -94,8 +107,9 @@ class RegistrationController extends Controller
 
         /** @var EmailConfirmForm $model */
         $model = new $confirmFormClass();
+        $model->provider = \Yii::$app->authEnhancer->emailProvider;
         if ($model->load(Yii::$app->request->get()) && $model->confirm()) {
-            \Yii::$app->authEnhancer->emailProvider->end($model->user);
+            $model->provider->end($model->user);
 
             \Yii::$app->session->setFlash('success', \Yii::t('steroids', 'Email успешно подтверджен!'));
             return $this->goHome();
@@ -115,14 +129,35 @@ class RegistrationController extends Controller
         if ($model->load(Yii::$app->request->post()) && $model->register()) {
             \Yii::$app->authEnhancer->phoneProvider->start($model->user);
 
-            // TODO Redirect to form with code
-            // TODO return $this->redirect(UserModule::getInstance()->registrationRedirectUrl ?: ['success']);
+            return $this->redirect(['sms-code']);
         }
         if (Yii::$app->request->isAjax) {
             return ActiveForm::renderAjax($model);
         }
 
-        return $this->render(Yii::$app->view->findOverwriteView('@steroids/modules/user/views/registration/registration'), [
+        return $this->render(Yii::$app->view->findOverwriteView('@steroids/modules/user/views/registration/registration-phone'), [
+            'model' => $model,
+        ]);
+    }
+
+    public function actionSmsCode()
+    {
+        $registrationFormClass = UserModule::getInstance()->modelsMap['RegistrationPhoneForm'];
+
+        /** @var PhoneConfirmForm $model */
+        $model = new $registrationFormClass();
+        $model->provider = \Yii::$app->authEnhancer->phoneProvider;
+        if ($model->load(Yii::$app->request->post()) && $model->confirm()) {
+            \Yii::$app->authEnhancer->phoneProvider->end($model->user);
+
+            \Yii::$app->session->setFlash('success', \Yii::t('steroids', 'Телефон успешно подтверджен!'));
+            return $this->goHome();
+        }
+        if (Yii::$app->request->isAjax) {
+            return ActiveForm::renderAjax($model);
+        }
+
+        return $this->render(Yii::$app->view->findOverwriteView('@steroids/modules/user/views/registration/phone-confirm'), [
             'model' => $model,
         ]);
     }
@@ -136,6 +171,9 @@ class RegistrationController extends Controller
     {
         return $this->render(Yii::$app->view->findOverwriteView('@steroids/modules/user/views/registration/agreement'));
     }
+
+
+
 
     /**
      * @return RegistrationEmailForm

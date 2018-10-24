@@ -2,12 +2,6 @@
 
 namespace steroids\base;
 
-use steroids\auth\TwoFactorModelWorkflow;
-use steroids\components\AuthManager;
-use steroids\components\FrontendState;
-use steroids\components\SiteMap;
-use steroids\components\Types;
-
 require(STEROIDS_VENDOR_DIR . '/yiisoft/yii2/BaseYii.php');
 
 class BaseYii extends \yii\BaseYii
