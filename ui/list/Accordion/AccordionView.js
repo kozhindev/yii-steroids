@@ -13,6 +13,7 @@ export default class AccordionView extends React.PureComponent {
             id: PropTypes.oneOfType([
                 PropTypes.number,
                 PropTypes.string,
+                PropTypes.bool,
             ]),
             index: PropTypes.number,
             isOpen: PropTypes.bool,
