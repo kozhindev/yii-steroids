@@ -39,6 +39,8 @@ class AccessRulesEditor extends React.PureComponent {
             return null;
         }
 
+        console.log(453453, this.props.roles.length);
+
         return (
             <Form
                 formId={FORM_ID}
@@ -50,7 +52,7 @@ class AccessRulesEditor extends React.PureComponent {
                     className={bem.element('roles')}
                     style={{
                         marginLeft: 400,
-                        width: (400 + (this.props.roles.length * 200)) + '%',
+                        width: (400 + (this.props.roles.length * 200)),
                     }}
                 >
                     {this.props.roles.map(role => (
