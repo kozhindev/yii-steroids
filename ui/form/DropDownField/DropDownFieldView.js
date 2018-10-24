@@ -26,6 +26,7 @@ export default class DropDownFieldView extends React.PureComponent {
             id: PropTypes.oneOfType([
                 PropTypes.number,
                 PropTypes.string,
+                PropTypes.bool,
             ]),
             label: PropTypes.string,
         })),
@@ -33,6 +34,7 @@ export default class DropDownFieldView extends React.PureComponent {
             id: PropTypes.oneOfType([
                 PropTypes.number,
                 PropTypes.string,
+                PropTypes.bool,
             ]),
             label: PropTypes.string,
             isSelected: PropTypes.bool,

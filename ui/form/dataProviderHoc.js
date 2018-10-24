@@ -6,6 +6,7 @@ import _filter from 'lodash-es/filter';
 import _isArray from 'lodash-es/isArray';
 import _isFunction from 'lodash-es/isFunction';
 import _isObject from 'lodash-es/isObject';
+import _includes from 'lodash-es/includes';
 
 import {http, store} from 'components';
 
@@ -26,6 +27,7 @@ export default () => WrappedComponent => class DataProviderHoc extends React.Pur
                 id: PropTypes.oneOfType([
                     PropTypes.number,
                     PropTypes.string,
+                    PropTypes.bool,
                 ]),
                 label: PropTypes.string,
             })),
@@ -172,8 +174,8 @@ export default () => WrappedComponent => class DataProviderHoc extends React.Pur
      * @private
      */
     _findSelectedItems(items, value) {
-        const selectedValues = [].concat(value || []);
-        return items.filter(item => selectedValues.indexOf(item.id) !== -1);
+        const selectedValues = value === false || value === 0 ? [value] : [].concat(value || []);
+        return items.filter(item => _includes(selectedValues, item.id));
     }
 
     /**
