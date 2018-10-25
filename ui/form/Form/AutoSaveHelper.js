@@ -1,4 +1,5 @@
 import {initialize} from 'redux-form';
+import _isString from 'lodash-es/isString';
 
 import {clientStorage, store} from 'components';
 
@@ -8,7 +9,7 @@ export default class AutoSaveHelper {
 
     static restore(formId, initialValues) {
         const values = clientStorage.get(`${AutoSaveHelper.STORAGE_KEY_PREFIX}_${formId}`) || '';
-        if (values) {
+        if (_isString(values) && values.substr(0, 1) === '{') {
             store.dispatch(initialize(formId, {
                 ...JSON.parse(values),
                 ...initialValues,

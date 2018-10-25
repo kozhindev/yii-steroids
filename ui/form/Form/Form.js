@@ -135,7 +135,7 @@ class Form extends React.PureComponent {
             if (this.props.onChange) {
                 this.props.onChange(nextProps.formValues);
             }
-            if (this.props.autoSave) {
+            if (this.props.autoSave && nextProps.formValues) {
                 AutoSaveHelper.save(this.props.formId, nextProps.formValues);
             }
             if (this.props.syncWithAddressBar) {
