@@ -39,8 +39,6 @@ class AccessRulesEditor extends React.PureComponent {
             return null;
         }
 
-        console.log(453453, this.props.roles.length);
-
         return (
             <Form
                 formId={FORM_ID}

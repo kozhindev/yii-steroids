@@ -18,6 +18,8 @@ class PhoneConfirmationProvider extends BaseProvider
      */
     public $codeLength = 4;
 
+    public $useSession = true;
+
     /**
      * @var string|array
      */
@@ -54,7 +56,9 @@ class PhoneConfirmationProvider extends BaseProvider
      */
     public function start($user)
     {
-        \Yii::$app->session->set(self::SESSION_PHONE_KEY, $user->phone);
+        if ($this->useSession) {
+            \Yii::$app->session->set(self::SESSION_PHONE_KEY, $user->phone);
+        }
 
         $user->confirmKey = static::generateRandomNumbers($this->codeLength);
         $user->saveOrPanic();
@@ -65,12 +69,16 @@ class PhoneConfirmationProvider extends BaseProvider
 
     /**
      * @param string $code
+     * @param string|null $phone
      * @return User|null
      * @throws \yii\base\Exception
      */
-    public function check($code)
+    public function check($code, $phone = null)
     {
-        $phone = \Yii::$app->session->get(self::SESSION_PHONE_KEY);
+        if ($this->useSession) {
+            $phone = \Yii::$app->session->get(self::SESSION_PHONE_KEY);
+        }
+
         if (!$phone) {
             return null;
         }
@@ -89,7 +97,9 @@ class PhoneConfirmationProvider extends BaseProvider
      */
     public function end($user)
     {
-        \Yii::$app->session->remove(self::SESSION_PHONE_KEY);
+        if ($this->useSession) {
+            \Yii::$app->session->remove(self::SESSION_PHONE_KEY);
+        }
 
         $user->confirmKey = null;
         $user->confirmTime = date('Y-m-d H:i');

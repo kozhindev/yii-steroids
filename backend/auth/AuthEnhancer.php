@@ -29,7 +29,7 @@ class AuthEnhancer extends Component
     public function init() {
         parent::init();
 
-        $this->providers = array_merge(
+        $this->providers = ArrayHelper::merge(
             [
                 self::PROVIDER_EMAIL => [
                     'class' => EmailConfirmationProvider::class,

@@ -47,7 +47,7 @@ abstract class UserMeta extends Model
             [['sessionKey', 'confirmKey'], 'string', 'max' => '32'],
             ['language', 'string', 'max' => '10'],
             ['lastLoginIp', 'string', 'max' => '45'],
-            [['confirmTime', 'blockedTime', 'lastLoginTime'], 'date', 'format' => 'php:Y-m-d H:i'],
+            [['confirmTime', 'blockedTime', 'lastLoginTime'], 'date', 'format' => 'php:Y-m-d H:i:s'],
         ];
     }
 
@@ -97,7 +97,7 @@ abstract class UserMeta extends Model
                 'stringLength' => '45'
             ],
             'confirmKey' => [
-                'label' => Yii::t('steroids', 'Ключ подтверждения почты'),
+                'label' => Yii::t('steroids', 'Ключ подтверждения'),
                 'stringLength' => '32'
             ],
             'createTime' => [
@@ -110,7 +110,7 @@ abstract class UserMeta extends Model
                 'touchOnUpdate' => true
             ],
             'confirmTime' => [
-                'label' => Yii::t('steroids', 'Дата подтверждения почты'),
+                'label' => Yii::t('steroids', 'Дата подтверждения'),
                 'appType' => 'dateTime'
             ],
             'blockedTime' => [

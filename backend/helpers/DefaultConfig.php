@@ -266,8 +266,8 @@ class DefaultConfig
             }
 
             self::$moduleClasses = array_merge(
-                static::scanModuleClasses($steroidsConfig['appDir'], $steroidsConfig['namespace']),
-                static::scanModuleClasses(dirname(__DIR__) . '/modules', 'steroids\\modules')
+                static::scanModuleClasses(dirname(__DIR__) . '/modules', 'steroids\\modules'),
+                static::scanModuleClasses($steroidsConfig['appDir'], $steroidsConfig['namespace'])
             );
         }
 

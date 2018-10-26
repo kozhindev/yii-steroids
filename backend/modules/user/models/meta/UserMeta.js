@@ -57,7 +57,7 @@ export default class UserMeta extends Model {
             'confirmKey': {
                 'component': 'InputField',
                 'attribute': 'confirmKey',
-                'label': __('Ключ подтверждения почты')
+                'label': __('Ключ подтверждения')
             },
             'createTime': {
                 'component': 'DateTimeField',
@@ -72,7 +72,7 @@ export default class UserMeta extends Model {
             'confirmTime': {
                 'component': 'DateTimeField',
                 'attribute': 'confirmTime',
-                'label': __('Дата подтверждения почты')
+                'label': __('Дата подтверждения')
             },
             'blockedTime': {
                 'component': 'DateTimeField',
