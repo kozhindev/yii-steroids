@@ -15,10 +15,10 @@ class SmsRu extends BaseSmsGateway
     /**
      * @param string $to
      * @param string $text
-     * @param string $from
+     * @param string [$from]
      * @throws Exception
      */
-    public function internalSend($to, $text, $from)
+    public function internalSend($to, $text, $from = null)
     {
         $ch = curl_init("http://sms.ru/sms/send");
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
