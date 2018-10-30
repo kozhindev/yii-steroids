@@ -102,7 +102,7 @@ class PhoneConfirmationProvider extends BaseProvider
         }
 
         $user->confirmKey = null;
-        $user->confirmTime = date('Y-m-d H:i');
+        $user->confirmTime = date('Y-m-d H:i:s');
         $user->saveOrPanic();
     }
 }
