@@ -14,10 +14,23 @@ class PhoneConfirmationProvider extends BaseProvider
     const SESSION_PHONE_KEY = 'auth_phone_confirmation_phone';
 
     /**
+     * @var string
+     */
+    public $keyAttribute = 'phoneConfirmKey';
+
+    /**
+     * @var string
+     */
+    public $timeAttribute = 'phoneConfirmTime';
+
+    /**
      * @var int
      */
     public $codeLength = 4;
 
+    /**
+     * @var bool
+     */
     public $useSession = true;
 
     /**
@@ -60,10 +73,10 @@ class PhoneConfirmationProvider extends BaseProvider
             \Yii::$app->session->set(self::SESSION_PHONE_KEY, $user->phone);
         }
 
-        $user->confirmKey = static::generateRandomNumbers($this->codeLength);
+        $user->setAttribute($this->keyAttribute, static::generateRandomNumbers($this->codeLength));
         $user->saveOrPanic();
 
-        $message = \Yii::t('steroids', 'Проверочный код: {code}', ['code' => $user->confirmKey]);
+        $message = \Yii::t('steroids', 'Проверочный код: {code}', ['code' => $user->getAttribute($this->keyAttribute)]);
         $this->sms->send($user->phone, $message);
     }
 
@@ -87,7 +100,7 @@ class PhoneConfirmationProvider extends BaseProvider
         $modelClass = UserModule::getInstance()->modelsMap['User'];
         return $modelClass::findOne([
             'phone' => $phone,
-            'confirmKey' => $code,
+            $this->keyAttribute => $code,
         ]);
     }
 
@@ -101,8 +114,8 @@ class PhoneConfirmationProvider extends BaseProvider
             \Yii::$app->session->remove(self::SESSION_PHONE_KEY);
         }
 
-        $user->confirmKey = null;
-        $user->confirmTime = date('Y-m-d H:i:s');
+        $user->setAttribute($this->keyAttribute, null);
+        $user->setAttribute($this->timeAttribute, date('Y-m-d H:i:s'));
         $user->saveOrPanic();
     }
 }

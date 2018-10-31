@@ -8,7 +8,7 @@ use yii\helpers\Url;
 /* @var $user \steroids\modules\user\models\User */
 
 $message->setSubject(\Yii::t('steroids', 'Добро пожаловать на сайт {siteName}', ['siteName' => \Yii::$app->name]));
-$confirmUrl = Url::to(['/user/registration/email-confirm', 'email' => $user->email, 'code' => $user->confirmKey], true);
+$confirmUrl = Url::to(['/user/registration/email-confirm', 'email' => $user->email, 'code' => $user->emailConfirmKey], true);
 ?>
 <h2><?= \Yii::t('steroids', 'Добро пожаловать!') ?></h2>
 <h2>
