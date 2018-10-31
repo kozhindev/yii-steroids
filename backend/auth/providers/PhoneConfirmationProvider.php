@@ -115,7 +115,7 @@ class PhoneConfirmationProvider extends BaseProvider
         }
 
         $user->setAttribute($this->keyAttribute, null);
-        $user->setAttribute($this->timeAttribute, date('Y-m-d H:i'));
+        $user->setAttribute($this->timeAttribute, date('Y-m-d H:i:s'));
         $user->saveOrPanic();
     }
 }
