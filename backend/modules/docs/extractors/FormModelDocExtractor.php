@@ -2,6 +2,7 @@
 
 namespace steroids\modules\docs\extractors;
 
+use steroids\base\BaseSchema;
 use steroids\base\FormModel;
 use steroids\base\Model;
 use steroids\base\Type;
@@ -14,7 +15,7 @@ use yii\helpers\ArrayHelper;
 class FormModelDocExtractor extends BaseDocExtractor
 {
     /**
-     * @var FormModel|Model
+     * @var FormModel|Model|BaseSchema
      */
     public $className;
 
@@ -36,7 +37,7 @@ class FormModelDocExtractor extends BaseDocExtractor
 
         $required = [];
         $requestSchema = SwaggerTypeExtractor::getInstance()->extractModel($this->className, $this->getRequestFields($model, $required));
-        $responseSchema = SwaggerTypeExtractor::getInstance()->extractModel($this->className, $model->fields());
+        $responseSchema = SwaggerTypeExtractor::getInstance()->extractObject($this->className, $model->fields());
 
         $this->swaggerJson->updatePath($this->url, $this->method, [
             'parameters' => empty($requestSchema) ? null : [
@@ -84,6 +85,10 @@ class FormModelDocExtractor extends BaseDocExtractor
      */
     protected function getRequestFields($model, &$required)
     {
+        if ($model instanceof BaseSchema) {
+            return [];
+        }
+
         $requestFields = [];
         if (strtoupper($this->method) !== 'GET' || !($model instanceof Model)) {
             foreach ($model->safeAttributes() as $attribute) {

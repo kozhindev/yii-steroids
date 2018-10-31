@@ -29,7 +29,7 @@ abstract class BaseDocExtractor extends BaseObject
                     'method' => $method,
                 ]);
             }
-            if (is_subclass_of($type, FormModel::class) || is_subclass_of($type, Model::class)) {
+            if (is_subclass_of($type, FormModel::class) || is_subclass_of($type, Model::class) || is_subclass_of($type, BaseSchema::class)) {
                 return new FormModelDocExtractor([
                     'swaggerJson' => $this->swaggerJson,
                     'className' => $type,

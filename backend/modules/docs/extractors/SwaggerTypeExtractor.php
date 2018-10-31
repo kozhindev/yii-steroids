@@ -3,11 +3,13 @@
 namespace steroids\modules\docs\extractors;
 
 use Doctrine\Common\Annotations\TokenParser;
+use steroids\base\BaseSchema;
 use steroids\base\Type;
 use yii\base\BaseObject;
 use yii\base\Model;
 use yii\db\ActiveRecord;
 use yii\helpers\ArrayHelper;
+use yii\helpers\Json;
 
 /**
  * Class ControllerDocExtractor
@@ -54,13 +56,31 @@ class SwaggerTypeExtractor extends BaseObject
         return static::$_instance;
     }
 
+    public static function fixJson($json)
+    {
+        $newJSON = '';
+        $jsonLength = strlen($json);
+        for ($i = 0; $i < $jsonLength; $i++) {
+            if ($json[$i] == '"' || $json[$i] == "'") {
+                $nextQuote = strpos($json, $json[$i], $i + 1);
+                $quoteContent = substr($json, $i + 1, $nextQuote - $i - 1);
+                $newJSON .= '"' . str_replace('"', "'", $quoteContent) . '"';
+                $i = $nextQuote;
+            } else {
+                $newJSON .= $json[$i];
+            }
+        }
+        return $newJSON;
+    }
+
     /**
      * @param string $type
      * @param string $inClassName
+     * @param string $phpdoc
      * @return array
      * @throws \ReflectionException
      */
-    public function extractType($type, $inClassName)
+    public function extractType($type, $inClassName, $phpdoc = null)
     {
         if (!$type) {
             return [
@@ -87,6 +107,41 @@ class SwaggerTypeExtractor extends BaseObject
             $schema = $this->extractObject($className);
         }
 
+        if ($phpdoc) {
+            // Class description
+            if (preg_match('/@property(-read)? +[^ ]+ \$[^ ]+ (.*)/u', $phpdoc, $matches)) {
+                if (!empty($matches[2])) {
+                    $schema['description'] = $matches[2];
+                }
+            } else {
+                // Find first comment line as description
+                foreach (explode("\n", $phpdoc) as $line) {
+                    $line = preg_replace('/^\s*\\/?\*+/', '', $line);
+                    $line = trim($line);
+                    if ($line) {
+                        $schema['description'] = $line;
+                        break;
+                    }
+                }
+
+                if (preg_match('/@example (.*)/u', $phpdoc, $matches)) {
+                    $schema['example'] = trim($matches[1]);
+                }
+
+                // Get description from type param
+                if (preg_match('/@(var|type) +([^ |\n]+) (.*)/u', $phpdoc, $matches)) {
+                    if (!empty($matches[3])) {
+                        $schema['description'] = $matches[3];
+                    }
+                }
+            }
+        }
+
+        // Support array/object examples
+        if (!empty($schema['example']) && in_array(substr($schema['example'], 0, 1), ['[', '{'])) {
+            $schema['example'] = Json::decode(static::fixJson($schema['example']));
+        }
+
         return $isArray
             ? [
                 'type' => 'array',
@@ -103,6 +158,11 @@ class SwaggerTypeExtractor extends BaseObject
      */
     public function extractObject($className, $fields = null)
     {
+        // Detect schema
+        if (is_subclass_of($className, BaseSchema::class)) {
+            return $this->extractSchema($className, $fields);
+        }
+
         // Detect model
         if (is_subclass_of($className, Model::class)) {
             return $this->extractModel($className, $fields);
@@ -136,9 +196,10 @@ class SwaggerTypeExtractor extends BaseObject
      */
     public function extractAttribute($className, $attribute)
     {
-        $type = $this->findAttributeType($className, $attribute);
+        $phpdoc = null;
+        $type = $this->findAttributeType($className, $attribute, $phpdoc);
 
-        return $this->extractType($type, $className);
+        return $this->extractType($type, $className, $phpdoc);
     }
 
     /**
@@ -220,6 +281,41 @@ class SwaggerTypeExtractor extends BaseObject
         ];
     }
 
+    public function extractSchema($className, $fields = null)
+    {
+        /** @var BaseSchema $schema */
+        $schema = new $className();
+
+        if ($fields === null) {
+            $fields = $schema->fields();
+        }
+
+        $properties = [];
+        foreach ($fields as $key => $attribute) {
+            $property = null;
+
+            if (is_int($key) && is_string($attribute)) {
+                $key = $attribute;
+
+                if ($schema->canGetProperty($attribute, true, false)) {
+                    $property = $this->extractAttribute($className, $attribute);
+                } else {
+                    $modelClass = $this->findAttributeType($className, 'model');
+                    $property = ArrayHelper::getValue($this->extractModel($modelClass, [$attribute]), ['properties', $attribute]);
+                }
+            }
+
+            if ($property) {
+                $properties[$key] = $property;
+            }
+        }
+
+        return [
+            'type' => 'object',
+            'properties' => $properties,
+        ];
+    }
+
     /**
      * @param string $className
      * @param string $methodName
@@ -238,33 +334,38 @@ class SwaggerTypeExtractor extends BaseObject
         }
 
         if (preg_match('/@return ([a-z0-9_]+)/i', $comment, $match)) {
-            return $this->extractType($match[1], $className);
+            return $this->extractType($match[1], $className, $comment);
         }
 
-        return $this->extractType(null, $className);
+        return $this->extractType(null, $className, $comment);
     }
 
     /**
      * @param string $className
      * @param string $attribute
+     * @param string $phpdoc
      * @return string|null
      * @throws \ReflectionException
      */
-    public function findAttributeType($className, $attribute)
+    public function findAttributeType($className, $attribute, &$phpdoc = null)
     {
         $type = null;
         $classInfo = new \ReflectionClass($className);
+        $inClassName = $className;
 
         // Find is class php doc
-        if (preg_match('/@property(-read)? +([^ |\n]+) \$' . preg_quote($attribute) . '/', $classInfo->getDocComment(), $matchClass)) {
+        if (preg_match('/@property(-read)? +([^ |\n]+) \$' . preg_quote($attribute) . ' .*/u', $classInfo->getDocComment(), $matchClass)) {
             $type = $matchClass[2];
+            $phpdoc = $matchClass[0];
         }
 
         // Find in class property php doc
         if (!$type) {
             $propertyInfo = $classInfo->hasProperty($attribute) ? $classInfo->getProperty($attribute) : null;
-            if ($propertyInfo && preg_match('/@(var|type) +([^ |\n]+)/', $propertyInfo->getDocComment(), $matchProperty)) {
+            if ($propertyInfo && preg_match('/@(var|type) +([^ |\n]+)/u', $propertyInfo->getDocComment(), $matchProperty)) {
                 $type = $matchProperty[2];
+                $inClassName = $propertyInfo->getDeclaringClass()->getName();
+                $phpdoc = $propertyInfo->getDocComment();
             }
         }
 
@@ -272,8 +373,10 @@ class SwaggerTypeExtractor extends BaseObject
         if (!$type) {
             $getter = 'get' . ucfirst($attribute);
             $methodInfo = $classInfo->hasMethod($getter) ? $classInfo->getMethod($getter) : null;
-            if ($methodInfo && preg_match('/@return +([^ |\n]+)/', $methodInfo->getDocComment(), $matchMethod)) {
+            if ($methodInfo && preg_match('/@return +([^ |\n]+)/u', $methodInfo->getDocComment(), $matchMethod)) {
                 $type = $matchMethod[1];
+                $inClassName = $methodInfo->getDeclaringClass()->getName();
+                $phpdoc = $methodInfo->getDocComment();
             }
         }
 
@@ -283,7 +386,7 @@ class SwaggerTypeExtractor extends BaseObject
                 return $singleType;
             }
 
-            return $this->resolveClassName(trim($type), $className);
+            return $this->resolveClassName(trim($type), $inClassName);
         }
         return null;
     }
@@ -310,16 +413,15 @@ class SwaggerTypeExtractor extends BaseObject
         if (strpos($shortName, '\\') !== false) {
             return $shortName;
         }
-
         // Fetch use statements
-        $controllerInfo = new \ReflectionClass($inClassName);
-        $controllerNamespace = $controllerInfo->getNamespaceName();
-        $tokenParser = new TokenParser(file_get_contents($controllerInfo->getFileName()));
-        $useStatements = $tokenParser->parseUseStatements($controllerNamespace);
+        $inClassInfo = new \ReflectionClass($inClassName);
+        $inClassNamespace = $inClassInfo->getNamespaceName();
+        $tokenParser = new TokenParser(file_get_contents($inClassInfo->getFileName()));
+        $useStatements = $tokenParser->parseUseStatements($inClassNamespace);
 
         $isArray = preg_match('/\[\]$/', $shortName);
         $statementKey = preg_replace('/\[\]/', '', strtolower($shortName));
-        $className = ArrayHelper::getValue($useStatements, $statementKey, $shortName);
+        $className = ArrayHelper::getValue($useStatements, $statementKey, $inClassNamespace . '\\' . $shortName);
         $className = '\\' . ltrim($className, '\\');
         return $className . ($isArray ? '[]' : '');
     }
