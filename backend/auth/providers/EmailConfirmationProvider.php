@@ -8,13 +8,23 @@ use steroids\modules\user\UserModule;
 class EmailConfirmationProvider extends BaseProvider
 {
     /**
+     * @var string
+     */
+    public $keyAttribute = 'emailConfirmKey';
+
+    /**
+     * @var string
+     */
+    public $timeAttribute = 'emailConfirmTime';
+
+    /**
      * @param User $user
      * @param string|null $view
      * @throws \yii\base\Exception
      */
     public function start($user, $view = null)
     {
-        $user->confirmKey = \Yii::$app->security->generateRandomString();
+        $user->setAttribute($this->keyAttribute, \Yii::$app->security->generateRandomString());
         $user->saveOrPanic();
 
         $view = $view ?: \Yii::$app->view->findOverwriteView('@steroids/modules/user/mail/registration');
@@ -38,7 +48,7 @@ class EmailConfirmationProvider extends BaseProvider
         $modelClass = UserModule::getInstance()->modelsMap['User'];
         return $modelClass::findOne([
             'email' => $email,
-            'confirmKey' => $code,
+            $this->keyAttribute => $code,
         ]);
     }
 
@@ -48,8 +58,8 @@ class EmailConfirmationProvider extends BaseProvider
      */
     public function end($user)
     {
-        $user->confirmKey = null;
-        $user->confirmTime = date('Y-m-d H:i');
+        $user->setAttribute($this->keyAttribute, null);
+        $user->setAttribute($this->timeAttribute, date('Y-m-d H:i'));
         $user->saveOrPanic();
     }
 }

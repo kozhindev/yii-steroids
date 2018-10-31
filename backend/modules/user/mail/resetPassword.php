@@ -13,7 +13,7 @@ use yii\web\View;
 /* @var $user User */
 
 $message->setSubject(\Yii::t('steroids', 'Смена пароля на сайте') . ' ' . Yii::$app->name);
-$link = Yii::$app->urlManager->createAbsoluteUrl(['/user/recovery/change', 'token' => $user->confirmKey]);
+$link = Yii::$app->urlManager->createAbsoluteUrl(['/user/recovery/change', 'token' => $user->emailConfirmKey]);
 ?>
 <h2>
     <?= \Yii::t('steroids', 'Здравствуйте, {username}.', [
