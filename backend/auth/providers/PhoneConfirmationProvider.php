@@ -76,8 +76,10 @@ class PhoneConfirmationProvider extends BaseProvider
         $user->setAttribute($this->keyAttribute, static::generateRandomNumbers($this->codeLength));
         $user->saveOrPanic();
 
-        $message = \Yii::t('steroids', 'Проверочный код: {code}', ['code' => $user->getAttribute($this->keyAttribute)]);
-        $this->sms->send($user->phone, $message);
+        if (!$this->standalone) {
+            $message = \Yii::t('steroids', 'Проверочный код: {code}', ['code' => $user->getAttribute($this->keyAttribute)]);
+            $this->sms->send($user->phone, $message);
+        }
     }
 
     /**

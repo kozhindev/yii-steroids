@@ -27,13 +27,15 @@ class EmailConfirmationProvider extends BaseProvider
         $user->setAttribute($this->keyAttribute, \Yii::$app->security->generateRandomString());
         $user->saveOrPanic();
 
-        $view = $view ?: \Yii::$app->view->findOverwriteView('@steroids/modules/user/mail/registration');
-        \Yii::$app->mailer
-            ->compose($view, [
-                'user' => $user
-            ])
-            ->setTo($user->email)
-            ->send();
+        if (!$this->standalone) {
+            $view = $view ?: \Yii::$app->view->findOverwriteView('@steroids/modules/user/mail/registration');
+            \Yii::$app->mailer
+                ->compose($view, [
+                    'user' => $user
+                ])
+                ->setTo($user->email)
+                ->send();
+        }
     }
 
     /**
