@@ -55,11 +55,17 @@ export const fetch = (listId, params) => (dispatch, getState) => {
             listId,
             type: LIST_BEFORE_FETCH,
         },
-        onFetch(list).then(data => ({
-            ...data,
-            listId,
-            type: LIST_AFTER_FETCH,
-        })),
+        onFetch(list).then(data => {
+            if (!getState().list[listId]) {
+                return [];
+            }
+
+            return {
+                ...data,
+                listId,
+                type: LIST_AFTER_FETCH,
+            };
+        }),
     ]);
 };
 
@@ -93,10 +99,16 @@ export const update = (listId, item, condition) => ({
     type: LIST_ITEM_UPDATE,
 });
 
-export const destroy = listId => ({
-    listId,
-    type: LIST_DESTROY,
-});
+export const destroy = listId => {
+    if (lazyTimers[listId]) {
+        clearTimeout(lazyTimers[listId]);
+    }
+
+    return {
+        listId,
+        type: LIST_DESTROY,
+    };
+};
 
 export const toggleItem = (listId, itemId) => ({
     listId,
