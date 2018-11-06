@@ -33,7 +33,7 @@ class PhoneValidator extends Validator
     {
         // Normalize
         if ($model->$attribute) {
-            $model->$attribute = '+' . preg_replace('/^8/', $this->countyCode, preg_replace('/[^0-9]/', '', $model->$attribute));
+            $model->$attribute = $this->getValidatedNumber($model->$attribute);
         }
 
         if (!preg_match('/^\+' . $this->countyCode . '[0-9]{10}$/', $model->$attribute)) {
@@ -43,5 +43,9 @@ class PhoneValidator extends Validator
         }
     }
 
+    public function getValidatedNumber($phoneNumber)
+    {
+        return '+' . preg_replace('/^8/', $this->countyCode, preg_replace('/[^0-9]/', '', $phoneNumber));
+    }
 
 }
