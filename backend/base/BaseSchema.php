@@ -20,6 +20,15 @@ class BaseSchema extends FormModel
     {
         $fields = $fields ? (array)$fields : ['*'];
 
+        // Detect *
+        foreach ($fields as $key => $name) {
+            if ($name === '*') {
+                unset($fields[$key]);
+                $fields = array_merge($fields, $this->fields());
+                break;
+            }
+        }
+
         $result = [];
         foreach ($fields as $key => $name) {
             if (is_int($key) && is_string($name)) {
@@ -27,9 +36,12 @@ class BaseSchema extends FormModel
                 if ($this->canGetProperty($name, true, false)) {
                     $result[$name] = $this->$name;
                 } elseif ($this->model) {
-                    $result[$key] = static::anyToFrontend(ArrayHelper::getValue($this->model, $name));
+                    $result[$name] = static::anyToFrontend(ArrayHelper::getValue($this->model, $name));
                 }
             } else {
+                if (is_int($key)) {
+                    $key = $name;
+                }
                 $result[$key] = static::anyToFrontend(ArrayHelper::getValue($this, $name));
             }
         }
