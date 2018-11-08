@@ -2,8 +2,6 @@
 
 namespace steroids\base;
 
-use steroids\base\FormModel;
-use steroids\base\Model;
 use yii\helpers\ArrayHelper;
 
 class BaseSchema extends FormModel
@@ -34,7 +32,19 @@ class BaseSchema extends FormModel
             if (is_int($key) && is_string($name)) {
                 // Check getter and property
                 if ($this->canGetProperty($name, true, false)) {
-                    $result[$name] = $this->$name;
+                    $item = $this->$name;
+                    if (is_array($item)) {
+                        $result[$name] = [];
+                        foreach ($item as $subItem) {
+                            $result[$name][] = $subItem instanceof BaseSchema
+                                ? $subItem->toFrontend()
+                                : static::anyToFrontend($subItem);
+                        }
+                    } else {
+                        $result[$name] = $item instanceof BaseSchema
+                            ? $item->toFrontend()
+                            : static::anyToFrontend($item);
+                    }
                 } elseif ($this->model) {
                     $result[$name] = static::anyToFrontend(ArrayHelper::getValue($this->model, $name));
                 }

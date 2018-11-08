@@ -88,7 +88,7 @@ class SwaggerTypeExtractor extends BaseObject
             ];
         }
 
-        $isArray = preg_match('/\[\]$/', $type);
+        $isArray = (bool)preg_match('/\[\]$/', $type);
         if ($isArray) {
             $type = preg_replace('/\[\]$/', '', $type);
         }
@@ -393,12 +393,17 @@ class SwaggerTypeExtractor extends BaseObject
 
     protected function parseSingleType($type)
     {
+        $isArray = preg_match('/\[\]$/', $type);
+        $type = preg_replace('/\[\]$/', '', $type);
+
         // Normalize
         $type = trim($type);
         $type = ArrayHelper::getValue(self::TYPE_ALIASES, $type, $type);
 
         // Find or return null
-        return ArrayHelper::keyExists($type, self::SINGLE_MAPPING) ? $type : null;
+        return ArrayHelper::keyExists($type, self::SINGLE_MAPPING)
+            ? $type . ($isArray ? '[]' : '')
+            : null;
     }
 
     /**
@@ -413,6 +418,7 @@ class SwaggerTypeExtractor extends BaseObject
         if (strpos($shortName, '\\') !== false) {
             return $shortName;
         }
+
         // Fetch use statements
         $inClassInfo = new \ReflectionClass($inClassName);
         $inClassNamespace = $inClassInfo->getNamespaceName();
@@ -420,8 +426,9 @@ class SwaggerTypeExtractor extends BaseObject
         $useStatements = $tokenParser->parseUseStatements($inClassNamespace);
 
         $isArray = preg_match('/\[\]$/', $shortName);
-        $statementKey = preg_replace('/\[\]/', '', strtolower($shortName));
-        $className = ArrayHelper::getValue($useStatements, $statementKey, $inClassNamespace . '\\' . $shortName);
+        $shortName = preg_replace('/\[\]$/', '', $shortName);
+        $className = ArrayHelper::getValue($useStatements, strtolower($shortName), $inClassNamespace . '\\' . $shortName);
+
         $className = '\\' . ltrim($className, '\\');
         return $className . ($isArray ? '[]' : '');
     }
