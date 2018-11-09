@@ -12,6 +12,17 @@ class BaseSchema extends FormModel
     public $model;
 
     /**
+     * @param $models
+     * @return static[]
+     */
+    public static function toList($models)
+    {
+        return array_map(function($model) {
+            return new static(['model' => $model]);
+        }, $models ?: []);
+    }
+
+    /**
      * @inheritdoc
      */
     public function toFrontend($fields = null)
