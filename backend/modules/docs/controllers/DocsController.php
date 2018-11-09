@@ -44,7 +44,7 @@ class DocsController extends Controller
 
         $extractor = new SiteMapDocExtractor([
             'items' => array_filter(ArrayHelper::getValue(\Yii::$app->siteMap->getItem('api'), 'items', []), function(SiteMapItem $item) {
-                return $item->getVisible();
+                return $item->getVisible(false);
             }),
             'swaggerJson' => $swaggerJson,
         ]);

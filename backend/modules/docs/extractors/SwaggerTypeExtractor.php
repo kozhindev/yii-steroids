@@ -217,6 +217,24 @@ class SwaggerTypeExtractor extends BaseObject
             $fields = $model->fields();
         }
 
+        // Detect * => model.*
+        foreach ($fields as $key => $name) {
+            // Syntax: * => model.*
+            if ($key === '*' && preg_match('/\.*$/', $name) !== false) {
+                unset($fields[$key]);
+
+                $attribute = substr($name, 0, -2);
+                $subClassName = $this->findAttributeType($className, $attribute);
+                if ($subClassName) {
+                    $subModel = new $subClassName();
+                    foreach ($subModel->fields() as $key => $name) {
+                        $key = is_int($key) ? $name : $key;
+                        $fields[$key] = $attribute . '.' . $name;
+                    }
+                }
+            }
+        }
+
         $properties = [];
         foreach ($fields as $key => $attributes) {
             if (is_int($key) && is_string($attributes)) {
