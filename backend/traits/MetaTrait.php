@@ -114,7 +114,7 @@ trait MetaTrait
             }
 
             // Detect path
-            if (strpos($name, '.') !== false) {
+            if (is_string($name) && strpos($name, '.') !== false) {
                 $parts = explode('.', $name);
                 $name = array_pop($parts);
                 $item = ArrayHelper::getValue($model, $parts);

@@ -367,7 +367,7 @@ class SwaggerTypeExtractor extends BaseObject
      */
     public function findAttributeType($className, $attribute, &$phpdoc = null)
     {
-        $type = null;
+        $type = '';
         $classInfo = new \ReflectionClass($className);
         $inClassName = $className;
 
@@ -398,13 +398,15 @@ class SwaggerTypeExtractor extends BaseObject
             }
         }
 
+        $type = trim($type);
+
         if ($type) {
             $singleType = $this->parseSingleType($type);
             if ($singleType) {
                 return $singleType;
             }
 
-            return $this->resolveClassName(trim($type), $inClassName);
+            return $this->resolveClassName($type, $inClassName);
         }
         return null;
     }
