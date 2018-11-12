@@ -245,10 +245,10 @@ class SwaggerTypeExtractor extends BaseObject
             if (is_callable($attributes)) {
                 // Method
                 $property = $this->extractMethod($className, $attributes);
-            } elseif (is_array($attributes)) {
+            } elseif (is_array($attributes) || (is_string($attributes) && $model->getRelation($attributes, false))) {
                 // Relation
                 $relation = $model->getRelation($key);
-                $property = $this->extractModel($relation->modelClass, $attributes);
+                $property = $this->extractModel($relation->modelClass, is_array($attributes) ? $attributes : null);
 
                 // Check hasMany relation
                 if ($relation->multiple) {
