@@ -267,7 +267,7 @@ class DefaultConfig
         return self::$moduleClasses;
     }
 
-    public static function onDbAfterOpen()
+    public static function onDbAfterOpen($event)
     {
         if ($event->sender->schema instanceof Schema) {
             $event->sender->createCommand("SET time_zone='" . date('P') . "'")->execute();
