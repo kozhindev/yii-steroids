@@ -145,30 +145,42 @@ class GiiHelper
     public static function findClasses($classType)
     {
         $classes = [];
-        foreach (static::findModules() as $moduleId => $className) {
-            $moduleDir = dirname((new \ReflectionClass($className))->getFileName());
-            $files = FileHelper::findFiles($moduleDir, [
-                'only' => [
-                    ClassType::getDir($classType) . '/*.php',
-                ]
-            ]);
-            foreach ($files as $file) {
-                $name = basename($file, '.php');
+        $dirs = ['@app'];
+        if (GiiModule::getInstance()->showSteroidsEntries) {
+            $dirs[] = '@steroids/modules';
+        }
 
-                $className = static::getClassName($classType, $moduleId, $name);
-                if (strpos($className, 'steroids\\modules\\') === 0
-                    && !class_exists(str_replace('steroids\\modules\\', 'app\\', $className))
-                    && !GiiModule::getInstance()->showSteroidsEntries
-                ) {
+        foreach ($dirs as $modulesDir) {
+            $modulesDir = \Yii::getAlias($modulesDir);
+
+            foreach (scandir($modulesDir) as $moduleId) {
+                if ($moduleId === '.' || $moduleId === '..') {
                     continue;
                 }
 
-                $info = new \ReflectionClass($className);
-                if ($info->getParentClass() && preg_match('/Meta$/', $info->getParentClass()->name)) {
-                    $classes[] = [
-                        'moduleId' => $moduleId,
-                        'name' => $name,
-                    ];
+                $files = FileHelper::findFiles($modulesDir . '/' . $moduleId, [
+                    'only' => [
+                        ClassType::getDir($classType) . '/*.php',
+                    ]
+                ]);
+                foreach ($files as $file) {
+                    $name = basename($file, '.php');
+
+                    $className = static::getClassName($classType, $moduleId, $name);
+                    if (strpos($className, 'steroids\\modules\\') === 0
+                        && !class_exists(str_replace('steroids\\modules\\', 'app\\', $className))
+                        && !GiiModule::getInstance()->showSteroidsEntries
+                    ) {
+                        continue;
+                    }
+
+                    $info = new \ReflectionClass($className);
+                    if ($info->getParentClass() && (preg_match('/Meta$/', $info->getParentClass()->name) || preg_match('/Meta$/', $info->getParentClass()->getParentClass()->name))) {
+                        $classes[] = [
+                            'moduleId' => $moduleId,
+                            'name' => $name,
+                        ];
+                    }
                 }
             }
         }
