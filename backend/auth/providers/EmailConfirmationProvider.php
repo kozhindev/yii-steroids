@@ -56,12 +56,12 @@ class EmailConfirmationProvider extends BaseProvider
 
     /**
      * @param User $user
-     * @throws \yii\base\Exception
      */
     public function end($user)
     {
-        $user->setAttribute($this->keyAttribute, null);
-        $user->setAttribute($this->timeAttribute, date('Y-m-d H:i'));
-        $user->saveOrPanic();
+        $user->updateAttributes([
+            $this->keyAttribute => null,
+            $this->timeAttribute => date('Y-m-d H:i:s'),
+        ]);
     }
 }
