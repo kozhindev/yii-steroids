@@ -53,7 +53,6 @@ export default class LocaleComponent {
 
         // Format message (params, plural, etc..)
         const language = hasTranslate ? this.language : this.sourceLanguage;
-        console.log(6363, message, language);
         const formatter = new IntlMessageFormat(message, language);
         message = formatter.format(params);
 

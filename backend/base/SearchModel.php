@@ -126,9 +126,7 @@ class SearchModel extends FormModel
         $result = [
             'meta' => !empty($this->meta) ? $this->meta : null,
             'total' => $this->dataProvider->getTotalCount(),
-            'items' => array_map(function (Model $model) use ($fields) {
-                return $model->toFrontend($fields);
-            }, $this->dataProvider->models),
+            'items' => Model::anyToFrontend($this->dataProvider->models, $fields),
         ];
         if ($this->hasErrors()) {
             $result['errors'] = $this->getErrors();
