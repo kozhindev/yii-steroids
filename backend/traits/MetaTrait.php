@@ -80,6 +80,14 @@ trait MetaTrait
             if ($name === '*') {
                 unset($fields[$key]);
                 $fields = array_merge($fields, $model->fields());
+
+                if ($model instanceof BaseSchema && $model->model instanceof Model) {
+                    $index = array_search('*', $fields);
+                    if ($index !== false) {
+                        unset($fields[$index]);
+                        $fields = array_merge($fields, $model->model->fields());
+                    }
+                }
                 break;
             }
         }

@@ -81,6 +81,7 @@ class Form extends React.PureComponent {
                 PropTypes.node
             ]),
         }),
+        autoFocus: PropTypes.bool,
     };
 
     static childContextTypes = {
@@ -126,6 +127,17 @@ class Form extends React.PureComponent {
         // Restore values from address bar
         if (this.props.syncWithAddressBar) {
             SyncAddressBarHelper.restore(this.props.formId, this.props.initialValues);
+        }
+    }
+
+    componentDidMount() {
+        if (this.props.autoFocus) {
+            const inputEl = findDOMNode(this).querySelector('input:not([type=hidden])');
+            setTimeout(() => {
+                if (inputEl && inputEl.focus) {
+                    inputEl.focus();
+                }
+            }, 10);
         }
     }
 
