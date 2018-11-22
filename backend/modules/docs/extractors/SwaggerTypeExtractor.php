@@ -8,6 +8,7 @@ use steroids\base\Type;
 use yii\base\BaseObject;
 use yii\base\Model;
 use yii\db\ActiveRecord;
+use yii\db\BaseActiveRecord;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Json;
 
@@ -245,7 +246,7 @@ class SwaggerTypeExtractor extends BaseObject
             if (is_callable($attributes)) {
                 // Method
                 $property = $this->extractMethod($className, $attributes);
-            } elseif (is_array($attributes) || (is_string($attributes) && $model->getRelation($attributes, false))) {
+            } elseif (is_array($attributes) || (is_string($attributes) && $model instanceof BaseActiveRecord && $model->getRelation($attributes, false))) {
                 // Relation
                 $relation = $model->getRelation($key);
                 $property = $this->extractModel($relation->modelClass, is_array($attributes) ? $attributes : null);

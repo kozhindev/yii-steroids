@@ -175,7 +175,7 @@ class GiiHelper
                     }
 
                     $info = new \ReflectionClass($className);
-                    if ($info->getParentClass() && (preg_match('/Meta$/', $info->getParentClass()->name) || preg_match('/Meta$/', $info->getParentClass()->getParentClass()->name))) {
+                    if ($info->getParentClass() && (preg_match('/Meta$/', $info->getParentClass()->name) || ($info->getParentClass()->getParentClass() && preg_match('/Meta$/', $info->getParentClass()->getParentClass()->name)))) {
                         $classes[] = [
                             'moduleId' => $moduleId,
                             'name' => $name,
