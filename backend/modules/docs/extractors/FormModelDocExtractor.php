@@ -29,6 +29,11 @@ class FormModelDocExtractor extends BaseDocExtractor
      */
     public $method;
 
+    /**
+     * @var []
+     */
+    public $listenRelation;
+
     public function run()
     {
         /** @var FormModel $model */
@@ -36,7 +41,10 @@ class FormModelDocExtractor extends BaseDocExtractor
         $model = new $className();
 
         $required = [];
-        $requestSchema = SwaggerTypeExtractor::getInstance()->extractModel($this->className, $this->getRequestFields($model, $required));
+        $field = $this->listenRelation
+            ? array_merge($this->listenRelation, $this->getRequestFields($model, $required))
+            : $this->getRequestFields($model, $required);
+        $requestSchema = SwaggerTypeExtractor::getInstance()->extractModel($this->className, $field, $this->listenRelation ? true : false);
         $responseSchema = SwaggerTypeExtractor::getInstance()->extractObject($this->className, $model->fields());
 
         $this->swaggerJson->updatePath($this->url, $this->method, [
