@@ -13,7 +13,7 @@ class Migration extends \yii\db\Migration
     public function createTable($table, $columns, $options = null)
     {
         if (!$options && $this->db->schema instanceof Schema) {
-            $options = 'CHARACTER SET utf8 COLLATE utf8_general_ci ENGINE=InnoDB';
+            $options = 'CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci ENGINE=InnoDB';
         }
         return parent::createTable($table, $columns, $options);
     }

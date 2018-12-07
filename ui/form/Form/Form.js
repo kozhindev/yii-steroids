@@ -1,4 +1,5 @@
 import React from 'react';
+import {findDOMNode} from 'react-dom';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import {reduxForm, SubmissionError, getFormValues, isInvalid} from 'redux-form';
