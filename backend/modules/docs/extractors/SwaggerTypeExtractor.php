@@ -204,18 +204,24 @@ class SwaggerTypeExtractor extends BaseObject
     }
 
     /**
-     * @param string $className
+     * @param $className
      * @param null $fields
+     * @param bool $isListenRelation
      * @return array
      * @throws \ReflectionException
      */
-    public function extractModel($className, $fields = null)
+    public function extractModel($className, $fields = null, $isListenRelation = false)
     {
         /** @var Model|ActiveRecord $model */
         $model = new $className();
 
         if ($fields === null) {
             $fields = $model->fields();
+        }
+
+        if ($isListenRelation && !$fields) {
+            $fields = $model->safeAttributes();
+            $isListenRelation = false;
         }
 
         // Detect * => model.*
@@ -249,7 +255,7 @@ class SwaggerTypeExtractor extends BaseObject
             } elseif (is_array($attributes) || (is_string($attributes) && $model instanceof BaseActiveRecord && $model->getRelation($attributes, false))) {
                 // Relation
                 $relation = $model->getRelation($key);
-                $property = $this->extractModel($relation->modelClass, is_array($attributes) ? $attributes : null);
+                $property = $this->extractModel($relation->modelClass, is_array($attributes) ? $attributes : null, $isListenRelation);
 
                 // Check hasMany relation
                 if ($relation->multiple) {
