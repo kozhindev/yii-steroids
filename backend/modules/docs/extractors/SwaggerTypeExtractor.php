@@ -206,22 +206,77 @@ class SwaggerTypeExtractor extends BaseObject
     /**
      * @param $className
      * @param null $fields
-     * @param bool $isListenRelation
      * @return array
      * @throws \ReflectionException
      */
-    public function extractModel($className, $fields = null, $isListenRelation = false)
+    public function extractModelRequest($className, $fields = null)
+    {
+        /** @var Model|ActiveRecord $model */
+        $model = new $className();
+
+        if ($fields === null) {
+            $fields = $model->safeAttributes();
+        }
+
+        $properties = [];
+        foreach ($fields as $attributes) {
+            $attributes = explode('.', $attributes);
+            $attribute = array_shift($attributes);
+
+            if ($model instanceof BaseActiveRecord && $relation = $model->getRelation($attribute, false)) {
+                // Relation
+                /** @var Model|ActiveRecord $relationModel */
+                $relationModelClass = $relation->modelClass;
+                $relationModel = new $relationModelClass();
+                $property = $this->extractModelRequest($relationModelClass, array_merge($relationModel->safeAttributes(), $attributes));
+
+                // Check hasMany relation
+                if ($relation->multiple) {
+                    $property = [
+                        'type' => 'array',
+                        'items' => $property,
+                    ];
+                }
+            } else {
+                $property = $this->extractAttribute($className, $attribute);
+
+                // Steroids meta model
+                if (method_exists($className, 'meta')) {
+                    $property = array_merge($property, [
+                        'description' => $model->getAttributeLabel($attribute),
+                        'example' => ArrayHelper::getValue($className::meta(), [$attribute, 'example']),
+                    ]);
+
+                    /** @var Type $appType */
+                    $appType = \Yii::$app->types->getTypeByModel($model, $attribute);
+                    $appType->prepareSwaggerProperty($className, $attribute, $property);
+                }
+            }
+
+            if ($property) {
+                $properties[$attribute] = $property;
+            }
+        }
+
+        return [
+            'type' => 'object',
+            'properties' => $properties,
+        ];
+    }
+
+    /**
+     * @param $className
+     * @param null $fields
+     * @return array
+     * @throws \ReflectionException
+     */
+    public function extractModel($className, $fields = null)
     {
         /** @var Model|ActiveRecord $model */
         $model = new $className();
 
         if ($fields === null) {
             $fields = $model->fields();
-        }
-
-        if ($isListenRelation && !$fields) {
-            $fields = $model->safeAttributes();
-            $isListenRelation = false;
         }
 
         // Detect * => model.*
@@ -255,7 +310,7 @@ class SwaggerTypeExtractor extends BaseObject
             } elseif (is_array($attributes) || (is_string($attributes) && $model instanceof BaseActiveRecord && $model->getRelation($attributes, false))) {
                 // Relation
                 $relation = $model->getRelation($key);
-                $property = $this->extractModel($relation->modelClass, is_array($attributes) ? $attributes : null, $isListenRelation);
+                $property = $this->extractModel($relation->modelClass, is_array($attributes) ? $attributes : null);
 
                 // Check hasMany relation
                 if ($relation->multiple) {
