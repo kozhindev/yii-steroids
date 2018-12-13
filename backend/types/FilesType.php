@@ -79,6 +79,22 @@ class FilesType extends RelationType
     /**
      * @inheritdoc
      */
+    public function prepareSwaggerProperty($modelClass, $attribute, &$property)
+    {
+        $property = array_merge(
+            $property,
+            [
+                'type' => 'array',
+                'items' => [
+                    'type' => 'integer',
+                ],
+            ]
+        );
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function giiRules($attributeEntity, &$useClasses = [])
     {
         return [
