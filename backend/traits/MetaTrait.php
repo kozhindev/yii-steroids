@@ -66,7 +66,7 @@ trait MetaTrait
 
         // Detect empty
         if (!$model) {
-            return null;
+            return $model;
         }
 
         // Scalar
