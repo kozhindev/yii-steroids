@@ -75,6 +75,9 @@ module.exports = (config, entry) => {
                             loader: 'eslint-loader',
                             options: {
                                 configFile: config.cwd + '/.eslintrc',
+                                ignoreFile: fs.existsSync(config.cwd + '/.eslintignore')
+                                    ? config.cwd + '/.eslintignore'
+                                    : null,
                             }
                         },
                     },

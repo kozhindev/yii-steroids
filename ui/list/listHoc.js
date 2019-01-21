@@ -5,7 +5,8 @@ import {getFormValues} from 'redux-form';
 import _get from 'lodash-es/get';
 import _isEqual from 'lodash-es/isEqual';
 import _isFunction from 'lodash-es/isFunction';
-import _merge from 'lodash-es/merge';
+import _isArray from 'lodash-es/isArray';
+import _mergeWith from 'lodash-es/mergeWith';
 
 import {init, lazyFetch, refresh, destroy} from '../../actions/list';
 import {getList} from '../../reducers/list';
@@ -119,9 +120,15 @@ class ListHoc extends React.PureComponent {
     }
 
     componentWillReceiveProps(nextProps) {
+        const customizer = (objValue, srcValue) => {
+            if (_isArray(objValue)) {
+                return srcValue;
+            }
+        };
+
         // Send fetch request on change query or init list
-        const prevQuery = _merge({}, _get(this.props, 'list.query'), _get(this.props, 'formValues'));
-        const nextQuery = _merge({}, _get(nextProps, 'list.query'), _get(nextProps, 'formValues'));
+        const prevQuery = _mergeWith({}, _get(this.props, 'list.query'), _get(this.props, 'formValues'), customizer);
+        const nextQuery = _mergeWith({}, _get(nextProps, 'list.query'), _get(nextProps, 'formValues'), customizer);
         if (!_isEqual(prevQuery, nextQuery) || (!this.props.list && nextProps.list)) {
             this.props.dispatch(lazyFetch(this.props.listId, {
                 page: this.props.defaultPage,
