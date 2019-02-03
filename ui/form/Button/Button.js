@@ -127,7 +127,7 @@ class Button extends React.PureComponent {
         }
 
         if (this.props.onClick) {
-            this.props.onClick();
+            this.props.onClick(e);
         }
     }
 }
