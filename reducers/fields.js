@@ -1,6 +1,6 @@
 import _get from 'lodash-es/get';
 
-import {FIELDS_BEFORE_FETCH, FIELDS_AFTER_FETCH, FIELDS_ADD_SECURITY} from '../actions/fields';
+import {FIELDS_BEFORE_FETCH, FIELDS_AFTER_FETCH, FIELDS_ADD_SECURITY, FIELDS_REMOVE_SECURITY} from '../actions/fields';
 
 const initialState = {
     props: {},
@@ -48,6 +48,15 @@ export default (state = initialState, action) => {
                 security: {
                     ...state.security,
                     [action.formId]: action.params,
+                },
+            };
+
+        case FIELDS_REMOVE_SECURITY:
+            return {
+                ...state,
+                security: {
+                    ...state.security,
+                    [action.formId]: null,
                 },
             };
     }

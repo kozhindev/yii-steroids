@@ -131,31 +131,7 @@ class DefaultConfig
                     ],
                 ],
                 'assetManager' => [
-                    'forceCopy' => true,
-                    'bundles' => [
-                        // Disables Yii & jQuery
-                        'yii\web\JqueryAsset' => [
-                            'sourcePath' => null,
-                            'js' => [],
-                        ],
-                        'yii\web\YiiAsset' => [
-                            'sourcePath' => null,
-                            'js' => [],
-                        ],
-                        'yii\grid\GridViewAsset' => [
-                            'sourcePath' => null,
-                            'js' => [],
-                        ],
-                        'yii\bootstrap\BootstrapAsset' => [
-                            'sourcePath' => null,
-                            'css' => [],
-                        ],
-                        'yii\bootstrap\BootstrapPluginAsset' => [
-                            'sourcePath' => null,
-                            'js' => [],
-                            'css' => [],
-                        ],
-                    ],
+                    'bundles' => false,
                 ],
                 'cache' => [
                     'class' => 'yii\caching\FileCache',

@@ -9,7 +9,7 @@ import _set from 'lodash-es/set';
 import _isUndefined from 'lodash-es/isUndefined';
 
 import {http, ui} from 'components';
-import {addSecurity} from '../../../actions/fields';
+import {addSecurity, removeSecurity} from '../../../actions/fields';
 import AutoSaveHelper from './AutoSaveHelper';
 import SyncAddressBarHelper from './SyncAddressBarHelper';
 import {getSecurity} from '../../../reducers/fields';
@@ -200,10 +200,15 @@ class Form extends React.PureComponent {
         return http.post(this.props.action || location.pathname, values)
             .then(response => {
                 if (response.security) {
-                    this.props.dispatch(addSecurity(this.props.formId, {
-                        ...response.security,
-                        onSuccess: data => this._onSubmit({...values, ...data}),
-                    }));
+                    return new Promise(resolve => {
+                        this.props.dispatch(addSecurity(this.props.formId, {
+                            ...response.security,
+                            onSuccess: data => {
+                                this.props.dispatch(removeSecurity(this.props.formId));
+                                resolve(this._onSubmit({...values, ...data}));
+                            },
+                        }));
+                    });
                 }
                 if (response.errors) {
                     throw new SubmissionError(response.errors);

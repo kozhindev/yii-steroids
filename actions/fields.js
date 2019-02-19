@@ -5,6 +5,7 @@ import {http} from 'components';
 export const FIELDS_BEFORE_FETCH = 'FIELDS_BEFORE_FETCH';
 export const FIELDS_AFTER_FETCH = 'FIELDS_AFTER_FETCH';
 export const FIELDS_ADD_SECURITY = 'FIELDS_ADD_SECURITY';
+export const FIELDS_REMOVE_SECURITY = 'FIELDS_REMOVE_SECURITY';
 
 let timer = null;
 let queue = [];
@@ -44,4 +45,9 @@ export const addSecurity = (formId, params) => ({
     type: FIELDS_ADD_SECURITY,
     formId,
     params,
+});
+
+export const removeSecurity = (formId, params) => ({
+    type: FIELDS_REMOVE_SECURITY,
+    formId,
 });
