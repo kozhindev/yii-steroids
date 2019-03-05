@@ -126,7 +126,9 @@ class SearchModel extends FormModel
         $result = [
             'meta' => !empty($this->meta) ? $this->meta : null,
             'total' => $this->dataProvider->getTotalCount(),
-            'items' => Model::anyToFrontend($this->dataProvider->models, $fields),
+            'items' => $this->fieldsSchema()
+                ? BaseSchema::anyToFrontend($this->fieldsSchema()::toList($this->dataProvider->models))
+                : Model::anyToFrontend($this->dataProvider->models, $fields),
         ];
         if ($this->hasErrors()) {
             $result['errors'] = $this->getErrors();
@@ -139,5 +141,13 @@ class SearchModel extends FormModel
      */
     public function prepare($query)
     {
+    }
+
+    /**
+     * @return null|BaseSchema
+     */
+    public function fieldsSchema()
+    {
+        return null;
     }
 }
