@@ -5,7 +5,7 @@ namespace steroids\modules\gii\models;
 use steroids\modules\gii\helpers\GiiHelper;
 use yii\base\Arrayable;
 use yii\base\ArrayableTrait;
-use yii\base\Object;
+use yii\base\BaseObject;
 use yii\helpers\ArrayHelper;
 
 /**
@@ -14,7 +14,7 @@ use yii\helpers\ArrayHelper;
  * @property-read string $phpDocType
  * @property-read MetaItem[] $items
  */
-class MetaItem extends Object implements Arrayable
+class MetaItem extends BaseObject implements Arrayable
 {
     use ArrayableTrait;
 
