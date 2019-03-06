@@ -116,8 +116,9 @@ class PhoneConfirmationProvider extends BaseProvider
             \Yii::$app->session->remove(self::SESSION_PHONE_KEY);
         }
 
-        $user->setAttribute($this->keyAttribute, null);
-        $user->setAttribute($this->timeAttribute, date('Y-m-d H:i:s'));
-        $user->saveOrPanic();
+        $user->updateAttributes([
+            $this->keyAttribute => null,
+            $this->timeAttribute => date('Y-m-d H:i:s'),
+        ]);
     }
 }

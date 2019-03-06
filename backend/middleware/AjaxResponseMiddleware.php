@@ -2,7 +2,7 @@
 
 namespace steroids\middleware;
 
-use app\profile\schemas\BaseSchema;
+use steroids\base\BaseSchema;
 use steroids\base\FormModel;
 use steroids\base\Model;
 use steroids\base\SearchModel;
@@ -50,9 +50,9 @@ class AjaxResponseMiddleware extends BaseObject
             || $event->result instanceof \yii\base\Model) {
 
             // Detect data provider
-            if ($event->result instanceof SearchModel || $event->result instanceof Model || $event->result instanceof BaseSchema) {
+            if ($event->result instanceof SearchModel || $event->result instanceof BaseSchema) {
                 $data = $event->result->toFrontend();
-            } elseif ($event->result instanceof FormModel) {
+            } elseif ($event->result instanceof Model || $event->result instanceof FormModel) {
                 $data = ActiveForm::renderAjax($event->result, '');
             } elseif ($event->result instanceof BaseDataProvider) {
                 $data = [

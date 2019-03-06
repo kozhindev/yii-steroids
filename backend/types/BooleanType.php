@@ -37,10 +37,10 @@ class BooleanType extends Type
     public function prepareSwaggerProperty($modelClass, $attribute, &$property)
     {
         $property = array_merge(
+            $property,
             [
                 'type' => 'boolean',
-            ],
-            $property
+            ]
         );
     }
 

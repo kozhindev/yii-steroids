@@ -1,6 +1,6 @@
 {
   "name": "yii-steroids",
-  "version": "1.6.13",
+  "version": "1.6.37",
   "description": "JavaScript part for php library yii-steroids",
   "main": "index.js",
   "author": "Vladimir Kozhin <hello@kozhindev.com>",
@@ -87,14 +87,15 @@
     "webpack-bundle-analyzer": "^3.0.2"
   },
   "devDependencies": {
-    "@storybook/addon-actions": "^4.0.0-alpha.20",
-    "@storybook/addon-info": "^4.0.0-alpha.20",
-    "@storybook/addon-knobs": "^4.0.0-alpha.20",
-    "@storybook/addon-links": "^4.0.0-alpha.20",
-    "@storybook/addon-options": "^4.0.0-alpha.20",
-    "@storybook/addons": "^4.0.0-alpha.20",
-    "@storybook/react": "^4.0.0-alpha.20",
-    "storybook-readme": "^4.0.0-beta1"
+    "@storybook/addon-actions": "^4.1.1",
+    "@storybook/addon-info": "^4.1.1",
+    "@storybook/addon-knobs": "^4.1.1",
+    "@storybook/addon-links": "^4.1.1",
+    "@storybook/addon-options": "^4.1.1",
+    "@storybook/addons": "^4.1.1",
+    "@storybook/core": "^4.1.1",
+    "@storybook/react": "^4.1.1",
+    "storybook-readme": "^4.0.2"
   },
   "scripts": {
     "storybook": "start-storybook -p 6006",

@@ -57,13 +57,13 @@ abstract class <?= $modelEntity->name ?>Meta extends <?= $modelEntity->getOverWr
 
     public function fields()
     {
-        return array_merge(parent::fields(), [
+        return <?= $modelEntity->getOverWriteEntity() ? 'array_merge(parent::fields(), ' : '' ?>[
 <?php foreach ($modelEntity->publicAttributeItems as $attributeEntity) {
 if ($attributeEntity->isPublishToFrontend) {?>
             '<?= $attributeEntity->name ?>',
 <?php }
 } ?>
-        ]);
+        <?= ($modelEntity->getOverWriteEntity() ? ']);' : '];') . "\n" ?>
     }
 <?php } ?>
 <?php if (!empty($rules)) { ?>

@@ -8,7 +8,6 @@ import 'moment/locale/ru';
 // Fix load locale data
 window.IntlMessageFormat = IntlMessageFormat;
 require('intl-messageformat/dist/locale-data/ru');
-require('intl-messageformat/dist/locale-data/it');
 delete window.IntlMessageFormat;
 
 /**
@@ -40,6 +39,7 @@ export default class LocaleComponent {
 
     translate(message, params = {}) {
         // Translate
+        const hasTranslate = !!this.translations[message];
         message = this.translations[message] || message;
 
         // Cut react components
@@ -52,7 +52,7 @@ export default class LocaleComponent {
         });
 
         // Format message (params, plural, etc..)
-        const language = this.translations[message] ? this.language : this.sourceLanguage;
+        const language = hasTranslate ? this.language : this.sourceLanguage;
         const formatter = new IntlMessageFormat(message, language);
         message = formatter.format(params);
 

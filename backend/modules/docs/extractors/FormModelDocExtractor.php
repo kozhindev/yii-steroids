@@ -36,7 +36,8 @@ class FormModelDocExtractor extends BaseDocExtractor
         $model = new $className();
 
         $required = [];
-        $requestSchema = SwaggerTypeExtractor::getInstance()->extractModel($this->className, $this->getRequestFields($model, $required));
+        $fields = array_merge($this->listenRelations, $this->getRequestFields($model, $required));
+        $requestSchema = SwaggerTypeExtractor::getInstance()->extractModelRequest($this->className, $fields);
         $responseSchema = SwaggerTypeExtractor::getInstance()->extractObject($this->className, $model->fields());
 
         $this->swaggerJson->updatePath($this->url, $this->method, [

@@ -2,6 +2,7 @@
 
 namespace steroids\traits;
 
+use steroids\base\BaseSchema;
 use steroids\base\FormModel;
 use steroids\base\Model;
 use yii\base\BaseObject;
@@ -54,6 +55,8 @@ trait MetaTrait
      */
     public static function anyToFrontend($model, $fields = null)
     {
+        $fields = $fields ? (array)$fields : ['*'];
+
         // Detect array
         if (is_array($model)) {
             return array_map(function($item) use ($fields) {
@@ -61,39 +64,56 @@ trait MetaTrait
             }, $model);
         }
 
+        // Detect empty
+        if (!$model) {
+            return $model;
+        }
+
         // Scalar
         if (!is_object($model)) {
             return $model;
         }
 
-        $fields = $fields ? (array)$fields : ['*'];
-
-        // Detect empty
-        if (!$model) {
-            return is_array($model) ? [] : null;
-        }
-
-        // Detect single type
-        /*if (!($model instanceof Model)) {
-            // Detect Yii Object
-            if ($model instanceof BaseObject) {
-                return $model->toArray($fields);
-            }
-
-            return $model;
-        }*/
-
         // Detect *
         foreach ($fields as $key => $name) {
+            // Syntax: *
             if ($name === '*') {
                 unset($fields[$key]);
                 $fields = array_merge($fields, $model->fields());
+
+                if ($model instanceof BaseSchema && $model->model instanceof Model) {
+                    $index = array_search('*', $fields);
+                    if ($index !== false) {
+                        unset($fields[$index]);
+                        $fields = array_merge($fields, $model->model->fields());
+                    }
+                }
                 break;
             }
         }
 
-        // Export
         $result = [];
+
+        // Detect * => model.*
+        foreach ($fields as $key => $name) {
+            // Syntax: * => model.*
+            if ($key === '*' && preg_match('/\.*$/', $name) !== false) {
+                unset($fields[$key]);
+
+                /** @var Model $subModel */
+                $attribute = substr($name, 0, -2);
+                $subModel = ArrayHelper::getValue($model, $attribute);
+                if ($subModel) {
+                    foreach ($subModel->fields() as $key => $name) {
+                        $key = is_int($key) ? $name : $key;
+                        $fields[$key] = $attribute . '.' . $name;
+                    }
+                    //$result = array_merge($result, static::anyToFrontend($subModel));
+                }
+            }
+        }
+
+        // Export
         foreach ($fields as $key => $name) {
             $key = is_int($key) ? $name : $key;
 
@@ -101,12 +121,32 @@ trait MetaTrait
                 throw new InvalidConfigException('Wrong fields format for model "' . get_class($model) . '"');
             }
 
-            if (is_callable($name)) {
-                $result[$key] = call_user_func($name, $model);
-            } elseif (is_array($name)) {
-                $result[$key] = static::anyToFrontend(ArrayHelper::getValue($model, $key), $name);
+            // Detect path
+            if (is_string($name) && strpos($name, '.') !== false) {
+                $parts = explode('.', $name);
+                $name = array_pop($parts);
+                $item = ArrayHelper::getValue($model, $parts);
             } else {
-                $result[$key] = static::anyToFrontend(ArrayHelper::getValue($model, $name));
+                $item = $model;
+            }
+
+            // BaseScheme logic
+            if (is_string($name) && $item instanceof BaseSchema) {
+                if ($item->canGetProperty($name, true, false)) {
+                    $result[$key] = static::anyToFrontend($item->$name);
+                    continue;
+                } else {
+                    $item = $item->model;
+                }
+            }
+
+            // Standard model logic
+            if (is_callable($name)) {
+                $result[$key] = static::anyToFrontend(call_user_func($name, $item));
+            } elseif (is_array($name)) {
+                $result[$key] = static::anyToFrontend(ArrayHelper::getValue($item, $key), $name);
+            } else {
+                $result[$key] = static::anyToFrontend(ArrayHelper::getValue($item, $name));
             }
         }
         return $result;

@@ -8,6 +8,7 @@ use steroids\base\Type;
 use yii\base\BaseObject;
 use yii\base\Model;
 use yii\db\ActiveRecord;
+use yii\db\BaseActiveRecord;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Json;
 
@@ -88,7 +89,7 @@ class SwaggerTypeExtractor extends BaseObject
             ];
         }
 
-        $isArray = preg_match('/\[\]$/', $type);
+        $isArray = (bool)preg_match('/\[\]$/', $type);
         if ($isArray) {
             $type = preg_replace('/\[\]$/', '', $type);
         }
@@ -203,7 +204,68 @@ class SwaggerTypeExtractor extends BaseObject
     }
 
     /**
-     * @param string $className
+     * @param $className
+     * @param null $fields
+     * @return array
+     * @throws \ReflectionException
+     */
+    public function extractModelRequest($className, $fields = null)
+    {
+        /** @var Model|ActiveRecord $model */
+        $model = new $className();
+
+        if ($fields === null) {
+            $fields = $model->safeAttributes();
+        }
+
+        $properties = [];
+        foreach ($fields as $attributes) {
+            $attributes = explode('.', $attributes);
+            $attribute = array_shift($attributes);
+
+            if ($model instanceof BaseActiveRecord && $relation = $model->getRelation($attribute, false)) {
+                // Relation
+                /** @var Model|ActiveRecord $relationModel */
+                $relationModelClass = $relation->modelClass;
+                $relationModel = new $relationModelClass();
+                $property = $this->extractModelRequest($relationModelClass, array_merge($relationModel->safeAttributes(), $attributes));
+
+                // Check hasMany relation
+                if ($relation->multiple) {
+                    $property = [
+                        'type' => 'array',
+                        'items' => $property,
+                    ];
+                }
+            } else {
+                $property = $this->extractAttribute($className, $attribute);
+
+                // Steroids meta model
+                if (method_exists($className, 'meta')) {
+                    $property = array_merge($property, [
+                        'description' => $model->getAttributeLabel($attribute),
+                        'example' => ArrayHelper::getValue($className::meta(), [$attribute, 'example']),
+                    ]);
+
+                    /** @var Type $appType */
+                    $appType = \Yii::$app->types->getTypeByModel($model, $attribute);
+                    $appType->prepareSwaggerProperty($className, $attribute, $property);
+                }
+            }
+
+            if ($property) {
+                $properties[$attribute] = $property;
+            }
+        }
+
+        return [
+            'type' => 'object',
+            'properties' => $properties,
+        ];
+    }
+
+    /**
+     * @param $className
      * @param null $fields
      * @return array
      * @throws \ReflectionException
@@ -217,6 +279,24 @@ class SwaggerTypeExtractor extends BaseObject
             $fields = $model->fields();
         }
 
+        // Detect * => model.*
+        foreach ($fields as $key => $name) {
+            // Syntax: * => model.*
+            if ($key === '*' && preg_match('/\.*$/', $name) !== false) {
+                unset($fields[$key]);
+
+                $attribute = substr($name, 0, -2);
+                $subClassName = $this->findAttributeType($className, $attribute);
+                if ($subClassName) {
+                    $subModel = new $subClassName();
+                    foreach ($subModel->fields() as $key => $name) {
+                        $key = is_int($key) ? $name : $key;
+                        $fields[$key] = $attribute . '.' . $name;
+                    }
+                }
+            }
+        }
+
         $properties = [];
         foreach ($fields as $key => $attributes) {
             if (is_int($key) && is_string($attributes)) {
@@ -227,10 +307,10 @@ class SwaggerTypeExtractor extends BaseObject
             if (is_callable($attributes)) {
                 // Method
                 $property = $this->extractMethod($className, $attributes);
-            } elseif (is_array($attributes)) {
+            } elseif (is_array($attributes) || (is_string($attributes) && $model instanceof BaseActiveRecord && $model->getRelation($attributes, false))) {
                 // Relation
                 $relation = $model->getRelation($key);
-                $property = $this->extractModel($relation->modelClass, $attributes);
+                $property = $this->extractModel($relation->modelClass, is_array($attributes) ? $attributes : null);
 
                 // Check hasMany relation
                 if ($relation->multiple) {
@@ -349,7 +429,7 @@ class SwaggerTypeExtractor extends BaseObject
      */
     public function findAttributeType($className, $attribute, &$phpdoc = null)
     {
-        $type = null;
+        $type = '';
         $classInfo = new \ReflectionClass($className);
         $inClassName = $className;
 
@@ -380,25 +460,32 @@ class SwaggerTypeExtractor extends BaseObject
             }
         }
 
+        $type = trim($type);
+
         if ($type) {
             $singleType = $this->parseSingleType($type);
             if ($singleType) {
                 return $singleType;
             }
 
-            return $this->resolveClassName(trim($type), $inClassName);
+            return $this->resolveClassName($type, $inClassName);
         }
         return null;
     }
 
     protected function parseSingleType($type)
     {
+        $isArray = preg_match('/\[\]$/', $type);
+        $type = preg_replace('/\[\]$/', '', $type);
+
         // Normalize
         $type = trim($type);
         $type = ArrayHelper::getValue(self::TYPE_ALIASES, $type, $type);
 
         // Find or return null
-        return ArrayHelper::keyExists($type, self::SINGLE_MAPPING) ? $type : null;
+        return ArrayHelper::keyExists($type, self::SINGLE_MAPPING)
+            ? $type . ($isArray ? '[]' : '')
+            : null;
     }
 
     /**
@@ -413,6 +500,7 @@ class SwaggerTypeExtractor extends BaseObject
         if (strpos($shortName, '\\') !== false) {
             return $shortName;
         }
+
         // Fetch use statements
         $inClassInfo = new \ReflectionClass($inClassName);
         $inClassNamespace = $inClassInfo->getNamespaceName();
@@ -420,8 +508,9 @@ class SwaggerTypeExtractor extends BaseObject
         $useStatements = $tokenParser->parseUseStatements($inClassNamespace);
 
         $isArray = preg_match('/\[\]$/', $shortName);
-        $statementKey = preg_replace('/\[\]/', '', strtolower($shortName));
-        $className = ArrayHelper::getValue($useStatements, $statementKey, $inClassNamespace . '\\' . $shortName);
+        $shortName = preg_replace('/\[\]$/', '', $shortName);
+        $className = ArrayHelper::getValue($useStatements, strtolower($shortName), $inClassNamespace . '\\' . $shortName);
+
         $className = '\\' . ltrim($className, '\\');
         return $className . ($isArray ? '[]' : '');
     }

@@ -70,6 +70,9 @@ class ControllerDocExtractor extends BaseDocExtractor
             $type = ExtractorHelper::resolveType($match[1], get_class($controller));
             $extractor = $this->createTypeExtractor($type, $url, $httpMethod);
             if ($extractor) {
+                if (preg_match_all('/@request-listen-relation\s+([^\s]+)/i', $method->getDocComment(), $match)) {
+                    $extractor->listenRelations = $match[1];
+                }
                 $extractor->run();
             }
         }

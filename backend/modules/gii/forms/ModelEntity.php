@@ -12,7 +12,6 @@ use steroids\modules\gii\models\MigrationMethods;
 use steroids\modules\gii\models\ValueExpression;
 use steroids\modules\gii\traits\EntityTrait;
 use steroids\types\RelationType;
-use steroids\validators\RecordExistValidator;
 use yii\helpers\ArrayHelper;
 
 /**
@@ -92,15 +91,12 @@ class ModelEntity extends ModelEntityMeta implements IEntity
 
             // Lazy create module
             ModuleEntity::findOrCreate($this->moduleId);
-            
+
             // Create/update meta information
             if (GiiHelper::isOverWriteClass($this->getClassName()) && GiiModule::getInstance()->showSteroidsEntries) {
                 // TODO Save lib class
             }
             GiiHelper::renderFile('model/meta', $this->getMetaPath(), [
-                'modelEntity' => $this,
-            ]);
-            GiiHelper::renderFile('model/meta_js', $this->getMetaJsPath(), [
                 'modelEntity' => $this,
             ]);
             \Yii::$app->session->addFlash('success', 'Meta  info model ' . $this->name . 'Meta updated');
@@ -112,6 +108,10 @@ class ModelEntity extends ModelEntityMeta implements IEntity
                 ]);
                 \Yii::$app->session->addFlash('success', 'Added model ' . $this->name);
             }
+
+            GiiHelper::renderFile('model/meta_js', $this->getMetaJsPath(), [
+                'modelEntity' => $this,
+            ]);
 
             // Create migration
             $migrationMethods = new MigrationMethods([
@@ -422,39 +422,6 @@ class ModelEntity extends ModelEntityMeta implements IEntity
             }
 
             $rules[] = "[$attributesRaw, $validatorRaw]";
-        }
-
-        $primaryKey = null;
-
-        foreach ($attributeEntities as $attributeEntity) {
-            if ($attributeEntity->appType === 'primaryKey') {
-                $primaryKey = $attributeEntity->name;
-            }
-        }
-
-        // Exist rules for foreign keys
-        foreach ($relationEntities as $relationEntity) {
-            // Checking for existence of the relations with self key == primary key might fail when run on save
-            $isSelfExistCheck = $primaryKey !== null && $relationEntity->isHasOne && $relationEntity->selfKey === $primaryKey;
-
-            if (!$relationEntity->isHasOne || $isSelfExistCheck) {
-                continue;
-            }
-
-            $attribute = $relationEntity->name;
-            $relationModelEntity = ModelEntity::findOne($relationEntity->relationModel);
-            $refClassName = $relationModelEntity->name;
-            $useClasses[] = $relationModelEntity->getClassName();
-            $useClasses[] = RecordExistValidator::class;
-            $targetAttributes = "'{$relationEntity->selfKey}' => '{$relationEntity->relationKey}'";
-
-            $rules[] = "[" . implode(', ', [
-                    "'$attribute'",
-                    "RecordExistValidator::class",
-                    "'skipOnError' => true",
-                    "'targetClass' => $refClassName::class",
-                    "'targetAttribute' => [$targetAttributes]",
-                ]) . "]";
         }
 
         return $rules;

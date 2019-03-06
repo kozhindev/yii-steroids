@@ -5,6 +5,7 @@ namespace steroids\base;
 use yii\data\ActiveDataProvider;
 use yii\data\ArrayDataProvider;
 use yii\db\ActiveQuery;
+use yii\db\Query;
 use yii\helpers\ArrayHelper;
 
 class SearchModel extends FormModel
@@ -56,12 +57,15 @@ class SearchModel extends FormModel
         $this->load($params);
 
         $query = $this->createQuery();
-        $this->prepare($query);
+        if ($this->validate()) {
+            $this->prepare($query);
+        } elseif ($query instanceof Query) {
+            $query->emulateExecution();
+        }
 
         $this->dataProvider = $this->createProvider();
         if (is_array($this->dataProvider)) {
             $this->dataProvider = new ActiveDataProvider(ArrayHelper::merge(
-                $this->dataProvider,
                 [
                     'query' => $query,
                     'sort' => false,
@@ -69,16 +73,11 @@ class SearchModel extends FormModel
                         'page' => $this->page - 1,
                         'pageSize' => $this->pageSize,
                     ],
-                ]
+                ],
+                $this->dataProvider
             ));
         } else if ($this->dataProvider instanceof ActiveDataProvider) {
             $this->dataProvider->query = $query;
-        }
-
-        if (!$this->validate()) {
-            if ($this->dataProvider instanceof ActiveDataProvider) {
-                $query->emulateExecution();
-            }
         }
 
         return $this->dataProvider;
@@ -127,9 +126,9 @@ class SearchModel extends FormModel
         $result = [
             'meta' => !empty($this->meta) ? $this->meta : null,
             'total' => $this->dataProvider->getTotalCount(),
-            'items' => array_map(function (Model $model) use ($fields) {
-                return $model->toFrontend($fields);
-            }, $this->dataProvider->models),
+            'items' => $this->fieldsSchema()
+                ? BaseSchema::anyToFrontend($this->fieldsSchema()::toList($this->dataProvider->models))
+                : Model::anyToFrontend($this->dataProvider->models, $fields),
         ];
         if ($this->hasErrors()) {
             $result['errors'] = $this->getErrors();
@@ -142,5 +141,13 @@ class SearchModel extends FormModel
      */
     public function prepare($query)
     {
+    }
+
+    /**
+     * @return null|BaseSchema
+     */
+    public function fieldsSchema()
+    {
+        return null;
     }
 }

@@ -7,6 +7,7 @@ import _isArray from 'lodash-es/isArray';
 import _isFunction from 'lodash-es/isFunction';
 import _isObject from 'lodash-es/isObject';
 import _includes from 'lodash-es/includes';
+import _uniqBy from 'lodash-es/uniqBy';
 
 import {http, store} from 'components';
 
@@ -235,7 +236,12 @@ export default () => WrappedComponent => class DataProviderHoc extends React.Pur
 
         this.setState({
             items: query
-                ? _filter(this.state.sourceItems, item => item.label.toLowerCase().indexOf(query) === 0)
+                ? _uniqBy(
+                    []
+                        .concat(_filter(this.state.sourceItems, item => item.label.toLowerCase().indexOf(query) === 0))
+                        .concat(_filter(this.state.sourceItems, item => item.label.toLowerCase().indexOf(query) > 0)),
+                    'id'
+                )
                 : this.state.sourceItems,
         });
     }
@@ -281,15 +287,18 @@ export default () => WrappedComponent => class DataProviderHoc extends React.Pur
     /**
      * Handler for user click on item
      * @param {object} item
+     * @param {boolean} skipToggle
      * @private
      */
-    _onItemClick(item) {
+    _onItemClick(item, skipToggle = false) {
         const id = item.id;
 
         if (this.props.multiple) {
             const values = [].concat(this.props.input.value || []);
             if (values.indexOf(id) !== -1) {
-                _remove(values, value => value === id);
+                if (!skipToggle) {
+                    _remove(values, value => value === id);
+                }
             } else {
                 values.push(id);
             }
@@ -301,7 +310,7 @@ export default () => WrappedComponent => class DataProviderHoc extends React.Pur
                 store.dispatch(change(this.props.formId, this.props.input.name, values));
             }
         } else {
-            this.props.input.onChange(this.props.input.value !== id ? id : null);
+            this.props.input.onChange(this.props.input.value !== id || skipToggle ? id : null);
             this._onClose();
         }
     }
@@ -345,10 +354,10 @@ export default () => WrappedComponent => class DataProviderHoc extends React.Pur
 
                     if (this.state.hoveredItem) {
                         // Select hovered
-                        this._onItemClick(this.state.hoveredItem);
+                        this._onItemClick(this.state.hoveredItem, true);
                     } else if (this.state.items.length > 0) {
                         // Select first result
-                        this._onItemClick(this.state.items[0]);
+                        this._onItemClick(this.state.items[0], true);
                     }
                 }
                 break;
@@ -369,7 +378,11 @@ export default () => WrappedComponent => class DataProviderHoc extends React.Pur
                 // Navigate on items by keys
                 const direction = isDown > 0 ? 1 : -1;
                 const keys = this.state.items.map(item => item.id);
-                const index = this.state.hoveredItem ? keys.indexOf(this.state.hoveredItem.id) : -1;
+                let index = this.state.hoveredItem ? keys.indexOf(this.state.hoveredItem.id) : -1;
+                if (index === -1 && this.state.selectedItems.length === 1) {
+                    index = keys.indexOf(this.state.selectedItems[0].id);
+                }
+
                 const newIndex = index !== -1 ? Math.min(keys.length - 1, Math.max(0, index + direction)) : 0;
                 this.setState({
                     hoveredItem: this.state.sourceItems.find(item => item.id === keys[newIndex]),

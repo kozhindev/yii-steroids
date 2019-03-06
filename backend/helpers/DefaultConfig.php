@@ -82,10 +82,7 @@ class DefaultConfig
                         'class' => '\steroids\commands\SteroidsCommand',
                     ],
                 ],
-                'on beforeAction' => function() use ($steroidsConfig) {
-                    Yii::setAlias('@tests', STEROIDS_ROOT_DIR . '/tests');
-                    Yii::setAlias('@webroot', STEROIDS_ROOT_DIR . '/public');
-                }
+                'on beforeAction' => [static::class, 'onConsoleBeforeAction'],
             ],
             $yiiCustom
         );
@@ -134,31 +131,7 @@ class DefaultConfig
                     ],
                 ],
                 'assetManager' => [
-                    'forceCopy' => true,
-                    'bundles' => [
-                        // Disables Yii & jQuery
-                        'yii\web\JqueryAsset' => [
-                            'sourcePath' => null,
-                            'js' => [],
-                        ],
-                        'yii\web\YiiAsset' => [
-                            'sourcePath' => null,
-                            'js' => [],
-                        ],
-                        'yii\grid\GridViewAsset' => [
-                            'sourcePath' => null,
-                            'js' => [],
-                        ],
-                        'yii\bootstrap\BootstrapAsset' => [
-                            'sourcePath' => null,
-                            'css' => [],
-                        ],
-                        'yii\bootstrap\BootstrapPluginAsset' => [
-                            'sourcePath' => null,
-                            'js' => [],
-                            'css' => [],
-                        ],
-                    ],
+                    'bundles' => false,
                 ],
                 'cache' => [
                     'class' => 'yii\caching\FileCache',
@@ -166,11 +139,7 @@ class DefaultConfig
                 'db' => [
                     'class' => 'yii\db\Connection',
                     'charset' => 'utf8',
-                    'on afterOpen' => function ($event) {
-                        if ($event->sender->schema instanceof Schema) {
-                            $event->sender->createCommand("SET time_zone='" . date('P') . "'")->execute();
-                        }
-                    },
+                    'on afterOpen' => [static::class, 'onDbAfterOpen'],
                 ],
                 'formatter' => [
                     'defaultTimeZone' => $timeZone,
@@ -272,6 +241,19 @@ class DefaultConfig
         }
 
         return self::$moduleClasses;
+    }
+
+    public static function onDbAfterOpen($event)
+    {
+        if ($event->sender->schema instanceof Schema) {
+            $event->sender->createCommand("SET time_zone='" . date('P') . "'")->execute();
+        }
+    }
+
+    public static function onConsoleBeforeAction()
+    {
+        Yii::setAlias('@tests', STEROIDS_ROOT_DIR . '/tests');
+        Yii::setAlias('@webroot', STEROIDS_ROOT_DIR . '/public');
     }
 
     protected static function getSteroidsConfig($params = [])
