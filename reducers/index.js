@@ -7,6 +7,7 @@ import config from './config';
 import notifications from './notifications';
 import modal from './modal';
 import routing from './routing';
+import navigation from './navigation';
 
 export {
     form,
@@ -16,6 +17,7 @@ export {
     notifications,
     modal,
     routing,
+    navigation,
 };
 
 export default asyncReducers => combineReducers({

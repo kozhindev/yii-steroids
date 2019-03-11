@@ -32,7 +32,7 @@ class Router extends React.PureComponent {
         this._renderItem = this._renderItem.bind(this);
     }
 
-    componentDidMount() {
+    componentWillMount() {
         this.props.dispatch(registerRoutes(this.props.routes));
     }
 
