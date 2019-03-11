@@ -99,3 +99,29 @@ export const getBreadcrumbs = (state, pageId = null, params = {}) => {
 
     return items.filter(item => item.isVisible !== false).map(route => buildNavItem(state, route, params));
 };
+
+export const getNavItem = (state, pageId, params = {}) => {
+    const route = getRoute(state, pageId);
+    return route ? buildNavItem(state, route, params) : null;
+};
+export const getNavUrl = (state, pageId, params = {}) => {
+    const navItem = getNavItem(state, pageId, params);
+    return navItem ? navItem.url : '';
+};
+
+export const getRoute = (state, pageId) => {
+    const root = state.navigation.routesTree;
+    if (!root) {
+        return null;
+    }
+
+    return root.id === pageId ? root : findRecursive(root.items, pageId);
+};
+
+export const getNavItems = (state, parentPageId = null, params = {}) => {
+    const route = getRoute(state, parentPageId);
+    return route
+        ? (route.items || []).filter(item => item.isVisible !== false).map(item => buildNavItem(state, item, params))
+        : [];
+};
+
