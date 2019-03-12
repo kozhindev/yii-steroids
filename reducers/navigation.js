@@ -1,7 +1,6 @@
 import pathToRegexp from 'path-to-regexp';
 import {matchPath} from 'react-router';
 import _get from 'lodash-es/get';
-import _trimEnd from 'lodash-es/trimEnd';
 import {NAVIGATION_INIT_ROUTES, NAVIGATION_SET_PARAMS} from '../actions/navigation';
 
 const initialState = {
@@ -47,12 +46,12 @@ const buildNavItem = (state, item, params) => {
         });
     } catch (e) { // eslint-disable-line no-empty
     }
-
+    
     return {
         id: item.id,
         title: item.title,
         label: item.label,
-        url: _trimEnd(url, '/') + '/',
+        url: url,
         // icon: RoutesEnum.getIconCssClass(item.id) || null, //TODO icon
         isVisible: item.isVisible,
         isActive: checkActiveRecursive(pathname, item),
