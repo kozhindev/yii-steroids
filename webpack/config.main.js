@@ -48,6 +48,7 @@ module.exports = (config, entry) => {
                 js: {
                     test: /\.js$/,
                     use: {
+                        cache: utils.isProduction() && 'cache-loader',
                         babel: {
                             loader: 'babel-loader',
                             options: {
@@ -86,12 +87,14 @@ module.exports = (config, entry) => {
                 json: {
                     test: /\.json$/,
                     use: {
+                        cache: utils.isProduction() && 'cache-loader',
                         json: 'json-loader'
                     },
                 },
                 less: {
                     test: /\.less$/,
                     use: [
+                        utils.isProduction() && 'cache-loader',
                         MiniCssExtractPlugin.loader,
                         'css-loader',
                         'less-loader',
@@ -100,6 +103,7 @@ module.exports = (config, entry) => {
                 sass: {
                     test: /\.scss$/,
                     use: [
+                        utils.isProduction() && 'cache-loader',
                         MiniCssExtractPlugin.loader,
                         'css-loader',
                         'sass-loader',
@@ -108,6 +112,7 @@ module.exports = (config, entry) => {
                 font: {
                     test: /(\/|\\)fonts(\/|\\).*\.(ttf|otf|eot|svg|woff(2)?)(\?[a-z0-9]+)?$/,
                     use: {
+                        cache: utils.isProduction() && 'cache-loader',
                         file: {
                             loader: 'file-loader',
                             options: {
@@ -119,6 +124,7 @@ module.exports = (config, entry) => {
                 image: {
                     test: /\.(jpe?g|gif|png|svg)$/,
                     use: {
+                        cache: utils.isProduction() && 'cache-loader',
                         file: {
                             loader: 'file-loader'
                         },
@@ -152,8 +158,16 @@ module.exports = (config, entry) => {
             utils.isProduction() && new webpack.optimize.OccurrenceOrderPlugin(),
             !utils.isProduction() && new webpack.ProgressPlugin(),
             new webpack.NamedModulesPlugin(),
-            new webpack.NamedChunksPlugin(),,
-            !utils.isProduction() && new webpack.HotModuleReplacementPlugin()
+            new webpack.NamedChunksPlugin(),
+            !utils.isProduction() && new webpack.HotModuleReplacementPlugin(),
+
+            // Proxy all APP_* env variables
+            new webpack.DefinePlugin(Object.keys(process.env).reduce((obj, key) => {
+                if (key.indexOf('APP_') === 0) {
+                    obj['process.env.' + key] = JSON.stringify(process.env[key]);
+                }
+                return obj;
+            }, {})),
         ].filter(Boolean),
         performance: {
             maxEntrypointSize: 12000000,
