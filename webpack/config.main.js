@@ -94,7 +94,6 @@ module.exports = (config, entry) => {
                 less: {
                     test: /\.less$/,
                     use: [
-                        utils.isProduction() && 'cache-loader',
                         MiniCssExtractPlugin.loader,
                         'css-loader',
                         'less-loader',
@@ -103,7 +102,6 @@ module.exports = (config, entry) => {
                 sass: {
                     test: /\.scss$/,
                     use: [
-                        utils.isProduction() && 'cache-loader',
                         MiniCssExtractPlugin.loader,
                         'css-loader',
                         'sass-loader',
