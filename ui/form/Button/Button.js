@@ -87,7 +87,9 @@ class Button extends React.PureComponent {
         const button = (
             <ButtonInternal
                 {...this.props}
-                url={this.props.link && !this.props.url ? 'javascript:void(0)' : this.props.url}
+                url={this.props.link && !(this.props.url || this.props.to)
+                    ? 'javascript:void(0)'
+                    : this.props.url || this.props.to}
                 onClick={this._onClick}
                 formId={this.context.formId}
                 layout={this.context.layout}
@@ -123,11 +125,19 @@ class Button extends React.PureComponent {
             return;
         }
         if (this.props.to) {
-            this.props.dispatch(push(this.props.to));
+            this._onLinkClick(e, this.props.to);
         }
 
         if (this.props.onClick) {
             this.props.onClick(e);
         }
     }
+
+    _onLinkClick(e, url) {
+        if (!e.ctrlKey && !e.shiftKey && !e.metaKey) {
+            e.preventDefault();
+            this.props.dispatch(push(url));
+        }
+    };
+
 }
