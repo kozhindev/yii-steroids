@@ -4,6 +4,7 @@ import {http} from 'components';
 
 export const FIELDS_BEFORE_FETCH = 'FIELDS_BEFORE_FETCH';
 export const FIELDS_AFTER_FETCH = 'FIELDS_AFTER_FETCH';
+export const FIELDS_SET_META = 'FIELDS_SET_META';
 export const FIELDS_ADD_SECURITY = 'FIELDS_ADD_SECURITY';
 export const FIELDS_REMOVE_SECURITY = 'FIELDS_REMOVE_SECURITY';
 
@@ -39,6 +40,20 @@ export const fetch = (fieldId, model, attribute, params = {}) => dispatch => {
         // Clean queue
         queue = [];
     }, 10);
+};
+
+export const fetchMeta = (names, force = false) => (dispatch, getState) => {
+    const isMetaFetched = getState().fields.meta !== null;
+    if (isMetaFetched && !force) {
+        return;
+    }
+
+    // Send request
+    return http.post('/api/steroids/meta-fetch', {names})
+        .then(meta => dispatch({
+            type: FIELDS_SET_META,
+            meta,
+        }));
 };
 
 export const addSecurity = (formId, params) => ({

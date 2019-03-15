@@ -43,8 +43,8 @@ class SiteMap extends Component
 
             // Detect verb
             $verb = null;
-            if (preg_match('/^(' . implode('|', self::VERBS) . ',?) .+/', $urlRule, $match)) {
-                $verb = explode(',', $match[1]);
+            if (preg_match('/^([a-z,]+) .+/i', $urlRule, $match)) {
+                $verb = array_intersect(explode(',', strtoupper($match[1])), static::VERBS);
                 $urlRule = str_replace($match[1] . ' ', '', $urlRule);
             }
 
@@ -521,7 +521,7 @@ class SiteMap extends Component
                     if ($key === 'url' && !$baseItems[$id]->controllerRoute && $controllerRoute) {
                         $baseItems[$id]->controllerRoute = $controllerRoute;
                     }
-                    
+
                     if ($key === 'items') {
                         $baseItems[$id]->$key = $this->mergeItems($baseItems[$id]->$key, $value, $append, $controllerRoute, $baseItems[$id]);
                     } elseif (is_array($baseItems[$id]) && is_array($value)) {

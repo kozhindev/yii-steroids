@@ -72,6 +72,7 @@ class SearchModel extends FormModel
                     'pagination' => [
                         'page' => $this->page - 1,
                         'pageSize' => $this->pageSize,
+                        'pageSizeLimit' => [1, 500],
                     ],
                 ],
                 $this->dataProvider

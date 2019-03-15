@@ -2,7 +2,9 @@
 
 namespace steroids\widgets;
 
+use steroids\base\Enum;
 use steroids\base\SearchModel;
+use steroids\modules\gii\helpers\GiiHelper;
 use Yii;
 use steroids\base\FormModel;
 use steroids\base\Model;
@@ -175,7 +177,15 @@ class Crud extends Widget
 
             // Prepare column props by type
             $type = \Yii::$app->types->getTypeByModel($modelClass, $attribute);
-            $type->prepareFormatterProps($model, $attribute, $column, $import);
+            $type->prepareFormatterProps($model, $attribute, $column);
+
+            // Enums process
+            foreach (GiiHelper::findClassNamesInMeta($column) as $key => $className) {
+                if (is_subclass_of($className, Enum::class)) {
+                    /** @type Enum $className */
+                    $column[$key] = $className::toFrontend();
+                }
+            }
 
             // Skip value func
             unset($column['value']);
@@ -211,7 +221,15 @@ class Crud extends Widget
                 );
 
                 $type = \Yii::$app->types->getTypeByModel($modelClass, $attribute);
-                $type->prepareFieldProps($model, $attribute, $field, $import);
+                $type->prepareFieldProps($model, $attribute, $field);
+
+                // Enums process
+                foreach (GiiHelper::findClassNamesInMeta($field) as $key => $className) {
+                    if (is_subclass_of($className, Enum::class)) {
+                        /** @type Enum $className */
+                        $field[$key] = $className::toFrontend();
+                    }
+                }
             }
 
             $config[] = $field;
@@ -237,7 +255,15 @@ class Crud extends Widget
             );
 
             $type = \Yii::$app->types->getTypeByModel($modelClass, $attribute);
-            $type->prepareFieldProps($model, $attribute, $field, $import);
+            $type->prepareFieldProps($model, $attribute, $field);
+
+            // Enums process
+            foreach (GiiHelper::findClassNamesInMeta($field) as $key => $className) {
+                if (is_subclass_of($className, Enum::class)) {
+                    /** @type Enum $className */
+                    $field[$key] = $className::toFrontend();
+                }
+            }
 
             $config[] = $field;
         }

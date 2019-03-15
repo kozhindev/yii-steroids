@@ -245,11 +245,9 @@ class ModelEntity extends ModelEntityMeta implements IEntity
     }
 
     /**
-     * @param string $indent
-     * @param array $import
-     * @return mixed|string
+     * @return array
      */
-    public function renderJsFields($indent = '', &$import = [])
+    public function getJsFields()
     {
         $result = [];
 
@@ -275,12 +273,12 @@ class ModelEntity extends ModelEntityMeta implements IEntity
             }
 
             // Add other props
-            $type->prepareFieldProps($this->getClassName(), $attribute, $props, $import);
+            $type->prepareFieldProps($this->getClassName(), $attribute, $props);
 
             $result[$attribute] = $props;
         }
 
-        return GiiHelper::varJsExport($result, $indent);
+        return $result;
     }
 
     /**
@@ -288,7 +286,17 @@ class ModelEntity extends ModelEntityMeta implements IEntity
      * @param array $import
      * @return mixed|string
      */
-    public function renderJsFormatters($indent = '', &$import = [])
+    public function renderJsFields($indent = '', &$import = [])
+    {
+        return $this->jsExport($this->getJsFields(), $indent, $import);
+    }
+
+    /**
+     * @param string $indent
+     * @param array $import
+     * @return mixed|string
+     */
+    public function getJsFormatters($indent = '', &$import = [])
     {
         $result = [];
         foreach (static::exportMeta($this->publicAttributeItems) as $attribute => $item) {
@@ -308,9 +316,46 @@ class ModelEntity extends ModelEntityMeta implements IEntity
             }
 
             // Add other props
-            $type->prepareFormatterProps($this->getClassName(), $attribute, $props, $import);
+            $type->prepareFormatterProps($this->getClassName(), $attribute, $props);
 
             $result[$attribute] = $props;
+        }
+
+        return GiiHelper::varJsExport($result, $indent);
+    }
+
+    /**
+     * @param string $indent
+     * @param array $import
+     * @return mixed|string
+     * @throws \ReflectionException
+     */
+    public function renderJsFormatters($indent = '', &$import = [])
+    {
+        return $this->jsExport($this->getJsFormatters(), $indent, $import);
+    }
+
+    /**
+     * @param $result
+     * @param string $indent
+     * @param array $import
+     * @return mixed|string
+     * @throws \ReflectionException
+     */
+    protected function jsExport($result, $indent = '', &$import = [])
+    {
+        // Detect class names for import
+        foreach (GiiHelper::findClassNamesInMeta($result) as $className) {
+            $info = (new \ReflectionClass($className))->getParentClass();
+            $name = $info->getName();
+            if (strpos('app\\', $name) === 0) {
+                $path = str_replace('\\', '/', $info->getName());
+            } else {
+                $path = GiiHelper::getRelativePath((new \ReflectionClass($className))->getParentClass()->getFileName(), $info->getFileName());
+                $path = preg_replace('/\.php$/', '', $path);
+            }
+
+            $import[] = "import {$info->getShortName()} from '" . $path . "';";
         }
 
         return GiiHelper::varJsExport($result, $indent);

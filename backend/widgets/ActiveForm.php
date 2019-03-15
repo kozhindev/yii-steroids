@@ -2,9 +2,11 @@
 
 namespace steroids\widgets;
 
+use steroids\base\Enum;
 use steroids\base\FormModel;
 use steroids\base\Model;
 use steroids\base\Widget;
+use steroids\modules\gii\helpers\GiiHelper;
 use yii\base\InvalidConfigException;
 use yii\db\ActiveRecordInterface;
 use yii\helpers\ArrayHelper;
@@ -129,7 +131,15 @@ class ActiveForm extends Widget
             );
 
             $type = \Yii::$app->types->getTypeByModel($this->model, $attribute);
-            $type->prepareFieldProps($this->model, $attribute, $field, $import);
+            $type->prepareFieldProps($this->model, $attribute, $field);
+
+            // Enums process
+            foreach (GiiHelper::findClassNamesInMeta($field) as $key => $className) {
+                if (is_subclass_of($className, Enum::class)) {
+                    /** @type Enum $className */
+                    $field[$key] = $className::toFrontend();
+                }
+            }
 
             $config[] = $field;
         }

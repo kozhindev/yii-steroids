@@ -2,8 +2,10 @@
 
 namespace steroids\widgets;
 
+use steroids\base\Enum;
 use steroids\base\Model;
 use steroids\base\Widget;
+use steroids\modules\gii\helpers\GiiHelper;
 use yii\data\ActiveDataProvider;
 use yii\helpers\ArrayHelper;
 
@@ -85,7 +87,15 @@ class GridView extends Widget
 
                 // Prepare column props by type
                 $type = \Yii::$app->types->getTypeByModel($modelClass, $attribute);
-                $type->prepareFormatterProps($model, $attribute, $column, $import);
+                $type->prepareFormatterProps($model, $attribute, $column);
+
+                // Enums process
+                foreach (GiiHelper::findClassNamesInMeta($column) as $key => $className) {
+                    if (is_subclass_of($className, Enum::class)) {
+                        /** @type Enum $className */
+                        $column[$key] = $className::toFrontend();
+                    }
+                }
             }
 
             $config[] = $column;

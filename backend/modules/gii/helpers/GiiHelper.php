@@ -16,6 +16,29 @@ use yii\web\JsExpression;
 
 class GiiHelper
 {
+    public static function findClassNamesInMeta($meta)
+    {
+        $names = [];
+        if (is_array($meta)) {
+            foreach ($meta as $key => $value) {
+                if (is_array($value)) {
+                    $names = array_merge($names, static::findClassNamesInMeta($value));
+                    continue;
+                }
+
+                if (!is_string($value) || !preg_match('/^[a-z0-9_.]+$/', $value)) {
+                    continue;
+                }
+
+                $className = str_replace('.', '\\', $value);
+                if (class_exists($className)) {
+                    $names[$key] = $className;
+                }
+            }
+        }
+        return $names;
+    }
+
     /**
      * @param string $template
      * @param $savePath

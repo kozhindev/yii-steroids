@@ -157,6 +157,11 @@ class ModelAttributeEntity extends ModelAttributeEntityMeta
                 ? '->defaultValue(' . (preg_match('/^[0-9]+$/', $this->defaultValue) ? $this->defaultValue : "'" . $this->defaultValue . "'") . ')'
                 : '';
 
+            if (!$isPostgres && $parts[0] === 'boolean') {
+                $notNull = '->notNull()';
+                $defaultValue = '->defaultValue(0)';
+            }
+
             return '$this->' . $map[$parts[0]] . '(' . $arguments . ')' . $notNull . $defaultValue;
         } else {
             return "'$dbType'";

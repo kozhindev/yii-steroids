@@ -1,10 +1,11 @@
 import _get from 'lodash-es/get';
 
-import {FIELDS_BEFORE_FETCH, FIELDS_AFTER_FETCH, FIELDS_ADD_SECURITY, FIELDS_REMOVE_SECURITY} from '../actions/fields';
+import {FIELDS_BEFORE_FETCH, FIELDS_AFTER_FETCH, FIELDS_SET_META, FIELDS_ADD_SECURITY, FIELDS_REMOVE_SECURITY} from '../actions/fields';
 
 const initialState = {
     props: {},
     security: {},
+    meta: null,
 };
 
 export default (state = initialState, action) => {
@@ -59,6 +60,15 @@ export default (state = initialState, action) => {
                     [action.formId]: null,
                 },
             };
+
+        case FIELDS_SET_META:
+            return {
+                ...state,
+                meta: {
+                    ...state.meta,
+                    ...action.meta,
+                },
+            };
     }
 
     return state;
@@ -66,4 +76,7 @@ export default (state = initialState, action) => {
 
 export const getFieldProps = (state, fieldId) => _get(state, ['fields', 'props', fieldId, 'props']);
 export const isFieldLoading = (state, fieldId) => !!_get(state, ['fields', 'props', fieldId, 'isLoading']);
+export const isMetaFetched = state => _get(state, ['fields', 'meta']) !== null;
+export const getMeta = (state, name) => _get(state, ['fields', 'meta', name]) || null;
+export const getEnumLabels = (state, name) => _get(state, ['fields', 'meta', name, 'labels']) || null;
 export const getSecurity = (state, formId) => _get(state, ['fields', 'security', formId]);

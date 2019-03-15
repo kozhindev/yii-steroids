@@ -47,7 +47,7 @@ abstract class CrudApiController extends Controller
                     'update' => [
                         'label' => \Yii::t('steroids', 'Редактирование'),
                         'url' => ['update'],
-                        'urlRule' => "PUT $baseUrl/<$idParam:\d+>",
+                        'urlRule' => "PUT,POST $baseUrl/<$idParam:\d+>",
                         'visible' => in_array('update', $controls),
                     ],
                     'view' => [
@@ -87,7 +87,7 @@ abstract class CrudApiController extends Controller
     public function actionIndex()
     {
         $searchModel = $this->createSearch();
-        $searchModel->search(Yii::$app->request->post());
+        $searchModel->search(Yii::$app->request->get());
         return $searchModel;
     }
 
@@ -146,7 +146,7 @@ abstract class CrudApiController extends Controller
 
         // Get primary key from post
         $primaryKey = $modelClass::primaryKey()[0];
-        $id = Yii::$app->request->post($modelClass::getRequestParamName());
+        $id = Yii::$app->request->get($modelClass::getRequestParamName());
         return $modelClass::findOrPanic([$primaryKey => $id]);
     }
 
@@ -178,6 +178,10 @@ abstract class CrudApiController extends Controller
             } else {
                 $attributes[] = $column['attribute'];
             }
+        }
+
+        if (empty($attributes)) {
+            $attributes = ['*'];
         }
 
         // Append primary key

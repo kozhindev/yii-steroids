@@ -2,13 +2,55 @@
 
 namespace steroids\modules\steroids\controllers;
 
+use steroids\base\Enum;
+use steroids\base\Model;
+use steroids\modules\gii\forms\ModelEntity;
+use steroids\modules\gii\helpers\GiiHelper;
 use yii\base\InvalidConfigException;
 use yii\helpers\ArrayHelper;
 use yii\web\Controller;
 
 class SteroidsFieldsController extends Controller
 {
-    public function actionFetch()
+    public function actionMetaFetch()
+    {
+        return $this->exportMetas(\Yii::$app->request->post('names'));
+    }
+
+    protected function exportMetas($names, $result = [])
+    {
+        foreach ((array)$names as $name) {
+            if (!is_string($name)) {
+                continue;
+            }
+
+            $className = str_replace('.', '\\', $name);
+            if (!class_exists($className)) {
+                $result[$name] = null;
+                continue;
+            }
+
+            if (is_subclass_of($className, Enum::class)) {
+                // TODO Other data?
+                /** @type Enum $className */
+                $result[$name]['labels'] = $className::toFrontend();
+            } elseif (is_subclass_of($className, Model::class)) {
+                /** @type Model $className */
+                $entity = ModelEntity::findOne($className);
+                if (!$entity) {
+                    $result[$name] = null;
+                    continue;
+                }
+
+                $result[$name]['fields'] = $entity->getJsFields();
+                $result = $this->exportMetas(GiiHelper::findClassNamesInMeta($result[$name]['fields']), $result);
+            }
+        }
+
+        return $result;
+    }
+
+    public function actionFieldsFetch()
     {
         $result = [];
         $fields = \Yii::$app->request->post('fields', []);

@@ -68,9 +68,9 @@ export default (state = {}, action) => {
                 ...state,
                 [action.listId]: {
                     ...state[action.listId],
-                    items: state[action.listId].map(item => {
+                    items: state[action.listId].items.map(item => {
                         if (_isMatch(item, action.condition)) {
-                            _extend(item, action.item);
+                            item = _extend({}, item, action.item);
                         }
                         return item;
                     }),

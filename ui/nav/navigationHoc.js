@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import _isArray from 'lodash-es/isArray';
+import _isEqual from 'lodash-es/isEqual';
 import {getCurrentRoute} from '../../reducers/routing';
 import {isInitialized} from '../../reducers/navigation';
 import {initRoutes, initParams} from '../../actions/navigation';
@@ -32,6 +33,10 @@ class NavigationHoc extends React.PureComponent {
         this._walkRoutesRecursive = this._walkRoutesRecursive.bind(this);
     }
 
+    shouldComponentUpdate(nextProps) {
+        return this.props.isInitialized !== nextProps.isInitialized
+            || !_isEqual(this.props.route, nextProps.route);
+    }
 
     componentWillMount() {
         store.dispatch([
