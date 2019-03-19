@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import _get from 'lodash/get';
 import _keyBy from 'lodash/keyBy';
 
 import {html} from 'components';
@@ -9,6 +8,7 @@ import Form from '../../form/Form';
 import Button from '../../form/Button';
 import Field from '../../form/Field';
 import InsideSearchFormView from './InsideSearchFormView';
+import './GridView.scss';
 
 const bem = html.bem('GridView');
 
@@ -87,6 +87,7 @@ export default class GridView extends React.Component {
                                 <td
                                     key={columnIndex}
                                     className={column.className}
+                                    data-label={column.label}
                                 >
                                     {this.props.renderValue(item, column)}
                                 </td>
