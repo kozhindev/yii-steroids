@@ -296,7 +296,7 @@ class ModelEntity extends ModelEntityMeta implements IEntity
      * @param array $import
      * @return mixed|string
      */
-    public function getJsFormatters($indent = '', &$import = [])
+    public function getJsFormatters()
     {
         $result = [];
         foreach (static::exportMeta($this->publicAttributeItems) as $attribute => $item) {
@@ -321,7 +321,7 @@ class ModelEntity extends ModelEntityMeta implements IEntity
             $result[$attribute] = $props;
         }
 
-        return GiiHelper::varJsExport($result, $indent);
+        return $result;
     }
 
     /**
