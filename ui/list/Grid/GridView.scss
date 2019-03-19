@@ -1,8 +1,42 @@
+@import '~bootstrap/scss/_functions.scss';
+@import '~bootstrap/scss/_variables.scss';
+@import '~bootstrap/scss/mixins/_breakpoints.scss';
+
 .GridView {
   opacity: 1;
   transition: opacity .2s;
 
   &_loading {
     opacity: .4;
+  }
+
+  //adaptive styles
+  @include media-breakpoint-down(sm) {
+    thead, tbody, th, tr {
+      display: block;
+    }
+
+    thead tr {
+      position: absolute;
+      top: -9999px;
+      left: -9999px;
+    }
+
+    td {
+      position: relative;
+      width: 100% !important;
+      text-align: left !important;
+
+      display: flex;
+      align-items: center;
+      white-space: pre-wrap;
+    }
+
+    td:before {
+      padding-right: 1rem;
+      width: 50%;
+      flex-shrink: 0;
+      content: attr(data-label);
+    }
   }
 }
