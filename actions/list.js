@@ -38,7 +38,7 @@ export const init = (listId, props) => dispatch => dispatch({
     type: LIST_INIT,
 });
 
-export const fetch = (listId, params) => (dispatch, getState) => {
+export const fetch = (listId, params = {}) => (dispatch, getState) => {
     const list = {
         ..._get(getState(), ['list', listId]),
         ...params,

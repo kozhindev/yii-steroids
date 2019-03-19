@@ -111,6 +111,11 @@ class SearchModel extends FormModel
         return $this->fields;
     }
 
+    public function sortFields()
+    {
+        return [];
+    }
+
     public function getDataProvider()
     {
         return $this->dataProvider;
@@ -142,6 +147,16 @@ class SearchModel extends FormModel
      */
     public function prepare($query)
     {
+        $sortFields = $this->sortFields();
+        if (!empty($sortFields) && !empty($this->sort)) {
+            foreach ((array)$this->sort as $key) {
+                $direction = strpos($key, '!') === 0 ? SORT_DESC : SORT_ASC;
+                $attribute = preg_replace('/^!/', '', $key);
+                if (in_array($attribute, $sortFields)) {
+                    $query->addOrderBy([$attribute => $direction]);
+                }
+            }
+        }
     }
 
     /**

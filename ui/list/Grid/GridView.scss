@@ -1,3 +1,8 @@
 .GridView {
+  opacity: 1;
+  transition: opacity .2s;
 
+  &_loading {
+    opacity: .4;
+  }
 }

@@ -8,7 +8,7 @@ import _isFunction from 'lodash-es/isFunction';
 import _isArray from 'lodash-es/isArray';
 import _mergeWith from 'lodash-es/mergeWith';
 
-import {init, lazyFetch, refresh, destroy} from '../../actions/list';
+import {init, lazyFetch, fetch, setSort, destroy} from '../../actions/list';
 import {getList} from '../../reducers/list';
 import Empty from './Empty';
 import Pagination from './Pagination';
@@ -16,7 +16,7 @@ import PaginationSize from './PaginationSize';
 import Form from '../form/Form';
 
 let formValuesSelectors = {};
-const getFormId = props => _get(props, 'searchForm.formId', props.listId);
+export const getFormId = props => _get(props, 'searchForm.formId', props.listId);
 
 export default () => WrappedComponent => @connect(
     (state, props) => {
@@ -50,7 +50,10 @@ class ListHoc extends React.PureComponent {
         loadMore: PropTypes.bool,
         defaultPage: PropTypes.number,
         defaultPageSize: PropTypes.number,
-        defaultSort: PropTypes.object,
+        defaultSort: PropTypes.oneOfType([
+            PropTypes.string,
+            PropTypes.arrayOf(PropTypes.string),
+        ]),
         query: PropTypes.object,
         items: PropTypes.array,
         total: PropTypes.number,
@@ -63,7 +66,7 @@ class ListHoc extends React.PureComponent {
                 PropTypes.func,
             ]),
             layout: PropTypes.oneOfType([
-                PropTypes.oneOf(['default', 'inline', 'horizontal']),
+                PropTypes.oneOf(['default', 'inline', 'horizontal', 'table']),
                 PropTypes.string,
             ]),
             layoutProps: PropTypes.object,
@@ -98,7 +101,10 @@ class ListHoc extends React.PureComponent {
             page: PropTypes.number,
             pageSize: PropTypes.number,
             total: PropTypes.number,
-            sort: PropTypes.object,
+            sort: PropTypes.oneOfType([
+                PropTypes.string,
+                PropTypes.arrayOf(PropTypes.string),
+            ]),
             query: PropTypes.object,
             items: PropTypes.array,
         }),
@@ -114,6 +120,13 @@ class ListHoc extends React.PureComponent {
         loadMore: true,
         reverse: false,
     };
+
+    constructor() {
+        super(...arguments);
+
+        this._onFetch = this._onFetch.bind(this);
+        this._onSort = this._onSort.bind(this);
+    }
 
     componentDidMount() {
         this.props.dispatch(init(this.props.listId, this.props));
@@ -165,7 +178,9 @@ class ListHoc extends React.PureComponent {
                 empty={this.renderEmpty()}
                 pagination={this.renderPagination()}
                 paginationSize={this.renderPaginationSize()}
-                searchForm={this.renderSearchForm()}
+                outsideSearchForm={this.renderOutsideSearchForm()}
+                fetch={this._onFetch}
+                sort={this._onSort}
             />
         );
     }
@@ -225,8 +240,11 @@ class ListHoc extends React.PureComponent {
         );
     }
 
-    renderSearchForm() {
+    renderOutsideSearchForm() {
         if (!this.props.searchForm || !this.props.searchForm.fields) {
+            return null;
+        }
+        if (this.props.searchForm.layout === 'table') {
             return null;
         }
 
@@ -235,9 +253,17 @@ class ListHoc extends React.PureComponent {
                 submitLabel={__('Найти')}
                 {...this.props.searchForm}
                 formId={getFormId(this.props)}
-                onSubmit={() => this.props.dispatch(refresh())}
+                onSubmit={() => this._onFetch()}
             />
         );
+    }
+
+    _onFetch(params) {
+        this.props.dispatch(fetch(this.props.listId, params));
+    }
+
+    _onSort(sort) {
+        this.props.dispatch(setSort(this.props.listId, sort));
     }
 
 };

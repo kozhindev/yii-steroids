@@ -14,7 +14,7 @@ const stateMap = state => ({
 });
 
 export default routes => WrappedComponent => @connect(stateMap)
-class NavigationHoc extends React.PureComponent {
+class NavigationHoc extends React.Component {
 
     static WrappedComponent = WrappedComponent;
 
