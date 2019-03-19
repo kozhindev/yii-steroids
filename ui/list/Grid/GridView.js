@@ -8,7 +8,6 @@ import Form from '../../form/Form';
 import Button from '../../form/Button';
 import Field from '../../form/Field';
 import InsideSearchFormView from './InsideSearchFormView';
-import './GridView.scss';
 
 const bem = html.bem('GridView');
 
