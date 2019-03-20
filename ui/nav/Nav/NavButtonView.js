@@ -18,6 +18,7 @@ export default class NavButtonView extends React.Component {
         return (
             <div className={bem(bem.block(), this.props.className)}>
                 <div className={bem.element('nav mb-3')}>
+                    
                     {this.props.items.map((item, index) => (
                         <Button
                             key={index}

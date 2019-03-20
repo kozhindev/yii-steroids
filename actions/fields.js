@@ -62,7 +62,7 @@ export const addSecurity = (formId, params) => ({
     params,
 });
 
-export const removeSecurity = (formId, params) => ({
+export const removeSecurity = (formId) => ({
     type: FIELDS_REMOVE_SECURITY,
     formId,
 });

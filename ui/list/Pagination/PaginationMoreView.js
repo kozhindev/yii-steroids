@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import {html, locale} from 'components';
+import {html} from 'components';
 import Button from '../../form/Button';
 
 const bem = html.bem('PaginationMoreView');

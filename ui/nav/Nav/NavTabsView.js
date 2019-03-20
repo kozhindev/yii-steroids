@@ -17,7 +17,7 @@ export default class NavTabsView extends React.Component {
     render() {
         return (
             <div className={bem(bem.block(), this.props.className)}>
-                <div className='nav nav-tabs mb-3'>
+                <div className={bem('nav nav-tabs', !this.props.children && 'mb-3')}>
                     {this.props.items.map((item, index) => (
                         <li
                             key={index}
@@ -25,12 +25,14 @@ export default class NavTabsView extends React.Component {
                         >
                             <Button
                                 link
+                                onClick={() => this.props.onClick(item, index)}
+                                layout={false}
+                                {...item}
                                 className={bem(
                                     'nav-link',
                                     item.isActive && 'active',
+                                    item.className,
                                 )}
-                                onClick={() => this.props.onClick(item, index)}
-                                {...item}
                             />
                         </li>
                     ))}

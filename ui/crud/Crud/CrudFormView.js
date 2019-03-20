@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import _get from 'lodash-es/get';
 
-import {html, http, locale} from 'components';
+import {html, http} from 'components';
 import Form from '../../form/Form/Form';
 
 const bem = html.bem('CrudFormView');

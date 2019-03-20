@@ -14,59 +14,59 @@ const stateMap = state => ({
 });
 
 export default routes => WrappedComponent => @connect(stateMap)
-class NavigationHoc extends React.Component {
+    class NavigationHoc extends React.Component {
 
-    static WrappedComponent = WrappedComponent;
+        static WrappedComponent = WrappedComponent;
 
-    /**
-     * Proxy real name, prop types and default props for storybook
-     */
-    static displayName = WrappedComponent.displayName || WrappedComponent.name;
+        /**
+         * Proxy real name, prop types and default props for storybook
+         */
+        static displayName = WrappedComponent.displayName || WrappedComponent.name;
 
-    static propTypes = {
-        isInitialized: PropTypes.bool,
-    };
+        static propTypes = {
+            isInitialized: PropTypes.bool,
+        };
 
-    constructor() {
-        super(...arguments);
+        constructor() {
+            super(...arguments);
 
-        this._walkRoutesRecursive = this._walkRoutesRecursive.bind(this);
-    }
-
-    shouldComponentUpdate(nextProps) {
-        return this.props.isInitialized !== nextProps.isInitialized
-            || !_isEqual(this.props.route, nextProps.route);
-    }
-
-    componentWillMount() {
-        store.dispatch([
-            initRoutes(this._walkRoutesRecursive(routes)),
-            initParams(this.props.route.params),
-        ]);
-    }
-
-    render() {
-        if (!this.props.isInitialized) {
-            return null;
+            this._walkRoutesRecursive = this._walkRoutesRecursive.bind(this);
         }
 
-        return (
-            <WrappedComponent {...this.props}/>
-        );
-    }
+        shouldComponentUpdate(nextProps) {
+            return this.props.isInitialized !== nextProps.isInitialized
+                || !_isEqual(this.props.route, nextProps.route);
+        }
 
-    _walkRoutesRecursive(item) {
-        return {
-            id: item.id,
-            exact: item.exact,
-            path: item.path,
-            label: item.label,
-            title: item.title,
-            isVisible: item.isVisible,
-            items: _isArray(item.items)
-                ? item.items.map(this._walkRoutesRecursive)
-                : null,
-        };
-    }
+        componentWillMount() {
+            store.dispatch([
+                initRoutes(this._walkRoutesRecursive(routes)),
+                initParams(this.props.route.params),
+            ]);
+        }
+
+        render() {
+            if (!this.props.isInitialized) {
+                return null;
+            }
+
+            return (
+                <WrappedComponent {...this.props}/>
+            );
+        }
+
+        _walkRoutesRecursive(item) {
+            return {
+                id: item.id,
+                exact: item.exact,
+                path: item.path,
+                label: item.label,
+                title: item.title,
+                isVisible: item.isVisible,
+                items: _isArray(item.items)
+                    ? item.items.map(this._walkRoutesRecursive)
+                    : null,
+            };
+        }
 
 };

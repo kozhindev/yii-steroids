@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import _first from 'lodash-es/first';
 import _values from 'lodash-es/values';
 
-import {locale, ui} from 'components';
+import {ui} from 'components';
 import fieldHoc from '../fieldHoc';
 import fileHoc from '../fileHoc';
 

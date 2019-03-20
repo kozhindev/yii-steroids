@@ -8,7 +8,11 @@ export default
 class BooleanFormatter extends React.Component {
 
     static propTypes = {
-        value: PropTypes.string,
+        value: PropTypes.oneOfType([
+            PropTypes.string,
+            PropTypes.number,
+            PropTypes.bool,
+        ]),
     };
 
     render() {
