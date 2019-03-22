@@ -10,6 +10,7 @@ use steroids\traits\MetaTrait;
 use steroids\traits\SecurityTrait;
 use yii\base\InvalidConfigException;
 use yii\db\ActiveRecord;
+use yii\helpers\ArrayHelper;
 use yii\web\NotFoundHttpException;
 
 /**
@@ -32,6 +33,49 @@ class Model extends ActiveRecord
             $pk = 'id';
         }
         return lcfirst(substr(strrchr(static::className(), "\\"), 1)) . ucfirst($pk);
+    }
+
+    /**
+     * @param array $condition
+     * @param array $additionalFields
+     * @param bool $onlyVisible
+     * @return array
+     * @throws InvalidConfigException
+     */
+    public static function asEnum($condition = [], $additionalFields = [], $onlyVisible = true)
+    {
+        $query = static::find()
+            ->andFilterWhere($condition)
+            ->limit(1000);
+
+        if ($onlyVisible && in_array('isVisible', static::getTableSchema()->columns)) {
+            $query->andWhere(['isVisible' => true]);
+        }
+
+        $result = [];
+        foreach ($query->all() as $model)
+        {
+            $idKey = $model::primaryKey()[0];
+            $labelKey = $idKey;
+            foreach (['title', 'label', 'name'] as $attribute) {
+                if ($model->canGetProperty($attribute)) {
+                    $labelKey = $attribute;
+                    break;
+                }
+            }
+
+            $item = $model->toFrontend(array_merge(
+                [
+                    'id' => $idKey,
+                    'label' => $labelKey,
+                ],
+                $additionalFields
+            ));
+            $result[$item['id']] = $item;
+        }
+
+        ArrayHelper::multisort($result, 'label');
+        return array_values($result);
     }
 
     /**

@@ -42,8 +42,11 @@ class SteroidsFieldsController extends Controller
                     continue;
                 }
 
+                $result[$name]['labels'] = $className::asEnum();
                 $result[$name]['fields'] = $entity->getJsFields();
+                $result[$name]['formatters'] = $entity->getJsFormatters();
                 $result = $this->exportMetas(GiiHelper::findClassNamesInMeta($result[$name]['fields']), $result);
+                $result = $this->exportMetas(GiiHelper::findClassNamesInMeta($result[$name]['formatters']), $result);
             }
         }
 

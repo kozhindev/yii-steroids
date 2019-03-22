@@ -8,7 +8,6 @@
         "ext-mbstring": "*",
         "ext-curl": "*",
         "lib-pcre": "*",
-        "yidas/yii2-composer-bower-skip": "~2.0.5",
         "yiisoft/yii2": "~2.0.15",
         "yiisoft/yii2-swiftmailer": "^2.1.0",
         "yiisoft/yii2-debug": "^2.0.13",
