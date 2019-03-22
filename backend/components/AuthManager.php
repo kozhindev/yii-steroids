@@ -3,7 +3,6 @@
 namespace steroids\components;
 
 use steroids\base\Model;
-use yii\base\BaseObject;
 use yii\helpers\ArrayHelper;
 use yii\rbac\Assignment;
 use yii\rbac\PhpManager;
@@ -23,6 +22,11 @@ class AuthManager extends PhpManager
     public $itemFile = '@app/config/rbac/items.php';
     public $assignmentFile = '@app/config/rbac/assignments.php';
     public $ruleFile = '@app/config/rbac/rules.php';
+
+    /**
+     * @var array
+     */
+    protected $_assignments = [];
 
     /**
      * @param Model|null $user
@@ -82,27 +86,30 @@ class AuthManager extends PhpManager
      */
     public function getAssignments($userId)
     {
-        if ($userId === null) {
-            return [
-                self::ROLE_GUEST => new Assignment([
-                    'roleName' => self::ROLE_GUEST,
+        if (!isset($this->_assignments[$userId])) {
+            if ($userId === null) {
+                $this->_assignments[$userId] = [
+                    self::ROLE_GUEST => new Assignment([
+                        'roleName' => self::ROLE_GUEST,
+                    ]),
+                ];
+            }
+
+            /** @var Model $userClass */
+            $userClass = \Yii::$app->user->identityClass;
+            $user = $userClass::findOne($userId);
+            if (!$user) {
+                $this->_assignments[$userId] = [];
+            }
+
+            $this->_assignments[$userId] = [
+                $user->role => new Assignment([
+                    'userId' => $userId,
+                    'roleName' => $user->role,
                 ]),
             ];
         }
-
-        /** @var Model $userClass */
-        $userClass = \Yii::$app->user->identityClass;
-        $user = $userClass::findOne($userId);
-        if (!$user) {
-            return [];
-        }
-
-        return [
-            $user->role => new Assignment([
-                'userId' => $userId,
-                'roleName' => $user->role,
-            ]),
-        ];
+        return $this->_assignments[$userId];
     }
 
     /**
