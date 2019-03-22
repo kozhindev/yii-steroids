@@ -126,15 +126,30 @@ class SearchModel extends FormModel
         return $this->meta;
     }
 
+    public function getItems($fields = null)
+    {
+        $schema = $this->fieldsSchema();
+        if ($schema) {
+            return Model::anyToFrontend(
+                array_map(
+                    function ($model) use ($schema) {
+                        return $this->createSchema($schema, $model);
+                    },
+                    $this->dataProvider->models
+                )
+            );
+        }
+
+        $fields = $fields ?: $this->fields();
+        return Model::anyToFrontend($this->dataProvider->models, $fields);
+    }
+
     public function toFrontend($fields = null)
     {
-        $fields = $fields ?: $this->fields();
         $result = [
             'meta' => !empty($this->meta) ? $this->meta : null,
             'total' => $this->dataProvider->getTotalCount(),
-            'items' => $this->fieldsSchema()
-                ? BaseSchema::anyToFrontend($this->fieldsSchema()::toList($this->dataProvider->models))
-                : Model::anyToFrontend($this->dataProvider->models, $fields),
+            'items' => $this->getItems()
         ];
         if ($this->hasErrors()) {
             $result['errors'] = $this->getErrors();
@@ -160,10 +175,20 @@ class SearchModel extends FormModel
     }
 
     /**
-     * @return null|BaseSchema
+     * @return null|string
      */
     public function fieldsSchema()
     {
         return null;
+    }
+
+    /**
+     * @param BaseSchema $schema
+     * @param Model $model
+     * @return BaseSchema
+     */
+    public function createSchema($schema, $model)
+    {
+        return new $schema(['model' => $model]);
     }
 }
