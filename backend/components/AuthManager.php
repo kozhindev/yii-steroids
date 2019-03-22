@@ -97,17 +97,19 @@ class AuthManager extends PhpManager
 
             /** @var Model $userClass */
             $userClass = \Yii::$app->user->identityClass;
+            
+            /** @var Model $user */
             $user = $userClass::findOne($userId);
-            if (!$user) {
+            if ($user) {
+                $this->_assignments[$userId] = [
+                    $user->role => new Assignment([
+                        'userId' => $userId,
+                        'roleName' => $user->role,
+                    ]),
+                ];
+            } else {
                 $this->_assignments[$userId] = [];
             }
-
-            $this->_assignments[$userId] = [
-                $user->role => new Assignment([
-                    'userId' => $userId,
-                    'roleName' => $user->role,
-                ]),
-            ];
         }
         return $this->_assignments[$userId];
     }
