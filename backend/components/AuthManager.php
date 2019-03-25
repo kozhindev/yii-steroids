@@ -93,22 +93,22 @@ class AuthManager extends PhpManager
                         'roleName' => self::ROLE_GUEST,
                     ]),
                 ];
-            }
-
-            /** @var Model $userClass */
-            $userClass = \Yii::$app->user->identityClass;
-            
-            /** @var Model $user */
-            $user = $userClass::findOne($userId);
-            if ($user) {
-                $this->_assignments[$userId] = [
-                    $user->role => new Assignment([
-                        'userId' => $userId,
-                        'roleName' => $user->role,
-                    ]),
-                ];
             } else {
-                $this->_assignments[$userId] = [];
+                /** @var Model $userClass */
+                $userClass = \Yii::$app->user->identityClass;
+
+                /** @var Model $user */
+                $user = $userClass::findOne($userId);
+                if ($user) {
+                    $this->_assignments[$userId] = [
+                        $user->role => new Assignment([
+                            'userId' => $userId,
+                            'roleName' => $user->role,
+                        ]),
+                    ];
+                } else {
+                    $this->_assignments[$userId] = [];
+                }
             }
         }
         return $this->_assignments[$userId];
