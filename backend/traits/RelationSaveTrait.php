@@ -489,7 +489,16 @@ trait RelationSaveTrait
         $primaryKey = $relatedModel::primaryKey()[0];
 
         // Fill from database
-        return $relation->select($primaryKey)->column();
+        $ids = $relation->select($primaryKey)->column();
+
+        // Typecast
+        $column = $relatedModel::getTableSchema()->getColumn($primaryKey);
+        return array_map(
+            function($value) use ($column) {
+                return $column->phpTypecast($value);
+            },
+            $ids
+        );
     }
 
 }

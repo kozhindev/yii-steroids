@@ -47,19 +47,19 @@ abstract class CrudApiController extends Controller
                     'update' => [
                         'label' => \Yii::t('steroids', 'Редактирование'),
                         'url' => ['update'],
-                        'urlRule' => "PUT,POST $baseUrl/<$idParam:\d+>",
+                        'urlRule' => "PUT,POST $baseUrl/<$idParam>",
                         'visible' => in_array('update', $controls),
                     ],
                     'view' => [
                         'label' => \Yii::t('steroids', 'Просмотр'),
                         'url' => ['view'],
-                        'urlRule' => "GET $baseUrl/<$idParam:\d+>",
+                        'urlRule' => "GET $baseUrl/<$idParam>",
                         'visible' => in_array('view', $controls),
                     ],
                     'delete' => [
                         'label' => \Yii::t('steroids', 'Удаление'),
                         'url' => ['delete'],
-                        'urlRule' => "DELETE $baseUrl/<$idParam:\d+>",
+                        'urlRule' => "DELETE $baseUrl/<$idParam>",
                         'visible' => in_array('delete', $controls),
                     ],
                 ],
@@ -101,7 +101,7 @@ abstract class CrudApiController extends Controller
         }
 
         $model->load(Yii::$app->request->post(), '');
-        $model->save();
+        $this->saveModel($model);
 
         return $model;
     }
@@ -114,7 +114,7 @@ abstract class CrudApiController extends Controller
         }
 
         $model->load(Yii::$app->request->post(), '');
-        $model->save();
+        $this->saveModel($model);
 
         return $model;
     }
@@ -139,6 +139,18 @@ abstract class CrudApiController extends Controller
         return $model;
     }
 
+    /**
+     * @param Model $model
+     */
+    protected function saveModel($model)
+    {
+        $model->save();
+    }
+
+    /**
+     * @return Model|null
+     * @throws \yii\web\NotFoundHttpException
+     */
     protected function findModel()
     {
         /** @var Model $modelClass */
@@ -149,7 +161,6 @@ abstract class CrudApiController extends Controller
         $id = Yii::$app->request->get($modelClass::getRequestParamName());
         return $modelClass::findOrPanic([$primaryKey => $id]);
     }
-
 
     /**
      * @return SearchModel

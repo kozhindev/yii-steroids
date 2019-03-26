@@ -162,7 +162,7 @@ export default () => WrappedComponent => class FileHoc extends React.PureCompone
             <WrappedComponent
                 {...this.props}
                 uploader={this._uploader}
-                files={this._uploader.queue.getFiles()}
+                files={[].concat(this._uploader.queue.getFiles())}
                 onBrowse={this._onBrowse}
                 onRemove={this._onRemove}
             />

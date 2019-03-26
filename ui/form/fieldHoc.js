@@ -4,6 +4,7 @@ import {connect} from 'react-redux';
 import {Field, FieldArray, formValueSelector, getFormSubmitErrors, change} from 'redux-form';
 import _get from 'lodash-es/get';
 import _upperFirst from 'lodash-es/upperFirst';
+import _isEqual from 'lodash-es/isEqual';
 
 import {ui} from 'components';
 import FieldLayout from './FieldLayout';
@@ -33,7 +34,7 @@ const errorSelectors = {};
         // Fetch values
         const values = {};
         props._config.attributes.map(attribute => {
-            values['formValue' + _upperFirst(attribute)] = valueSelector(state, FieldHoc.getName(props, attribute));
+            values[attribute] = valueSelector(state, FieldHoc.getName(props, attribute));
         });
 
         // Lazy create error selector
@@ -43,13 +44,13 @@ const errorSelectors = {};
         const errorSelector = errorSelectors[props.formId];
 
         return {
-            ...values,
+            values,
             formErrors: errorSelector(state),
             fieldProps: getFieldProps(state, FieldHoc.getFieldId(props)),
         };
     }
 )
-class FieldHoc extends React.PureComponent {
+class FieldHoc extends React.Component {
 
     static propTypes = {
         attribute: PropTypes.string,
@@ -97,6 +98,13 @@ class FieldHoc extends React.PureComponent {
         } else {
             this._fieldId = FieldHoc.getFieldId(this.props);
         }
+    }
+
+    shouldComponentUpdate(nextProps, nextState) {
+        return !_isEqual(this.props.values, nextProps.values)
+            || (nextProps._config.list && !_isEqual(this.props.formErrors, nextProps.formErrors))
+            || !_isEqual(this.props.fieldProps, nextProps.fieldProps)
+            || !_isEqual(this.state, nextState);
     }
 
     render() {
@@ -173,7 +181,7 @@ class FieldHoc extends React.PureComponent {
 
     _getValue(attribute) {
         if (this.props.formId) {
-            return _get(this.props, 'formValue' + _upperFirst(attribute));
+            return _get(this.props.values, attribute);
         } else {
             return this.state['value' + attribute];
         }
