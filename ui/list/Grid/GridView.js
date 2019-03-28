@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import _keyBy from 'lodash/keyBy';
+import _isString from 'lodash/isString';
 
 import {html} from 'components';
 import {getFormId} from '../listHoc';
@@ -86,7 +87,7 @@ export default class GridView extends React.Component {
                                 <td
                                     key={columnIndex}
                                     className={column.className}
-                                    data-label={column.label}
+                                    data-label={_isString(column.label) ? column.label : null}
                                 >
                                     {this.props.renderValue(item, column)}
                                 </td>

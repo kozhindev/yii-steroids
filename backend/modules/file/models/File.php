@@ -316,8 +316,8 @@ class File extends Model
 
     public function getExtendedAttributes($processor = null)
     {
-        if ($processor) {
-            $this->processors = [$processor];
+        if (!empty($processor)) {
+            $this->processors = (array)$processor;
         }
         return $this->toArray();
     }

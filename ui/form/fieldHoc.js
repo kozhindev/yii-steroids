@@ -83,7 +83,7 @@ class FieldHoc extends React.Component {
         if (this.props.formId) {
             this.props._config.attributes.forEach(attribute => {
                 if (!this.props['attribute' + _upperFirst(attribute)]) {
-                    throw new Error(`Please set attribute names for component "${this.props._wrappedComponent.name}" in form "${this.props.formId}"`);
+                    throw new Error(`Please set attribute name "${attribute}" for component "${this.props._wrappedComponent.name}" in form "${this.props.formId}"`);
                 }
             });
         }

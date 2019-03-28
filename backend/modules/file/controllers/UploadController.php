@@ -18,9 +18,9 @@ class UploadController extends Controller
         $fixedSize = \Yii::$app->request->get('fixedSize');
 
         $result = FileModule::getInstance()->upload([
-            'mimeTypes' => $mimeTypes ? explode(',', $mimeTypes) : null,
+            'mimeTypes' => is_string($mimeTypes) ? explode(',', $mimeTypes) : $mimeTypes,
         ], [
-            'fixedSize' => $fixedSize ? explode(',', $fixedSize) : null,
+            'fixedSize' => is_string($fixedSize) ? explode(',', $fixedSize) : $fixedSize,
         ]);
 
         if (isset($result['errors'])) {
@@ -29,7 +29,7 @@ class UploadController extends Controller
             ];
         }
 
-        $processor = \Yii::$app->request->get('processor');
+        $processor = array_filter(explode(',', (string)\Yii::$app->request->get('imagesProcessor') ?: \Yii::$app->request->get('processor')));
 
         // Send responses data
         return array_map(

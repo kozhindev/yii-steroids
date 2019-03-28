@@ -97,6 +97,10 @@ class FileModule extends Module
                         'url' => ['/file/upload/editor'],
                         'urlRule' => 'file/upload/editor',
                     ],
+                    'crop' => [
+                        'url' => ['/file/crop/index'],
+                        'urlRule' => 'file/crop',
+                    ],
                     'download' => [
                         'url' => ['/file/download/index'],
                         'urlRule' => 'file/<uid:[a-z0-9-]{36}>/<name>',

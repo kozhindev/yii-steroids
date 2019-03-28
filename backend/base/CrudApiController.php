@@ -12,6 +12,7 @@ abstract class CrudApiController extends Controller
 {
     public static $modelClass;
     public static $searchModelClass;
+    public static $viewSchema;
 
     /**
      * @param $baseUrl
@@ -124,6 +125,10 @@ abstract class CrudApiController extends Controller
         $model = $this->findModel();
         if (!$model->canView(Yii::$app->user->model)) {
             throw new ForbiddenHttpException();
+        }
+
+        if (static::$viewSchema) {
+            return new static::$viewSchema(['model' => $model]);
         }
 
         return $model;

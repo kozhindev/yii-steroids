@@ -82,7 +82,6 @@ class ImageCrop extends BaseFileProcessor
         }
 
         // Place, resize and save file
-
         $bool = $bool && imagecopyresampled($dst, $src, 0, 0, $this->offsetX, $this->offsetY, $this->width, $this->height, $this->width, $this->height);
         $bool && $extension === 'png' ?
             imagepng($dst, $this->filePath) :

@@ -219,6 +219,8 @@ export default () => WrappedComponent => class FileHoc extends React.PureCompone
         } else if (toRemove.indexOf(this.props.input.value) !== -1) {
             this.props.input.onChange(null);
         }
+
+        this.forceUpdate();
     }
 
     /**

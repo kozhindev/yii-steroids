@@ -10,7 +10,7 @@ export default (names = []) => WrappedComponent => @connect(
         isMetaFetched: isMetaFetched(state),
     })
 )
-class MetaFetcherHoc extends React.PureComponent {
+    class MetaFetcherHoc extends React.PureComponent {
 
     static WrappedComponent = WrappedComponent;
 
@@ -38,4 +38,4 @@ class MetaFetcherHoc extends React.PureComponent {
             <WrappedComponent {...this.props}/>
         );
     }
-}
+};
