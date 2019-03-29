@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
+import _get from 'lodash-es/get';
 import _isArray from 'lodash-es/isArray';
 import _isEqual from 'lodash-es/isEqual';
 import {getCurrentRoute} from '../../reducers/routing';
@@ -41,7 +42,7 @@ export default routes => WrappedComponent => @connect(stateMap)
         componentWillMount() {
             store.dispatch([
                 initRoutes(this._walkRoutesRecursive(routes)),
-                initParams(this.props.route.params),
+                initParams(_get(this.props, 'route.params')),
             ]);
         }
 
@@ -57,12 +58,15 @@ export default routes => WrappedComponent => @connect(stateMap)
 
         _walkRoutesRecursive(item) {
             return {
+                ...item,
                 id: item.id,
                 exact: item.exact,
                 path: item.path,
                 label: item.label,
                 title: item.title,
                 isVisible: item.isVisible,
+                component: null,
+                componentProps: null,
                 items: _isArray(item.items)
                     ? item.items.map(this._walkRoutesRecursive)
                     : null,

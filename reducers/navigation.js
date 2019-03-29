@@ -1,7 +1,9 @@
 import pathToRegexp from 'path-to-regexp';
 import {matchPath} from 'react-router';
 import _get from 'lodash-es/get';
+
 import {NAVIGATION_INIT_ROUTES, NAVIGATION_SET_PARAMS} from '../actions/navigation';
+import {getCurrentRoute} from './routing';
 
 const initialState = {
     routesTree: null,
@@ -46,7 +48,7 @@ const buildNavItem = (state, item, params) => {
         });
     } catch (e) { // eslint-disable-line no-empty
     }
-    
+
     return {
         id: item.id,
         title: item.title,
@@ -115,6 +117,16 @@ export const getRoute = (state, pageId) => {
     }
 
     return root.id === pageId ? root : findRecursive(root.items, pageId);
+};
+
+export const getCurrentItem = (state) => {
+    const route = getCurrentRoute(state);
+    return route && getRoute(state, route.id) || null;
+};
+
+export const getCurrentItemParam = (state, param) => {
+    const item = getCurrentItem(state);
+    return item && item[param] || null;
 };
 
 export const getNavItems = (state, parentPageId = null, params = {}) => {
