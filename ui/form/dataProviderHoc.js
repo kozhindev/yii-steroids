@@ -1,8 +1,10 @@
 import React from 'react';
+import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 import {change} from 'redux-form';
 import _remove from 'lodash-es/remove';
 import _filter from 'lodash-es/filter';
+import _isString from 'lodash-es/isString';
 import _isArray from 'lodash-es/isArray';
 import _isFunction from 'lodash-es/isFunction';
 import _isObject from 'lodash-es/isObject';
@@ -10,8 +12,15 @@ import _includes from 'lodash-es/includes';
 import _uniqBy from 'lodash-es/uniqBy';
 
 import {http, store} from 'components';
+import {getEnumLabels} from 'yii-steroids/reducers/fields';
 
-export default () => WrappedComponent => class DataProviderHoc extends React.PureComponent {
+const stateMap = (state, props) => ({
+    items: _isString(props.items)
+        ? getEnumLabels(state, props.items)
+        : props.items,
+});
+
+export default () => WrappedComponent => @connect(stateMap) class DataProviderHoc extends React.PureComponent {
 
     static WrappedComponent = WrappedComponent;
 
@@ -32,6 +41,7 @@ export default () => WrappedComponent => class DataProviderHoc extends React.Pur
                 ]),
                 label: PropTypes.string,
             })),
+            PropTypes.string, // Enum from redux state
             PropTypes.func, // Enum
         ]),
         dataProvider: PropTypes.shape({
