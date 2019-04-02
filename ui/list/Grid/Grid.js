@@ -55,6 +55,13 @@ class Grid extends React.PureComponent {
             });
         }
 
+        if (this.props.itemsIndexing) {
+            columns.unshift({
+                label: '№',
+                valueView: props => props.item.index,
+            })
+        }
+
         const GridView = this.props.view || ui.getView('list.GridView');
         return (
             <GridView
