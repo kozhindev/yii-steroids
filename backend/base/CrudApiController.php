@@ -104,6 +104,10 @@ abstract class CrudApiController extends Controller
         $model->load(Yii::$app->request->post(), '');
         $this->saveModel($model);
 
+        if (static::$viewSchema) {
+            return new static::$viewSchema(['model' => $model]);
+        }
+
         return $model;
     }
 
@@ -116,6 +120,10 @@ abstract class CrudApiController extends Controller
 
         $model->load(Yii::$app->request->post(), '');
         $this->saveModel($model);
+
+        if (static::$viewSchema) {
+            return new static::$viewSchema(['model' => $model]);
+        }
 
         return $model;
     }

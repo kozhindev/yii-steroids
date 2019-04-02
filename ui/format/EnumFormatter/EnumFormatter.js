@@ -1,13 +1,23 @@
 import React from 'react';
+import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 import _isArray from 'lodash-es/isArray';
+import _isString from 'lodash-es/isString';
 import _isFunction from 'lodash-es/isFunction';
 import _isObject from 'lodash-es/isObject';
+import {getEnumLabels} from '../../../reducers/fields';
 
 import viewHoc from '../viewHoc';
 
 export default
 @viewHoc()
+@connect(
+    (state, props) => ({
+        items: _isString(props.items)
+            ? getEnumLabels(state, props.items)
+            : props.items,
+    })
+)
 class EnumFormatter extends React.Component {
 
     static propTypes = {

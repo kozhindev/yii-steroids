@@ -5,8 +5,6 @@ import {connect} from 'react-redux';
 import {reduxForm, SubmissionError, getFormValues, isInvalid} from 'redux-form';
 import _isEqual from 'lodash-es/isEqual';
 import _get from 'lodash-es/get';
-import _set from 'lodash-es/set';
-import _isUndefined from 'lodash-es/isUndefined';
 
 import {http, ui} from 'components';
 import {addSecurity, removeSecurity} from '../../../actions/fields';
@@ -15,6 +13,7 @@ import SyncAddressBarHelper from './SyncAddressBarHelper';
 import {getSecurity} from '../../../reducers/fields';
 import Field from '../Field';
 import Button from '../Button';
+import formSubmitHoc from '../formSubmitHoc';
 
 let valuesSelector = null;
 let invalidSelector = null;
@@ -34,6 +33,7 @@ export default
         };
     }
 )
+@formSubmitHoc()
 @reduxForm()
 class Form extends React.PureComponent {
 
@@ -100,12 +100,6 @@ class Form extends React.PureComponent {
         size: PropTypes.oneOf(['sm', 'md', 'lg']),
     };
 
-    constructor() {
-        super(...arguments);
-
-        this._onSubmit = this._onSubmit.bind(this);
-    }
-
     getChildContext() {
         return {
             prefix: this.props.prefix,
@@ -162,7 +156,7 @@ class Form extends React.PureComponent {
         return (
             <FormView
                 {...this.props}
-                onSubmit={this.props.handleSubmit(this._onSubmit)}
+                onSubmit={this.props.handleSubmit(this.props.onSubmit)}
             >
                 {this.props.children}
                 {this.props.fields && this.props.fields.map((field, index) => (
@@ -182,46 +176,6 @@ class Form extends React.PureComponent {
                 )}
             </FormView>
         );
-    }
-
-    _onSubmit(values) {
-        // Append non touched fields to values object
-        Object.keys(this.props.formRegisteredFields || {}).forEach(key => {
-            const name = this.props.formRegisteredFields[key].name;
-            if (_isUndefined(_get(values, name))) {
-                _set(values, name, null);
-            }
-        });
-
-        if (this.props.onSubmit) {
-            return this.props.onSubmit(values);
-        }
-
-        return http.post(this.props.action || location.pathname, values)
-            .then(response => {
-                if (response.security) {
-                    return new Promise(resolve => {
-                        this.props.dispatch(addSecurity(this.props.formId, {
-                            ...response.security,
-                            onSuccess: data => {
-                                this.props.dispatch(removeSecurity(this.props.formId));
-                                resolve(this._onSubmit({...values, ...data}));
-                            },
-                        }));
-                    });
-                }
-                if (response.errors) {
-                    throw new SubmissionError(response.errors);
-                }
-                if (!response.security) {
-                    if (this.props.autoSave) {
-                        AutoSaveHelper.remove(this.props.formId);
-                    }
-                    if (this.props.onComplete) {
-                        this.props.onComplete(values, response);
-                    }
-                }
-            });
     }
 
 }

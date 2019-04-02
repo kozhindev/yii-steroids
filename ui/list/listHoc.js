@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import {getFormValues} from 'redux-form';
 import _get from 'lodash-es/get';
+import _has from 'lodash-es/has';
 import _isEqual from 'lodash-es/isEqual';
 import _isFunction from 'lodash-es/isFunction';
 import _isArray from 'lodash-es/isArray';
@@ -139,10 +140,23 @@ export default
                     return srcValue;
                 }
             };
+            const getQuery = props => {
+                const query = _get(props, 'list.query') || {};
+                const formValues = _get(props, 'formValues') || {};
+
+                Object.keys(query).forEach(attribute => {
+                    if (!_has(formValues, attribute)) {
+                        formValues[attribute] = null;
+                    }
+                });
+
+                return _mergeWith({}, query, formValues, customizer)
+            };
 
             // Send fetch request on change query or init list
-            const prevQuery = _mergeWith({}, _get(this.props, 'list.query'), _get(this.props, 'formValues'), customizer);
-            const nextQuery = _mergeWith({}, _get(nextProps, 'list.query'), _get(nextProps, 'formValues'), customizer);
+
+            const prevQuery = getQuery(this.props);
+            const nextQuery = getQuery(nextProps);
             if (!_isEqual(prevQuery, nextQuery) || (!this.props.list && nextProps.list)) {
                 this.props.dispatch(lazyFetch(this.props.listId, {
                     page: this.props.defaultPage,
