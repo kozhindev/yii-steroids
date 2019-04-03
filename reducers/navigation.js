@@ -54,7 +54,7 @@ const buildNavItem = (state, item, params) => {
         title: item.title,
         label: item.label,
         url: url,
-        // icon: RoutesEnum.getIconCssClass(item.id) || null, //TODO icon
+        icon: item.icon || null,
         isVisible: item.isVisible,
         isActive: checkActiveRecursive(pathname, item),
     };
