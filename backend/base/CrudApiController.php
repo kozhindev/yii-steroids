@@ -104,11 +104,17 @@ abstract class CrudApiController extends Controller
         $model->load(Yii::$app->request->post(), '');
         $this->saveModel($model);
 
-        if (static::$viewSchema) {
-            return new static::$viewSchema(['model' => $model]);
+        if ($errors = $model->getErrors()) {
+            $result = ['errors' => $errors];
+        } else {
+            if (static::$viewSchema) {
+                $result = new static::$viewSchema(['model' => $model]);
+            } else {
+                $result = $model;
+            }
         }
 
-        return $model;
+        return $result;
     }
 
     public function actionUpdate()
@@ -121,11 +127,17 @@ abstract class CrudApiController extends Controller
         $model->load(Yii::$app->request->post(), '');
         $this->saveModel($model);
 
-        if (static::$viewSchema) {
-            return new static::$viewSchema(['model' => $model]);
+        if ($errors = $model->getErrors()) {
+            $result = ['errors' => $errors];
+        } else {
+            if (static::$viewSchema) {
+                $result = new static::$viewSchema(['model' => $model]);
+            } else {
+                $result = $model;
+            }
         }
 
-        return $model;
+        return $result;
     }
 
     public function actionView()
