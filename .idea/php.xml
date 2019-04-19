@@ -2,6 +2,7 @@
 <project version="4">
   <component name="PhpIncludePathManager">
     <include_path>
+      <path value="$PROJECT_DIR$/../aliencloud/vendor/yiisoft" />
       <path value="$PROJECT_DIR$/../yii2-boilerplate/app" />
     </include_path>
   </component>
