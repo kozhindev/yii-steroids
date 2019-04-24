@@ -161,6 +161,8 @@ abstract class CrudApiController extends Controller
             throw new ForbiddenHttpException();
         }
 
+        $model->deleteOrPanic();
+
         return $model;
     }
 
