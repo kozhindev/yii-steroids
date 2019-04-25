@@ -8,4 +8,9 @@ export default class Model {
         return {};
     }
 
+    static getRequiredFields() {
+        return Object.entries(this.fields())
+            .filter(fieldEntry => fieldEntry[1].required)
+            .map(fieldEntry => fieldEntry[0])
+    }
 }

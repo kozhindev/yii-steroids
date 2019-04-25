@@ -19,6 +19,13 @@ export default class SyncAddressBarHelper {
         }
     }
 
+    /**
+     * WARNING
+     * Method incorrectly saves nested objects (e.g. {foo: [{bar: 1}]}
+     * // @todo use 'qs' library instead of 'query-string'
+     *
+     * @param {*} values
+     */
     static save(values) {
         values = {...values};
 

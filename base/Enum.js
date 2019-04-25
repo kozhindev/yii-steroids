@@ -20,4 +20,11 @@ export default class Enum {
         return this.getCssClasses()[id] || '';
     }
 
+    static getDropdownItems() {
+        return Object.entries(this.getLabels())
+            .map(([id, label]) => ({
+                label,
+                id,
+            }));
+    }
 }

@@ -60,6 +60,7 @@ export default
             items: PropTypes.array,
             total: PropTypes.number,
             reverse: PropTypes.bool,
+            itemsIndexing: PropTypes.bool,
             searchForm: PropTypes.shape({
                 formId: PropTypes.string,
                 prefix: PropTypes.string,
@@ -183,6 +184,16 @@ export default
             let items = _get(this.props, 'list.items') || [];
             if (this.props.reverse) {
                 items = [].concat(items).reverse();
+            }
+
+            // Set "index" propery to items depending on page number
+            if (this.props.itemsIndexing) {
+                items = [].concat(items.map(item => ({
+                    ...item,
+                    index: items.findIndex(searchItem => searchItem.id === item.id)
+                        + (this.props.list.page > 1 && ((this.props.list.page - 1) * this.props.list.pageSize))
+                        + 1, // + 1 to start indexing elements from 1 insted of 0.
+                })))
             }
 
             return (
