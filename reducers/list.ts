@@ -3,6 +3,7 @@ import _isMatch from 'lodash-es/isMatch';
 import _every from 'lodash-es/every';
 import _extend from 'lodash-es/extend';
 
+//TODO: replace "any" and "object"
 import {
     LIST_INIT,
     LIST_BEFORE_FETCH,
@@ -11,9 +12,24 @@ import {
     LIST_DESTROY,
     LIST_TOGGLE_ITEM,
     LIST_TOGGLE_ALL,
-} from '../actions/list';
+} from '../actions/actionTypes';
+import {
+    IntInit,
+    IntBeforeFetch,
+    IntAfterFetch,
+    IntItemUpdate,
+    IntDestroy,
+    IntToggleItem,
+    IntToggleAll
+} from '../actions/list.d';
+import {listState} from '../state/initialState';
+import RootStateModel from '../models/RootState';
+import ListModel from '../models/List';
+import ListItemModel from '../models/ListItem';
 
-export default (state = {}, action) => {
+type TypeListAction = IntInit | IntBeforeFetch | IntAfterFetch | IntItemUpdate | IntDestroy | IntToggleItem | IntToggleAll;
+
+export default (state = listState, action: TypeListAction) => {
     switch (action.type) {
         case LIST_INIT:
             return {
@@ -40,11 +56,11 @@ export default (state = {}, action) => {
 
         case LIST_AFTER_FETCH:
             let items;
-            const list = state[action.listId];
+            const list: ListModel = state[action.listId];
 
             if (list && list.items && list.loadMore && list.page > 1) {
-                items = [].concat(list.items);
-                action.items.forEach((entry, i) => {
+                items = [].concat(list.items as any); //TODO: find better solution
+                action.items.forEach((entry: any, i: number) => {
                     const index = ((list.page - 1) * list.pageSize) + i;
                     items[index] = entry;
                 });
@@ -68,7 +84,7 @@ export default (state = {}, action) => {
                 ...state,
                 [action.listId]: {
                     ...state[action.listId],
-                    items: state[action.listId].items.map(item => {
+                    items: state[action.listId].items.map((item: ListItemModel<any>) => {
                         if (_isMatch(item, action.condition)) {
                             item = _extend({}, item, action.item);
                         }
@@ -96,7 +112,7 @@ export default (state = {}, action) => {
             };
 
         case LIST_TOGGLE_ALL:
-            const list4 = state[action.listId];
+            const list4: ListModel = state[action.listId];
             if (list4) {
                 const ids = list4.items.map(item => item[list4.primaryKey]) || [];
                 const isAll = _every(ids.map(id => list4.selectedIds[id]));
@@ -117,17 +133,17 @@ export default (state = {}, action) => {
     return state;
 };
 
-export const getList = (state, listId) => state.list[listId] || null;
-export const getIds = (state, listId) => {
+export const getList = (state: RootStateModel, listId: string) => state.list[listId] || null;
+export const getIds = (state: RootStateModel, listId: string) => {
     const list = state.list[listId];
-    return list && list.items.map(item => item[list.primaryKey]) || [];
+    return list && list.items.map((item: ListItemModel<any>) => item[list.primaryKey]) || [];
 };
-export const getCheckedIds = (state, listId) => {
+export const getCheckedIds = (state: RootStateModel, listId: string) => {
     const list = state.list[listId];
     const selectedIds = list && list.selectedIds || {};
     return Object.keys(selectedIds).filter(id => selectedIds[id]);
 };
-export const isCheckedAll = (state, listId) => {
+export const isCheckedAll = (state: RootStateModel, listId: string) => {
     const list = state.list[listId];
-    return _every(getIds(state, listId).map(id => list.selectedIds[id]));
+    return _every(getIds(state, listId).map((id: string) => list.selectedIds[id]));
 };

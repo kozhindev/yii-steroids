@@ -1,17 +1,25 @@
 import _get from 'lodash-es/get';
+import { Dispatch } from 'redux';
 
-import {http} from 'components';
+//TODO: replace "any"
+import {http} from './../components';
+import {
+    FIELDS_BEFORE_FETCH,
+    FIELDS_AFTER_FETCH,
+    FIELDS_SET_META,
+    FIELDS_ADD_SECURITY,
+    FIELDS_REMOVE_SECURITY
+} from './actionTypes';
 
-export const FIELDS_BEFORE_FETCH = 'FIELDS_BEFORE_FETCH';
-export const FIELDS_AFTER_FETCH = 'FIELDS_AFTER_FETCH';
-export const FIELDS_SET_META = 'FIELDS_SET_META';
-export const FIELDS_ADD_SECURITY = 'FIELDS_ADD_SECURITY';
-export const FIELDS_REMOVE_SECURITY = 'FIELDS_REMOVE_SECURITY';
+let timer: number | null = null;
+let queue: Array<{
+    fieldId: string;
+    model: any;
+    attribute: string;
+    params?: object;
+}> = [];
 
-let timer = null;
-let queue = [];
-
-export const fetch = (fieldId, model, attribute, params = {}) => dispatch => {
+export const fetch = (fieldId: string, model: any, attribute: string, params: object = {}) => (dispatch: Dispatch) => {
     model = _get(model, 'className', String(model));
 
     // Mark loading
@@ -39,11 +47,11 @@ export const fetch = (fieldId, model, attribute, params = {}) => dispatch => {
 
         // Clean queue
         queue = [];
-    }, 10);
+    }, 10) as any;
 };
 
-export const fetchMeta = (names, force = false) => (dispatch, getState) => {
-    const isMetaFetched = getState().fields.meta !== null;
+export const fetchMeta = (names: Array<string>, force: boolean = false) => (dispatch: Dispatch, getState: any) => {
+    const isMetaFetched: boolean = getState().fields.meta !== null;
     if (isMetaFetched && !force) {
         return;
     }
@@ -56,13 +64,13 @@ export const fetchMeta = (names, force = false) => (dispatch, getState) => {
         }));
 };
 
-export const addSecurity = (formId, params) => ({
+export const addSecurity = (formId: string, params: object) => ({
     type: FIELDS_ADD_SECURITY,
     formId,
     params,
 });
 
-export const removeSecurity = (formId) => ({
+export const removeSecurity = (formId: string) => ({
     type: FIELDS_REMOVE_SECURITY,
     formId,
 });

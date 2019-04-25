@@ -1,14 +1,26 @@
 import _get from 'lodash-es/get';
 
-import {FIELDS_BEFORE_FETCH, FIELDS_AFTER_FETCH, FIELDS_SET_META, FIELDS_ADD_SECURITY, FIELDS_REMOVE_SECURITY} from '../actions/fields';
+import {
+    FIELDS_BEFORE_FETCH,
+    FIELDS_AFTER_FETCH,
+    FIELDS_SET_META,
+    FIELDS_ADD_SECURITY,
+    FIELDS_REMOVE_SECURITY
+} from '../actions/actionTypes';
+import {
+    IntBeforeFetch,
+    IntAfterFetch,
+    IntSetMeta,
+    IntAddSecurity,
+    IntRemoveSecurity
+} from '../actions/fields.d';
+import {fieldsState} from '../state/initialState';
+import RootStateModel from '../models/RootState';
+import MetaModel from '../models/Meta';
 
-const initialState = {
-    props: {},
-    security: {},
-    meta: null,
-};
+type TypeFieldsAction = IntBeforeFetch | IntAfterFetch | IntSetMeta | IntAddSecurity | IntRemoveSecurity;
 
-export default (state = initialState, action) => {
+export default (state = fieldsState, action: TypeFieldsAction) => {
     switch (action.type) {
         case FIELDS_BEFORE_FETCH:
             return {
@@ -74,9 +86,9 @@ export default (state = initialState, action) => {
     return state;
 };
 
-export const getFieldProps = (state, fieldId) => _get(state, ['fields', 'props', fieldId, 'props']);
-export const isFieldLoading = (state, fieldId) => !!_get(state, ['fields', 'props', fieldId, 'isLoading']);
-export const isMetaFetched = state => _get(state, ['fields', 'meta']) !== null;
-export const getMeta = (state, name) => _get(state, ['fields', 'meta', name]) || null;
-export const getEnumLabels = (state, name) => _get(state, ['fields', 'meta', name, 'labels']) || null;
-export const getSecurity = (state, formId) => _get(state, ['fields', 'security', formId]);
+export const getFieldProps = (state: RootStateModel, fieldId: string) => _get(state, ['fields', 'props', fieldId, 'props']);
+export const isFieldLoading = (state: RootStateModel, fieldId: string): boolean => !!_get(state, ['fields', 'props', fieldId, 'isLoading']);
+export const isMetaFetched = (state: RootStateModel): boolean => _get(state, ['fields', 'meta']) !== null;
+export const getMeta = (state: RootStateModel, name: string): MetaModel => _get(state, ['fields', 'meta', name]) || null;
+export const getEnumLabels = (state: RootStateModel, name: string) => _get(state, ['fields', 'meta', name, 'labels']) || null;
+export const getSecurity = (state: RootStateModel, formId: string) => _get(state, ['fields', 'security', formId]);

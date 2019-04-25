@@ -20,7 +20,7 @@ export {
     navigation,
 };
 
-export default asyncReducers => combineReducers({
+export default (asyncReducers: any) => combineReducers({
     ...module.exports,
     ...asyncReducers,
 });

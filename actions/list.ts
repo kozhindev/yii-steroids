@@ -1,28 +1,33 @@
+//TODO: replace "any" and "object"
+
 import _get from 'lodash-es/get';
+import { Dispatch } from 'redux';
 
-import {http} from 'components';
+import {http} from './../components';
+import {
+    LIST_INIT,
+    LIST_BEFORE_FETCH,
+    LIST_AFTER_FETCH,
+    LIST_ITEM_UPDATE,
+    LIST_DESTROY,
+    LIST_TOGGLE_ITEM,
+    LIST_TOGGLE_ALL
+} from './actionTypes';
+import ListModel from './../models/List';
+import ListItemModel from './../models/ListItem';
 
-export const LIST_INIT = 'LIST_INIT';
-export const LIST_BEFORE_FETCH = 'LIST_BEFORE_FETCH';
-export const LIST_AFTER_FETCH = 'LIST_AFTER_FETCH';
-export const LIST_ITEM_UPDATE = 'LIST_ITEM_UPDATE';
-export const LIST_DESTROY = 'LIST_DESTROY';
-export const LIST_TOGGLE_ITEM = 'LIST_TOGGLE_ITEM';
-export const LIST_TOGGLE_ALL = 'LIST_TOGGLE_ALL';
+const lazyTimers: any = {};
 
-const lazyTimers = {};
-
-const defaultFetchHandler = list => {
+const defaultFetchHandler = (list: ListModel) => {
     return http.send(list.actionMethod, list.action || location.pathname, {
         ...list.query,
         page: list.page,
         pageSize: list.pageSize,
         sort: list.sort,
-    })
-        .then(response => response.data);
+    }).then((response: any) => response.data);
 };
 
-export const init = (listId, props) => dispatch => dispatch({
+export const init = (listId: string, props: any) => (dispatch: Dispatch) => dispatch({
     action: props.action || props.action === '' ? props.action : null,
     actionMethod: props.actionMethod || 'post',
     onFetch: props.onFetch,
@@ -38,7 +43,7 @@ export const init = (listId, props) => dispatch => dispatch({
     type: LIST_INIT,
 });
 
-export const fetch = (listId, params = {}) => (dispatch, getState) => {
+export const fetch = (listId: string, params: object = {}) => (dispatch: any, getState: any) => {
     const list = {
         ..._get(getState(), ['list', listId]),
         ...params,
@@ -55,7 +60,7 @@ export const fetch = (listId, params = {}) => (dispatch, getState) => {
             listId,
             type: LIST_BEFORE_FETCH,
         },
-        onFetch(list).then(data => {
+        onFetch(list).then((data: ListModel) => {
             if (!getState().list[listId]) {
                 return [];
             }
@@ -69,37 +74,37 @@ export const fetch = (listId, params = {}) => (dispatch, getState) => {
     ]);
 };
 
-export const lazyFetch = (listId, params) => dispatch => {
+export const lazyFetch = (listId: string, params: object) => (dispatch: any) => {
     if (lazyTimers[listId]) {
         clearTimeout(lazyTimers[listId]);
     }
     lazyTimers[listId] = setTimeout(() => dispatch(fetch(listId, params)), 200);
 };
 
-export const setPage = (listId, page, loadMore) => fetch(listId, {
+export const setPage = (listId: string, page: number, loadMore: boolean) => fetch(listId, {
     page,
     loadMore,
 });
 
-export const setPageSize = (listId, pageSize) => fetch(listId, {
+export const setPageSize = (listId: string, pageSize: number) => fetch(listId, {
     page: 1,
     pageSize,
 });
 
-export const setSort = (listId, sort) => fetch(listId, {
+export const setSort = (listId: string, sort: object) => fetch(listId, {
     sort,
 });
 
-export const refresh = listId => fetch(listId);
+export const refresh = (listId: string) => fetch(listId);
 
-export const update = (listId, item, condition) => ({
+export const update = (listId: string, item: ListItemModel<any>, condition: any) => ({
     item,
     condition,
     listId,
     type: LIST_ITEM_UPDATE,
 });
 
-export const destroy = listId => {
+export const destroy = (listId: string) => {
     if (lazyTimers[listId]) {
         clearTimeout(lazyTimers[listId]);
     }
@@ -110,13 +115,13 @@ export const destroy = listId => {
     };
 };
 
-export const toggleItem = (listId, itemId) => ({
+export const toggleItem = (listId: string, itemId: string) => ({
     listId,
     itemId,
     type: LIST_TOGGLE_ITEM,
 });
 
-export const toggleAll = listId => ({
+export const toggleAll = (listId: string) => ({
     listId,
     type: LIST_TOGGLE_ALL,
 });

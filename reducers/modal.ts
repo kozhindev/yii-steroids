@@ -1,13 +1,14 @@
 import _get from 'lodash-es/get';
 import _values from 'lodash-es/values';
 
-import {OPEN_MODAL, CLOSE_MODAL} from '../actions/modal';
+import { OPEN_MODAL, CLOSE_MODAL } from '../actions/actionTypes';
+import { IntOpenModal, IntCloseModal} from '../actions/modal.d';
+import {modalState} from '../state/initialState';
+import RootStateModel from '../models/RootState';
 
-const initialState = {
-    opened: {},
-};
+type TypeModalAction = IntOpenModal | IntCloseModal;
 
-export default (state = initialState, action) => {
+export default (state = modalState, action: TypeModalAction) => {
     switch (action.type) {
         case OPEN_MODAL:
             return {
@@ -42,4 +43,4 @@ export default (state = initialState, action) => {
     }
 };
 
-export const getOpened = (state) => _values(state.modal.opened);
+export const getOpened = (state: RootStateModel) => _values(state.modal.opened);
