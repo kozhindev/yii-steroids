@@ -1,5 +1,5 @@
 
-module.exports = (e, addHandler) => {
+export default (e, addHandler) => {
     if (!e.shiftKey || [38, 40].indexOf(e.keyCode) === -1) {
         return;
     }

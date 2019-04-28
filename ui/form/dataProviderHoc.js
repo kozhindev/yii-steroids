@@ -12,7 +12,7 @@ import _includes from 'lodash-es/includes';
 import _uniqBy from 'lodash-es/uniqBy';
 
 import {http, store} from 'components';
-import {getEnumLabels} from 'yii-steroids/reducers/fields';
+import {getEnumLabels} from 'reducers/fields';
 
 const stateMap = (state, props) => ({
     items: _isString(props.items)
@@ -20,7 +20,8 @@ const stateMap = (state, props) => ({
         : props.items,
 });
 
-export default () => WrappedComponent => @connect(stateMap) class DataProviderHoc extends React.PureComponent {
+export default () => WrappedComponent => @connect(stateMap)
+class DataProviderHoc extends React.PureComponent {
 
     static WrappedComponent = WrappedComponent;
 
