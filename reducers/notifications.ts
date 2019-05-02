@@ -1,10 +1,12 @@
-import {NOTIFICATIONS_SHOW, NOTIFICATIONS_CLOSING, NOTIFICATIONS_CLOSE} from '../actions/notifications';
+import { NOTIFICATIONS_SHOW, NOTIFICATIONS_CLOSING, NOTIFICATIONS_CLOSE } from '../actions/actionTypes';
+import { IntNotificationShow, IntNotificationClosing, IntNotificationClose} from '../actions/notifications.d';
+import {notificationsState} from '../state/initialState';
+import RootStateModel from '../models/RootState';
+import NotificationModel from '../models/Notification';
 
-const initialState = {
-    items: [],
-};
+type TypeNotificationAction = IntNotificationShow | IntNotificationClosing | IntNotificationClose;
 
-export default (state = initialState, action) => {
+export default (state = notificationsState, action: TypeNotificationAction) => {
     switch (action.type) {
         case NOTIFICATIONS_SHOW:
             return {
@@ -42,4 +44,4 @@ export default (state = initialState, action) => {
     }
 };
 
-export const getNotifications = (state) => state.notifications.items;
+export const getNotifications = (state: RootStateModel) => state.notifications.items;

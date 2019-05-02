@@ -1,9 +1,8 @@
-import {RouteProps} from 'react-router';
-import RouteModel from './Route';
+import { RouteProps } from 'react-router';
 
-export default interface RoutesTreeItem extends RouteProps {
+export default interface RoutesTreeItemModel extends RouteProps {
     id: string;
-    exact: boolean;
+    isVisible: boolean;
     path: string;
     componentProps?: {
         [key: string]: string,
@@ -11,6 +10,6 @@ export default interface RoutesTreeItem extends RouteProps {
     label: string;
     title: string;
     roles?: Array<string>;
-    icon: string | null;
-    items?: Array<RouteModel>;
+    icon?: string | null;
+    items?: Array<RoutesTreeItemModel>;
 }

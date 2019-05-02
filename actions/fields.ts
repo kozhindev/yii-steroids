@@ -1,7 +1,7 @@
 import _get from 'lodash-es/get';
 import { Dispatch } from 'redux';
 
-//TODO: replace "any"
+//TODO: replace "any" and "object"
 import {http} from './../components';
 import {
     FIELDS_BEFORE_FETCH,

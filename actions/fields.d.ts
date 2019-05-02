@@ -8,7 +8,7 @@ import {
 import MetaModel from './../models/Meta';
 import FieldModel from './../models/Field';
 
-//TODO: replace "any"
+//TODO: replace "any" and "object"
 export interface IntBeforeFetch {
     type: TYPE_FIELDS_BEFORE_FETCH;
     fieldId: string;

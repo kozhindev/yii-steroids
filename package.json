@@ -98,6 +98,7 @@
     "@storybook/core": "^4.1.1",
     "@storybook/react": "^4.1.1",
     "@types/lodash-es": "^4.17.3",
+    "@types/path-to-regexp": "^1.7.0",
     "@types/react-router": "^4.4.5",
     "@types/redux-form": "^8.1.1",
     "storybook-readme": "^4.0.2",

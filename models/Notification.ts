@@ -4,3 +4,7 @@ export default interface NotificationModel {
     message: string;
     isClosing: boolean;
 }
+
+export default interface NotificationsModel {
+    [key: string]: NotificationModel;
+}

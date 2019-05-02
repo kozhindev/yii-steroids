@@ -1,17 +1,18 @@
+//TODO: replace "any" and "object"
+
 import _get from 'lodash-es/get';
-import {matchPath} from 'react-router';
+import { matchPath } from 'react-router';
 
-import {ROUTING_REGISTER} from '../actions/routing';
+import { LOCATION_CHANGE, ROUTING_REGISTER } from '../actions/actionTypes';
+import { IntRegisterRoutes } from '../actions/routing.d';
+import { routingState } from '../state/initialState';
+import RootStateModel from '../models/RootState';
+import RoutesTreeItemModel from '../models/RoutesTreeItem';
+import RouteModel from '../models/Route';
 
-export const LOCATION_CHANGE = '@@router/LOCATION_CHANGE';
+type TRoutingAction = IntRegisterRoutes | any;
 
-const initialState = {
-    location: null,
-    action: null,
-    routes: [],
-};
-
-export default (state = initialState, action) => {
+export default (state = routingState, action: TRoutingAction) => {
     switch (action.type) {
         case LOCATION_CHANGE:
             return {
@@ -22,7 +23,7 @@ export default (state = initialState, action) => {
         case ROUTING_REGISTER:
             return {
                 ...state,
-                routes: action.routes.map(item => ({
+                routes: action.routes.map((item: RoutesTreeItemModel) => ({
                     id: item.id,
                     exact: item.exact,
                     strict: item.strict,
@@ -33,8 +34,7 @@ export default (state = initialState, action) => {
     return state;
 };
 
-
-export const getCurrentRoute = (state) => {
+export const getCurrentRoute = (state: RootStateModel): RouteModel | null => {
     let currentRoute = null;
     const pathname = _get(state, 'routing.location.pathname');
     state.routing.routes.forEach(route => {
