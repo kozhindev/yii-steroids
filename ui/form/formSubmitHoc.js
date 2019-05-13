@@ -17,7 +17,10 @@ export default () => WrappedComponent => class FormSubmitHoc extends React.PureC
      */
     static displayName = WrappedComponent.displayName || WrappedComponent.name;
     static propTypes = WrappedComponent.propTypes;
-    static defaultProps = WrappedComponent.defaultProps;
+    static defaultProps = {
+        ...WrappedComponent.defaultProps,
+        actionMethod: 'POST',
+    };
 
     static contextTypes = {
         formId: PropTypes.string,
@@ -53,7 +56,7 @@ export default () => WrappedComponent => class FormSubmitHoc extends React.PureC
             return this.props.onSubmit(values);
         }
 
-        return http.post(this.props.action || location.pathname, values)
+        return http.send(this.props.actionMethod, this.props.action || location.pathname, values)
             .then(response => {
                 if (response.security) {
                     return new Promise(resolve => {

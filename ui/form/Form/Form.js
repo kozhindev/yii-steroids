@@ -45,6 +45,7 @@ class Form extends React.PureComponent {
             PropTypes.func,
         ]),
         action: PropTypes.string,
+        actionMethod: PropTypes.string,
         layout: PropTypes.oneOfType([
             PropTypes.oneOf(['default', 'inline', 'horizontal']),
             PropTypes.string,
