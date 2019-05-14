@@ -54,7 +54,7 @@ const buildNavItem = (state, item, params) => {
         title: item.title,
         label: item.label,
         url: url,
-        icon: item.icon || null,
+        icon: item.icon || null, // you can set icon property to route in routes tree
         isVisible: item.isVisible,
         isActive: checkActiveRecursive(pathname, item),
     };

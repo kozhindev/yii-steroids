@@ -10,6 +10,8 @@ use yii\helpers\ArrayHelper;
 
 class SearchModel extends FormModel
 {
+    const SCOPE_PERMISSIONS = 'permissions';
+
     /**
      * @var int
      */
@@ -26,9 +28,20 @@ class SearchModel extends FormModel
     public $sort;
 
     /**
+     * @var string|string[]
+     */
+    public $scope;
+
+    /**
      * @var string|Model
      */
     public $model;
+
+    /**
+     * Context user model
+     * @var Model
+     */
+    public $user;
 
     /**
      * @var array
@@ -54,6 +67,10 @@ class SearchModel extends FormModel
         $this->page = ArrayHelper::getValue($params, 'page', $this->page);
         $this->pageSize = ArrayHelper::getValue($params, 'pageSize', $this->pageSize);
         $this->sort = ArrayHelper::getValue($params, 'sort', $this->sort);
+        $this->scope = ArrayHelper::getValue($params, 'scope', $this->scope);
+        if (!is_array($this->scope)) {
+            $this->scope = explode(',', $this->scope ?: '');
+        }
         $this->load($params);
 
         $query = $this->createQuery();
@@ -146,10 +163,40 @@ class SearchModel extends FormModel
 
     public function toFrontend($fields = null)
     {
+        $items = $this->getItems();
+
+        // Append permissions
+        if (in_array(self::SCOPE_PERMISSIONS, $this->scope)) {
+            $user = $this->user ?: (\Yii::$app->has('user') ? \Yii::$app->user->identity : null);
+            if ($user) {
+                $info = new \ReflectionClass($this->dataProvider->query->modelClass);
+                $cans = [];
+                foreach ($info->getMethods() as $method) {
+                    $parameters = $method->getParameters();
+                    if (count($parameters) === 0 || $parameters[0]->getName() !== 'user') {
+                        continue;
+                    }
+
+                    $name = $method->getName();
+                    if (preg_match('/^can(.+)$/', $name)) {
+                        $cans[] = $name;
+                    }
+                }
+
+                $models = $this->dataProvider->models;
+                foreach ($items as $index => &$item) {
+                    foreach ($cans as $can) {
+                        $item[$can] = $models[$index]->$can($user);
+                    }
+                }
+            }
+        }
+
+        // Result
         $result = [
             'meta' => !empty($this->meta) ? $this->meta : null,
             'total' => $this->dataProvider->getTotalCount(),
-            'items' => $this->getItems()
+            'items' => $items,
         ];
         if ($this->hasErrors()) {
             $result['errors'] = $this->getErrors();

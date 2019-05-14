@@ -18,6 +18,10 @@ export default class Money extends React.Component {
     };
 
     render() {
+        return Money.getAsString(this.props.amount, this.props.currency, this.props.scale);
+    }
+
+    static getAsString(amount, currency, scale) {
         const symbols = {
             eur: __('€'),
             rub: __('₽'),
@@ -25,8 +29,8 @@ export default class Money extends React.Component {
         };
 
         return __('{amount, number} {symbol}', {
-            amount: _round(this.props.amount, this.props.scale),
-            symbol: symbols[this.props.currency] || this.props.currency.toUpperCase(),
+            amount: _round(amount, scale),
+            symbol: symbols[currency] || currency.toUpperCase(),
         });
     }
 
