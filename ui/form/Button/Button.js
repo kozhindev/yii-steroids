@@ -28,7 +28,7 @@ class ButtonInternal extends React.PureComponent {
 export default
 @connect(
     (state, props) => ({
-        submitting: props.formId ? isSubmitting('myForm')(state) : !!props.submitting,
+        submitting: props.formId ? isSubmitting(props.formId)(state) : !!props.submitting,
     })
 )
 class Button extends React.PureComponent {
