@@ -1,5 +1,9 @@
 .ButtonView {
   &__icon {
     margin-right: 3px;
+
+    &_without-label {
+      margin: 0;
+    }
   }
 }
