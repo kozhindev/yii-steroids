@@ -77,7 +77,7 @@ class Form extends React.PureComponent {
         })),
         submitLabel: PropTypes.string,
         syncWithAddressBar: PropTypes.bool,
-        querySeparator: PropTypes.string,
+        useHash: PropTypes.bool,
         security: PropTypes.shape({
             component: PropTypes.oneOfType([
                 PropTypes.string,
@@ -148,7 +148,7 @@ class Form extends React.PureComponent {
                 AutoSaveHelper.save(this.props.formId, nextProps.formValues);
             }
             if (this.props.syncWithAddressBar) {
-                SyncAddressBarHelper.save(nextProps.formValues, nextProps.querySeparator);
+                SyncAddressBarHelper.save(nextProps.formValues, nextProps.useHash);
             }
         }
     }

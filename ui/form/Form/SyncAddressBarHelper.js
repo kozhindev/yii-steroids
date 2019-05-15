@@ -4,11 +4,11 @@ import _isObject from 'lodash/isObject';
 import _isBoolean from 'lodash/isBoolean';
 import _isEqual from 'lodash/isEqual';
 import _isEmpty from 'lodash/isEmpty';
-import _get from 'lodash/get';
 import {initialize} from 'redux-form';
 import {push} from 'react-router-redux';
 
 import {store} from 'components';
+import {getCurrentRoute} from '../../../reducers/routing';
 
 export default class SyncAddressBarHelper {
 
@@ -28,9 +28,9 @@ export default class SyncAddressBarHelper {
      * // @todo use 'qs' library instead of 'query-string'
      *
      * @param {*} values
-     * @param {string} querySeparator
+     * @param {boolean} useHash
      */
-    static save(values, querySeparator = '#') {
+    static save(values, useHash = true) {
         values = {...values};
 
         Object.keys(values).map(key => {
@@ -49,12 +49,20 @@ export default class SyncAddressBarHelper {
             }
         });
 
-        const currentPathname = _get(store.getState() || {}, 'routing.location.pathname', '');
+        const querySeparator = useHash ? '#' : '?';
+        const currentRoute = getCurrentRoute(store.getState() || {});
         if (_isEmpty(values)) {
-            store.dispatch(push(currentPathname));
+            if (currentRoute) {
+                store.dispatch(push(currentRoute.path));
+            } else {
+                location.hash = null;
+            }
         } else {
-            store.dispatch(push(currentPathname + querySeparator + queryString.stringify(values)));
+            if (currentRoute) {
+                store.dispatch(push(currentRoute.path + querySeparator + queryString.stringify(values)));
+            } else {
+                location.hash = querySeparator + queryString.stringify(values);
+            }
         }
     }
-
 }

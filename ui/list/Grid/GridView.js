@@ -135,7 +135,6 @@ export default class GridView extends React.Component {
                 layout='inline'
                 onSubmit={() => this.props.fetch()}
                 view={InsideSearchFormView}
-                querySeparator={this.props.searchForm && this.props.searchForm.querySeparator}
             >
                 {this.props.columns.map((column, columnIndex) => (
                     <td
