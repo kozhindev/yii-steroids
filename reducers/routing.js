@@ -1,4 +1,5 @@
 import _get from 'lodash-es/get';
+import _isEmpty from 'lodash-es/isEmpty';
 import {matchPath} from 'react-router';
 
 import {ROUTING_REGISTER} from '../actions/routing';
@@ -35,6 +36,10 @@ export default (state = initialState, action) => {
 
 
 export const getCurrentRoute = (state) => {
+    if (!state || _isEmpty(state)) {
+        return null;
+    }
+
     let currentRoute = null;
     const pathname = _get(state, 'routing.location.pathname');
     state.routing.routes.forEach(route => {
