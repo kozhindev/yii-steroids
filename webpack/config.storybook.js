@@ -3,7 +3,7 @@ const fs = require('fs');
 const _ = require('lodash');
 const utils = require('./utils');
 const getConfigDefault = require('./config.default');
-const mergeConfigs = require('@storybook/core/dist/server/mergeConfigs').default;
+const mergeConfigs = require('@storybook/core/dist/server/utils/merge-webpack-config').default;
 
 module.exports = (config) => {
     config = _.merge(getConfigDefault(), config);
