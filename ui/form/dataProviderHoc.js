@@ -249,8 +249,8 @@ class DataProviderHoc extends React.PureComponent {
             items: query
                 ? _uniqBy(
                     []
-                        .concat(_filter(this.state.sourceItems, item => item.label.toLowerCase().indexOf(query) === 0))
-                        .concat(_filter(this.state.sourceItems, item => item.label.toLowerCase().indexOf(query) > 0)),
+                        .concat(_filter(this.state.sourceItems, item => (item.label || '').toLowerCase().indexOf(query) === 0))
+                        .concat(_filter(this.state.sourceItems, item => (item.label || '').toLowerCase().indexOf(query) > 0)),
                     'id'
                 )
                 : this.state.sourceItems,
