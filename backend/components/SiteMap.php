@@ -592,7 +592,7 @@ class SiteMap extends Component
         if (is_object($module)) {
             $moduleClass = $module::className();
             $children = $module->getModules();
-        } elseif (is_array($module)) {
+        } elseif (is_array($module) && isset($module['class'])) {
             $moduleClass = $module['class'];
             $children = ArrayHelper::getValue($module, 'modules', []);
         } else {

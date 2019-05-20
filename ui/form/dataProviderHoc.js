@@ -20,7 +20,8 @@ const stateMap = (state, props) => ({
         : props.items,
 });
 
-export default () => WrappedComponent => @connect(stateMap) class DataProviderHoc extends React.PureComponent {
+export default () => WrappedComponent => @connect(stateMap)
+class DataProviderHoc extends React.PureComponent {
 
     static WrappedComponent = WrappedComponent;
 
