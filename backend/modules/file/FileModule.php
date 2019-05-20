@@ -4,6 +4,7 @@ namespace steroids\modules\file;
 
 use steroids\base\Module;
 use steroids\modules\file\models\File;
+use steroids\modules\file\models\ImageMeta;
 use steroids\modules\file\processors\ImageFitWithCrop;
 use steroids\modules\file\processors\ImageResize;
 use steroids\modules\file\uploaders\BaseUploader;
@@ -15,6 +16,9 @@ class FileModule extends Module
     const PROCESSOR_NAME_DEFAULT = 'default';
     const PROCESSOR_NAME_THUMBNAIL = 'thumbnail';
     const PROCESSOR_NAME_FULL = 'full';
+
+    const SOURCE_FILE = 'file';
+    const SOURCE_AMAZONE_S3 = 'amazone_s3';
 
     /**
      * Format is jpg or png
@@ -69,6 +73,13 @@ class FileModule extends Module
      * @var array
      */
     public $processors = [];
+
+    public $prioritySource = 'file';
+
+    /**
+     * @var frostealth\yii2\aws\s3\Service
+     */
+    public $amazoneStorage;
 
     /**
      * Default image processors (used when ImageMeta export)
@@ -141,6 +152,23 @@ class FileModule extends Module
             $this->processors
         );
 
+        // Create aws s3 service
+        if ($this->prioritySource === self::SOURCE_AMAZONE_S3) {
+            $this->amazoneStorage = \Yii::createObject(array_merge(
+                [
+                    'class' => 'frostealth\yii2\aws\s3\Service',
+                    'region' => '',
+                    'credentials' => [
+                        'key' => '',
+                        'secret' => '',
+                    ],
+                    'defaultBucket' => '',
+                    'defaultAcl' => 'public-read',
+                ],
+                $this->amazoneStorage ?: []
+            ));
+        }
+
         // Normalize and set default dir
         if ($this->filesRootPath === null) {
             $this->filesRootPath = \Yii::getAlias('@webroot/assets/');
@@ -167,8 +195,10 @@ class FileModule extends Module
      * @return \steroids\modules\file\models\File[]
      * @throws \yii\base\InvalidConfigException
      */
-    public function upload($uploaderConfig = [], $fileConfig = [])
+    public function upload($uploaderConfig = [], $fileConfig = [], $source = null)
     {
+        $source = $source ?: $this->prioritySource;
+
         /** @var BaseUploader $uploader */
         $uploader = \Yii::createObject(ArrayHelper::merge([
             'class' => empty($_FILES) ? '\steroids\modules\file\uploaders\PutUploader' : '\steroids\modules\file\uploaders\PostUploader',
@@ -194,6 +224,11 @@ class FileModule extends Module
                 'fileSize' => $item['bytesTotal'],
             ]);
 
+            if ($source === self::SOURCE_AMAZONE_S3) {
+                $file->sourceType = FileModule::SOURCE_AMAZONE_S3;
+                $this->uploadToAmazoneS3($file);
+            }
+
             if (!$file->save()) {
                 return [
                     'errors' => $file->getFirstErrors(),
@@ -202,12 +237,53 @@ class FileModule extends Module
 
             if (!empty($fileConfig['fixedSize']) && !$file->checkImageFixedSize($fileConfig['fixedSize'])) {
                 return [
-                    'errors' => $file->getImageMeta(FileModule::PROCESSOR_NAME_ORIGINAL)->getFirstErrors()
+                    'errors' => $file->getImageMeta(static::PROCESSOR_NAME_ORIGINAL)->getFirstErrors()
                 ];
             }
+
+            if ($source === self::SOURCE_AMAZONE_S3) {
+                if ($file->isImage()) {
+                    $processors = array_keys(static::getInstance()->processors);
+
+                    // Generate and upload thumb images
+                    foreach ($processors as $processor) {
+                        $imageMeta = $file->getImageMeta($processor);
+                        $this->uploadToAmazoneS3($imageMeta);
+                        $imageMeta->saveOrPanic(['amazoneS3Url']);
+                    }
+
+                    // Delete local files
+                    foreach ($processors as $processor) {
+                        unlink($file->getImageMeta($processor)->path);
+                    }
+                } else {
+                    // Delete local files
+                    unlink($file->path);
+                }
+            }
+
             $files[] = $file;
         }
 
         return $files;
+    }
+
+    /**
+     * @param File|ImageMeta $file
+     * @param null $sourcePath
+     */
+    public function uploadToAmazoneS3($file, $sourcePath = null)
+    {
+        $folder = trim($file->folder, '/');
+        $fileName = ($folder ? $folder . '/' : '') . $file->fileName;
+
+        ob_start();
+        $this->amazoneStorage
+            ->commands()
+            ->upload($fileName, $sourcePath ?: $file->path)
+            ->withContentType($file->fileMimeType)
+            ->execute();
+        $file->amazoneS3Url = $this->amazoneStorage->getUrl($fileName);
+        ob_end_clean();
     }
 }

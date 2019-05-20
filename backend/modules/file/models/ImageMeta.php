@@ -21,6 +21,7 @@ use steroids\modules\file\FileModule;
  * @property integer $height
  * @property string $processor
  * @property integer $createTime
+ * @property string $amazoneS3Url
  * @property-read string $path
  * @property-read string $url
  */
@@ -87,6 +88,10 @@ class ImageMeta extends Model
      */
     public function getUrl()
     {
+        if ($this->amazoneS3Url) {
+            return $this->amazoneS3Url;
+        }
+
         return FileModule::getInstance()->filesRootUrl . $this->getRelativePath();
     }
 

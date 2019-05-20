@@ -16,6 +16,7 @@
         "phpunit/phpunit": "5.7.19",
         "codemix/yii2-localeurls": "^1.7",
         "doctrine/annotations": "^1.6",
+        "frostealth/yii2-aws-s3": "~2.0",
         "gee-team/gt-php-sdk": "^v3.2.0"
     },
     "autoload": {

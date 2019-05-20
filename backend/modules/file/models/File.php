@@ -20,6 +20,8 @@ use yii\helpers\Url;
  * @property string $fileSize
  * @property integer $createTime
  * @property boolean $isTemp
+ * @property string $sourceType
+ * @property string $amazoneS3Url
  * @property-read string $path
  * @property-read string $url
  * @property-read string $downloadUrl
@@ -179,6 +181,9 @@ class File extends Model
      */
     public function getUrl()
     {
+        if ($this->sourceType === FileModule::SOURCE_AMAZONE_S3) {
+            return $this->amazoneS3Url;
+        }
         return FileModule::getInstance()->filesRootUrl . $this->getRelativePath();
     }
 
@@ -194,6 +199,9 @@ class File extends Model
      */
     public function getDownloadUrl()
     {
+        if ($this->sourceType === FileModule::SOURCE_AMAZONE_S3) {
+            return $this->amazoneS3Url;
+        }
         return Url::to(['/file/download/index', 'uid' => $this->uid, 'name' => $this->getDownloadName()], true);
     }
 
