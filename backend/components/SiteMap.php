@@ -40,6 +40,9 @@ class SiteMap extends Component
         foreach ($items as $item) {
             $url = $item->getNormalizedUrl();
             $urlRule = ArrayHelper::getValue($item, 'urlRule');
+            if (is_array($urlRule)) {
+                $urlRule = ArrayHelper::getValue($urlRule, 'pattern');
+            }
 
             // Detect verb
             $verb = null;
