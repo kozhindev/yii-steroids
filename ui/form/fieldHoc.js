@@ -102,6 +102,7 @@ class FieldHoc extends React.Component {
 
     shouldComponentUpdate(nextProps, nextState) {
         return !_isEqual(this.props.values, nextProps.values)
+            || !_isEqual(this.props.label, nextProps.label)
             || !_isEqual(this.props.formErrors, nextProps.formErrors)
             || !_isEqual(this.props.fieldProps, nextProps.fieldProps)
             || !_isEqual(this.state, nextState);
