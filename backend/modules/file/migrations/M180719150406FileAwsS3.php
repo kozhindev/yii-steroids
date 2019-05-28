@@ -2,7 +2,7 @@
 
 namespace extpoint\yii2\file\migrations;
 
-use \extpoint\yii2\base\Migration;
+use steroids\base\Migration;
 
 class M180719150406FileAwsS3 extends Migration
 {
