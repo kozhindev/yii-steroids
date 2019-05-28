@@ -1,6 +1,6 @@
 <?php
 
-namespace extpoint\yii2\file\migrations;
+namespace steroids\modules\file\migrations;
 
 use steroids\base\Migration;
 
