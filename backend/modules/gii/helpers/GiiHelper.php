@@ -32,7 +32,7 @@ class GiiHelper
 
                 $className = str_replace('.', '\\', $value);
                 if (class_exists($className)) {
-                    $names[$key] = $className;
+                    $names[$value] = $className;
                 }
             }
         }

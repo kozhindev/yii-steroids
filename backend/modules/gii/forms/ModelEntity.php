@@ -352,21 +352,31 @@ class ModelEntity extends ModelEntityMeta implements IEntity
      */
     protected function jsExport($result, $indent = '', &$import = [])
     {
+        $toReplace1 = [];
+        $toReplace2 = [];
+
         // Detect class names for import
-        foreach (GiiHelper::findClassNamesInMeta($result) as $className) {
-            $info = (new \ReflectionClass($className))->getParentClass();
-            $name = $info->getName();
-            if (strpos('app\\', $name) === 0) {
-                $path = str_replace('\\', '/', $info->getName());
+        foreach (GiiHelper::findClassNamesInMeta($result) as $key => $className) {
+            $info = (new \ReflectionClass($className));
+            $infoParent = $info->getParentClass();
+            $name = $infoParent->getName();
+            if (strpos($name, 'app\\') === 0) {
+                $path = str_replace('\\', '/', $infoParent->getName());
             } else {
-                $path = GiiHelper::getRelativePath((new \ReflectionClass($className))->getParentClass()->getFileName(), $info->getFileName());
+                $path = GiiHelper::getRelativePath($infoParent->getFileName(), $infoParent->getFileName());
                 $path = preg_replace('/\.php$/', '', $path);
             }
 
             $import[] = "import {$info->getShortName()} from '" . $path . "';";
+
+            $toReplace1[] = "'$key'";
+            $toReplace2[] = $info->getShortName();
         }
 
-        return GiiHelper::varJsExport($result, $indent);
+        $code = GiiHelper::varJsExport($result, $indent);
+        $code = str_replace($toReplace1, $toReplace2, $code);
+
+        return $code;
     }
 
     /**

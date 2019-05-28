@@ -73,7 +73,7 @@ export default class Field extends React.Component {
 
         // Auto label
         if (props.label && props.label !== '' && props.label !== false) {
-            props.label = _upperFirst(props.attribute);
+            //props.label = _upperFirst(props.attribute);
         }
 
         const component = props.component || 'InputField';
