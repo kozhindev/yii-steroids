@@ -36,9 +36,10 @@ class FormEntity extends ModelEntity implements IEntity
         $entity->className = $className;
         $entity->attributes = GiiHelper::parseClassName($className);
 
-        if (method_exists($className, 'createQuery')) {
-            /** @var SearchModel $searchModel */
-            $searchModel = new $className();
+        /** @var SearchModel $searchModel */
+        $searchModel = new $className();
+
+        if (method_exists($searchModel, 'createQuery')) {
             $query = $searchModel->createQuery();
             if (property_exists(get_class($query), 'modelClass')) {
                 $entity->queryModel = $query->modelClass;
@@ -47,6 +48,13 @@ class FormEntity extends ModelEntity implements IEntity
 
         $entity->populateRelation('relationItems', FormRelationEntity::findAll($entity));
         $entity->populateRelation('attributeItems', FormAttributeEntity::findAll($entity));
+
+        if (method_exists($searchModel, 'sortFields')) {
+            $sortFields = $searchModel->sortFields();
+            foreach ($entity->attributeItems as $item) {
+                $item->isSortable = in_array($item->name, $sortFields);
+            }
+        }
 
         return $entity;
     }

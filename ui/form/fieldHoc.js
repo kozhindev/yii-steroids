@@ -215,6 +215,7 @@ export default config => WrappedComponent => class FieldHocWrapper extends React
         model: PropTypes.oneOfType([
             PropTypes.string,
             PropTypes.func,
+            PropTypes.object,
         ]),
         prefix: PropTypes.string,
         layout: PropTypes.string,

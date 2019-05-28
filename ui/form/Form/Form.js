@@ -2,12 +2,12 @@ import React from 'react';
 import {findDOMNode} from 'react-dom';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
-import {reduxForm, SubmissionError, getFormValues, isInvalid} from 'redux-form';
+import {reduxForm, getFormValues, isInvalid} from 'redux-form';
 import _isEqual from 'lodash-es/isEqual';
+import _isString from 'lodash-es/isString';
 import _get from 'lodash-es/get';
 
-import {http, ui} from 'components';
-import {addSecurity, removeSecurity} from '../../../actions/fields';
+import {ui} from 'components';
 import AutoSaveHelper from './AutoSaveHelper';
 import SyncAddressBarHelper from './SyncAddressBarHelper';
 import {getSecurity} from '../../../reducers/fields';
@@ -43,6 +43,7 @@ class Form extends React.PureComponent {
         model: PropTypes.oneOfType([
             PropTypes.string,
             PropTypes.func,
+            PropTypes.object,
         ]),
         action: PropTypes.string,
         actionMethod: PropTypes.string,
@@ -63,18 +64,18 @@ class Form extends React.PureComponent {
         formValues: PropTypes.object,
         isInvalid: PropTypes.bool,
         formRegisteredFields: PropTypes.object,
-        fields: PropTypes.arrayOf(PropTypes.shape({
-            label: PropTypes.oneOfType([
-                PropTypes.string,
-                PropTypes.bool,
-            ]),
-            hint: PropTypes.string,
-            required: PropTypes.bool,
-            component: PropTypes.oneOfType([
-                PropTypes.string,
-                PropTypes.func,
-            ]),
-        })),
+        fields: PropTypes.arrayOf(PropTypes.oneOfType([
+            PropTypes.string,
+            PropTypes.shape({
+                label: PropTypes.string,
+                hint: PropTypes.string,
+                required: PropTypes.bool,
+                component: PropTypes.oneOfType([
+                    PropTypes.string,
+                    PropTypes.func,
+                ]),
+            })
+        ])),
         submitLabel: PropTypes.string,
         syncWithAddressBar: PropTypes.bool,
         useHash: PropTypes.bool,
@@ -93,6 +94,7 @@ class Form extends React.PureComponent {
         model: PropTypes.oneOfType([
             PropTypes.string,
             PropTypes.func,
+            PropTypes.object,
         ]),
         layout: PropTypes.oneOfType([
             PropTypes.oneOf(['default', 'inline', 'horizontal']),
@@ -164,7 +166,7 @@ class Form extends React.PureComponent {
                 {this.props.fields && this.props.fields.map((field, index) => (
                     <Field
                         key={index}
-                        {...field}
+                        {...(_isString(field) ? {attribute: field} : field)}
                     />
                 ))}
                 {this.props.security && (

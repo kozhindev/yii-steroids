@@ -3,6 +3,7 @@
 namespace steroids\modules\gii\forms;
 
 use steroids\base\Model;
+use steroids\base\SearchModel;
 use steroids\modules\gii\enums\ClassType;
 use steroids\modules\gii\enums\MigrateMode;
 use steroids\modules\gii\forms\meta\ModelEntityMeta;
@@ -247,7 +248,7 @@ class ModelEntity extends ModelEntityMeta implements IEntity
     /**
      * @return array
      */
-    public function getJsFields()
+    public function getJsFields($searchForm = false, $locale = false)
     {
         $result = [];
 
@@ -255,27 +256,33 @@ class ModelEntity extends ModelEntityMeta implements IEntity
             $props = [];
             $type = \Yii::$app->types->getType($this->getAttributeEntity($attribute)->appType);
 
-            // Add label and hint
-            foreach (['label', 'hint'] as $key) {
-                if (empty($item[$key])) {
-                    continue;
+            if ($searchForm) {
+                $type->prepareSearchFieldProps($this->getClassName(), $attribute, $props);
+            } else {
+                // Add label and hint
+                foreach (['label', 'hint'] as $key) {
+                    if (empty($item[$key])) {
+                        continue;
+                    }
+
+                    $text = ArrayHelper::getValue($item, $key);
+                    if ($text) {
+                        $props[$key] = $locale ? GiiHelper::locale($text) : $text;
+                    }
                 }
 
-                $text = ArrayHelper::getValue($item, $key);
-                if ($text) {
-                    $props[$key] = GiiHelper::locale($text);
+                // Add required
+                if (ArrayHelper::getValue($item, 'isRequired')) {
+                    $props['required'] = true;
                 }
+
+                // Add other props
+                $type->prepareFieldProps($this->getClassName(), $attribute, $props);
             }
 
-            // Add required
-            if (ArrayHelper::getValue($item, 'isRequired')) {
-                $props['required'] = true;
+            if (!empty($props)) {
+                $result[$attribute] = $props;
             }
-
-            // Add other props
-            $type->prepareFieldProps($this->getClassName(), $attribute, $props);
-
-            $result[$attribute] = $props;
         }
 
         return $result;
@@ -288,15 +295,16 @@ class ModelEntity extends ModelEntityMeta implements IEntity
      */
     public function renderJsFields($indent = '', &$import = [])
     {
-        return $this->jsExport($this->getJsFields(), $indent, $import);
+        return $this->jsExport($this->getJsFields(false, true), $indent, $import);
     }
 
     /**
+     * @param bool $locale
      * @param string $indent
      * @param array $import
      * @return mixed|string
      */
-    public function getJsFormatters()
+    public function getJsFormatters($locale = false)
     {
         $result = [];
         foreach (static::exportMeta($this->publicAttributeItems) as $attribute => $item) {
@@ -311,7 +319,7 @@ class ModelEntity extends ModelEntityMeta implements IEntity
 
                 $text = ArrayHelper::getValue($item, $key);
                 if ($text) {
-                    $props[$key] = GiiHelper::locale($text);
+                    $props[$key] = $locale ? GiiHelper::locale($text) : $text;
                 }
             }
 
@@ -332,7 +340,7 @@ class ModelEntity extends ModelEntityMeta implements IEntity
      */
     public function renderJsFormatters($indent = '', &$import = [])
     {
-        return $this->jsExport($this->getJsFormatters(), $indent, $import);
+        return $this->jsExport($this->getJsFormatters(true), $indent, $import);
     }
 
     /**
@@ -475,6 +483,17 @@ class ModelEntity extends ModelEntityMeta implements IEntity
     public function renderBehaviors($indent = '', &$useClasses = [])
     {
         return static::exportBehaviors($this->publicAttributeItems, $indent, $useClasses);
+    }
+
+    public function renderSortFields($indent = '')
+    {
+        $attributes = [];
+        foreach ($this->attributeItems as $item) {
+            if ($item->isSortable) {
+                $attributes[] = $item->name;
+            }
+        }
+        return GiiHelper::varExport($attributes, $indent);
     }
 
     /**

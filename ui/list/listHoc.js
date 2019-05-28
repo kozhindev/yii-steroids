@@ -5,8 +5,10 @@ import {getFormValues} from 'redux-form';
 import _get from 'lodash-es/get';
 import _has from 'lodash-es/has';
 import _isEqual from 'lodash-es/isEqual';
+import _isString from 'lodash-es/isString';
 import _isFunction from 'lodash-es/isFunction';
 import _isArray from 'lodash-es/isArray';
+import _isEmpty from 'lodash-es/isEmpty';
 import _mergeWith from 'lodash-es/mergeWith';
 
 import {init, lazyFetch, fetch, setSort, destroy} from '../../actions/list';
@@ -15,6 +17,7 @@ import Empty from './Empty';
 import Pagination from './Pagination';
 import PaginationSize from './PaginationSize';
 import Form from '../form/Form';
+import {getMeta} from '../../reducers/fields';
 
 let formValuesSelectors = {};
 export const getFormId = props => _get(props, 'searchForm.formId', props.listId);
@@ -27,8 +30,34 @@ export default
             formValuesSelectors[formId] = getFormValues(formId);
         }
 
+        const list = getList(state, props.listId);
+
+        let model = props.model || _get(list, 'meta.model');
+        if (_isString(model)) {
+            model = getMeta(state, model) || null;
+        }
+
+        let searchForm = props.searchForm;
+        if (searchForm) {
+            let searchModel = searchForm.model || _get(list, 'meta.searchModel');
+            if (_isString(searchModel)) {
+                searchForm.model = {
+                    fields: {
+                        ..._get(getMeta(state, searchModel), 'fields'),
+                        ..._get(getMeta(state, searchModel), 'searchFields')
+                    },
+                    ...searchForm.model,
+                };
+                if (_isEmpty(searchForm.model)) {
+                    searchForm.model = null;
+                }
+            }
+        }
+
         return {
-            list: getList(state, props.listId),
+            model,
+            searchForm,
+            list,
             formValues: formId && formValuesSelectors[formId](state) || null,
         };
     }
@@ -48,6 +77,7 @@ export default
             primaryKey: PropTypes.string,
             action: PropTypes.string,
             actionMethod: PropTypes.string,
+            scope: PropTypes.arrayOf(PropTypes.string),
             onFetch: PropTypes.func,
             loadMore: PropTypes.bool,
             defaultPage: PropTypes.number,
@@ -67,6 +97,7 @@ export default
                 model: PropTypes.oneOfType([
                     PropTypes.string,
                     PropTypes.func,
+                    PropTypes.object,
                 ]),
                 layout: PropTypes.oneOfType([
                     PropTypes.oneOf(['default', 'inline', 'horizontal', 'table']),
@@ -74,16 +105,24 @@ export default
                 ]),
                 layoutProps: PropTypes.object,
                 initialValues: PropTypes.object,
-                fields: PropTypes.arrayOf(PropTypes.shape({
-                    label: PropTypes.string,
-                    hint: PropTypes.string,
-                    required: PropTypes.bool,
-                    component: PropTypes.oneOfType([
-                        PropTypes.string,
-                        PropTypes.func,
-                    ]),
-                })),
+                fields: PropTypes.arrayOf(PropTypes.oneOfType([
+                    PropTypes.string,
+                    PropTypes.shape({
+                        label: PropTypes.string,
+                        hint: PropTypes.string,
+                        required: PropTypes.bool,
+                        component: PropTypes.oneOfType([
+                            PropTypes.string,
+                            PropTypes.func,
+                        ]),
+                    })
+                ])),
             }),
+            model: PropTypes.oneOfType([
+                PropTypes.string,
+                PropTypes.func,
+                PropTypes.object,
+            ]),
             emptyText: PropTypes.string,
             emptyView: PropTypes.func,
             emptyProps: PropTypes.object,
@@ -186,7 +225,7 @@ export default
                 items = [].concat(items).reverse();
             }
 
-            // Set "index" propery to items depending on page number
+            // Set "index" property to items depending on page number
             if (this.props.itemsIndexing) {
                 items = [].concat(items.map(item => ({
                     ...item,
@@ -196,9 +235,18 @@ export default
                 })))
             }
 
+            // Customize model from backend
+            const searchForm = this.props.searchForm
+                ? {
+                    ...this.props.searchForm,
+                    model: this.props.searchForm.model || _get(this.props.list, 'meta.searchModel')
+                }
+                : null;
+
             return (
                 <WrappedComponent
                     {...this.props}
+                    searchForm={searchForm}
                     isLoading={_get(this.props, 'list.isLoading')}
                     items={items}
                     empty={this.renderEmpty()}
@@ -247,7 +295,6 @@ export default
         }
 
         renderPaginationSize() {
-
             if (this.props.paginationSizeView === false) {
                 return null;
             }
@@ -273,11 +320,15 @@ export default
             if (this.props.searchForm.layout === 'table') {
                 return null;
             }
+            if ((this.props.scope || []).includes('model') && !this.props.list.isFetched) {
+                return null;
+            }
 
             return (
                 <Form
                     submitLabel={__('Найти')}
                     {...this.props.searchForm}
+                    model={_get(this.props.searchForm, 'model') || _get(this.props.list, 'meta.searchModel')}
                     formId={getFormId(this.props)}
                     onSubmit={() => this._onFetch()}
                 />

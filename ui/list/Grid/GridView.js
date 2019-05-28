@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import _get from 'lodash/get';
 import _keyBy from 'lodash/keyBy';
 import _isString from 'lodash/isString';
 
@@ -56,8 +57,6 @@ export default class GridView extends React.Component {
     }
 
     renderTable() {
-        // TODO Hint
-        // TODO Sortable
         return (
             <table className='table table-striped'>
                 <thead>
@@ -123,9 +122,11 @@ export default class GridView extends React.Component {
         if (!this.props.searchForm || !this.props.searchForm.fields || this.props.searchForm.layout !== 'table') {
             return;
         }
-
-        const fields = _keyBy(this.props.searchForm.fields, 'attribute');
-
+        const fields = _keyBy(
+            this.props.searchForm.fields
+                .map(column => _isString(column) ? {attribute: column} : column),
+            'attribute'
+        );
         return (
             <Form
                 {...this.props.searchForm}

@@ -2,8 +2,8 @@ import React from 'react';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 
-import {fetchMeta} from 'yii-steroids/actions/fields';
-import {isMetaFetched} from 'yii-steroids/reducers/fields';
+import {fetchMeta} from '../../actions/fields';
+import {isMetaFetched} from '../../reducers/fields';
 
 export default (names = []) => WrappedComponent => @connect(
     state => ({

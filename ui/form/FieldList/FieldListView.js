@@ -31,6 +31,7 @@ export default class FieldListView extends React.PureComponent {
             model: PropTypes.oneOfType([
                 PropTypes.string,
                 PropTypes.func,
+                PropTypes.object,
             ]),
             component: PropTypes.any,
             required: PropTypes.bool,

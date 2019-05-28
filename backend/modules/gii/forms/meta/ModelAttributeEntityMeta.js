@@ -49,6 +49,11 @@ export default class ModelAttributeEntityMeta extends Model {
                 'attribute': 'isRequired',
                 'label': __('Required'),
             },
+            'isSortable': {
+                'component': 'CheckboxField',
+                'attribute': 'isSortable',
+                'label': __('Sortable'),
+            },
             'isPublishToFrontend': {
                 'component': 'CheckboxField',
                 'attribute': 'isPublishToFrontend',

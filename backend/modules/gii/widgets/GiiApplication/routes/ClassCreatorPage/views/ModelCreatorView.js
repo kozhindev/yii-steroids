@@ -129,6 +129,12 @@ export default class ModelCreatorView extends React.PureComponent {
                                 headerClassName: 'd-none',
                             },
                             {
+                                attribute: 'isSortable',
+                                firstLine: true,
+                                headerClassName: 'd-none',
+                                visible: this.props.classType === ClassTypeMeta.FORM,
+                            },
+                            {
                                 attribute: 'isPublishToFrontend',
                                 firstLine: true,
                                 headerClassName: 'd-none',

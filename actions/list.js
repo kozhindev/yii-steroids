@@ -13,7 +13,12 @@ export const LIST_TOGGLE_ALL = 'LIST_TOGGLE_ALL';
 const lazyTimers = {};
 
 const defaultFetchHandler = list => {
-    return http.send(list.actionMethod, list.action || location.pathname, {
+    let url = list.action;
+    if (list.scope) {
+        url += (url.indexOf('?') !== -1 ? '&' : '?') + 'scope=' + list.scope.join(',');
+    }
+
+    return http.send(list.actionMethod, url || location.pathname, {
         ...list.query,
         page: list.page,
         pageSize: list.pageSize,
@@ -26,6 +31,7 @@ export const init = (listId, props) => dispatch => dispatch({
     action: props.action || props.action === '' ? props.action : null,
     actionMethod: props.actionMethod || 'post',
     onFetch: props.onFetch,
+    scope: props.scope,
     page: props.defaultPage,
     pageSize: props.defaultPageSize,
     sort: props.defaultSort || null,

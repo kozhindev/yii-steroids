@@ -25,7 +25,7 @@ class EnumEntity extends EnumEntityMeta implements IEntity
             $items[] = static::findOne($className);
         }
 
-        ArrayHelper::multisort($items, 'name');
+        ArrayHelper::multisort($items, ['moduleId', 'name']);
         return $items;
     }
 

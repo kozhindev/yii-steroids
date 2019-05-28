@@ -35,6 +35,10 @@ export default class HttpComponent {
         return config;
     }
 
+    resetConfig() {
+        this._axios = null;
+    }
+
     getAxiosInstance() {
         if (!this._axios) {
             this._axios = axios.create(this.getAxiosConfig());

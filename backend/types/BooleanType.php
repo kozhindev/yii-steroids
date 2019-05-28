@@ -26,6 +26,42 @@ class BooleanType extends Type
     /**
      * @inheritdoc
      */
+    public function prepareSearchFieldProps($modelClass, $attribute, &$props)
+    {
+        $props = array_merge(
+            [
+                'component' => 'DropDownField',
+                'attribute' => $attribute,
+                'items' => [
+                    [
+                        'id' => 1,
+                        'label' => \Yii::t('steroids', 'Да')
+                    ],
+                    [
+                        'id' => 0,
+                        'label' => \Yii::t('steroids', 'Нет')
+                    ],
+                ],
+                'showReset' => true,
+            ],
+            $props
+        );
+    }
+
+    public function prepareFormatterProps($modelClass, $attribute, &$props)
+    {
+        $props = array_merge(
+            [
+                'component' => 'BooleanFormatter',
+                'attribute' => $attribute,
+            ],
+            $props
+        );
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function giiDbType($attributeEntity)
     {
         return Schema::TYPE_BOOLEAN;

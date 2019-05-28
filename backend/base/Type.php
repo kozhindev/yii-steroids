@@ -27,6 +27,14 @@ abstract class Type extends BaseObject
         return null;
     }
 
+    /**
+     * @param Model|FormModel|string $modelClass
+     * @param string $attribute
+     * @param array $props
+     */
+    public function prepareSearchFieldProps($modelClass, $attribute, &$props)
+    {
+    }
 
     /**
      * @param Model|FormModel|string $modelClass

@@ -26,7 +26,7 @@ class GiiHelper
                     continue;
                 }
 
-                if (!is_string($value) || !preg_match('/^[a-z0-9_.]+$/', $value)) {
+                if (!is_string($value) || !preg_match('/^[a-z0-9_.]+$/i', $value)) {
                     continue;
                 }
 

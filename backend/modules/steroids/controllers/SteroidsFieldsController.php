@@ -3,7 +3,9 @@
 namespace steroids\modules\steroids\controllers;
 
 use steroids\base\Enum;
+use steroids\base\FormModel;
 use steroids\base\Model;
+use steroids\modules\gii\forms\FormEntity;
 use steroids\modules\gii\forms\ModelEntity;
 use steroids\modules\gii\helpers\GiiHelper;
 use yii\base\InvalidConfigException;
@@ -14,39 +16,60 @@ class SteroidsFieldsController extends Controller
 {
     public function actionMetaFetch()
     {
-        return $this->exportMetas(\Yii::$app->request->post('names'));
+        return ArrayHelper::merge(
+            $this->exportModels(\Yii::$app->request->post('models')),
+            $this->exportEnums(\Yii::$app->request->post('enums'))
+        );
     }
 
-    protected function exportMetas($names, $result = [])
+    protected function parseNames($names)
     {
+        $result = [];
         foreach ((array)$names as $name) {
             if (!is_string($name)) {
                 continue;
             }
 
-            $className = str_replace('.', '\\', $name);
-            if (!class_exists($className)) {
-                $result[$name] = null;
-                continue;
+            $name = str_replace('\\', '.', $name);
+            $className = trim(str_replace('.', '\\', $name), '.');
+            if (class_exists($className)) {
+                $result[$name] = $className;
             }
+        }
+        return $result;
+    }
 
+    protected function exportEnums($names, $result = [])
+    {
+        foreach ($this->parseNames($names) as $name => $className) {
             if (is_subclass_of($className, Enum::class)) {
                 // TODO Other data?
                 /** @type Enum $className */
                 $result[$name]['labels'] = $className::toFrontend();
-            } elseif (is_subclass_of($className, Model::class)) {
+            }
+        }
+
+        return $result;
+    }
+
+    protected function exportModels($names, $result = [])
+    {
+        foreach ($this->parseNames($names) as $name => $className) {
+            if (is_subclass_of($className, Model::class) || is_subclass_of($className, FormModel::class)) {
                 /** @type Model $className */
-                $entity = ModelEntity::findOne($className);
+                $entity = is_subclass_of($className, Model::class)
+                    ? ModelEntity::findOne($className)
+                    : FormEntity::findOne($className);
                 if (!$entity) {
                     $result[$name] = null;
                     continue;
                 }
 
-                $result[$name]['labels'] = $className::asEnum();
-                $result[$name]['fields'] = $entity->getJsFields();
+                //$result[$name]['labels'] = $className::asEnum();
+                $result[$name]['fields'] = $entity->getJsFields(false);
+                $result[$name]['searchFields'] = $entity->getJsFields(true);
                 $result[$name]['formatters'] = $entity->getJsFormatters();
-                $result = $this->exportMetas(GiiHelper::findClassNamesInMeta($result[$name]['fields']), $result);
-                $result = $this->exportMetas(GiiHelper::findClassNamesInMeta($result[$name]['formatters']), $result);
+                $result = $this->exportModels(GiiHelper::findClassNamesInMeta($result[$name]), $result);
             }
         }
 

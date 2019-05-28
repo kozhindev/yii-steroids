@@ -7,6 +7,7 @@ export default class FieldSet extends React.PureComponent {
         model: PropTypes.oneOfType([
             PropTypes.string,
             PropTypes.func,
+            PropTypes.object,
         ]),
         prefix: PropTypes.string,
         layout: PropTypes.string,
@@ -18,6 +19,7 @@ export default class FieldSet extends React.PureComponent {
         model: PropTypes.oneOfType([
             PropTypes.string,
             PropTypes.func,
+            PropTypes.object,
         ]),
         prefix: PropTypes.string,
         layout: PropTypes.string,
@@ -29,6 +31,7 @@ export default class FieldSet extends React.PureComponent {
         model: PropTypes.oneOfType([
             PropTypes.string,
             PropTypes.func,
+            PropTypes.object,
         ]),
         prefix: PropTypes.string,
         layout: PropTypes.string,

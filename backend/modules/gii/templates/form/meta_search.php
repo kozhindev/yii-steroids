@@ -12,6 +12,7 @@ if (count($formEntity->publicRelationItems) > 0) {
 }
 $rules = $formEntity->renderRules($useClasses);
 $behaviors = $formEntity->renderBehaviors('            ', $useClasses);
+$sortFields = $formEntity->renderSortFields('        ');
 $meta = $formEntity->renderMeta('        ', $useClasses);
 
 echo "<?php\n";
@@ -50,6 +51,13 @@ abstract class <?= $formEntity->name ?>Meta extends SearchModel
         return [
             <?= $behaviors ?>
         ];
+    }
+<?php } ?>
+<?php if (!empty($sortFields)) { ?>
+
+    public function sortFields()
+    {
+        return <?= $sortFields ?>;
     }
 <?php } ?>
 

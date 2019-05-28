@@ -11,6 +11,7 @@ use yii\helpers\ArrayHelper;
 class SearchModel extends FormModel
 {
     const SCOPE_PERMISSIONS = 'permissions';
+    const SCOPE_MODEL = 'model';
 
     /**
      * @var int
@@ -49,7 +50,7 @@ class SearchModel extends FormModel
     public $fields = [];
 
     /**
-     * @var ArrayDataProvider
+     * @var ArrayDataProvider|ActiveDataProvider
      */
     public $dataProvider;
 
@@ -189,6 +190,16 @@ class SearchModel extends FormModel
                         $item[$can] = $models[$index]->$can($user);
                     }
                 }
+            }
+        }
+
+        // Append meta
+        if (in_array(self::SCOPE_MODEL, $this->scope) && $this->dataProvider instanceof ActiveDataProvider) {
+            /** @var ActiveQuery $query */
+            $query = $this->dataProvider->query;
+            $this->meta['model'] = str_replace('.', '\\', $query->modelClass);
+            if (get_class($this) !== __CLASS__) {
+                $this->meta['searchModel'] = str_replace('.', '\\', get_class($this));
             }
         }
 

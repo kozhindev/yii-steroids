@@ -1,20 +1,39 @@
 import React from 'react';
+import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 import {arrayPush} from 'redux-form';
 import {findDOMNode} from 'react-dom';
+import _isString from 'lodash-es/isString';
 
 import {ui} from 'components';
-import Field from '../Field';
+import Field, {getFieldPropsFromModel} from '../Field/Field';
 import fieldHoc from '../fieldHoc';
 
 import './FieldListView.scss';
 import tableNavigationHandler from './tableNavigationHandler';
+import {getMeta} from '../../../reducers/fields';
+import formIdHoc from '../formIdHoc';
 
 export default
 @fieldHoc({
     componentId: 'form.FieldList',
     list: true,
 })
+@formIdHoc({
+    appendPrefix: true,
+})
+@connect(
+    (state, props) => {{
+        let model = props.model;
+        if (_isString(model)) {
+            model = getMeta(state, model) || null;
+        }
+
+        return {
+            model,
+        };
+    }}
+)
 class FieldList extends React.PureComponent {
 
     static propTypes = {
@@ -41,6 +60,7 @@ class FieldList extends React.PureComponent {
             model: PropTypes.oneOfType([
                 PropTypes.string,
                 PropTypes.func,
+                PropTypes.object,
             ]),
             component: PropTypes.any,
             required: PropTypes.bool,
@@ -78,17 +98,11 @@ class FieldList extends React.PureComponent {
         enableKeyboardNavigation: true,
     };
 
-    static contextTypes = {
-        model: PropTypes.oneOfType([
-            PropTypes.string,
-            PropTypes.func,
-        ]),
-    };
-
     static childContextTypes = {
         model: PropTypes.oneOfType([
             PropTypes.string,
             PropTypes.func,
+            PropTypes.object,
         ]),
         prefix: PropTypes.string,
         layout: PropTypes.string,
@@ -98,14 +112,11 @@ class FieldList extends React.PureComponent {
 
     getChildContext() {
         return {
-            model: this.props.model || this.context.model,
-            prefix: (this.context.prefix || '') + (this.props.prefix || ''),
-            layout: this.props.layout || this.context.layout,
-            layoutProps: {
-                ...this.context.layoutProps,
-                ...this.props.layoutProps,
-            },
-            size: this.props.size || this.context.size,
+            model: this.props.model,
+            prefix: this.props.prefix,
+            layout: this.props.layout,
+            layoutProps: this.props.layoutProps,
+            size: this.props.size,
         };
     }
 
@@ -161,7 +172,7 @@ class FieldList extends React.PureComponent {
         const items = (this.props.items || [])
             .filter(field => field.visible !== false)
             .map(field => ({
-                ...Field.getFieldPropsFromModel(this.props.model || this.context.model, field.attribute),
+                ...getFieldPropsFromModel(this.props.model, field.attribute),
                 ...field,
                 disabled: field.disabled || this.props.disabled,
                 size: field.size || this.props.size,

@@ -52,4 +52,9 @@
     line-height: 6px;
     color: $gray-600;
   }
+
+  .DropDownFieldView__drop-down {
+    width: auto;
+    max-width: 500px;
+  }
 }
