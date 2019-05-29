@@ -70,6 +70,7 @@ class SteroidsFieldsController extends Controller
                 $result[$name]['searchFields'] = $entity->getJsFields(true);
                 $result[$name]['formatters'] = $entity->getJsFormatters();
                 $result = $this->exportModels(GiiHelper::findClassNamesInMeta($result[$name]), $result);
+                $result = $this->exportEnums(GiiHelper::findClassNamesInMeta($result[$name]), $result);
             }
         }
 
@@ -83,7 +84,7 @@ class SteroidsFieldsController extends Controller
         foreach ($fields as $field) {
             // Get model and attribute properties
             $fieldId = ArrayHelper::getValue($field, 'fieldId');
-            $model = ArrayHelper::getValue($field, 'model');
+            $model = str_replace('.', '\\', ArrayHelper::getValue($field, 'model'));
             $attribute = ArrayHelper::getValue($field, 'attribute');
             if (!$fieldId || !$model || !$attribute) {
                 continue;
