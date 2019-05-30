@@ -78,7 +78,7 @@ export default () => WrappedComponent => class FormSubmitHoc extends React.PureC
                         AutoSaveHelper.remove(this.props.formId);
                     }
                     if (this.props.onComplete) {
-                        this.props.onComplete(values, response);
+                        this.props.onComplete(values, data);
                     }
                 }
             });
