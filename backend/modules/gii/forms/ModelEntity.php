@@ -94,9 +94,6 @@ class ModelEntity extends ModelEntityMeta implements IEntity
             ModuleEntity::findOrCreate($this->moduleId);
 
             // Create/update meta information
-            if (GiiHelper::isOverWriteClass($this->getClassName()) && GiiModule::getInstance()->showSteroidsEntries) {
-                // TODO Save lib class
-            }
             GiiHelper::renderFile('model/meta', $this->getMetaPath(), [
                 'modelEntity' => $this,
             ]);
@@ -143,15 +140,6 @@ class ModelEntity extends ModelEntityMeta implements IEntity
     public function getClassName()
     {
         return $this->className ?: GiiHelper::getClassName(ClassType::MODEL, $this->moduleId, $this->name);
-    }
-
-    public function getOverWriteEntity()
-    {
-        $libClassName = str_replace('app\\', 'steroids\\modules\\', $this->getClassName());
-        if (class_exists($libClassName)) {
-            return static::findOne($libClassName);
-        }
-        return null;
     }
 
     public function getModelsDir()

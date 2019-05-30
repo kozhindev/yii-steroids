@@ -76,9 +76,6 @@ class FormEntity extends ModelEntity implements IEntity
             // Lazy create module
             ModuleEntity::findOrCreate($this->moduleId);
 
-            if (GiiHelper::isOverWriteClass($this->getClassName()) && GiiModule::getInstance()->showSteroidsEntries) {
-                // TODO Save lib class
-            }
             GiiHelper::renderFile($this->queryModel ? 'form/meta_search' : 'form/meta_form', $this->getMetaPath(), [
                 'formEntity' => $this,
             ]);

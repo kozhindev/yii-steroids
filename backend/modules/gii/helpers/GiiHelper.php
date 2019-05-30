@@ -94,11 +94,6 @@ class GiiHelper
         ];
     }
 
-    public static function isOverWriteClass($className)
-    {
-        return class_exists(str_replace('app\\', 'steroids\\modules\\', $className));
-    }
-
     public static function getModuleDir($moduleId)
     {
         $appDir = \Yii::getAlias('@app');
@@ -169,9 +164,6 @@ class GiiHelper
     {
         $classes = [];
         $dirs = ['@app'];
-        if (GiiModule::getInstance()->showSteroidsEntries) {
-            $dirs[] = '@steroids/modules';
-        }
 
         foreach ($dirs as $modulesDir) {
             $modulesDir = \Yii::getAlias($modulesDir);

@@ -17,12 +17,12 @@ class SteroidsFieldsController extends Controller
     public function actionMetaFetch()
     {
         return ArrayHelper::merge(
-            $this->exportModels(\Yii::$app->request->post('models')),
-            $this->exportEnums(\Yii::$app->request->post('enums'))
+            static::exportModels(\Yii::$app->request->post('models')),
+            static::exportEnums(\Yii::$app->request->post('enums'))
         );
     }
 
-    protected function parseNames($names)
+    protected static function parseNames($names)
     {
         $result = [];
         foreach ((array)$names as $name) {
@@ -39,9 +39,9 @@ class SteroidsFieldsController extends Controller
         return $result;
     }
 
-    protected function exportEnums($names, $result = [])
+    public static function exportEnums($names, $result = [])
     {
-        foreach ($this->parseNames($names) as $name => $className) {
+        foreach (static::parseNames($names) as $name => $className) {
             if (is_subclass_of($className, Enum::class)) {
                 // TODO Other data?
                 /** @type Enum $className */
@@ -52,9 +52,9 @@ class SteroidsFieldsController extends Controller
         return $result;
     }
 
-    protected function exportModels($names, $result = [])
+    public static function exportModels($names, $result = [])
     {
-        foreach ($this->parseNames($names) as $name => $className) {
+        foreach (static::parseNames($names) as $name => $className) {
             if (is_subclass_of($className, Model::class) || is_subclass_of($className, FormModel::class)) {
                 /** @type Model $className */
                 $entity = is_subclass_of($className, Model::class)
@@ -69,8 +69,8 @@ class SteroidsFieldsController extends Controller
                 $result[$name]['fields'] = $entity->getJsFields(false);
                 $result[$name]['searchFields'] = $entity->getJsFields(true);
                 $result[$name]['formatters'] = $entity->getJsFormatters();
-                $result = $this->exportModels(GiiHelper::findClassNamesInMeta($result[$name]), $result);
-                $result = $this->exportEnums(GiiHelper::findClassNamesInMeta($result[$name]), $result);
+                $result = static::exportModels(GiiHelper::findClassNamesInMeta($result[$name]), $result);
+                $result = static::exportEnums(GiiHelper::findClassNamesInMeta($result[$name]), $result);
             }
         }
 
