@@ -16,10 +16,19 @@ class SteroidsFieldsController extends Controller
 {
     public function actionMetaFetch()
     {
-        return ArrayHelper::merge(
+        $result = [];
+        $data = [
             static::exportModels(\Yii::$app->request->post('models')),
             static::exportEnums(\Yii::$app->request->post('enums'))
-        );
+        ];
+        foreach ($data as $key => $item) {
+            $result[$key] = array_merge(
+                ArrayHelper::getValue($result, $key, []),
+                $item
+            );
+        }
+
+        return $result;
     }
 
     protected static function parseNames($names)
