@@ -143,7 +143,10 @@ class DataProviderHoc extends React.PureComponent {
         // Store selected items in state on change value
         if (this.props.input.value !== nextProps.input.value) {
             this.setState({
-                selectedItems: this._findSelectedItems(this.state.items, nextProps.input.value),
+                selectedItems: this._findSelectedItems(
+                    _uniqBy([].concat(this.state.items, this.state.sourceItems, this.state.selectedItems), 'id'),
+                    nextProps.input.value
+                ),
             });
         }
 
