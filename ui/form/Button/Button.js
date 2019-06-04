@@ -11,7 +11,7 @@ class ButtonInternal extends React.PureComponent {
 
     render() {
         const ButtonView = this.props.view || ui.getView('form.ButtonView');
-        const disabled = this.props.submitting || this.props.disabled;
+        const disabled = this.props.submitting || this.props.disabled || this.props.isLoading;
         return (
             <ButtonView
                 {...this.props}
@@ -80,13 +80,28 @@ class Button extends React.PureComponent {
     constructor() {
         super(...arguments);
 
+        this._isMounted = false;
+
+        this.state = {
+            isLoading: false,
+        };
+
         this._onClick = this._onClick.bind(this);
+    }
+
+    componentDidMount() {
+        this._isMounted = true;
+    }
+
+    componentWillUnmount() {
+        this._isMounted = false;
     }
 
     render() {
         const button = (
             <ButtonInternal
                 {...this.props}
+                isLoading={this.state.isLoading}
                 url={this.props.link && !(this.props.url || this.props.to)
                     ? 'javascript:void(0)'
                     : this.props.url || this.props.to}
@@ -129,7 +144,23 @@ class Button extends React.PureComponent {
         }
 
         if (this.props.onClick) {
-            this.props.onClick(e);
+            const result = this.props.onClick(e);
+
+            if (result instanceof Promise) {
+                this.setState({isLoading: true});
+                result
+                    .then(() => {
+                        if (this._isMounted) {
+                            this.setState({isLoading: false});
+                        }
+                    })
+                    .catch(e => {
+                        if (this._isMounted) {
+                            this.setState({isLoading: false});
+                        }
+                        throw e;
+                    })
+            }
         }
     }
 

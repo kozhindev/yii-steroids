@@ -29,6 +29,7 @@ export default class ButtonView extends React.PureComponent {
         onClick: PropTypes.func,
         disabled: PropTypes.bool,
         submitting: PropTypes.bool,
+        isLoading: PropTypes.bool,
         block: PropTypes.bool,
         className: PropTypes.string,
         view: PropTypes.func,
@@ -65,20 +66,33 @@ export default class ButtonView extends React.PureComponent {
 
     renderLabel() {
         return (
-            <span>
-                {this.props.icon && (
-                    <span
-                        className={bem(
-                            bem.element('icon', !this.props.label && 'without-label'),
-                            'material-icons'
-                        )}
-                        title={_isString(this.props.label) ? this.props.label : null}
-                    >
-                        {this.props.icon}
-                    </span>
+            <>
+                {this.props.isLoading && (
+                    <div className={bem.element('preloader')}>
+                        <span
+                            className={`spinner-border spinner-border-${this.props.size}`}
+                            role="status"
+                            aria-hidden="true"
+                        />
+                    </div>
                 )}
-                {this.props.children}
-            </span>
+                <span
+                    className={bem.element('label')}
+                >
+                    {this.props.icon && (
+                        <span
+                            className={bem(
+                                bem.element('icon', !this.props.label && 'without-label'),
+                                'material-icons'
+                            )}
+                            title={_isString(this.props.label) ? this.props.label : null}
+                        >
+                            {this.props.icon}
+                        </span>
+                    )}
+                    {this.props.children}
+                </span>
+            </>
         );
     }
     
@@ -90,6 +104,7 @@ export default class ButtonView extends React.PureComponent {
                 size: this.props.size,
                 disabled: this.props.disabled,
                 submitting: this.props.submitting,
+                'is-loading': this.props.isLoading,
                 ...modifiers,
             }),
             this.props.className,
