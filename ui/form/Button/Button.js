@@ -11,7 +11,7 @@ class ButtonInternal extends React.PureComponent {
 
     render() {
         const ButtonView = this.props.view || ui.getView('form.ButtonView');
-        const disabled = this.props.submitting || this.props.disabled || this.props.isLoading;
+        const disabled = this.props.submitting || this.props.disabled || this.state.isLoading;
         return (
             <ButtonView
                 {...this.props}
