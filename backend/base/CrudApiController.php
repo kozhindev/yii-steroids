@@ -101,7 +101,7 @@ abstract class CrudApiController extends Controller
             throw new ForbiddenHttpException();
         }
 
-        $model->load(Yii::$app->request->post(), '');
+        $this->loadAttributes($model, Yii::$app->request->post());
         $this->saveModel($model);
 
         if ($errors = $model->getErrors()) {
@@ -124,7 +124,7 @@ abstract class CrudApiController extends Controller
             throw new ForbiddenHttpException();
         }
 
-        $model->load(Yii::$app->request->post(), '');
+        $this->loadAttributes($model, Yii::$app->request->post());
         $this->saveModel($model);
 
         if ($errors = $model->getErrors()) {
@@ -187,6 +187,21 @@ abstract class CrudApiController extends Controller
         $primaryKey = $modelClass::primaryKey()[0];
         $id = Yii::$app->request->get($modelClass::getRequestParamName());
         return $modelClass::findOrPanic([$primaryKey => $id]);
+    }
+
+    /**
+     * @param Model $model
+     * @param array $attributes
+     */
+    protected function loadAttributes($model, $attributes) {
+        $availableAttributes = array_filter($attributes,
+            function ($attributeName) use ($model) {
+                return $model->canUpdateAttribute(Yii::app()->user->model, $attributeName);
+            },
+            ARRAY_FILTER_USE_KEY
+        );
+
+        $model->load($availableAttributes, '');
     }
 
     /**

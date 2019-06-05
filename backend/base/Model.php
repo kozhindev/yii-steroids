@@ -301,9 +301,46 @@ class Model extends ActiveRecord
         return true;
     }
 
+    /**
+     * @return bool
+     */
     public function canDeleted()
     {
         return $this->canUpdated() && !$this->isNewRecord;
+    }
+
+    /**
+     * @param Model $user
+     * @param string $attributeName
+     * @return bool
+     */
+    public function canUpdateAttribute($user, $attributeName) {
+        if (\Yii::$app->has('authManager')) {
+            return \Yii::$app->authManager->checkAttributeAccess(
+                $user,
+                $this,
+                $attributeName,
+                AuthManager::RULE_MODEL_UPDATE
+            ) && $this->canUpdated();
+        }
+        return $this->canUpdated();
+    }
+
+    /**
+     * @param Model $user
+     * @param string $attributeName
+     * @return bool
+     */
+    public function canViewAttribute($user, $attributeName) {
+        if (\Yii::$app->has('authManager')) {
+            return \Yii::$app->authManager->checkAttributeAccess(
+                $user,
+                $this,
+                $attributeName,
+                AuthManager::RULE_MODEL_VIEW
+            );
+        }
+        return true;
     }
 
     public function beforeSave($insert)

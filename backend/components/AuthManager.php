@@ -60,8 +60,7 @@ class AuthManager extends PhpManager
      */
     public function checkAttributeAccess($user, $model, $attribute, $rule)
     {
-        return $this->checkAttributeAccessInternal($user, $model, $attribute, $rule)
-            || $this->checkModelAccessInternal($user, $model, $rule);
+        return $this->checkAttributeAccessInternal($user, $model, $attribute, $rule);
     }
 
     /**
