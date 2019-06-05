@@ -5,6 +5,7 @@ const _ = require('lodash');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const ExportTranslationKeysPlugin = require('./plugins/ExportTranslationKeysPlugin');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 const utils = require('./utils');
 const getConfigDefault = require('./config.default');
@@ -34,14 +35,14 @@ module.exports = (config, entry) => {
             ? {
                 publicPath: '/',
                 path: config.outputPath,
-                filename: 'assets/bundle-[name].js',
-                chunkFilename: 'assets/bundle-[name].js',
+                filename: `${config.baseUrl}bundle-[name]${config.useHash ? '.[hash]' : ''}.js`,
+                chunkFilename: `${config.baseUrl}bundle-[name]${config.useHash ? '.[hash]' : ''}.js`,
             }
             : {
                 publicPath: `http://${config.host}:${config.port}/`,
                 path: config.outputPath,
-                filename: `${config.staticPath}assets/bundle-[name].js`,
-                chunkFilename: `${config.staticPath}assets/bundle-[name].js`,
+                filename: `${config.staticPath}${config.baseUrl}bundle-[name]${config.useHash ? '.[hash]' : ''}.js`,
+                chunkFilename: `${config.staticPath}${config.baseUrl}bundle-[name]${config.useHash ? '.[hash]' : ''}.js`,
             },
         module: {
             rules: {
@@ -102,6 +103,7 @@ module.exports = (config, entry) => {
                 sass: {
                     test: /\.scss$/,
                     use: [
+                        'css-hot-loader',
                         MiniCssExtractPlugin.loader,
                         'css-loader',
                         'sass-loader',
@@ -114,7 +116,7 @@ module.exports = (config, entry) => {
                         file: {
                             loader: 'file-loader',
                             options: {
-                                name: 'fonts/[name].[ext]'
+                                name: `${config.staticPath}${config.baseUrl}fonts/[name].[hash].[ext]`,
                             },
                         },
                     },
@@ -124,20 +126,26 @@ module.exports = (config, entry) => {
                     use: {
                         cache: utils.isProduction() && 'cache-loader',
                         file: {
-                            loader: 'file-loader'
+                            loader: 'file-loader',
+                            options: {
+                                name: `${config.staticPath}${config.baseUrl}images/[hash].[ext]`,
+                            },
                         },
                     },
                 },
             },
         },
         resolve: {
-            extensions: ['.js'],
+            extensions: ['.js', '.jsx'],
             alias: {
                 app: path.resolve(config.cwd, 'app'),
-                actions: 'core/frontend/actions',
-                components: 'core/frontend/components',
-                reducers: 'core/frontend/reducers',
-                shared: 'core/frontend/shared',
+                actions: `${config.sourcePath}/actions`,
+                components: `${config.sourcePath}/components`,
+                enums: `${config.sourcePath}/enums`,
+                reducers: `${config.sourcePath}/reducers`,
+                shared: `${config.sourcePath}/shared`,
+                types: `${config.sourcePath}/types`,
+                ui: `${config.sourcePath}/ui`,
             },
             modules: [
                 path.resolve(config.cwd, 'node_modules'), // the old 'fallback' option (needed for npm link-ed packages)
@@ -149,8 +157,8 @@ module.exports = (config, entry) => {
             utils.isAnalyze() && new BundleAnalyzerPlugin(),
             new ExportTranslationKeysPlugin(),
             new MiniCssExtractPlugin({
-                filename: `${config.staticPath}assets/bundle-[name].css`,
-                chunkFilename: `${config.staticPath}assets/bundle-[id].css`,
+                filename: `${config.staticPath}${config.baseUrl}bundle-[name]${config.useHash ? '.[hash]' : ''}.css`,
+                chunkFilename: `${config.staticPath}${config.baseUrl}bundle-[id]${config.useHash ? '.[hash]' : ''}.css`,
             }),
             new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/), // Skip moment locale files (0.3 mb!)
             utils.isProduction() && new webpack.optimize.OccurrenceOrderPlugin(),
@@ -158,6 +166,13 @@ module.exports = (config, entry) => {
             new webpack.NamedModulesPlugin(),
             new webpack.NamedChunksPlugin(),
             !utils.isProduction() && new webpack.HotModuleReplacementPlugin(),
+
+            // Index html
+            fs.existsSync(config.sourcePath + '/index.html') && new HtmlWebpackPlugin({
+                inject: true,
+                template: config.sourcePath + '/index.html',
+                filename: `${config.baseUrl}index.html`
+            }),
 
             // Proxy all APP_* env variables
             new webpack.DefinePlugin(Object.keys(process.env).reduce((obj, key) => {
