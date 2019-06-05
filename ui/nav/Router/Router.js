@@ -4,6 +4,7 @@ import {Route, Switch} from 'react-router';
 import {connect} from 'react-redux';
 import {ConnectedRouter} from 'react-router-redux';
 import _get from 'lodash-es/get';
+import _isArray from 'lodash-es/isArray';
 import _isObject from 'lodash-es/isObject';
 
 import {store} from 'components';
@@ -34,9 +35,17 @@ class Router extends React.PureComponent {
 
     static treeToList(item) {
         let items = [item];
-        if (item.items) {
+        if (_isArray(item.items)) {
             item.items.forEach(sub => {
                 items = items.concat(Application.treeToList(sub));
+            });
+        }
+        if (_isObject(item.items)) {
+            Object.keys(item.items).map(id => {
+                items.push({
+                    ...item.items[id],
+                    id,
+                });
             });
         }
 

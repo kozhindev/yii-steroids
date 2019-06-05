@@ -12,6 +12,7 @@ export default class HttpComponent {
         this.apiUrl = '//' + location.host;
         this._lazyRequests = {};
         this._axios = null;
+        this._csrfToken = null;
     }
 
     getAxiosConfig() {
@@ -27,12 +28,17 @@ export default class HttpComponent {
         };
 
         // Add CSRF header
-        const metaToken = document.querySelector('meta[name=csrf-token]');
+        const metaToken = this._csrfToken || document.querySelector('meta[name=csrf-token]');
         if (metaToken) {
             config.headers['X-CSRF-Token'] = metaToken.getAttribute('content');
         }
 
         return config;
+    }
+
+    setCsrfToken(value) {
+        this._csrfToken = value;
+        this.resetConfig();
     }
 
     resetConfig() {

@@ -43,10 +43,15 @@ class NavigationHoc extends React.Component {
     componentWillMount() {
         const routesTree = routes || (_isObject(this.props.routes) ? this.props.routes : null);
         if (routesTree) {
-            store.dispatch([
-                initRoutes(this._walkRoutesRecursive(routesTree)),
-                initParams(_get(this.props, 'route.params')),
-            ]);
+            store.dispatch(initRoutes(this._walkRoutesRecursive(routesTree)));
+        }
+
+        this._initParams(this.props);
+    }
+
+    componentWillReceiveProps(nextProps, nextContext) {
+        if (!this.props.route && nextProps.route) {
+            this._initParams(nextProps);
         }
     }
 
@@ -58,6 +63,12 @@ class NavigationHoc extends React.Component {
         return (
             <WrappedComponent {...this.props}/>
         );
+    }
+
+    _initParams(props) {
+        if (props.route) {
+            store.dispatch(initParams(props.route.params));
+        }
     }
 
     _walkRoutesRecursive(item, isRoot) {
