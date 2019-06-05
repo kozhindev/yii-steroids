@@ -62,11 +62,13 @@ export const fetchMeta = (names, force = false) => (dispatch, getState) => {
 
     // Send request
     return http.post('/api/steroids/meta-fetch', names)
-        .then(meta => dispatch({
-            type: FIELDS_SET_META,
-            meta,
-        }));
+        .then(meta => setMeta(meta));
 };
+
+export const setMeta = meta => ({
+    type: FIELDS_SET_META,
+    meta,
+});
 
 export const addSecurity = (formId, params) => ({
     type: FIELDS_ADD_SECURITY,

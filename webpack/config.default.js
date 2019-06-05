@@ -8,6 +8,9 @@ module.exports = () => {
         port: utils.generatePort(),
         outputPath: path.resolve(process.cwd(), 'public'),
         staticPath: !utils.isProduction() ? 'static/1.0/' : '',
+        sourcePath: path.resolve(process.cwd(), 'app/core/frontend'),
+        baseUrl: 'assets/',
+        useHash: false,
         webpack: {}, // you custom webpack config
         devServer: {}, // you custom dev server config
     };

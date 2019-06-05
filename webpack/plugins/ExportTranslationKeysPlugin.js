@@ -83,6 +83,11 @@ ExportTranslationKeysPlugin.prototype.apply = function (compiler) {
     });
 
     compiler.hooks.done.tap('ExportTranslationKeysPlugin', function (stats) {
+        const dir = stats.compilation.outputOptions.path + '/assets';
+        if (!fs.existsSync(dir)) {
+            fs.mkdirSync(dir);
+        }
+
         let indexTranslations = [];
         Object.keys(translationKeys).forEach(bundleName => {
             const moduleName = translationKeys[bundleName].moduleName;
@@ -90,14 +95,15 @@ ExportTranslationKeysPlugin.prototype.apply = function (compiler) {
                 indexTranslations = indexTranslations.concat(translationKeys[bundleName].translationKeys);
             } else {
                 const fileName = 'bundle-' + moduleName + '-' + translationKeys[bundleName].bundleName;
-                const filePath = stats.compilation.outputOptions.path + '/assets/' + fileName + '-lang.json';
+
+                const filePath = dir + '/' + fileName + '-lang.json';
                 const arrayKeys = JSON.stringify(_uniq(translationKeys[bundleName].translationKeys));
                 fs.writeFileSync(filePath, arrayKeys);
             }
         });
 
         if (indexTranslations.length > 0) {
-            const filePath = stats.compilation.outputOptions.path + '/assets/index-lang.json';
+            const filePath = dir + '/index-lang.json';
             fs.writeFileSync(filePath, JSON.stringify(_uniq(indexTranslations)));
         }
     });
