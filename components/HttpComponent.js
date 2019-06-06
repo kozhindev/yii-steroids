@@ -10,9 +10,12 @@ export default class HttpComponent {
 
     constructor() {
         this.apiUrl = '//' + location.host;
+        this.accessTokenKey = 'accessToken';
+
         this._lazyRequests = {};
         this._axios = null;
         this._csrfToken = null;
+        this._accessToken = false;
     }
 
     getAxiosConfig() {
@@ -28,17 +31,56 @@ export default class HttpComponent {
         };
 
         // Add CSRF header
-        const metaToken = this._csrfToken || document.querySelector('meta[name=csrf-token]');
-        if (metaToken) {
-            config.headers['X-CSRF-Token'] = metaToken.getAttribute('content');
+        if (!this._csrfToken) {
+            const metaElement = document.querySelector('meta[name=csrf-token]');
+            if (metaElement) {
+                this._csrfToken = metaElement.getAttribute('content');
+            }
+        }
+        if (this._csrfToken) {
+            config.headers['X-CSRF-Token'] = this._csrfToken;
+        }
+
+        // Set access token
+        const clientStorage = require('components').clientStorage;
+        if (this._accessToken === false) {
+            this._accessToken = clientStorage.get(this.accessTokenKey) || null;
+        }
+        if (this._accessToken) {
+            config.headers['Authorization'] = 'Bearer ' + this._accessToken;
         }
 
         return config;
     }
 
+    /**
+     * @param value
+     */
     setCsrfToken(value) {
         this._csrfToken = value;
         this.resetConfig();
+    }
+
+    /**
+     * @param value
+     */
+    setAccessToken(value) {
+        this._accessToken = value;
+        this.resetConfig();
+
+        const clientStorage = require('components').clientStorage;
+        clientStorage.set(this.accessTokenKey, value);
+    }
+
+    /**
+     * @returns {string}
+     */
+    getAccessToken() {
+        if (this._accessToken === false) {
+            const clientStorage = require('components').clientStorage;
+            this._accessToken = clientStorage.get(this.accessTokenKey) || null;
+        }
+        return this._accessToken;
     }
 
     resetConfig() {

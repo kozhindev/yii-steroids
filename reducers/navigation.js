@@ -48,7 +48,7 @@ const buildNavItem = (state, item, params) => {
         });
     } catch (e) { // eslint-disable-line no-empty
     }
-    
+
     return {
         ...item,
         id: item.id,

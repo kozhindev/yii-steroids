@@ -6,6 +6,7 @@ import {push} from 'react-router-redux';
 
 import {ui} from 'components';
 import FieldLayout from '../FieldLayout';
+import {getNavUrl} from '../../../reducers/navigation';
 
 class ButtonInternal extends React.PureComponent {
 
@@ -29,6 +30,7 @@ export default
 @connect(
     (state, props) => ({
         submitting: props.formId ? isSubmitting(props.formId)(state) : !!props.submitting,
+        to: props.toRoute ? getNavUrl(state, props.toRoute, props.toRouteParams) : props.to,
     })
 )
 class Button extends React.PureComponent {
@@ -58,6 +60,8 @@ class Button extends React.PureComponent {
         block: PropTypes.bool,
         className: PropTypes.string,
         view: PropTypes.func,
+        toRoute: PropTypes.string,
+        toRouteParams: PropTypes.object,
     };
 
     static defaultProps = {

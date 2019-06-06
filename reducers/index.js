@@ -1,6 +1,7 @@
 import {combineReducers} from 'redux';
 import {reducer as form} from 'redux-form';
 
+import auth from './auth';
 import fields from './fields';
 import list from './list';
 import config from './config';
@@ -11,6 +12,7 @@ import navigation from './navigation';
 
 export {
     form,
+    auth,
     fields,
     list,
     config,

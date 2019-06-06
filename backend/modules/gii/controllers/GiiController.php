@@ -70,8 +70,11 @@ class GiiController extends Controller
 
     public function actionApiGetEntities()
     {
+        $moduleIds = array_keys(GiiHelper::findModules());
+        sort($moduleIds);
+
         return [
-            'moduleIds' => array_keys(GiiHelper::findModules()),
+            'moduleIds' => $moduleIds,
             'classes' => [
                 'crud' => CrudEntity::findAll(),
                 'enum' => EnumEntity::findAll(),

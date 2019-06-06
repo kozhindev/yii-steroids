@@ -143,6 +143,7 @@ module.exports = (config, entry) => {
                 components: `${config.sourcePath}/components`,
                 enums: `${config.sourcePath}/enums`,
                 reducers: `${config.sourcePath}/reducers`,
+                routes: `${config.sourcePath}/routes`,
                 shared: `${config.sourcePath}/shared`,
                 types: `${config.sourcePath}/types`,
                 ui: `${config.sourcePath}/ui`,
@@ -151,6 +152,7 @@ module.exports = (config, entry) => {
                 path.resolve(config.cwd, 'node_modules'), // the old 'fallback' option (needed for npm link-ed packages)
                 fs.existsSync(path.resolve(config.cwd, '../node_modules')) ? path.resolve(config.cwd, '../node_modules') : null,
                 path.resolve(config.cwd, 'app'),
+                config.sourcePath,
             ].filter(Boolean),
         },
         plugins: [

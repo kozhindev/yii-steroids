@@ -33,19 +33,22 @@ class Router extends React.PureComponent {
         pathname: PropTypes.string,
     };
 
-    static treeToList(item) {
-        let items = [item];
+    static treeToList(item, isRoot) {
+        if (isRoot && !item.id) {
+            item.id = 'root';
+        }
+
+        let items = item.path ? [item] : [];
         if (_isArray(item.items)) {
             item.items.forEach(sub => {
-                items = items.concat(Application.treeToList(sub));
+                items = items.concat(Router.treeToList(sub));
             });
-        }
-        if (_isObject(item.items)) {
+        } else if (_isObject(item.items)) {
             Object.keys(item.items).map(id => {
-                items.push({
+                items = items.concat(Router.treeToList({
                     ...item.items[id],
                     id,
-                });
+                }));
             });
         }
 
@@ -55,15 +58,24 @@ class Router extends React.PureComponent {
     constructor() {
         super(...arguments);
 
-        this._routes = _isObject(this.props.routes) ? Router.treeToList(this.props.routes) : this.props.routes;
         this._renderItem = this._renderItem.bind(this);
+
+        this.state = {
+            routes: !_isArray(this.props.routes)
+                ? Router.treeToList(this.props.routes, true)
+                : this.props.routes,
+        };
     }
 
     componentWillMount() {
-        this.props.dispatch(registerRoutes(this._routes));
+        this.props.dispatch(registerRoutes(this.state.routes));
     }
 
     componentWillReceiveProps(nextProps) {
+        if (this.props.routes !== nextProps.routes) {
+            this.setState({routes: nextProps.routes});
+        }
+
         // Fix end slash on switch to base route
         if (window.history && nextProps.pathname === '/' && location.pathname.match(/\/$/)) {
             window.history.replaceState({}, '', store.history.basename);
@@ -74,7 +86,7 @@ class Router extends React.PureComponent {
         const WrapperComponent = this.props.wrapperView;
         const routes = (
             <Switch>
-                {this._routes.map((route, index) => (
+                {this.state.routes.map((route, index) => (
                     <Route
                         key={index}
                         render={props => this._renderItem(route, props)}

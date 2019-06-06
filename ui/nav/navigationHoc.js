@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
-import _get from 'lodash-es/get';
 import _isArray from 'lodash-es/isArray';
 import _isObject from 'lodash-es/isObject';
 import _isEqual from 'lodash-es/isEqual';
@@ -35,15 +34,10 @@ class NavigationHoc extends React.Component {
         this._walkRoutesRecursive = this._walkRoutesRecursive.bind(this);
     }
 
-    shouldComponentUpdate(nextProps) {
-        return this.props.isInitialized !== nextProps.isInitialized
-            || !_isEqual(this.props.route, nextProps.route);
-    }
-
     componentWillMount() {
-        const routesTree = routes || (_isObject(this.props.routes) ? this.props.routes : null);
+        const routesTree = routes || !_isArray(this.props.routes) ? this.props.routes : null;
         if (routesTree) {
-            store.dispatch(initRoutes(this._walkRoutesRecursive(routesTree)));
+            store.dispatch(initRoutes(this._walkRoutesRecursive({id: 'root', ...routesTree})));
         }
 
         this._initParams(this.props);
@@ -56,7 +50,7 @@ class NavigationHoc extends React.Component {
     }
 
     render() {
-        if (!this.props.isInitialized) {
+        if (!_isArray(this.props.routes) && !this.props.isInitialized) {
             return null;
         }
 
@@ -71,12 +65,11 @@ class NavigationHoc extends React.Component {
         }
     }
 
-    _walkRoutesRecursive(item, isRoot) {
+    _walkRoutesRecursive(item) {
         let items = null;
         if (_isArray(item.items)) {
             items = item.items.map(this._walkRoutesRecursive);
-        }
-        if (_isObject(item.items)) {
+        } else if (_isObject(item.items)) {
             items = Object.keys(item.items).map(id => this._walkRoutesRecursive({
                 ...item.items[id],
                 id,
@@ -84,7 +77,7 @@ class NavigationHoc extends React.Component {
         }
         return {
             ...item,
-            id: item.id || (isRoot ? 'root' : ''),
+            id: item.id,
             exact: item.exact,
             path: item.path,
             label: item.label,
