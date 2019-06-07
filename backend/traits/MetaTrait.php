@@ -153,12 +153,29 @@ trait MetaTrait
     }
 
     /**
+     * Note: when user param is supplied, fields in result will be filtered
+     * according to the user permissions.
+     *
      * @param array|string|null $fields
+     * @param Model $user
      * @return array
      * @throws InvalidConfigException
      */
-    public function toFrontend($fields = null)
+    public function toFrontend($fields = null, $user = null)
     {
+        if ($user) {
+            $model = $this instanceof Model
+                ? $this
+                : $this->model;
+
+            $permittedFields = $model->canView($user);
+
+            $fields = array_intersect(
+                $fields ?: $model->attributes(),
+                $permittedFields
+            );
+        }
+
         return static::anyToFrontend($this, $fields);
     }
 }

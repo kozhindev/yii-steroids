@@ -151,10 +151,12 @@ abstract class CrudApiController extends Controller
         }
 
         if (static::$viewSchema) {
-            return new static::$viewSchema(['model' => $model]);
+            $result = new static::$viewSchema(['model' => $model]);
+        } else {
+            $result = $model;
         }
 
-        return $model;
+        return $result;
     }
 
     public function actionDelete()
@@ -246,6 +248,30 @@ abstract class CrudApiController extends Controller
         }
 
         return $attributes;
+    }
+
+    public function afterAction($action, $result)
+    {
+        $resultIsSchema = ($result instanceof FormModel);
+
+        $user = Yii::$app->user->model;
+        $model = $resultIsSchema ? $result->model : $result;
+        $result = $result->toFrontend(null, $user);
+
+        // TODO we need to check scope here because permissions appending is different in Model and SearchModel
+        if ($model instanceof Model && Yii::$app->request->get('scope')) {
+            $result = array_merge(
+                $result,
+                [
+                    'canUpdate' => $model->canUpdate($user),
+                    'canCreate' => $model->canCreate($user),
+                    'canView'   => $model->canView($user),
+                    'canDelete' => $model->canDelete($user)
+                ]
+            );
+        }
+
+        return parent::afterAction($action, $result);
     }
 
 }

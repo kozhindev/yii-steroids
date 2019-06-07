@@ -353,14 +353,13 @@ class Model extends ActiveRecord
      * @return array of attribute names
      */
     protected function getPermittedAttributes($user, $rule) {
-        $attributesNames = array_keys($this->attributes);
         $permissionCheckMethod = 'can' . ucfirst($rule) . 'Attribute';
 
-        return array_filter($attributesNames,
+        return array_values(array_filter($this->attributes(),
             function($attribute) use ($user, $permissionCheckMethod) {
                 return $this->$permissionCheckMethod($user, $attribute);
             }
-        );
+        ));
     }
 
     public function beforeSave($insert)
@@ -372,5 +371,4 @@ class Model extends ActiveRecord
     {
         return parent::beforeDelete() && $this->canDeleted();
     }
-
 }
