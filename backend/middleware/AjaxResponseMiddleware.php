@@ -50,7 +50,7 @@ class AjaxResponseMiddleware extends BaseObject
 
             // Detect data provider
             if ($event->result instanceof SearchModel || $event->result instanceof BaseSchema) {
-                $data = $event->result->toFrontend();
+                $data = $event->result->toFrontend(null, \Yii::$app->user->identity);
             } elseif ($event->result instanceof Model || $event->result instanceof FormModel) {
                 $data = ActiveForm::renderAjax($event->result, '');
             } elseif ($event->result instanceof BaseDataProvider) {

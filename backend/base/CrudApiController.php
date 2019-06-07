@@ -151,12 +151,10 @@ abstract class CrudApiController extends Controller
         }
 
         if (static::$viewSchema) {
-            $result = new static::$viewSchema(['model' => $model]);
-        } else {
-            $result = $model;
+            return new static::$viewSchema(['model' => $model]);
         }
 
-        return $result;
+        return $model;
     }
 
     public function actionDelete()
@@ -252,23 +250,16 @@ abstract class CrudApiController extends Controller
 
     public function afterAction($action, $result)
     {
-        $resultIsSchema = ($result instanceof FormModel);
+        if (Yii::$app->request->get('scope') === SearchModel::SCOPE_PERMISSIONS
+            && ($result instanceof BaseSchema || $result instanceof Model)) {
+            $user = Yii::$app->user->model;
+            $model = $result instanceof BaseSchema ? $result->model : $result;
 
-        $user = Yii::$app->user->model;
-        $model = $resultIsSchema ? $result->model : $result;
-        $result = $result->toFrontend(null, $user);
-
-        // TODO we need to check scope here because permissions appending is different in Model and SearchModel
-        if ($model instanceof Model && Yii::$app->request->get('scope')) {
             $result = array_merge(
-                $result,
-                [
-                    'canUpdate' => $model->canUpdate($user),
-                    'canCreate' => $model->canCreate($user),
-                    'canView'   => $model->canView($user),
-                    'canDelete' => $model->canDelete($user)
-                ]
+                $model->toFrontend(null, $user),
+                $model->getPermissions($user)
             );
+
         }
 
         return parent::afterAction($action, $result);

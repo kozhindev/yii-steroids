@@ -22,6 +22,33 @@ class Model extends ActiveRecord
     use RelationSaveTrait;
     use SecurityTrait;
 
+    private static $_cans;
+
+    public function getPermissions($user) {
+
+        if (static::$_cans === null) {
+            static::$_cans = [];
+            $info = new \ReflectionClass(get_class($this));
+            foreach ($info->getMethods() as $method) {
+                $parameters = $method->getParameters();
+                if (count($parameters) === 0 || $parameters[0]->getName() !== 'user') {
+                    continue;
+                }
+
+                $name = $method->getName();
+                if (preg_match('/^can((?!Attribute)\w)*$/', $name)) {
+                    static::$_cans[] = $name;
+                }
+            }
+        }
+
+        $result = [];
+        foreach (static::$_cans as $can) {
+            $result[$can] = $this->$can($user);
+        }
+        return $result;
+    }
+
     /**
      * @return string
      */

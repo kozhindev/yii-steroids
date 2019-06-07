@@ -146,7 +146,7 @@ class SearchModel extends FormModel
 
     public function getItems($fields = null, $user = null)
     {
-        $user = $this->user ?: $user;
+        $user = $user ?: $this->user;
         $schema = $this->fieldsSchema();
         $fields = $fields ?: $this->fields();
 
@@ -164,32 +164,21 @@ class SearchModel extends FormModel
 
     public function toFrontend($fields = null, $user = null)
     {
-        $user = $this->user ?: $user ?:
+        $user = $user ?:
+            $this->user ?:
                 (\Yii::$app->has('user') ? \Yii::$app->user->identity : null);
 
         $items = $this->getItems($fields, $user);
 
         // Append whole model permissions
         if (in_array(self::SCOPE_PERMISSIONS, $this->scope) && $user) {
-            $info = new \ReflectionClass($this->dataProvider->query->modelClass);
-            $cans = [];
-            foreach ($info->getMethods() as $method) {
-                $parameters = $method->getParameters();
-                if (count($parameters) === 0 || $parameters[0]->getName() !== 'user') {
-                    continue;
-                }
-
-                $name = $method->getName();
-                if (preg_match('/^can((?!Attribute)\w)*$/', $name)) {
-                    $cans[] = $name;
-                }
-            }
-
+            /** @var Model[] $models */
             $models = $this->dataProvider->models;
-            foreach ($items as $index => &$item) {
-                foreach ($cans as $can) {
-                    $item[$can] = $models[$index]->$can($user);
-                }
+            foreach ($items as $index => $item) {
+                $items[$index] = array_merge(
+                    $items[$index],
+                    $models[$index]->getPermissions($user)
+                );
             }
         }
 
