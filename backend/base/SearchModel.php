@@ -10,6 +10,7 @@ use yii\helpers\ArrayHelper;
 
 class SearchModel extends FormModel
 {
+    const SCOPE_FIELDS_PERMISSIONS = 'fields_permissions';
     const SCOPE_PERMISSIONS = 'permissions';
     const SCOPE_MODEL = 'model';
 
@@ -165,30 +166,28 @@ class SearchModel extends FormModel
     public function toFrontend($fields = null)
     {
         $items = $this->getItems();
+        $user = $this->user ?: (\Yii::$app->has('user') ? \Yii::$app->user->identity : null);
 
-        // Append permissions
-        if (in_array(self::SCOPE_PERMISSIONS, $this->scope)) {
-            $user = $this->user ?: (\Yii::$app->has('user') ? \Yii::$app->user->identity : null);
-            if ($user) {
-                $info = new \ReflectionClass($this->dataProvider->query->modelClass);
-                $cans = [];
-                foreach ($info->getMethods() as $method) {
-                    $parameters = $method->getParameters();
-                    if (count($parameters) === 0 || $parameters[0]->getName() !== 'user') {
-                        continue;
-                    }
-
-                    $name = $method->getName();
-                    if (preg_match('/^can(.+)$/', $name)) {
-                        $cans[] = $name;
-                    }
+        // Append whole model permissions
+        if (in_array(self::SCOPE_PERMISSIONS, $this->scope) && $user) {
+            $info = new \ReflectionClass($this->dataProvider->query->modelClass);
+            $cans = [];
+            foreach ($info->getMethods() as $method) {
+                $parameters = $method->getParameters();
+                if (count($parameters) === 0 || $parameters[0]->getName() !== 'user') {
+                    continue;
                 }
 
-                $models = $this->dataProvider->models;
-                foreach ($items as $index => &$item) {
-                    foreach ($cans as $can) {
-                        $item[$can] = $models[$index]->$can($user);
-                    }
+                $name = $method->getName();
+                if (preg_match('/^can((?!Attribute)\w)*$/', $name)) {
+                    $cans[] = $name;
+                }
+            }
+
+            $models = $this->dataProvider->models;
+            foreach ($items as $index => &$item) {
+                foreach ($cans as $can) {
+                    $item[$can] = $models[$index]->$can($user);
                 }
             }
         }
