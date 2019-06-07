@@ -22,7 +22,7 @@ class Model extends ActiveRecord
     use RelationSaveTrait;
     use SecurityTrait;
 
-    private static $_cans;
+    protected static $_cans;
 
     public function getPermissions($user) {
 
