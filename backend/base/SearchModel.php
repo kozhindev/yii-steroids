@@ -192,41 +192,6 @@ class SearchModel extends FormModel
             }
         }
 
-        // Append fields permissions
-        if (in_array(self::SCOPE_FIELDS_PERMISSIONS, $this->scope) && $user) {
-            $info = new \ReflectionClass($this->dataProvider->query->modelClass);
-            $cans = [];
-            foreach ($info->getMethods() as $method) {
-                $parameters = $method->getParameters();
-                if (count($parameters) === 0 || $parameters[0]->getName() !== 'user') {
-                    continue;
-                }
-
-                $name = $method->getName();
-                if (preg_match('/^(can\w+)Attribute$/', $name, $matches)) {
-                    $cans[] = [
-                        'method' => $matches[0],
-                        'name' => $matches[1]
-                    ];
-                }
-            }
-
-            $models = $this->dataProvider->models;
-            foreach ($items as $index => &$item) {
-                /** @var Model $model */
-                $model = $models[$index];
-                foreach ($model->attributes as $attribute => $value) {
-                    foreach ($cans as $can) {
-                        $permissionName = $can['name'];
-                        $checkPermissionMethod = $can['method'];
-
-                        $item['fieldsPermissions'][$attribute][$permissionName] =
-                            $model->$checkPermissionMethod($user, $attribute);
-                    }
-                }
-            }
-        }
-
         // Append meta
         if (in_array(self::SCOPE_MODEL, $this->scope) && $this->dataProvider instanceof ActiveDataProvider) {
             /** @var ActiveQuery $query */

@@ -96,12 +96,13 @@ abstract class CrudApiController extends Controller
     {
         /** @var Model $model */
         $model = new static::$modelClass();
+        $user = Yii::$app->user->model;
 
-        if (!$model->canCreate(Yii::$app->user->model)) {
+        if (!$model->canCreate($user)) {
             throw new ForbiddenHttpException();
         }
 
-        $this->loadAttributes($model, Yii::$app->request->post());
+        $model->load(Yii::$app->request->post());
         $this->saveModel($model);
 
         if ($errors = $model->getErrors()) {
@@ -120,11 +121,13 @@ abstract class CrudApiController extends Controller
     public function actionUpdate()
     {
         $model = $this->findModel();
-        if (!$model->canUpdate(Yii::$app->user->model)) {
+        $user = Yii::$app->user->model;
+
+        if (!$model->canUpdate($user)) {
             throw new ForbiddenHttpException();
         }
 
-        $this->loadAttributes($model, Yii::$app->request->post());
+        $model->load(Yii::$app->request->post());
         $this->saveModel($model);
 
         if ($errors = $model->getErrors()) {
@@ -168,10 +171,15 @@ abstract class CrudApiController extends Controller
 
     /**
      * @param Model $model
+     * @throws
      */
     protected function saveModel($model)
     {
-        $model->save();
+        $permittedAttributes = $model->canUpdate(Yii::$app->user->model);
+
+        if ($permittedAttributes) {
+            $model->save($permittedAttributes);
+        }
     }
 
     /**
@@ -187,21 +195,6 @@ abstract class CrudApiController extends Controller
         $primaryKey = $modelClass::primaryKey()[0];
         $id = Yii::$app->request->get($modelClass::getRequestParamName());
         return $modelClass::findOrPanic([$primaryKey => $id]);
-    }
-
-    /**
-     * @param Model $model
-     * @param array $attributes
-     */
-    protected function loadAttributes($model, $attributes) {
-        $availableAttributes = array_filter($attributes,
-            function ($attributeName) use ($model) {
-                return $model->canUpdateAttribute(Yii::app()->user->model, $attributeName);
-            },
-            ARRAY_FILTER_USE_KEY
-        );
-
-        $model->load($availableAttributes, '');
     }
 
     /**

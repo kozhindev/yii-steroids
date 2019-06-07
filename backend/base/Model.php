@@ -247,14 +247,15 @@ class Model extends ActiveRecord
 
     /**
      * @param Model $user
-     * @return bool
+     * @return bool|array
      */
     public function canView($user)
     {
         if (\Yii::$app->has('authManager')) {
-            return \Yii::$app->authManager->checkModelAccess($user, $this, AuthManager::RULE_MODEL_VIEW);
+            return $this->getPermittedAttributes($user, AuthManager::RULE_MODEL_VIEW);
         }
-        return $this->canUpdate($user);
+
+        return true;
     }
 
     /**
@@ -271,13 +272,16 @@ class Model extends ActiveRecord
 
     /**
      * @param Model $user
-     * @return bool
+     * @return bool|array
      */
     public function canUpdate($user)
     {
         if (\Yii::$app->has('authManager')) {
-            return \Yii::$app->authManager->checkModelAccess($user, $this, AuthManager::RULE_MODEL_UPDATE) && $this->canUpdated();
+            return $this->canUpdated()
+                ? $this->getPermittedAttributes($user, AuthManager::RULE_MODEL_UPDATE)
+                : false;
         }
+
         return $this->canUpdated();
     }
 
@@ -341,6 +345,22 @@ class Model extends ActiveRecord
             );
         }
         return true;
+    }
+
+    /**
+     * @param Model $user
+     * @param string $rule
+     * @return array of attribute names
+     */
+    protected function getPermittedAttributes($user, $rule) {
+        $attributesNames = array_keys($this->attributes);
+        $permissionCheckMethod = 'can' . ucfirst($rule) . 'Attribute';
+
+        return array_filter($attributesNames,
+            function($attribute) use ($user, $permissionCheckMethod) {
+                return $this->$permissionCheckMethod($user, $attribute);
+            }
+        );
     }
 
     public function beforeSave($insert)
