@@ -10,7 +10,6 @@ use yii\helpers\ArrayHelper;
 
 class SearchModel extends FormModel
 {
-    const SCOPE_FIELDS_PERMISSIONS = 'fields_permissions';
     const SCOPE_PERMISSIONS = 'permissions';
     const SCOPE_MODEL = 'model';
 
@@ -145,28 +144,30 @@ class SearchModel extends FormModel
         return $this->meta;
     }
 
-    public function getItems($fields = null)
+    public function getItems($fields = null, $user = null)
     {
+        $user = $this->user ?: $user;
         $schema = $this->fieldsSchema();
-        if ($schema) {
-            return Model::anyToFrontend(
-                array_map(
-                    function ($model) use ($schema) {
-                        return $this->createSchema($schema, $model);
-                    },
-                    $this->dataProvider->models
-                )
-            );
-        }
-
         $fields = $fields ?: $this->fields();
-        return Model::anyToFrontend($this->dataProvider->models, $fields);
+
+        return array_map(
+            function ($model) use ($schema, $fields, $user) {
+                return
+                    ($schema
+                        ? $this->createSchema($schema, $model)
+                        : $model
+                    )->toFrontend($fields, $user);
+            },
+            $this->dataProvider->models
+        );
     }
 
-    public function toFrontend($fields = null)
+    public function toFrontend($fields = null, $user = null)
     {
-        $items = $this->getItems();
-        $user = $this->user ?: (\Yii::$app->has('user') ? \Yii::$app->user->identity : null);
+        $user = $this->user ?: $user ?:
+                (\Yii::$app->has('user') ? \Yii::$app->user->identity : null);
+
+        $items = $this->getItems($fields, $user);
 
         // Append whole model permissions
         if (in_array(self::SCOPE_PERMISSIONS, $this->scope) && $user) {
@@ -240,7 +241,7 @@ class SearchModel extends FormModel
     }
 
     /**
-     * @param BaseSchema $schema
+     * @param string $schema
      * @param Model $model
      * @return BaseSchema
      */

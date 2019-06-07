@@ -12,7 +12,6 @@ use yii\base\BaseObject;
 use yii\data\BaseDataProvider;
 use yii\web\Application;
 use yii\web\Controller;
-use yii\web\ForbiddenHttpException;
 use yii\web\Response;
 
 class AjaxResponseMiddleware extends BaseObject
@@ -23,13 +22,13 @@ class AjaxResponseMiddleware extends BaseObject
     public static function register($app)
     {
         if ($app instanceof Application) {
-            $app->on(Controller::EVENT_AFTER_ACTION, [static::className(), 'checkAjaxResponse']);
+            $app->on(Controller::EVENT_AFTER_ACTION, [static::class, 'checkAjaxResponse']);
         }
     }
 
     /**
      * @param ActionEvent $event
-     * @throws ForbiddenHttpException
+     * @throws
      */
     public static function checkAjaxResponse($event)
     {

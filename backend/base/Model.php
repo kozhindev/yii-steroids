@@ -372,5 +372,4 @@ class Model extends ActiveRecord
     {
         return parent::beforeDelete() && $this->canDeleted();
     }
-
 }
