@@ -235,16 +235,6 @@ abstract class CrudApiController extends Controller
         $modelClass = static::$modelClass;
         $attributes[] = $modelClass::primaryKey()[0];
 
-        // Append access flags
-        foreach (Crud::normalizeConfig(static::controls(), 'id') as $action) {
-            $method = 'can' . ucfirst($action['id']);
-            if (method_exists($modelClass, $method)) {
-                $attributes[$method] = function (Model $model) use ($method) {
-                    return $model->$method(Yii::$app->user->model);
-                };
-            }
-        }
-
         return $attributes;
     }
 
