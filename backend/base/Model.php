@@ -44,8 +44,9 @@ class Model extends ActiveRecord
 
         $result = [];
         foreach (static::$_cans as $can) {
-            $result[$can] = $this->$can($user);
+            $result[$can] = $this->$can($user) ?: false;
         }
+
         return $result;
     }
 
