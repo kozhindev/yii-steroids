@@ -58,6 +58,10 @@ class SteroidsFieldsController extends Controller
                 /** @type Enum $className */
                 $result[$name]['labels'] = $className::toFrontend();
             }
+            if (is_subclass_of($className, Model::class)) {
+                /** @type Model $className */
+                $result[$name]['labels'] = $className::asEnum();
+            }
         }
 
         return $result;
