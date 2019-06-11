@@ -167,9 +167,10 @@ trait MetaTrait
 
         if ($user && ($this instanceof BaseSchema || $this instanceof Model)) {
             $model = $this instanceof BaseSchema ? $this->model : $this;
+            $modelClass = get_class($model);
 
             $notPermittedFields = array_diff(
-                $model->attributes(),
+                array_keys($modelClass::meta()),
                 $model->canView($user)
             );
 

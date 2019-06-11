@@ -102,7 +102,7 @@ abstract class CrudApiController extends Controller
             throw new ForbiddenHttpException();
         }
 
-        $model->load(Yii::$app->request->post());
+        $model->load(Yii::$app->request->post(), '');
         $this->saveModel($model);
 
         if ($errors = $model->getErrors()) {
@@ -127,7 +127,7 @@ abstract class CrudApiController extends Controller
             throw new ForbiddenHttpException();
         }
 
-        $model->load(Yii::$app->request->post());
+        $model->load(Yii::$app->request->post(), '');
         $this->saveModel($model);
 
         if ($errors = $model->getErrors()) {
@@ -175,12 +175,17 @@ abstract class CrudApiController extends Controller
      */
     protected function saveModel($model)
     {
-        $permittedAttributes = $model->canUpdate(Yii::$app->user->model);
+        if ($model->isNewRecord) {
+            $permittedAttributes = $model->canCreate(Yii::$app->user->model);
+        } else {
+            $permittedAttributes = $model->canUpdate(Yii::$app->user->model);
+        }
 
         if ($permittedAttributes) {
             $model->save($permittedAttributes);
         }
     }
+
 
     /**
      * @return Model|null
