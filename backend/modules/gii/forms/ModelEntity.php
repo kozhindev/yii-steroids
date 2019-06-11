@@ -287,6 +287,21 @@ class ModelEntity extends ModelEntityMeta implements IEntity
     }
 
     /**
+     * @param Model $user
+     * @return array
+     */
+    public function getStaticPermissions($user) {
+        /** @var Model $model */
+        $model = new $this->className();
+
+        $permissions = [
+            'canCreate' => $model->canCreate($user)
+        ];
+
+        return $permissions;
+    }
+
+    /**
      * @param bool $locale
      * @param string $indent
      * @param array $import

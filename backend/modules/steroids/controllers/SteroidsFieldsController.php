@@ -84,6 +84,7 @@ class SteroidsFieldsController extends Controller
                 $result[$name]['fields'] = $entity->getJsFields(false);
                 $result[$name]['searchFields'] = $entity->getJsFields(true);
                 $result[$name]['formatters'] = $entity->getJsFormatters();
+                $result[$name]['permissions'] = $entity->getStaticPermissions(\Yii::$app->user->model);
                 $result = static::exportModels(GiiHelper::findClassNamesInMeta($result[$name]), $result);
                 $result = static::exportEnums(GiiHelper::findClassNamesInMeta($result[$name]), $result);
             }
