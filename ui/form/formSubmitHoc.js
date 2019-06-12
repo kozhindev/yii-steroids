@@ -52,6 +52,11 @@ export default () => WrappedComponent => class FormSubmitHoc extends React.PureC
             }
         });
 
+        // Event onBeforeSubmit
+        if (this.props.onBeforeSubmit && this.props.onBeforeSubmit(values) === false) {
+            return;
+        }
+
         if (this.props.onSubmit) {
             return this.props.onSubmit(values);
         }
@@ -59,6 +64,12 @@ export default () => WrappedComponent => class FormSubmitHoc extends React.PureC
         return http.send(this.props.actionMethod, this.props.action || location.pathname, values)
             .then(response => {
                 const data = response.data || {};
+
+                // Event onAfterSubmit
+                if (this.props.onAfterSubmit && this.props.onAfterSubmit(values, data, response) === false) {
+                    return;
+                }
+
                 if (data.security) {
                     return new Promise(resolve => {
                         this.props.dispatch(addSecurity(this.props.formId, {
@@ -75,7 +86,7 @@ export default () => WrappedComponent => class FormSubmitHoc extends React.PureC
                 }
                 if (!data.security) {
                     if (this.props.onComplete) {
-                        this.props.onComplete(values, data);
+                        this.props.onComplete(values, data, response);
                     }
                     if (this.props.autoSave) {
                         AutoSaveHelper.remove(this.props.formId);
