@@ -4,7 +4,6 @@ import PropTypes from 'prop-types';
 import _isFunction from 'lodash-es/isFunction';
 import _isObject from 'lodash-es/isObject';
 import _isString from 'lodash-es/isString';
-import _upperFirst from 'lodash-es/upperFirst';
 
 import {ui} from 'components';
 import formIdHoc from '../formIdHoc';
@@ -25,7 +24,7 @@ export const getFieldPropsFromModel = (model, attribute) => {
 
 @formIdHoc()
 @connect(
-    (state, props) => {{
+    (state, props) => {
         let model = props.model;
         if (_isString(model)) {
             model = getMeta(state, model) || null;
@@ -34,7 +33,7 @@ export const getFieldPropsFromModel = (model, attribute) => {
         return {
             model,
         };
-    }}
+    }
 )
 export default class Field extends React.Component {
 
@@ -70,11 +69,6 @@ export default class Field extends React.Component {
             ...getFieldPropsFromModel(this.props.model, this.props.attribute),
             ...props,
         };
-
-        // Auto label
-        if (props.label && props.label !== '' && props.label !== false) {
-            //props.label = _upperFirst(props.attribute);
-        }
 
         const component = props.component || 'InputField';
         const ComponentField = _isString(component) ? ui.getField('form.' + component) : component;

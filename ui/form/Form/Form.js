@@ -54,6 +54,7 @@ class Form extends React.PureComponent {
         layoutProps: PropTypes.object,
         size: PropTypes.oneOf(['sm', 'md', 'lg']),
         onSubmit: PropTypes.func,
+        onBeforeSubmit: PropTypes.func,
         onAfterSubmit: PropTypes.func,
         onChange: PropTypes.func,
         onComplete: PropTypes.func,

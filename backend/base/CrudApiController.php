@@ -102,7 +102,7 @@ abstract class CrudApiController extends Controller
             throw new ForbiddenHttpException();
         }
 
-        $model->load(Yii::$app->request->post());
+        $model->load(Yii::$app->request->post(), '');
         $this->saveModel($model);
 
         if ($errors = $model->getErrors()) {
@@ -127,7 +127,7 @@ abstract class CrudApiController extends Controller
             throw new ForbiddenHttpException();
         }
 
-        $model->load(Yii::$app->request->post());
+        $model->load(Yii::$app->request->post(), '');
         $this->saveModel($model);
 
         if ($errors = $model->getErrors()) {
@@ -177,12 +177,17 @@ abstract class CrudApiController extends Controller
      */
     protected function saveModel($model)
     {
-        $permittedAttributes = $model->canUpdate(Yii::$app->user->model);
+        if ($model->isNewRecord) {
+            $permittedAttributes = $model->canCreate(Yii::$app->user->model);
+        } else {
+            $permittedAttributes = $model->canUpdate(Yii::$app->user->model);
+        }
 
         if ($permittedAttributes) {
             $model->save($permittedAttributes);
         }
     }
+
 
     /**
      * @return Model|null
@@ -237,17 +242,24 @@ abstract class CrudApiController extends Controller
         $modelClass = static::$modelClass;
         $attributes[] = $modelClass::primaryKey()[0];
 
-        // Append access flags
-        foreach (Crud::normalizeConfig(static::controls(), 'id') as $action) {
-            $method = 'can' . ucfirst($action['id']);
-            if (method_exists($modelClass, $method)) {
-                $attributes[$method] = function (Model $model) use ($method) {
-                    return $model->$method(Yii::$app->user->model);
-                };
-            }
+        return $attributes;
+    }
+
+    public function afterAction($action, $result)
+    {
+        if (Yii::$app->request->get('scope') === SearchModel::SCOPE_PERMISSIONS
+            && ($result instanceof BaseSchema || $result instanceof Model)
+        ) {
+            $user = Yii::$app->user->model;
+            $model = $result instanceof BaseSchema ? $result->model : $result;
+
+            $result = array_merge(
+                $result->toFrontend(null, $user),
+                $model->getPermissions($user)
+            );
         }
 
-        return $attributes;
+        return parent::afterAction($action, $result);
     }
 
     public function afterAction($action, $result)

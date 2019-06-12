@@ -22,6 +22,34 @@ class Model extends ActiveRecord
     use RelationSaveTrait;
     use SecurityTrait;
 
+    protected static $_cans;
+
+    public function getPermissions($user) {
+
+        if (static::$_cans === null) {
+            static::$_cans = [];
+            $info = new \ReflectionClass(get_class($this));
+            foreach ($info->getMethods() as $method) {
+                $parameters = $method->getParameters();
+                if (count($parameters) === 0 || $parameters[0]->getName() !== 'user') {
+                    continue;
+                }
+
+                $name = $method->getName();
+                if (preg_match('/^can((?!Attribute)\w)*$/', $name)) {
+                    static::$_cans[] = $name;
+                }
+            }
+        }
+
+        $result = [];
+        foreach (static::$_cans as $can) {
+            $result[$can] = $this->$can($user) ?: false;
+        }
+
+        return $result;
+    }
+
     /**
      * @return string
      */
@@ -260,13 +288,14 @@ class Model extends ActiveRecord
 
     /**
      * @param Model $user
-     * @return bool
+     * @return bool|array
      */
     public function canCreate($user)
     {
         if (\Yii::$app->has('authManager')) {
-            return \Yii::$app->authManager->checkModelAccess($user, $this, AuthManager::RULE_MODEL_CREATE);
+            return $this->getPermittedAttributes($user, AuthManager::RULE_MODEL_CREATE);
         }
+
         return true;
     }
 
@@ -318,6 +347,23 @@ class Model extends ActiveRecord
      * @param string $attributeName
      * @return bool
      */
+    public function canCreateAttribute($user, $attributeName) {
+        if (\Yii::$app->has('authManager')) {
+            return \Yii::$app->authManager->checkAttributeAccess(
+                $user,
+                $this,
+                $attributeName,
+                AuthManager::RULE_MODEL_CREATE
+            );
+        }
+        return true;
+    }
+
+    /**
+     * @param Model $user
+     * @param string $attributeName
+     * @return bool
+     */
     public function canUpdateAttribute($user, $attributeName) {
         if (\Yii::$app->has('authManager')) {
             return \Yii::$app->authManager->checkAttributeAccess(
@@ -325,9 +371,9 @@ class Model extends ActiveRecord
                 $this,
                 $attributeName,
                 AuthManager::RULE_MODEL_UPDATE
-            ) && $this->canUpdated();
+            );
         }
-        return $this->canUpdated();
+        return true;
     }
 
     /**
@@ -355,11 +401,14 @@ class Model extends ActiveRecord
     protected function getPermittedAttributes($user, $rule) {
         $permissionCheckMethod = 'can' . ucfirst($rule) . 'Attribute';
 
-        return array_values(array_filter($this->attributes(),
-            function($attribute) use ($user, $permissionCheckMethod) {
-                return $this->$permissionCheckMethod($user, $attribute);
-            }
-        ));
+        return array_values(
+            array_filter(
+                array_keys(static::meta()),
+                function($attribute) use ($user, $permissionCheckMethod) {
+                    return $this->$permissionCheckMethod($user, $attribute);
+                }
+            )
+        );
     }
 
     public function beforeSave($insert)

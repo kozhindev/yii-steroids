@@ -163,19 +163,27 @@ trait MetaTrait
      */
     public function toFrontend($fields = null, $user = null)
     {
-        if ($user) {
-            $model = $this instanceof Model
-                ? $this
-                : $this->model;
+        $data = static::anyToFrontend($this, $fields);
 
-            $permittedFields = $model->canView($user);
+        if ($user && ($this instanceof BaseSchema || $this instanceof Model)) {
+            $model = $this instanceof BaseSchema ? $this->model : $this;
 
-            $fields = array_intersect(
-                $fields ?: $model->attributes(),
-                $permittedFields
+            /** @var Model $modelClass */
+            $modelClass = get_class($model);
+            $notPermittedFields = array_diff(
+                array_keys($modelClass::meta()),
+                $model->canView($user)
             );
+
+            if ($notPermittedFields) {
+                $data = array_filter($data,
+                    function($attribute) use ($notPermittedFields) {
+                        return !in_array($attribute, $notPermittedFields);
+                    },
+                    ARRAY_FILTER_USE_KEY
+                );
+            }
         }
 
-        return static::anyToFrontend($this, $fields);
-    }
+        return $data;
 }
