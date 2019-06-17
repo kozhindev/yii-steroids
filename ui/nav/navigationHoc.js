@@ -35,7 +35,7 @@ class NavigationHoc extends React.Component {
     }
 
     componentWillMount() {
-        const routesTree = routes || !_isArray(this.props.routes) ? this.props.routes : null;
+        const routesTree = routes || (!_isArray(this.props.routes) ? this.props.routes : null);
         if (routesTree) {
             store.dispatch(initRoutes(this._walkRoutesRecursive({id: 'root', ...routesTree})));
         }

@@ -40,7 +40,10 @@ class DataProviderHoc extends React.PureComponent {
                     PropTypes.string,
                     PropTypes.bool,
                 ]),
-                label: PropTypes.string,
+                label: PropTypes.oneOfType([
+                    PropTypes.string,
+                    PropTypes.any,
+                ]),
             })),
             PropTypes.string, // Enum from redux state
             PropTypes.func, // Enum

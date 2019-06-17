@@ -186,4 +186,5 @@ trait MetaTrait
         }
 
         return $data;
+    }
 }

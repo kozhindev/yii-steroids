@@ -2,6 +2,7 @@
 
 namespace steroids\modules\gii\forms;
 
+use BaconQrCode\Common\Mode;
 use steroids\base\Model;
 use steroids\base\SearchModel;
 use steroids\modules\gii\enums\ClassType;
@@ -290,15 +291,14 @@ class ModelEntity extends ModelEntityMeta implements IEntity
      * @param Model $user
      * @return array
      */
-    public function getStaticPermissions($user) {
-        /** @var Model $model */
-        $model = new $this->className();
-
-        $permissions = [
-            'canCreate' => $model->canCreate($user)
-        ];
-
-        return $permissions;
+    public function getStaticPermissions($user)
+    {
+        if (is_subclass_of($this->className, Model::class)) {
+            return [
+                'canCreate' => (new $this->className())->canCreate($user)
+            ];
+        }
+        return null;
     }
 
     /**

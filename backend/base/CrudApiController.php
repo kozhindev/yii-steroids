@@ -80,9 +80,9 @@ abstract class CrudApiController extends Controller
         ];
     }
 
-    public function columns()
+    public function fields()
     {
-        return [];
+        return null;
     }
 
     public function actionIndex()
@@ -212,75 +212,30 @@ abstract class CrudApiController extends Controller
         if (static::$searchModelClass) {
             $modelClass = static::$searchModelClass;
             return new $modelClass([
-                'fields' => $this->getListAttributes(),
+                'fields' => $this->fields(),
             ]);
         } else {
             return new SearchModel([
                 'model' => static::$modelClass,
-                'fields' => $this->getListAttributes(),
+                'fields' => $this->fields(),
             ]);
         }
     }
 
-    protected function getListAttributes()
+    public function afterAction($action, $result)
     {
-        $attributes = [];
-        foreach (Crud::normalizeConfig($this->columns()) as $column) {
-            if (isset($column['value']) && is_callable($column['value'])) {
-                $attributes[$column['attribute']] = $column['value'];
+        if ($result instanceof BaseSchema || $result instanceof Model) {
+            if (Yii::$app->request->get('scope') === SearchModel::SCOPE_PERMISSIONS) {
+                $user = Yii::$app->user->model;
+                $model = $result instanceof BaseSchema ? $result->model : $result;
+
+                $result = array_merge(
+                    $result->toFrontend($this->fields(), $user),
+                    $model->getPermissions($user)
+                );
             } else {
-                $attributes[] = $column['attribute'];
+                $result = $result->toFrontend($this->fields());
             }
-        }
-
-        if (empty($attributes)) {
-            $attributes = ['*'];
-        }
-
-        // Append primary key
-        /** @var Model $modelClass */
-        $modelClass = static::$modelClass;
-        $attributes[] = $modelClass::primaryKey()[0];
-
-        return $attributes;
-    }
-
-    public function afterAction($action, $result)
-    {
-        if (Yii::$app->request->get('scope') === SearchModel::SCOPE_PERMISSIONS
-            && ($result instanceof BaseSchema || $result instanceof Model)
-        ) {
-            $user = Yii::$app->user->model;
-            $model = $result instanceof BaseSchema ? $result->model : $result;
-
-            $result = array_merge(
-                $result->toFrontend(null, $user),
-                $model->getPermissions($user)
-            );
-        }
-
-        return parent::afterAction($action, $result);
-    }
-
-    public function afterAction($action, $result)
-    {
-        $resultIsSchema = ($result instanceof FormModel);
-
-        $user = Yii::$app->user->model;
-        $model = $resultIsSchema ? $result->model : $result;
-        $result = $result->toFrontend(null, $user);
-
-        // TODO we need to check scope here because permissions appending is different in Model and SearchModel
-        if ($model instanceof Model && Yii::$app->request->get('scope')) {
-            $result = array_merge(
-                $result,
-                [
-                    'canUpdate' => $model->canUpdate($user),
-                    'canCreate' => $model->canCreate($user),
-                    'canView'   => $model->canView($user),
-                    'canDelete' => $model->canDelete($user)
-                ]
-            );
         }
 
         return parent::afterAction($action, $result);

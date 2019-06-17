@@ -16,6 +16,7 @@ class RadioListField extends React.PureComponent {
         label: PropTypes.oneOfType([
             PropTypes.string,
             PropTypes.bool,
+            PropTypes.any,
         ]),
         hint: PropTypes.string,
         attribute: PropTypes.string,
@@ -37,7 +38,10 @@ class RadioListField extends React.PureComponent {
                 PropTypes.string,
                 PropTypes.bool,
             ]),
-            label: PropTypes.string,
+            label: PropTypes.oneOfType([
+                PropTypes.string,
+                PropTypes.any,
+            ]),
         })),
     };
 

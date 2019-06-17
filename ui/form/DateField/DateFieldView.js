@@ -28,6 +28,7 @@ export default class DateFieldView extends React.PureComponent {
                 <DayPickerInput
                     {...this.props.pickerProps}
                     inputProps={{
+                        ...(this.props.pickerProps && this.props.pickerProps.inputProps),
                         className: bem(
                             bem.block({
                                 size: this.props.size,
