@@ -167,21 +167,19 @@ trait MetaTrait
 
         if ($user && ($this instanceof BaseSchema || $this instanceof Model)) {
             $model = $this instanceof BaseSchema ? $this->model : $this;
-
-            /** @var Model $modelClass */
-            $modelClass = get_class($model);
-            $notPermittedFields = array_diff(
-                array_keys($modelClass::meta()),
-                $model->canView($user)
-            );
-
-            if ($notPermittedFields) {
-                $data = array_filter($data,
-                    function($attribute) use ($notPermittedFields) {
-                        return !in_array($attribute, $notPermittedFields);
-                    },
-                    ARRAY_FILTER_USE_KEY
-                );
+            $canView = $model->canView($user);
+            if (is_array($canView)) {
+                /** @var Model $modelClass */
+                $modelClass = get_class($model);
+                $notPermittedFields = array_diff(array_keys($modelClass::meta()), $canView);
+                if ($notPermittedFields) {
+                    $data = array_filter($data,
+                        function($attribute) use ($notPermittedFields) {
+                            return !in_array($attribute, $notPermittedFields);
+                        },
+                        ARRAY_FILTER_USE_KEY
+                    );
+                }
             }
         }
 

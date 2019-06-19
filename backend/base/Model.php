@@ -396,12 +396,12 @@ class Model extends ActiveRecord
     /**
      * @param Model $user
      * @param string $rule
-     * @return array of attribute names
+     * @return array|bool of attribute names
      */
     protected function getPermittedAttributes($user, $rule) {
         $permissionCheckMethod = 'can' . ucfirst($rule) . 'Attribute';
 
-        return array_values(
+        $attributes = array_values(
             array_filter(
                 array_keys(static::meta()),
                 function($attribute) use ($user, $permissionCheckMethod) {
@@ -409,6 +409,11 @@ class Model extends ActiveRecord
                 }
             )
         );
+
+        if (count($attributes) === 0 && \Yii::$app->authManager->checkModelAccess($user, $this, $rule)) {
+            return true;
+        }
+        return $attributes;
     }
 
     public function beforeSave($insert)
