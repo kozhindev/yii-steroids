@@ -164,9 +164,9 @@ trait MetaTrait
     public function toFrontend($fields = null, $user = null)
     {
         $data = static::anyToFrontend($this, $fields);
+        $model = $this instanceof BaseSchema ? $this->model : $this;
 
-        if ($user && ($this instanceof BaseSchema || $this instanceof Model)) {
-            $model = $this instanceof BaseSchema ? $this->model : $this;
+        if ($user && $model instanceof Model) {
             $canView = $model->canView($user);
             if (is_array($canView)) {
                 /** @var Model $modelClass */
