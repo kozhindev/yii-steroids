@@ -136,7 +136,7 @@ class DataProviderHoc extends React.PureComponent {
 
         // Check to auto fetch items first page
         if (this.props.autoFetch && this.props.dataProvider) {
-            this._searchDataProvider();
+            this._searchDataProvider('', true);
         }
 
         // Async load selected labels from backend
@@ -169,7 +169,7 @@ class DataProviderHoc extends React.PureComponent {
 
         // Check auto fetch on change autoFetch flag or data provider config
         if (nextProps.autoFetch && nextProps.dataProvider && (!this.props.autoFetch || this.props.dataProvider !== nextProps.dataProvider)) {
-            this._searchDataProvider();
+            this._searchDataProvider('', true);
         }
     }
 
@@ -250,7 +250,7 @@ class DataProviderHoc extends React.PureComponent {
             // Min length query logic
             if (query.length >= this.props.autoCompleteMinLength) {
                 // Search with delay
-                this._delayTimer = setTimeout(() => this._searchDataProvider(query), this.props.autoCompleteDelay);
+                this._delayTimer = setTimeout(() => this._searchDataProvider(query, true), this.props.autoCompleteDelay);
             }
         } else {
             // Client-side search on static items
@@ -344,8 +344,8 @@ class DataProviderHoc extends React.PureComponent {
      * @param {string} query
      * @private
      */
-    _searchDataProvider(query = '') {
-        if (query.length < this.props.autoCompleteMinLength) {
+    _searchDataProvider(query = '', isAutoFetch) {
+        if (!isAutoFetch && query.length < this.props.autoCompleteMinLength) {
             return;
         }
 
@@ -359,12 +359,13 @@ class DataProviderHoc extends React.PureComponent {
         });
 
         // Check is promise
+        const key = isAutoFetch ? 'sourceItems' : 'items';
         if (result && _isFunction(result.then)) {
             this.setState({isLoading: true});
-            result.then(items => {
+            result.then(items =>  {
                 this.setState({
                     isLoading: false,
-                    items: DataProviderHoc.normalizeItems(items),
+                    [key]: DataProviderHoc.normalizeItems(items),
                 });
             });
         }
@@ -372,7 +373,7 @@ class DataProviderHoc extends React.PureComponent {
         // Check is items list
         if (_isArray(result)) {
             this.setState({
-                items: DataProviderHoc.normalizeItems(result),
+                [key]: DataProviderHoc.normalizeItems(result),
             });
         }
     }
