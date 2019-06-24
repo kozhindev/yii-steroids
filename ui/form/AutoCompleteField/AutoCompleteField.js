@@ -147,9 +147,11 @@ class AutoCompleteField extends React.PureComponent {
     }
 
     _onBlur(e) {
-        if (this.props.isOpened) {
-            this.props.onClose();
-        }
+        setTimeout(() => {
+            if (this.props.isOpened) {
+                this.props.onClose();
+            }
+        }, 200);
         if (this.props.inputProps && this.props.inputProps.onBlur) {
             this.props.inputProps.onBlur(e);
         }
