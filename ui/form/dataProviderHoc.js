@@ -265,8 +265,8 @@ class DataProviderHoc extends React.PureComponent {
      * @param {string} query
      * @private
      */
-    _searchDataProvider(query = '') {
-        if (query.length < this.props.autoCompleteMinLength) {
+    _searchDataProvider(query = '', isAutoFetch) {
+        if (!isAutoFetch && query.length < this.props.autoCompleteMinLength) {
             return;
         }
 
@@ -280,12 +280,13 @@ class DataProviderHoc extends React.PureComponent {
         });
 
         // Check is promise
+        const key = isAutoFetch ? 'sourceItems' : 'items';
         if (result && _isFunction(result.then)) {
             this.setState({isLoading: true});
-            result.then(items => {
+            result.then(items =>  {
                 this.setState({
                     isLoading: false,
-                    items: DataProviderHoc.normalizeItems(items),
+                    [key]: DataProviderHoc.normalizeItems(items),
                 });
             });
         }
@@ -293,7 +294,7 @@ class DataProviderHoc extends React.PureComponent {
         // Check is items list
         if (_isArray(result)) {
             this.setState({
-                items: DataProviderHoc.normalizeItems(result),
+                [key]: DataProviderHoc.normalizeItems(result),
             });
         }
     }
