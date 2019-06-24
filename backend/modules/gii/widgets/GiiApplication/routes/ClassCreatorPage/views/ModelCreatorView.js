@@ -1,6 +1,10 @@
 import React from 'react';
+import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
-import {Form, Button, Field, DropDownField, FieldList} from 'yii-steroids/ui/form';
+import {getFormValues, change} from 'redux-form';
+import {Form, AutoCompleteField, Button, Field, DropDownField, FieldList} from 'yii-steroids/ui/form';
+import _get from 'lodash/get';
+import _some from 'lodash/some';
 
 import {html} from 'components';
 import RelationTypeMeta from '../../../../../enums/meta/RelationTypeMeta';
@@ -17,9 +21,15 @@ import './ModelCreatorView.scss';
 const bem = html.bem('ModelCreatorView');
 const FORM_ID = 'ModelCreatorView';
 
+@connect(
+    state => ({
+        formValues: getFormValues(FORM_ID)(state),
+    })
+)
 export default class ModelCreatorView extends React.PureComponent {
 
     static propTypes = {
+        moduleIds: PropTypes.arrayOf(PropTypes.string),
         entity: PropTypes.shape({
             moduleId: PropTypes.string,
             name: PropTypes.string,
@@ -37,6 +47,33 @@ export default class ModelCreatorView extends React.PureComponent {
         })),
         classType: PropTypes.string,
         onEntityComplete: PropTypes.func,
+        classes: PropTypes.shape({
+            model: PropTypes.arrayOf(PropTypes.shape({
+                moduleId: PropTypes.string,
+                name: PropTypes.string,
+                className: PropTypes.string,
+                tableName: PropTypes.string,
+            })),
+            form: PropTypes.arrayOf(PropTypes.shape({
+                moduleId: PropTypes.string,
+                name: PropTypes.string,
+                className: PropTypes.string,
+            })),
+            'enum': PropTypes.arrayOf(PropTypes.shape({
+                moduleId: PropTypes.string,
+                name: PropTypes.string,
+                className: PropTypes.string,
+            })),
+        }),
+        sampleAttributes: PropTypes.arrayOf(PropTypes.shape({
+            appType: PropTypes.string,
+            name: PropTypes.string,
+            defaultValue: PropTypes.string,
+            example: PropTypes.string,
+            hint: PropTypes.string,
+            label: PropTypes.string,
+        })),
+        formValues: PropTypes.object,
     };
 
     render() {
@@ -53,7 +90,11 @@ export default class ModelCreatorView extends React.PureComponent {
                 >
                     <div className='row'>
                         <div className='col-3'>
-                            <Field attribute='moduleId'/>
+                            <Field
+                                attribute='moduleId'
+                                items={this.props.moduleIds}
+                                component={AutoCompleteField}
+                            />
                         </div>
                         <div className='col-4'>
                             <Field attribute='name'/>
@@ -67,7 +108,11 @@ export default class ModelCreatorView extends React.PureComponent {
                     {this.props.classType === ClassTypeMeta.FORM && (
                         <div className='row'>
                             <div className='col-4'>
-                                <Field attribute='queryModel'/>
+                                <Field
+                                    attribute='queryModel'
+                                    component={AutoCompleteField}
+                                    items={this.props.classes.model.map(item => item.className)}
+                                />
                             </div>
                         </div>
                     )}
@@ -86,6 +131,17 @@ export default class ModelCreatorView extends React.PureComponent {
                                 placeholder: 'Attribute',
                                 className: bem.element('input-attribute'),
                                 firstLine: true,
+                                component: AutoCompleteField,
+                                items: this.props.sampleAttributes,
+                                onSelect: (item, params) => {
+                                    const hasFilled = _some(Object.keys(item.params), key => !!_get(this.props.formValues, params.prefix + '.' + key));
+                                    if (!hasFilled) {
+                                        this.props.dispatch(Object.keys(item.params).map(key => {
+                                            return change(FORM_ID, params.prefix + '.' + key, item.params[key]);
+                                        }));
+                                    }
+                                },
+
                             },
                             {
                                 attribute: 'label',
@@ -117,11 +173,8 @@ export default class ModelCreatorView extends React.PureComponent {
                                 attribute: 'appType',
                                 firstLine: true,
                                 className: bem.element('input-app-type'),
-                                component: DropDownField,
-                                items: this.props.appTypes && this.props.appTypes.map(appType => ({
-                                    id: appType.name,
-                                    label: appType.title,
-                                })),
+                                component: AutoCompleteField,
+                                items: (this.props.appTypes || []).map(item => item.name),
                             },
                             {
                                 attribute: 'isRequired',
@@ -163,6 +216,8 @@ export default class ModelCreatorView extends React.PureComponent {
                                 },
                                 {
                                     attribute: 'relationModel',
+                                    items: this.props.classes.model.map(item => item.className),
+                                    component: AutoCompleteField,
                                 },
                                 {
                                     attribute: 'relationKey',

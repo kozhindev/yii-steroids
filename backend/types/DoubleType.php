@@ -3,6 +3,7 @@
 namespace steroids\types;
 
 use steroids\base\Model;
+use steroids\modules\gii\forms\ModelAttributeEntity;
 use yii\db\Schema;
 use yii\helpers\ArrayHelper;
 
@@ -26,11 +27,13 @@ class DoubleType extends IntegerType
     }
 
     /**
-     * @inheritdoc
+     * @param ModelAttributeEntity $attributeEntity
+     * @return string
      */
     public function giiDbType($attributeEntity)
     {
-        return Schema::TYPE_DOUBLE;
+        $scale = ArrayHelper::getValue($attributeEntity->customProperties, self::OPTION_SCALE) ?: 2;
+        return (string)\Yii::$app->db->schema->createColumnSchemaBuilder(Schema::TYPE_DECIMAL, [19, $scale]);
     }
 
     /**

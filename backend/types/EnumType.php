@@ -152,14 +152,9 @@ class EnumType extends Type
         return [
             [
                 'attribute' => self::OPTION_CLASS_NAME,
-                'component' => 'DropDownField',
+                'component' => 'AutoCompleteField',
                 'label' => 'Enum Class',
-                'items' => array_map(function (EnumEntity $enumEntity) {
-                    return [
-                        'id' => $enumEntity->getClassName(),
-                        'label' => $enumEntity->getClassName(),
-                    ];
-                }, EnumEntity::findAll()),
+                'items' => ArrayHelper::getColumn(EnumEntity::findAll(), 'className'),
             ]
         ];
     }

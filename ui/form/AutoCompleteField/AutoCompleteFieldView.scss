@@ -1,0 +1,146 @@
+@import '~bootstrap/scss/_functions.scss';
+@import '~bootstrap/scss/_variables.scss';
+
+.AutoCompleteFieldView {
+  position: relative;
+
+  font-size: 1rem;
+  &_size_sm {
+    font-size: 0.875rem;
+  }
+  &_size_lg {
+    font-size: 1.25rem;
+  }
+
+  &__selected-items {
+    padding: 0.375rem 1.75rem 0.375rem 0.75rem;
+    min-width: 100px;
+    height: 38px;
+    cursor: pointer;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+    line-height: 1.5;
+    color: $gray-700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      right: 10px;
+      transform: translateY(-50%);
+      display: inline-block;
+      width: 0;
+      height: 0;
+      border-top: 0.3em solid;
+      border-right: 0.3em solid transparent;
+      border-bottom: 0;
+      border-left: 0.3em solid transparent;
+    }
+
+    &_reset {
+      padding-right: 3rem;
+    }
+
+    &_is-invalid {
+      border-color: $danger;
+    }
+  }
+  &_size_sm &__selected-items {
+    padding: 0.25rem 0.5rem;
+    line-height: 1.5;
+    border-radius: 0.2rem;
+    height: 31px;
+  }
+  &_size_lg &__selected-items {
+    padding: 0.5rem 1rem;
+    line-height: 1.5;
+    border-radius: 0.3rem;
+    height: 48px;
+  }
+
+  &__reset {
+    display: block;
+    position: absolute;
+    top: 0;
+    right: 20px;
+    width: 30px;
+    height: 100%;
+    cursor: pointer;
+
+    &::before,
+    &::after
+    {
+      display: block;
+      position: absolute;
+      top: 50%;
+      margin-top: -5px;
+      left: 50%;
+      width: 1px;
+      height: 10px;
+      background-color: $gray-700;
+      content: '';
+    }
+
+    &::before {
+      transform: rotate(45deg);
+    }
+
+    &::after {
+      transform: rotate(-45deg);
+    }
+  }
+
+  &__drop-down {
+    position: absolute;
+    top: calc(100% + 3px);
+    left: 0;
+    padding: 0.375rem 0;
+    width: 100%;
+    z-index: $zindex-dropdown;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+    box-shadow: 0 6px 12px rgba(0,0,0,.175);
+    line-height: 1.5;
+    color: #495057;
+  }
+
+  &__drop-down-list {
+    max-height: 273px;
+    overflow: auto;
+  }
+
+  &__search {
+    padding: 0.3rem 0.6rem;
+
+    > .form-control {
+      width: 100%;
+    }
+  }
+
+  &__drop-down-item {
+    padding: 0.375rem 0.75rem;
+    cursor: pointer;
+
+    &_hover {
+      background-color: $gray-100;
+    }
+
+    &_select {
+      background-color: $primary;
+      color: #fff;
+    }
+  }
+  &_size_sm &__drop-down-item {
+    padding: 0.25rem 0.5rem;
+  }
+  &_size_lg &__drop-down-item {
+    padding: 0.5rem 1rem;
+  }
+}

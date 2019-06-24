@@ -3,13 +3,14 @@ import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 import {change} from 'redux-form';
 import _remove from 'lodash-es/remove';
-import _filter from 'lodash-es/filter';
 import _isString from 'lodash-es/isString';
 import _isArray from 'lodash-es/isArray';
 import _isFunction from 'lodash-es/isFunction';
 import _isObject from 'lodash-es/isObject';
 import _includes from 'lodash-es/includes';
 import _uniqBy from 'lodash-es/uniqBy';
+import _isInteger from 'lodash-es/isInteger';
+import _orderBy from 'lodash-es/orderBy';
 
 import {http, store} from 'components';
 import {getEnumLabels} from '../../reducers/fields';
@@ -34,17 +35,21 @@ class DataProviderHoc extends React.PureComponent {
         ...WrappedComponent.propTypes,
         multiple: PropTypes.bool,
         items: PropTypes.oneOfType([
-            PropTypes.arrayOf(PropTypes.shape({
-                id: PropTypes.oneOfType([
-                    PropTypes.number,
-                    PropTypes.string,
-                    PropTypes.bool,
-                ]),
-                label: PropTypes.oneOfType([
-                    PropTypes.string,
-                    PropTypes.any,
-                ]),
-            })),
+            PropTypes.arrayOf(PropTypes.oneOfType([
+                PropTypes.string,
+                PropTypes.number,
+                PropTypes.shape({
+                    id: PropTypes.oneOfType([
+                        PropTypes.number,
+                        PropTypes.string,
+                        PropTypes.bool,
+                    ]),
+                    label: PropTypes.oneOfType([
+                        PropTypes.string,
+                        PropTypes.any,
+                    ]),
+                })
+            ])),
             PropTypes.string, // Enum from redux state
             PropTypes.func, // Enum
         ]),
@@ -58,6 +63,7 @@ class DataProviderHoc extends React.PureComponent {
         autoCompleteDelay: PropTypes.number,
         autoFetch: PropTypes.bool,
         selectFirst: PropTypes.bool,
+        onSelect: PropTypes.func,
     };
 
     static defaultProps = {
@@ -74,7 +80,15 @@ class DataProviderHoc extends React.PureComponent {
     static normalizeItems(items) {
         // Array
         if (_isArray(items)) {
-            return items;
+            return items.map(item => {
+                if (_isString(item) || _isInteger(item)) {
+                    return {
+                        id: item,
+                        label: item,
+                    };
+                }
+                return item;
+            });
         }
 
         // Enum
@@ -204,6 +218,7 @@ class DataProviderHoc extends React.PureComponent {
         this.setState({
             isOpened: !this.state.isOpened,
             items: this.state.sourceItems,
+            hoveredItem: null,
         });
     }
 
@@ -249,18 +264,79 @@ class DataProviderHoc extends React.PureComponent {
      * @private
      */
     _searchClientSide(query) {
-        query = query.toLowerCase();
+        if (!query) {
+            this.setState({
+                items: this.state.sourceItems,
+            });
+            return;
+        }
 
-        this.setState({
-            items: query
-                ? _uniqBy(
-                    []
-                        .concat(_filter(this.state.sourceItems, item => (item.label || '').toLowerCase().indexOf(query) === 0))
-                        .concat(_filter(this.state.sourceItems, item => (item.label || '').toLowerCase().indexOf(query) > 0)),
-                    'id'
-                )
-                : this.state.sourceItems,
+        const toWords = str => (str.match(/^[^A-ZА-Я]+/) || []).concat(str.match(/[A-ZА-Я][^A-ZА-Я]*/g) || []);
+        const queryCharacters = query.split('');
+
+        // Match
+        let items = this.state.sourceItems.filter(item => {
+            const id = item.id;
+            const words = toWords(item.label || '');
+            if (words.length === 0 || !id) {
+                return false;
+            }
+
+            let word = null;
+            let highlighted = [['', false]];
+            let index = 0;
+            let wordIndex = 0;
+            let wordChar = null;
+            let wordCharIndex = 0;
+            while(true) {
+                const char = queryCharacters[index];
+                if (!char) {
+                    highlighted.push([word.substr(wordCharIndex) + words.slice(wordIndex + 1).join(''), false]);
+                    break;
+                }
+
+                word = words[wordIndex];
+                wordChar = word && word.split('')[wordCharIndex] || '';
+                if (!word) {
+                    highlighted = [];
+                    break;
+                }
+
+                const isMatch = !char.match(/[A-ZА-Я]/)
+                    ? wordChar.toLowerCase() === char.toLowerCase()
+                    : wordChar === char;
+
+                if (isMatch) {
+                    index++;
+                    wordCharIndex++;
+                    highlighted[highlighted.length - 1][0] += wordChar;
+                    highlighted[highlighted.length - 1][1] = true;
+                } else {
+                    highlighted.push([word.substr(wordCharIndex), false]);
+                    highlighted.push(['', false]);
+
+                    wordIndex++;
+                    wordCharIndex = 0;
+                }
+            }
+            highlighted = highlighted.filter(item => !!item[0]);
+            if (highlighted.findIndex(item => item[1]) !== -1) {
+                item.labelHighlighted = highlighted;
+                return true;
+            }
+
+            return false;
         });
+
+        items = _orderBy(items, item => {
+            // Fined first word is priority
+            if (item.labelHighlighted) {
+                return item.labelHighlighted.findIndex(i => i[1]);
+            }
+            return Infinity;
+        }, 'asc');
+
+        this.setState({items});
     }
 
     /**
@@ -327,8 +403,17 @@ class DataProviderHoc extends React.PureComponent {
                 store.dispatch(change(this.props.formId, this.props.input.name, values));
             }
         } else {
-            this.props.input.onChange(this.props.input.value !== id || skipToggle ? id : null);
+            if (this.props.input.value !== id) {
+                this.props.input.onChange(id);
+            }
             this._onClose();
+        }
+
+        if (this.props.onSelect) {
+            this.props.onSelect(item, {
+                prefix: this.props.prefix,
+                name: this.props.input.name,
+            });
         }
     }
 
@@ -372,6 +457,9 @@ class DataProviderHoc extends React.PureComponent {
                     if (this.state.hoveredItem) {
                         // Select hovered
                         this._onItemClick(this.state.hoveredItem, true);
+                    } else if (this.state.selectedItems.length > 0) {
+                        // Select first selected
+                        this._onItemClick(this.state.selectedItems[0], true);
                     } else if (this.state.items.length > 0) {
                         // Select first result
                         this._onItemClick(this.state.items[0], true);
