@@ -9,7 +9,7 @@ import _isObject from 'lodash-es/isObject';
 
 import {store} from 'components';
 import {registerRoutes} from '../../../actions/routing';
-import navigationHoc from 'yii-steroids/ui/nav/navigationHoc';
+import navigationHoc from '../navigationHoc';
 
 export default
 @navigationHoc()
