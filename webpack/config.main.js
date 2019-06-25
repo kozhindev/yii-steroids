@@ -59,7 +59,7 @@ module.exports = (config, entry) => {
                                     //'transform-export-extensions',
                                     ['@babel/plugin-proposal-decorators', {legacy: true}],
                                     '@babel/plugin-proposal-class-properties',
-                                    utils.isProduction() && '@babel/plugin-transform-runtime',
+                                    '@babel/plugin-transform-runtime',
                                     !utils.isProduction() && 'react-hot-loader/babel',
                                 ].filter(Boolean),
                                 presets: [
