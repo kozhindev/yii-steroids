@@ -18,6 +18,16 @@ import formSubmitHoc from '../formSubmitHoc';
 
 let valuesSelector = null;
 let invalidSelector = null;
+const filterValues = (values = {}) => {
+    let obj = {...values};
+    Object.keys(values).forEach(key => {
+        if (!values[key]) {
+            delete values[key];
+        }
+    });
+
+    return obj;
+};
 
 export default
 @connect(
@@ -158,7 +168,7 @@ class Form extends React.PureComponent {
                 AutoSaveHelper.save(this.props.formId, nextProps.formValues);
             }
             if (this.props.syncWithAddressBar) {
-                SyncAddressBarHelper.save(nextProps.formValues, nextProps.useHash);
+                SyncAddressBarHelper.save(filterValues(nextProps.formValues), nextProps.useHash);
             }
         }
     }
