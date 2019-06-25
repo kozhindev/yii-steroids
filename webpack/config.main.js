@@ -85,13 +85,6 @@ module.exports = (config, entry) => {
                     },
                     exclude: /node_modules(\/|\\+)(?!yii-steroids)/,
                 },
-                json: {
-                    test: /\.json$/,
-                    use: {
-                        cache: utils.isProduction() && 'cache-loader',
-                        json: 'json-loader'
-                    },
-                },
                 less: {
                     test: /\.less$/,
                     use: [
@@ -136,7 +129,7 @@ module.exports = (config, entry) => {
             },
         },
         resolve: {
-            extensions: ['.js', '.jsx'],
+            extensions: ['.js', '.jsx', '.json'],
             alias: {
                 app: path.resolve(config.cwd, 'app'),
                 actions: `${config.sourcePath}/actions`,
