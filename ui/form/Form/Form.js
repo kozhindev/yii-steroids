@@ -143,7 +143,7 @@ class Form extends React.PureComponent {
                 this.props.initialValues || {},
                 queryString.parse(this.props.locationSearch)
             );
-            SyncAddressBarHelper.restore(this.props.formId, query);
+            SyncAddressBarHelper.restore(this.props.formId, query, true);
         }
     }
 

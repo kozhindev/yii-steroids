@@ -17,10 +17,7 @@ export default class SyncAddressBarHelper {
             ...initialValues,
             ...queryString.parse(location.hash),
         };
-        if (forceRestore) {
-            return store.dispatch(initialize(formId, newValues));
-        }
-        if (!_isEqual(initialValues, newValues)) {
+        if (forceRestore || !_isEqual(initialValues, newValues)) {
             store.dispatch(initialize(formId, newValues));
         }
     }
