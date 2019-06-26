@@ -32,8 +32,8 @@ const filterValues = (values = {}) => {
 export default
 @connect(
     (state, props) => {
-        valuesSelector = valuesSelector || getFormValues(props.formId);
-        invalidSelector = invalidSelector || isInvalid(props.formId);
+        valuesSelector = getFormValues(props.formId);
+        invalidSelector = isInvalid(props.formId);
 
         return {
             form: props.formId,
@@ -143,7 +143,7 @@ class Form extends React.PureComponent {
                 this.props.initialValues || {},
                 queryString.parse(this.props.locationSearch)
             );
-            SyncAddressBarHelper.restore(this.props.formId, query);
+            SyncAddressBarHelper.restore(this.props.formId, query, true);
         }
     }
 
