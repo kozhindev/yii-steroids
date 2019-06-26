@@ -84,13 +84,6 @@ module.exports = (config, entry) => {
                     },
                     exclude: /node_modules(\/|\\+)(?!yii-steroids)/,
                 },
-                json: {
-                    test: /\.json$/,
-                    use: {
-                        cache: utils.isProduction() && 'cache-loader',
-                        json: 'json-loader'
-                    },
-                },
                 less: {
                     test: /\.less$/,
                     use: [
