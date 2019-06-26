@@ -6,6 +6,7 @@ import {reduxForm, getFormValues, isInvalid} from 'redux-form';
 import _isEqual from 'lodash-es/isEqual';
 import _isString from 'lodash-es/isString';
 import _get from 'lodash-es/get';
+import queryString from 'query-string';
 
 import {ui} from 'components';
 import AutoSaveHelper from './AutoSaveHelper';
@@ -17,12 +18,22 @@ import formSubmitHoc from '../formSubmitHoc';
 
 let valuesSelector = null;
 let invalidSelector = null;
+const filterValues = (values = {}) => {
+    let obj = {...values};
+    Object.keys(values).forEach(key => {
+        if (!values[key]) {
+            delete values[key];
+        }
+    });
+
+    return obj;
+};
 
 export default
 @connect(
     (state, props) => {
-        valuesSelector = valuesSelector || getFormValues(props.formId);
-        invalidSelector = invalidSelector || isInvalid(props.formId);
+        valuesSelector = getFormValues(props.formId);
+        invalidSelector = isInvalid(props.formId);
 
         return {
             form: props.formId,
@@ -30,6 +41,7 @@ export default
             security: getSecurity(state, props.formId),
             isInvalid: invalidSelector(state),
             formRegisteredFields: _get(state, `form.${props.formId}.registeredFields`),
+            locationSearch: _get(state, 'routing.location.search', ''),
         };
     }
 )
@@ -87,6 +99,7 @@ class Form extends React.PureComponent {
             ]),
         }),
         autoFocus: PropTypes.bool,
+        locationSearch: PropTypes.string,
     };
 
     static childContextTypes = {
@@ -126,7 +139,11 @@ class Form extends React.PureComponent {
 
         // Restore values from address bar
         if (this.props.syncWithAddressBar) {
-            SyncAddressBarHelper.restore(this.props.formId, this.props.initialValues);
+            const query = Object.assign(
+                this.props.initialValues || {},
+                queryString.parse(this.props.locationSearch)
+            );
+            SyncAddressBarHelper.restore(this.props.formId, query, true);
         }
     }
 
@@ -151,7 +168,7 @@ class Form extends React.PureComponent {
                 AutoSaveHelper.save(this.props.formId, nextProps.formValues);
             }
             if (this.props.syncWithAddressBar) {
-                SyncAddressBarHelper.save(nextProps.formValues, nextProps.useHash);
+                SyncAddressBarHelper.save(filterValues(nextProps.formValues), nextProps.useHash);
             }
         }
     }

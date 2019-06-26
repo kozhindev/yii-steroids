@@ -12,12 +12,12 @@ import {getCurrentRoute} from '../../../reducers/routing';
 
 export default class SyncAddressBarHelper {
 
-    static restore(formId, initialValues) {
+    static restore(formId, initialValues, forceRestore = false) {
         const newValues = {
             ...initialValues,
             ...queryString.parse(location.hash),
         };
-        if (!_isEqual(initialValues, newValues)) {
+        if (forceRestore || !_isEqual(initialValues, newValues)) {
             store.dispatch(initialize(formId, newValues));
         }
     }

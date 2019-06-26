@@ -199,7 +199,7 @@ export default
             const nextQuery = getQuery(nextProps);
             if (!_isEqual(prevQuery, nextQuery) || (!this.props.list && nextProps.list)) {
                 this.props.dispatch(lazyFetch(this.props.listId, {
-                    page: this.props.defaultPage,
+                    page: Number(_get(nextQuery, 'page', this.props.defaultPage)),
                     query: nextQuery,
                 }));
             }
@@ -290,6 +290,11 @@ export default
                     {...this.props}
                     {...this.props.paginationProps}
                     view={_isFunction(this.props.paginationSizeView) ? this.props.paginationSizeView : undefined}
+                    syncWithAddressBar={Boolean(
+                        this.props.searchForm
+                        && this.props.searchForm.fields
+                        && this.props.searchForm.syncWithAddressBar
+                    )}
                 />
             );
         }
