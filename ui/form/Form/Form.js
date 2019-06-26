@@ -32,8 +32,8 @@ const filterValues = (values = {}) => {
 export default
 @connect(
     (state, props) => {
-        valuesSelector = valuesSelector || getFormValues(props.formId);
-        invalidSelector = invalidSelector || isInvalid(props.formId);
+        valuesSelector = getFormValues(props.formId);
+        invalidSelector = isInvalid(props.formId);
 
         return {
             form: props.formId,
