@@ -89,9 +89,11 @@ class FormEntity extends ModelEntity implements IEntity
                 \Yii::$app->session->addFlash('success', 'Added form ' . $this->name);
             }
 
-            GiiHelper::renderFile('form/meta_js', $this->getMetaJsPath(), [
-                'formEntity' => $this,
-            ]);
+            if (GiiModule::getInstance()->generateJsMeta) {
+                GiiHelper::renderFile('form/meta_js', $this->getMetaJsPath(), [
+                    'formEntity' => $this,
+                ]);
+            }
 
             return true;
         }
