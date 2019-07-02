@@ -2,7 +2,7 @@ import React from 'react';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 import {getFormValues, change} from 'redux-form';
-import {Form, AutoCompleteField, Button, Field, DropDownField, FieldList} from 'yii-steroids/ui/form';
+import {Form, AutoCompleteField, Button, Field, DropDownField, FieldList} from '../../../../../../../../ui/form';
 import _get from 'lodash/get';
 import _some from 'lodash/some';
 
@@ -111,7 +111,7 @@ export default class ModelCreatorView extends React.PureComponent {
                                 <Field
                                     attribute='queryModel'
                                     component={AutoCompleteField}
-                                    items={this.props.classes.model.map(item => item.className)}
+                                    items={_get(this.props, 'classes.model', []).map(item => item.className)}
                                 />
                             </div>
                         </div>
@@ -216,7 +216,7 @@ export default class ModelCreatorView extends React.PureComponent {
                                 },
                                 {
                                     attribute: 'relationModel',
-                                    items: this.props.classes.model.map(item => item.className),
+                                    items: _get(this.props, 'classes.model', []).map(item => item.className),
                                     component: AutoCompleteField,
                                 },
                                 {

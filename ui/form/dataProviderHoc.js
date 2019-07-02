@@ -169,7 +169,7 @@ class DataProviderHoc extends React.PureComponent {
 
         // Check auto fetch on change autoFetch flag or data provider config
         if (nextProps.autoFetch && nextProps.dataProvider && (!this.props.autoFetch || this.props.dataProvider !== nextProps.dataProvider)) {
-            this._searchDataProvider('', true);
+            this._searchDataProvider('');
         }
     }
 
@@ -250,7 +250,7 @@ class DataProviderHoc extends React.PureComponent {
             // Min length query logic
             if (query.length >= this.props.autoCompleteMinLength) {
                 // Search with delay
-                this._delayTimer = setTimeout(() => this._searchDataProvider(query, true), this.props.autoCompleteDelay);
+                this._delayTimer = setTimeout(() => this._searchDataProvider(query), this.props.autoCompleteDelay);
             }
         } else {
             // Client-side search on static items

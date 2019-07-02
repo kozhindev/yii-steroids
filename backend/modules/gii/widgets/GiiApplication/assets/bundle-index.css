@@ -1,0 +1,600 @@
+.AutoCompleteFieldView {
+  position: relative;
+  font-size: 1rem; }
+  .AutoCompleteFieldView_size_sm {
+    font-size: 0.875rem; }
+  .AutoCompleteFieldView_size_lg {
+    font-size: 1.25rem; }
+  .AutoCompleteFieldView__selected-items {
+    padding: 0.375rem 1.75rem 0.375rem 0.75rem;
+    min-width: 100px;
+    height: 38px;
+    cursor: pointer;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+    line-height: 1.5;
+    color: #495057;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; }
+    .AutoCompleteFieldView__selected-items::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      right: 10px;
+      transform: translateY(-50%);
+      display: inline-block;
+      width: 0;
+      height: 0;
+      border-top: 0.3em solid;
+      border-right: 0.3em solid transparent;
+      border-bottom: 0;
+      border-left: 0.3em solid transparent; }
+    .AutoCompleteFieldView__selected-items_reset {
+      padding-right: 3rem; }
+    .AutoCompleteFieldView__selected-items_is-invalid {
+      border-color: #dc3545; }
+  .AutoCompleteFieldView_size_sm .AutoCompleteFieldView__selected-items {
+    padding: 0.25rem 0.5rem;
+    line-height: 1.5;
+    border-radius: 0.2rem;
+    height: 31px; }
+  .AutoCompleteFieldView_size_lg .AutoCompleteFieldView__selected-items {
+    padding: 0.5rem 1rem;
+    line-height: 1.5;
+    border-radius: 0.3rem;
+    height: 48px; }
+  .AutoCompleteFieldView__reset {
+    display: block;
+    position: absolute;
+    top: 0;
+    right: 20px;
+    width: 30px;
+    height: 100%;
+    cursor: pointer; }
+    .AutoCompleteFieldView__reset::before, .AutoCompleteFieldView__reset::after {
+      display: block;
+      position: absolute;
+      top: 50%;
+      margin-top: -5px;
+      left: 50%;
+      width: 1px;
+      height: 10px;
+      background-color: #495057;
+      content: ''; }
+    .AutoCompleteFieldView__reset::before {
+      transform: rotate(45deg); }
+    .AutoCompleteFieldView__reset::after {
+      transform: rotate(-45deg); }
+  .AutoCompleteFieldView__drop-down {
+    position: absolute;
+    top: calc(100% + 3px);
+    left: 0;
+    padding: 0.375rem 0;
+    width: 100%;
+    z-index: 1000;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
+    line-height: 1.5;
+    color: #495057; }
+  .AutoCompleteFieldView__drop-down-list {
+    max-height: 273px;
+    overflow: auto; }
+  .AutoCompleteFieldView__search {
+    padding: 0.3rem 0.6rem; }
+    .AutoCompleteFieldView__search > .form-control {
+      width: 100%; }
+  .AutoCompleteFieldView__drop-down-item {
+    padding: 0.375rem 0.75rem;
+    cursor: pointer; }
+    .AutoCompleteFieldView__drop-down-item_hover {
+      background-color: #f8f9fa; }
+    .AutoCompleteFieldView__drop-down-item_select {
+      background-color: #007bff;
+      color: #fff; }
+  .AutoCompleteFieldView_size_sm .AutoCompleteFieldView__drop-down-item {
+    padding: 0.25rem 0.5rem; }
+  .AutoCompleteFieldView_size_lg .AutoCompleteFieldView__drop-down-item {
+    padding: 0.5rem 1rem; }
+
+.ButtonView {
+  position: relative; }
+  .ButtonView__icon {
+    margin-right: 3px; }
+    .ButtonView__icon_without-label {
+      margin: 0; }
+  .ButtonView_is-loading .ButtonView__label {
+    opacity: 0; }
+  .ButtonView__preloader {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); }
+
+.CheckboxFieldView {
+  display: inline-block; }
+  .CheckboxFieldView__label-text_required:after {
+    display: inline-block;
+    content: '*';
+    color: #dc3545;
+    margin: 0 0 0 3px; }
+
+/* DayPicker styles */
+
+.DayPicker {
+  display: inline-block;
+  font-size: 1rem;
+}
+
+.DayPicker-wrapper {
+  position: relative;
+
+  flex-direction: row;
+  padding-bottom: 1em;
+
+  -webkit-user-select: none;
+
+     -moz-user-select: none;
+
+      -ms-user-select: none;
+
+          user-select: none;
+}
+
+.DayPicker-Months {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.DayPicker-Month {
+  display: table;
+  margin: 0 1em;
+  margin-top: 1em;
+  border-spacing: 0;
+  border-collapse: collapse;
+
+  -webkit-user-select: none;
+
+     -moz-user-select: none;
+
+      -ms-user-select: none;
+
+          user-select: none;
+}
+
+.DayPicker-NavBar {
+}
+
+.DayPicker-NavButton {
+  position: absolute;
+  top: 1em;
+  right: 1.5em;
+  left: auto;
+
+  display: inline-block;
+  margin-top: 2px;
+  width: 1.25em;
+  height: 1.25em;
+  background-position: center;
+  background-size: 50%;
+  background-repeat: no-repeat;
+  color: #8B9898;
+  cursor: pointer;
+}
+
+.DayPicker-NavButton:hover {
+  opacity: 0.8;
+}
+
+.DayPicker-NavButton--prev {
+  margin-right: 1.5em;
+  background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAwCAYAAAB5R9gVAAAABGdBTUEAALGPC/xhBQAAAVVJREFUWAnN2G0KgjAYwPHpGfRkaZeqvgQaK+hY3SUHrk1YzNLay/OiEFp92I+/Mp2F2Mh2lLISWnflFjzH263RQjzMZ19wgs73ez0o1WmtW+dgA01VxrE3p6l2GLsnBy1VYQOtVSEH/atCCgqpQgKKqYIOiq2CBkqtggLKqQIKgqgCBjpJ2Y5CdJ+zrT9A7HHSTA1dxUdHgzCqJIEwq0SDsKsEg6iqBIEoq/wEcVRZBXFV+QJxV5mBtlDFB5VjYTaGZ2sf4R9PM7U9ZU+lLuaetPP/5Die3ToO1+u+MKtHs06qODB2zBnI/jBd4MPQm1VkY79Tb18gB+C62FdBFsZR6yeIo1YQiLJWMIiqVjQIu1YSCLNWFgijVjYIuhYYCKoWKAiiFgoopxYaKLUWOii2FgkophYp6F3r42W5A9s9OcgNvva8xQaysKXlFytoqdYmQH6tF3toSUo0INq9AAAAAElFTkSuQmCC');
+}
+
+.DayPicker-NavButton--next {
+  background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAwCAYAAAB5R9gVAAAABGdBTUEAALGPC/xhBQAAAXRJREFUWAnN119ugjAcwPHWzJ1gnmxzB/BBE0n24m4xfNkTaOL7wOtsl3AXMMb+Vjaa1BG00N8fSEibPpAP3xAKKs2yjzTPH9RAjhEo9WzPr/Vm8zgE0+gXATAxxuxtqeJ9t5tIwv5AtQAApsfT6TPdbp+kUBcgVwvO51KqVhMkXKsVJFXrOkigVhCIs1Y4iKlWZxB1rX4gwlpRIIpa8SDkWmggrFq4IIRaJKCYWnSgnrXIQV1r8YD+1Vrn+bReagysIFfLABRt31v8oBu1xEBttfRbltmfjgEcWh9snUS2kNdBK6WN1vrOWxObWsz+fjxevsxmB1GQDfINWiev83nhaoiB/CoOU438oPrhXS0WpQ9xc1ZQWxWHqUYe0I0qrKCQKjygDlXIQV2r0IF6ViEBxVTBBSFUQQNhVYkHIVeJAtkNsbQ7c1LtzP6FsObhb2rCKv7NBIGoq4SDmKoEgTirXAcJVGkFSVVpgoSrXICGUMUH/QBZNSUy5XWUhwAAAABJRU5ErkJggg==');
+}
+
+.DayPicker-NavButton--interactionDisabled {
+  display: none;
+}
+
+.DayPicker-Caption {
+  display: table-caption;
+  margin-bottom: 0.5em;
+  padding: 0 0.5em;
+  text-align: left;
+}
+
+.DayPicker-Caption > div {
+  font-weight: 500;
+  font-size: 1.15em;
+}
+
+.DayPicker-Weekdays {
+  display: table-header-group;
+  margin-top: 1em;
+}
+
+.DayPicker-WeekdaysRow {
+  display: table-row;
+}
+
+.DayPicker-Weekday {
+  display: table-cell;
+  padding: 0.5em;
+  color: #8B9898;
+  text-align: center;
+  font-size: 0.875em;
+}
+
+.DayPicker-Weekday abbr[title] {
+  border-bottom: none;
+  text-decoration: none;
+}
+
+.DayPicker-Body {
+  display: table-row-group;
+}
+
+.DayPicker-Week {
+  display: table-row;
+}
+
+.DayPicker-Day {
+  display: table-cell;
+  padding: 0.5em;
+  border-radius: 50%;
+  vertical-align: middle;
+  text-align: center;
+  cursor: pointer;
+}
+
+.DayPicker-WeekNumber {
+  display: table-cell;
+  padding: 0.5em;
+  min-width: 1em;
+  border-right: 1px solid #EAECEC;
+  color: #8B9898;
+  vertical-align: middle;
+  text-align: right;
+  font-size: 0.75em;
+  cursor: pointer;
+}
+
+.DayPicker--interactionDisabled .DayPicker-Day {
+  cursor: default;
+}
+
+.DayPicker-Footer {
+  padding-top: 0.5em;
+}
+
+.DayPicker-TodayButton {
+  border: none;
+  background-color: transparent;
+  background-image: none;
+  box-shadow: none;
+  color: #4A90E2;
+  font-size: 0.875em;
+  cursor: pointer;
+}
+
+/* Default modifiers */
+
+.DayPicker-Day--today {
+  color: #D0021B;
+  font-weight: 700;
+}
+
+.DayPicker-Day--outside {
+  color: #8B9898;
+  cursor: default;
+}
+
+.DayPicker-Day--disabled {
+  color: #DCE0E0;
+  cursor: default;
+  /* background-color: #eff1f1; */
+}
+
+/* Example modifiers */
+
+.DayPicker-Day--sunday {
+  background-color: #F7F8F8;
+}
+
+.DayPicker-Day--sunday:not(.DayPicker-Day--today) {
+  color: #DCE0E0;
+}
+
+.DayPicker-Day--selected:not(.DayPicker-Day--disabled):not(.DayPicker-Day--outside) {
+  position: relative;
+
+  background-color: #4A90E2;
+  color: #F0F8FF;
+}
+
+.DayPicker-Day--selected:not(.DayPicker-Day--disabled):not(.DayPicker-Day--outside):hover {
+  background-color: #51A0FA;
+}
+
+.DayPicker:not(.DayPicker--interactionDisabled)
+  .DayPicker-Day:not(.DayPicker-Day--disabled):not(.DayPicker-Day--selected):not(.DayPicker-Day--outside):hover {
+  background-color: #F0F8FF;
+}
+
+/* DayPickerInput */
+
+.DayPickerInput {
+  display: inline-block;
+}
+
+.DayPickerInput-OverlayWrapper {
+  position: relative;
+}
+
+.DayPickerInput-Overlay {
+  position: absolute;
+  left: 0;
+  z-index: 1;
+
+  background: white;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+}
+
+.DayPickerInput {
+  display: block; }
+
+.DayPickerInput-Overlay {
+  top: 5px; }
+
+.DayPickerInput-OverlayWrapper {
+  z-index: 999; }
+
+.DateTimeFieldView {
+  display: flex; }
+  .DateTimeFieldView__date {
+    width: 100%;
+    margin: 0 5px 0 0; }
+  .DateTimeFieldView__time {
+    width: 100%; }
+
+.DropDownFieldView {
+  position: relative;
+  font-size: 1rem; }
+  .DropDownFieldView_size_sm {
+    font-size: 0.875rem; }
+  .DropDownFieldView_size_lg {
+    font-size: 1.25rem; }
+  .DropDownFieldView__selected-items {
+    padding: 0.375rem 1.75rem 0.375rem 0.75rem;
+    min-width: 100px;
+    height: 38px;
+    cursor: pointer;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+    line-height: 1.5;
+    color: #495057;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; }
+    .DropDownFieldView__selected-items::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      right: 10px;
+      transform: translateY(-50%);
+      display: inline-block;
+      width: 0;
+      height: 0;
+      border-top: 0.3em solid;
+      border-right: 0.3em solid transparent;
+      border-bottom: 0;
+      border-left: 0.3em solid transparent; }
+    .DropDownFieldView__selected-items_reset {
+      padding-right: 3rem; }
+    .DropDownFieldView__selected-items_is-invalid {
+      border-color: #dc3545; }
+  .DropDownFieldView_size_sm .DropDownFieldView__selected-items {
+    padding: 0.25rem 0.5rem;
+    line-height: 1.5;
+    border-radius: 0.2rem;
+    height: 31px; }
+  .DropDownFieldView_size_lg .DropDownFieldView__selected-items {
+    padding: 0.5rem 1rem;
+    line-height: 1.5;
+    border-radius: 0.3rem;
+    height: 48px; }
+  .DropDownFieldView__reset {
+    display: block;
+    position: absolute;
+    top: 0;
+    right: 20px;
+    width: 30px;
+    height: 100%;
+    cursor: pointer; }
+    .DropDownFieldView__reset::before, .DropDownFieldView__reset::after {
+      display: block;
+      position: absolute;
+      top: 50%;
+      margin-top: -5px;
+      left: 50%;
+      width: 1px;
+      height: 10px;
+      background-color: #495057;
+      content: ''; }
+    .DropDownFieldView__reset::before {
+      transform: rotate(45deg); }
+    .DropDownFieldView__reset::after {
+      transform: rotate(-45deg); }
+  .DropDownFieldView__drop-down {
+    position: absolute;
+    top: calc(100% + 3px);
+    left: 0;
+    padding: 0.375rem 0;
+    width: 100%;
+    z-index: 1000;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
+    line-height: 1.5;
+    color: #495057; }
+  .DropDownFieldView__drop-down-list {
+    max-height: 273px;
+    overflow: auto; }
+  .DropDownFieldView__search {
+    padding: 0.3rem 0.6rem; }
+    .DropDownFieldView__search > .form-control {
+      width: 100%; }
+  .DropDownFieldView__drop-down-item {
+    padding: 0.375rem 0.75rem;
+    cursor: pointer; }
+    .DropDownFieldView__drop-down-item_hover {
+      background-color: #f8f9fa; }
+    .DropDownFieldView__drop-down-item_select {
+      background-color: #007bff;
+      color: #fff; }
+  .DropDownFieldView_size_sm .DropDownFieldView__drop-down-item {
+    padding: 0.25rem 0.5rem; }
+  .DropDownFieldView_size_lg .DropDownFieldView__drop-down-item {
+    padding: 0.5rem 1rem; }
+
+.FieldLayoutView__label_required:after {
+  display: inline-block;
+  content: '*';
+  color: #dc3545;
+  margin: 0 0 0 3px; }
+
+.FieldLayoutView__invalid-feedback {
+  display: block !important; }
+
+.FieldLayoutView__hint {
+  width: 100%;
+  margin-top: .25rem;
+  font-size: 80%; }
+
+
+.PasswordFieldView__input-container {
+  position: relative; }
+
+.PasswordFieldView__icon-eye {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  right: 10px;
+  color: #ced4da;
+  cursor: pointer; }
+  .PasswordFieldView__icon-eye:hover {
+    color: #adb5bd; }
+
+.PasswordFieldView__security-bar {
+  margin: 10px 0 0;
+  height: 4px;
+  width: 0;
+  border-radius: 3px;
+  transition: width 1s; }
+  .PasswordFieldView__security-bar_danger {
+    width: 33%;
+    background-color: #dc3545; }
+  .PasswordFieldView__security-bar_warning {
+    width: 66%;
+    background-color: #ffc107; }
+  .PasswordFieldView__security-bar_success {
+    width: 100%;
+    background-color: #28a745; }
+
+
+.PaginationButtonView {
+  justify-content: center; }
+
+.PaginationSizeView {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end; }
+  .PaginationSizeView__label {
+    margin-right: 5px; }
+  .PaginationSizeView__sizes {
+    margin-bottom: 0; }
+
+.ModalView__modal {
+  position: absolute;
+  top: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+  outline: none;
+  border: 1px solid rgba(0, 0, 0, 0.2); }
+
+.ModalView__overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  transition: opacity 300ms ease-in-out; }
+
+.ModalView__inner {
+  width: 500px;
+  min-height: 350px;
+  background: #fff; }
+
+.ModalView__header {
+  font-size: 20px;
+  color: #333;
+  display: flex;
+  justify-content: space-between;
+  padding: 15px;
+  border-bottom: 1px solid #e9ecef;
+  position: relative; }
+
+.ModalView__close {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: block;
+  width: 50px;
+  height: 50px; }
+  .ModalView__close:hover::before, .ModalView__close:hover::after {
+    background-color: #333; }
+  .ModalView__close::before, .ModalView__close::after {
+    content: '';
+    display: block;
+    position: absolute;
+    top: 50%;
+    margin-top: -8px;
+    left: 50%;
+    width: 1px;
+    height: 16px;
+    background-color: #888; }
+  .ModalView__close::before {
+    transform: rotate(45deg); }
+  .ModalView__close::after {
+    transform: rotate(-45deg); }
+
+.ModalView__content {
+  padding: 15px; }
+
+.ReactModal__Overlay--after-open {
+  opacity: 1; }
+
+.ReactModal__Overlay--before-close {
+  opacity: 0; }
+
+.NavButtonView__nav-item:not(:last-child) {
+  margin-right: 5px; }
+
+.NavLinkView__nav-item:not(:last-child) {
+  margin-right: 10px; }
+

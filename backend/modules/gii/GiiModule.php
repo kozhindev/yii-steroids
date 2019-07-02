@@ -28,6 +28,8 @@ class GiiModule extends Module
      */
     public $allowedIPs = ['127.0.0.1', '::1'];
 
+    public $generateJsMeta = true;
+
     public $showSteroidsEntries = false;
 
     public static function siteMap()

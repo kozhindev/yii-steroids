@@ -108,9 +108,11 @@ class ModelEntity extends ModelEntityMeta implements IEntity
                 \Yii::$app->session->addFlash('success', 'Added model ' . $this->name);
             }
 
-            GiiHelper::renderFile('model/meta_js', $this->getMetaJsPath(), [
-                'modelEntity' => $this,
-            ]);
+            if (GiiModule::getInstance()->generateJsMeta) {
+                GiiHelper::renderFile('model/meta_js', $this->getMetaJsPath(), [
+                    'modelEntity' => $this,
+                ]);
+            }
 
             // Create migration
             $migrationMethods = new MigrationMethods([

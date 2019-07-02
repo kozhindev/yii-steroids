@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Nav, Router} from 'yii-steroids/ui/nav';
+import {Nav, Router} from '../../../../../../../ui/nav';
 
 import {html} from 'components';
 import AccessRulesEditor from './views/AccessRulesEditor';

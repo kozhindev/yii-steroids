@@ -4,6 +4,7 @@ import {Provider} from 'react-redux';
 import domready from 'domready';
 import loadJs from 'load-js';
 import _trimStart from 'lodash-es/trimStart';
+import _values from 'lodash-es/values';
 
 export default class WidgetComponent {
 
@@ -19,7 +20,7 @@ export default class WidgetComponent {
                 async: true,
             }));
             loadJs(scripts).then(() => domready(() => {
-                this.toRender.forEach(args => this.render.apply(this, args));
+                this.toRender.forEach(args => this.render.apply(this, _values(args)));
             }));
         });
     }

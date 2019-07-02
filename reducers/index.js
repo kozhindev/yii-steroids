@@ -25,6 +25,15 @@ export {
 };
 
 export default asyncReducers => combineReducers({
-    ...module.exports,
+    form,
+    auth,
+    fields,
+    list,
+    config,
+    notifications,
+    modal,
+    routing,
+    navigation,
+    screen,
     ...asyncReducers,
 });
