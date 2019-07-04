@@ -174,11 +174,19 @@ export default
         }
 
         componentWillMount() {
+            const query = queryString.parse(this.props.locationSearch);
+            let newValues = {};
+            Object.keys(query).forEach(key => {
+                if (/^(\d+|\d*\.\d+)$/.test(query[key])) {
+                    return newValues[key] = parseFloat(query[key]);
+                }
+                return newValues[key] = query[key];
+            });
             // Restore values from address bar
             if (this.props.searchForm && this.props.searchForm.syncWithAddressBar) {
                 SyncAddressBarHelper.restore(getFormId(this.props), {
                     ...this.props.searchForm.initialValues,
-                    ...queryString.parse(this.props.locationSearch),
+                    ...newValues,
                 }, true);
             }
         }
