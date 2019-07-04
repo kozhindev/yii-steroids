@@ -143,7 +143,7 @@ class Button extends React.PureComponent {
             e.stopPropagation();
             return;
         }
-        if (this.props.to) {
+        if (this.props.to || this.props.to === '') {
             this._onLinkClick(e, this.props.to);
         }
 
