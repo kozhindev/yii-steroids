@@ -10,6 +10,7 @@ import _isFunction from 'lodash-es/isFunction';
 import _isArray from 'lodash-es/isArray';
 import _isEmpty from 'lodash-es/isEmpty';
 import _mergeWith from 'lodash-es/mergeWith';
+import queryString from 'query-string';
 
 import {init, lazyFetch, fetch, setSort, destroy} from '../../actions/list';
 import {getList} from '../../reducers/list';
@@ -18,6 +19,7 @@ import Pagination from './Pagination';
 import PaginationSize from './PaginationSize';
 import Form from '../form/Form';
 import {getMeta} from '../../reducers/fields';
+import SyncAddressBarHelper from '../../ui/form/Form/SyncAddressBarHelper';
 
 let formValuesSelectors = {};
 export const getFormId = props => _get(props, 'searchForm.formId', props.listId);
@@ -59,6 +61,7 @@ export default
             searchForm,
             list,
             formValues: formId && formValuesSelectors[formId](state) || null,
+            locationSearch: _get(state, 'routing.location.search', ''),
         };
     }
 )
@@ -168,6 +171,16 @@ export default
 
             this._onFetch = this._onFetch.bind(this);
             this._onSort = this._onSort.bind(this);
+        }
+
+        componentWillMount() {
+            // Restore values from address bar
+            if (this.props.searchForm && this.props.searchForm.syncWithAddressBar) {
+                SyncAddressBarHelper.restore(getFormId(this.props), {
+                    ...this.props.searchForm.initialValues,
+                    ...queryString.parse(this.props.locationSearch),
+                }, true);
+            }
         }
 
         componentDidMount() {
