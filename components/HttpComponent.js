@@ -9,7 +9,7 @@ import _isObject from 'lodash-es/isObject';
 export default class HttpComponent {
 
     constructor() {
-        this.apiUrl = '//' + location.host;
+        this.apiUrl = location.protocol + '//' + location.host;
         this.accessTokenKey = 'accessToken';
 
         this._lazyRequests = {};
@@ -92,6 +92,16 @@ export default class HttpComponent {
             this._axios = axios.create(this.getAxiosConfig());
         }
         return this._axios;
+    }
+
+    getUrl(method) {
+        if (method === null) {
+            method = location.pathname;
+        }
+        if (method.indexOf('://') === -1) {
+            method = `${_trimEnd(this.apiUrl, '/')}/${_trimStart(method, '/')}`;
+        }
+        return method;
     }
 
     get(url, params = {}, options = {}) {
@@ -198,16 +208,9 @@ export default class HttpComponent {
     }
 
     _send(method, config, options) {
-        if (method === null) {
-            method = location.pathname;
-        }
-        if (method.indexOf('://') === -1) {
-            method = `${_trimEnd(this.apiUrl, '/')}/${_trimStart(method, '/')}`;
-        }
-
         const axiosConfig = {
             ...config,
-            url: method,
+            url: this.getUrl(method),
         };
 
         if (options.cancelToken) {

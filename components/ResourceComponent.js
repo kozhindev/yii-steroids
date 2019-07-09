@@ -22,14 +22,14 @@ export default class ResourceComponent {
             return Promise.resolve(window.google.maps);
         }
 
-        return this._loadScript(
+        return this.loadScript(
             ResourceComponent.RESOURCE_GOOGLE_MAP_API,
             {
                 libraries: 'places',
                 key: this.googleApiKey,
                 language: locale.language,
             },
-            () => new Promise(resolve => resolve(window.google.maps))
+            () => window.google.maps
         );
     }
 
@@ -40,7 +40,7 @@ export default class ResourceComponent {
             return new Promise(resolve => window.ymaps.ready(() => resolve(window.ymaps)));
         }
 
-        return this._loadScript(
+        return this.loadScript(
             ResourceComponent.RESOURCE_YANDEX_MAP_API,
             {
                 lang: locale.language,
@@ -51,10 +51,10 @@ export default class ResourceComponent {
 
     loadTwitterWidget() {
         if (window.twttr) {
-            return new Promise(resolve => resolve(window.twttr));
+            return Promise.resolve(window.twttr);
         }
 
-        return this._loadScript(
+        return this.loadScript(
             ResourceComponent.RESOURCE_TWITTER_WIDGET,
             {},
             () => new Promise(resolve => window.twttr.ready(() => resolve(window.twttr)))
@@ -63,18 +63,18 @@ export default class ResourceComponent {
 
     loadGeetest() {
         if (window.initGeetest) {
-            return new Promise(resolve => resolve(window.initGeetest));
+            return Promise.resolve(window.initGeetest);
         }
-        return this._loadScript(
+        return this.loadScript(
             ResourceComponent.RESOURCE_GEETEST_API + '?_t=' + (new Date()).getTime(),
             {},
-            () => new Promise(resolve => resolve(window.initGeetest))
+            () => window.initGeetest
         );
     }
 
-    _loadScript(url, params, firstResolver) {
+    loadScript(url, params, firstResolver) {
         if (this._callbacks[url] === true) {
-            return Promise.resolve();
+            return Promise.resolve(firstResolver());
         }
 
         if (_isArray(this._callbacks[url])) {
@@ -90,21 +90,38 @@ export default class ResourceComponent {
             let script = document.createElement('script');
             script.async = true;
             script.onload = () => {
-                firstResolver()
-                    .then(result => {
-                        // Resolve current
-                        resolve(result);
+                setTimeout(() => {
+                    Promise.resolve(firstResolver())
+                        .then(result => {
+                            // Resolve current
+                            resolve(result);
 
-                        // Resolve queue promises after current
-                        const callbacks = this._callbacks[url];
-                        this._callbacks[url] = true;
-                        callbacks.forEach(callback => callback(result));
-                    })
-                    .catch(reject);
+                            // Resolve queue promises after current
+                            const callbacks = this._callbacks[url];
+                            this._callbacks[url] = true;
+                            callbacks.forEach(callback => callback(result));
+                        })
+                        .catch(reject);
+                });
             };
             script.src = url + (params ? '?' + queryString.stringify(params) : '');
             document.body.appendChild(script);
         });
+    }
+
+    wait(condition, timeout = 5000) {
+        const start = Date.now();
+        const checker = (resolve, reject) => {
+            const result = condition();
+            if (result) {
+                resolve(result);
+            } else if (start + timeout > Date.now()) {
+                reject();
+            } else {
+                setTimeout(() => checker(resolve, reject), 500);
+            }
+        };
+        return new Promise(checker);
     }
 
 }
