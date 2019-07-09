@@ -136,6 +136,15 @@ class Form extends React.PureComponent {
         if (this.props.autoSave) {
             AutoSaveHelper.restore(this.props.formId, this.props.initialValues);
         }
+
+        // Restore values from address bar
+        if (this.props.syncWithAddressBar) {
+            const query = Object.assign(
+                this.props.initialValues || {},
+                queryString.parse(this.props.locationSearch)
+            );
+            SyncAddressBarHelper.restore(this.props.formId, query, true);
+        }
     }
 
     componentDidMount() {
