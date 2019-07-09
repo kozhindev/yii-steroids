@@ -138,11 +138,10 @@ class Button extends React.PureComponent {
     }
 
     _onClick(e) {
+        e.preventDefault();
         e.stopPropagation();
 
         if (this.props.confirm && !confirm(this.props.confirm)) {
-            e.preventDefault();
-            e.stopPropagation();
             return;
         }
         if (this.props.to || this.props.to === '') {
