@@ -8,6 +8,7 @@ use steroids\modules\file\models\ImageMeta;
 use steroids\modules\file\processors\ImageFitWithCrop;
 use steroids\modules\file\processors\ImageResize;
 use steroids\modules\file\uploaders\BaseUploader;
+use Yii;
 use yii\helpers\ArrayHelper;
 
 class FileModule extends Module
@@ -223,6 +224,8 @@ class FileModule extends Module
                 'fileMimeType' => $item['type'],
                 'fileSize' => $item['bytesTotal'],
             ]);
+            $file->md5=md5_file($file->getPath());
+            $file->userId=Yii::$app->user->identity ? Yii::$app->user->identity->getId() : null;
 
             if ($source === self::SOURCE_AMAZONE_S3) {
                 $file->sourceType = FileModule::SOURCE_AMAZONE_S3;
