@@ -26,6 +26,9 @@ use yii\helpers\Url;
  * @property-read string $url
  * @property-read string $downloadUrl
  * @property-read string $downloadName
+ *
+ * @property string $md5
+ * @property integer $userId
  */
 class File extends Model
 {
@@ -134,6 +137,8 @@ class File extends Model
             'url',
             'downloadUrl',
             'images',
+            'md5',
+            'userId'
         ];
     }
 
@@ -155,6 +160,8 @@ class File extends Model
             ['fileName', 'string'],
             ['fileSize', 'integer'],
             ['fileMimeType', 'default', 'value' => 'text/plain'],
+            ['md5', 'string', 'max' => 255],
+            ['userId', 'number']
         ];
     }
 
