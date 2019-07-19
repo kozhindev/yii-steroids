@@ -224,8 +224,14 @@ class FileModule extends Module
                 'fileMimeType' => $item['type'],
                 'fileSize' => $item['bytesTotal'],
             ]);
-            $file->md5=md5_file($file->getPath());
-            $file->userId=Yii::$app->user->identity ? Yii::$app->user->identity->getId() : null;
+
+            if (is_readable($file->getPath())) {
+                $file->md5 = md5_file($file->getPath());
+            }
+
+            if (Yii::$app->user->identity) {
+                $file->userId = Yii::$app->user->identity->getId();
+            }
 
             if ($source === self::SOURCE_AMAZONE_S3) {
                 $file->sourceType = FileModule::SOURCE_AMAZONE_S3;

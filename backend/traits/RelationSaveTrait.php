@@ -291,18 +291,24 @@ trait RelationSaveTrait
                     $relatedAttribute => array_values(array_diff($prevIds, $nextIds)),
                 ])->execute();
             }
+
             // Insert
-            static::getDb()
-                ->createCommand()
-                ->batchInsert(
-                    $table,
-                    [$ownAttribute, $relatedAttribute],
-                    array_map(function ($id) {
-                        return [$this->primaryKey, $id];
-                    }, array_values(array_diff($nextIds, $prevIds)))
-                )
-                ->execute();
+            $this->insertRelationsByIds($table, $ownAttribute, $relatedAttribute, $nextIds, $prevIds);
         }
+    }
+
+    protected function insertRelationsByIds($table, $ownAttribute, $relatedAttribute, $nextIds, $prevIds)
+    {
+        static::getDb()
+            ->createCommand()
+            ->batchInsert(
+                $table,
+                [$ownAttribute, $relatedAttribute],
+                array_map(function ($id) {
+                    return [$this->primaryKey, $id];
+                }, array_values(array_diff($nextIds, $prevIds)))
+            )
+            ->execute();
     }
 
     protected function saveRelationDataBeforeSelf()
