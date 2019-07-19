@@ -1,6 +1,6 @@
 <?php
 
-namespace app\article\migrations;
+namespace steroids\modules\file\migrations;
 
 use steroids\base\Migration;
 
