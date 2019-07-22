@@ -91,7 +91,7 @@ module.exports = (config) => {
         .filter(Boolean);
 
     return storybookConfig => {
-        const finalConfig = mergeConfigs(storybookConfig, webpackConfig);
+        const finalConfig = mergeConfigs(storybookConfig.config, webpackConfig);
 
         // No exclude yii-steroids package - it's es6 code
         finalConfig.module.rules[0].exclude = /node_modules(\/|\\+)(?!yii-steroids)/;

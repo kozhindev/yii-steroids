@@ -5,7 +5,7 @@ import _merge from 'lodash-es/merge';
 
 import {http} from 'components';
 import {setMeta} from './fields';
-import {goToPage} from 'yii-steroids/actions/navigation';
+import {goToPage} from './navigation';
 
 export const AUTH_INIT_USER = 'AUTH_INIT_USER';
 export const AUTH_SET_DATA = 'AUTH_SET_DATA';
