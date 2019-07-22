@@ -2,21 +2,17 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import _get from 'lodash-es/get';
-import _upperFirst from 'lodash-es/upperFirst';
 import _isFunction from 'lodash-es/isFunction';
-import _isObject from 'lodash-es/isObject';
-import _merge from 'lodash-es/merge';
 import {getCurrentItem} from 'yii-steroids/reducers/navigation';
 
-import * as components from 'components';
-import {store} from 'components';
-import {getUser} from '../reducers/auth';
-import {setUser} from '../actions/auth';
-import {setMeta} from '../actions/fields';
+import {getData, getUser, isInitialized} from '../reducers/auth';
+import {init} from '../actions/auth';
 
 const stateMap = state => ({
     page: getCurrentItem(state),
     user: getUser(state),
+    data: getData(state),
+    isInitialized: isInitialized(state),
 });
 
 export const STATUS_LOADING = 'loading';
@@ -44,6 +40,7 @@ export default (initAction) => WrappedComponent => @connect(stateMap)
         user: PropTypes.shape({
             role: PropTypes.string,
         }),
+        data: PropTypes.object,
     };
 
     static getDerivedStateFromError(e) {
@@ -56,50 +53,15 @@ export default (initAction) => WrappedComponent => @connect(stateMap)
         super(...arguments);
 
         this.state = {
-            isLoading: true,
             renderError: null,
             httpError: null,
-            data: null,
         };
     }
 
     componentWillMount() {
         // Callback for load initial page data (return promise)
         if (_isFunction(initAction)) {
-            initAction(this.props)
-                .then(data => {
-                    // Configure components
-                    if (_isObject(data.config)) {
-                        Object.keys(data.config).map(name => {
-                            if (components[name]) {
-                                Object.keys(data.config[name]).map(key => {
-                                    const value = data.config[name][key];
-                                    const setter = 'set' + _upperFirst(key);
-                                    if (_isFunction(components[name][setter])) {
-                                        components[name][setter](value);
-                                    } else if (_isObject(components[name][key]) && _isObject(value)) {
-                                        _merge(components[name][key], value);
-                                    } else {
-                                        components[name][key] = value;
-                                    }
-                                });
-                            }
-                        });
-                    }
-
-                    store.dispatch([
-                        // User auth
-                        setUser(data.user),
-
-                        // Meta models & enums
-                        data.meta && setMeta(data.meta),
-                    ].filter(Boolean));
-
-                    this.setState({
-                        isLoading: false,
-                        data,
-                    });
-                })
+            this.props.dispatch(init(initAction))
                 .catch(e => {
                     this.setState({
                         httpError: e,
@@ -107,16 +69,12 @@ export default (initAction) => WrappedComponent => @connect(stateMap)
 
                     throw e;
                 })
-        } else {
-            this.setState({
-                isLoading: false,
-            });
         }
     }
 
     render() {
         let status = STATUS_OK;
-        if (this.state.isLoading) {
+        if (!this.props.isInitialized) {
             status = STATUS_LOADING;
         } else if (this.state.renderError) {
             status = STATUS_RENDER_ERROR;
@@ -140,7 +98,7 @@ export default (initAction) => WrappedComponent => @connect(stateMap)
         return (
             <WrappedComponent
                 {...this.props}
-                {...this.state.data}
+                {...this.props.data}
                 status={status}
             />
         );
