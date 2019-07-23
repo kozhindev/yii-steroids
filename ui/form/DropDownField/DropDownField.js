@@ -65,6 +65,7 @@ class DropDownField extends React.PureComponent {
         autoCompleteMinLength: PropTypes.number,
         autoCompleteDelay: PropTypes.number,
         isOpened: PropTypes.bool,
+        isLoading: PropTypes.bool,
         onOpen: PropTypes.func,
         onClose: PropTypes.func,
         onSearch: PropTypes.func,
@@ -111,6 +112,7 @@ class DropDownField extends React.PureComponent {
                 }))}
                 selectedItems={this.props.selectedItems}
                 isOpened={this.props.isOpened}
+                isLoading={this.props.isLoading}
                 showReset={this.props.showReset}
                 onOpen={this.props.onOpen}
                 onReset={this._onReset}
