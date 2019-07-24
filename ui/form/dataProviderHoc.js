@@ -353,7 +353,6 @@ class DataProviderHoc extends React.PureComponent {
             return;
         }
 
-
         const searchHandler = this.props.dataProvider.onSearch || http.post;
         const result = searchHandler(this.props.dataProvider.action, {
             query,
@@ -363,21 +362,24 @@ class DataProviderHoc extends React.PureComponent {
         });
 
         // Check is promise
-        const key = isAutoFetch ? 'sourceItems' : 'items';
         if (result && _isFunction(result.then)) {
             this.setState({isLoading: true});
             result.then(items =>  {
+                items = DataProviderHoc.normalizeItems(items);
                 this.setState({
                     isLoading: false,
-                    [key]: DataProviderHoc.normalizeItems(items),
+                    items,
+                    sourceItems: isAutoFetch ? items : this.state.sourceItems,
                 });
             });
         }
 
         // Check is items list
         if (_isArray(result)) {
+            const items = DataProviderHoc.normalizeItems(result);
             this.setState({
-                [key]: DataProviderHoc.normalizeItems(result),
+                items,
+                sourceItems: isAutoFetch ? items : this.state.sourceItems,
             });
         }
     }
