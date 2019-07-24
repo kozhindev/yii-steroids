@@ -171,6 +171,7 @@ class DataProviderHoc extends React.PureComponent {
                 selectedItems={this.state.selectedItems}
                 hoveredItem={this.state.hoveredItem}
                 isOpened={this.state.isOpened}
+                isLoading={this.state.isLoading}
                 items={this.state.items}
                 onOpen={this._onOpen}
                 onClose={this._onClose}
