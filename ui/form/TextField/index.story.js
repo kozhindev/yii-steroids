@@ -8,8 +8,6 @@ import {text, boolean, select, array} from '@storybook/addon-knobs/react';
 import TextField from './TextField';
 import README from './README.md'
 
-import './TextFieldView.scss';
-
 TextField.propTypes = {
     label: PropTypes.oneOfType([
         PropTypes.string,

@@ -9,7 +9,6 @@ import {ui} from 'components';
 import Field, {getFieldPropsFromModel} from '../Field/Field';
 import fieldHoc from '../fieldHoc';
 
-import './FieldListView.scss';
 import tableNavigationHandler from './tableNavigationHandler';
 import {getMeta} from '../../../reducers/fields';
 import formIdHoc from '../formIdHoc';

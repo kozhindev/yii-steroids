@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 
 import {html, ui} from 'components';
 const bem = html.bem('AutoCompleteFieldView');
-import './AutoCompleteFieldView.scss';
 
 export default class AutoCompleteFieldView extends React.PureComponent {
 

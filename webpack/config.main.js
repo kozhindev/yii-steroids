@@ -99,7 +99,14 @@ module.exports = (config, entry) => {
                         'css-hot-loader',
                         MiniCssExtractPlugin.loader,
                         'css-loader',
-                        'sass-loader',
+                        {
+                            loader: 'sass-loader',
+                            options: {
+                                includePaths: [
+                                    config.sourcePath,
+                                ],
+                            },
+                        }
                     ],
                 },
                 font: {

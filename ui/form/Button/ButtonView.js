@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import _isString from 'lodash-es/isString';
 
 import {html} from 'components';
-import './ButtonView.scss';
 
 const bem = html.bem('ButtonView');
 
@@ -95,7 +94,7 @@ export default class ButtonView extends React.PureComponent {
             </>
         );
     }
-    
+
     _getClassName(modifiers) {
         return bem(
             bem.block({

@@ -98,11 +98,18 @@ abstract class CrudApiController extends Controller
         $model = new static::$modelClass();
         $user = Yii::$app->user->model;
 
-        if (!$model->canCreate($user)) {
+        $permittedAttributes = $model->canCreate(Yii::$app->user->model);
+        if (!$permittedAttributes) {
             throw new ForbiddenHttpException();
         }
 
-        $model->load(Yii::$app->request->post(), '');
+        $data = [];
+        foreach (Yii::$app->request->post() as $key => $value) {
+            if ($permittedAttributes === true || in_array($key, $permittedAttributes)) {
+                $data[$key] = $value;
+            }
+        }
+        $model->load($data, '');
         $this->saveModel($model);
 
         if ($errors = $model->getErrors()) {
@@ -123,11 +130,18 @@ abstract class CrudApiController extends Controller
         $model = $this->findModel();
         $user = Yii::$app->user->model;
 
-        if (!$model->canUpdate($user)) {
+        $permittedAttributes = $model->canUpdate(Yii::$app->user->model);
+        if (!$permittedAttributes) {
             throw new ForbiddenHttpException();
         }
 
-        $model->load(Yii::$app->request->post(), '');
+        $data = [];
+        foreach (Yii::$app->request->post() as $key => $value) {
+            if ($permittedAttributes === true || in_array($key, $permittedAttributes)) {
+                $data[$key] = $value;
+            }
+        }
+        $model->load($data, '');
         $this->saveModel($model);
 
         if ($errors = $model->getErrors()) {
@@ -177,15 +191,7 @@ abstract class CrudApiController extends Controller
      */
     protected function saveModel($model)
     {
-        if ($model->isNewRecord) {
-            $permittedAttributes = $model->canCreate(Yii::$app->user->model);
-        } else {
-            $permittedAttributes = $model->canUpdate(Yii::$app->user->model);
-        }
-
-        if ($permittedAttributes) {
-            $model->save($permittedAttributes);
-        }
+        $model->saveOrPanic();
     }
 
 

@@ -118,7 +118,7 @@ class FileModule extends Module
                         'urlRule' => 'file/<uid:[a-z0-9-]{36}>/<name>',
                     ],
                 ]
-            ]
+            ],
         ];
     }
 

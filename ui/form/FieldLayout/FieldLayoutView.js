@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import {html} from 'components';
-import './FieldLayoutView.scss';
 const bem = html.bem('FieldLayoutView');
 
 export default class FieldLayoutView extends React.PureComponent {

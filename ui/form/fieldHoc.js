@@ -50,7 +50,7 @@ const errorSelectors = {};
         };
     }
 )
-class FieldHoc extends React.Component {
+class FieldHoc extends React.PureComponent {
 
     static propTypes = {
         attribute: PropTypes.string,
@@ -98,14 +98,6 @@ class FieldHoc extends React.Component {
         } else {
             this._fieldId = FieldHoc.getFieldId(this.props);
         }
-    }
-
-    shouldComponentUpdate(nextProps, nextState) {
-        return !_isEqual(this.props.values, nextProps.values)
-            || !_isEqual(this.props.label, nextProps.label)
-            || !_isEqual(this.props.formErrors, nextProps.formErrors)
-            || !_isEqual(this.props.fieldProps, nextProps.fieldProps)
-            || !_isEqual(this.state, nextState);
     }
 
     render() {
