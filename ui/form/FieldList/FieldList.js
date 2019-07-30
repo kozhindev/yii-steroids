@@ -104,7 +104,11 @@ class FieldList extends React.PureComponent {
             PropTypes.object,
         ]),
         prefix: PropTypes.string,
-        layout: PropTypes.string,
+        layout: PropTypes.oneOfType([
+            PropTypes.oneOf(['default', 'inline', 'horizontal']),
+            PropTypes.string,
+            PropTypes.bool,
+        ]),
         layoutProps: PropTypes.object,
         size: PropTypes.oneOf(['sm', 'md', 'lg']),
     };

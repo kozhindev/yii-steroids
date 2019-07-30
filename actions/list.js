@@ -5,6 +5,7 @@ import {http} from 'components';
 export const LIST_INIT = 'LIST_INIT';
 export const LIST_BEFORE_FETCH = 'LIST_BEFORE_FETCH';
 export const LIST_AFTER_FETCH = 'LIST_AFTER_FETCH';
+export const LIST_ITEM_ADD = 'LIST_ITEM_ADD';
 export const LIST_ITEM_UPDATE = 'LIST_ITEM_UPDATE';
 export const LIST_DESTROY = 'LIST_DESTROY';
 export const LIST_TOGGLE_ITEM = 'LIST_TOGGLE_ITEM';
@@ -97,6 +98,12 @@ export const setSort = (listId, sort) => fetch(listId, {
 });
 
 export const refresh = listId => fetch(listId);
+
+export const add = (listId, item) => ({
+    item,
+    listId,
+    type: LIST_ITEM_ADD,
+});
 
 export const update = (listId, item, condition) => ({
     item,

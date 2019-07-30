@@ -7,6 +7,7 @@ import {
     LIST_INIT,
     LIST_BEFORE_FETCH,
     LIST_AFTER_FETCH,
+    LIST_ITEM_ADD,
     LIST_ITEM_UPDATE,
     LIST_DESTROY,
     LIST_TOGGLE_ITEM,
@@ -60,6 +61,17 @@ export default (state = {}, action) => {
                     items,
                     isFetched: true,
                     isLoading: false,
+                }
+            };
+
+        case LIST_ITEM_ADD:
+            return {
+                ...state,
+                [action.listId]: {
+                    ...state[action.listId],
+                    items: action.prepend
+                        ? [].concat(action.item).concat(state[action.listId].items)
+                        : [].concat(state[action.listId].items).concat(action.item),
                 }
             };
 

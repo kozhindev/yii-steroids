@@ -9,7 +9,10 @@ const bem = html.bem('ButtonView');
 export default class ButtonView extends React.PureComponent {
 
     static propTypes = {
-        label: PropTypes.string,
+        label: PropTypes.oneOfType([
+            PropTypes.string,
+            PropTypes.any,
+        ]),
         type: PropTypes.oneOf(['button', 'submit']),
         size: PropTypes.oneOf(['sm', 'md', 'lg']),
         color: PropTypes.oneOf([

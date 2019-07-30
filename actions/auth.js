@@ -9,6 +9,7 @@ import {goToPage} from './navigation';
 
 export const AUTH_INIT_USER = 'AUTH_INIT_USER';
 export const AUTH_SET_DATA = 'AUTH_SET_DATA';
+export const AUTH_ADD_SOCIAL = 'AUTH_ADD_SOCIAL';
 
 let lastInitAction = null;
 
@@ -55,6 +56,11 @@ export const login = token => dispatch => {
     return dispatch(init(lastInitAction))
         .then(() => dispatch(goToPage('root')));
 };
+
+export const addSocial = social => ({
+    type: AUTH_ADD_SOCIAL,
+    social,
+})
 
 export const setUser = user => ({
     type: AUTH_INIT_USER,

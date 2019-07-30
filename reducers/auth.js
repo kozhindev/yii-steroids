@@ -1,4 +1,4 @@
-import {AUTH_INIT_USER, AUTH_SET_DATA} from '../actions/auth';
+import {AUTH_INIT_USER, AUTH_SET_DATA, AUTH_ADD_SOCIAL} from '../actions/auth';
 
 const initialState = {
     isInitialized: false,
@@ -20,6 +20,17 @@ export default (state = initialState, action) => {
                 isInitialized: true,
                 data: action.data,
             };
+        case AUTH_ADD_SOCIAL:
+            return {
+                ...state,
+                user: {
+                    ...state.user,
+                    socials: [
+                        ...state.user.socials,
+                        action.social,
+                    ],
+                }
+            };
     }
 
     return state;
@@ -28,4 +39,6 @@ export default (state = initialState, action) => {
 export const isInitialized = state => state.auth.isInitialized;
 export const isAuthorized = state => !!state.auth.user;
 export const getUser = state => state.auth.user;
+export const getUserId = state => state.auth.user && state.auth.user.id || null;
+export const getUserRole = state => state.auth.user && state.auth.user.role || null;
 export const getData = state => state.auth.data;

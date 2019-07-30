@@ -62,6 +62,7 @@ class Form extends React.PureComponent {
         layout: PropTypes.oneOfType([
             PropTypes.oneOf(['default', 'inline', 'horizontal']),
             PropTypes.string,
+            PropTypes.bool,
         ]),
         layoutProps: PropTypes.object,
         size: PropTypes.oneOf(['sm', 'md', 'lg']),
@@ -113,6 +114,7 @@ class Form extends React.PureComponent {
         layout: PropTypes.oneOfType([
             PropTypes.oneOf(['default', 'inline', 'horizontal']),
             PropTypes.string,
+            PropTypes.bool,
         ]),
         layoutProps: PropTypes.object,
         size: PropTypes.oneOf(['sm', 'md', 'lg']),

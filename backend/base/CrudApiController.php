@@ -191,7 +191,7 @@ abstract class CrudApiController extends Controller
      */
     protected function saveModel($model)
     {
-        $model->saveOrPanic();
+        $model->save();
     }
 
 

@@ -36,7 +36,10 @@ export default
 class Button extends React.PureComponent {
 
     static propTypes = {
-        label: PropTypes.string,
+        label: PropTypes.oneOfType([
+            PropTypes.string,
+            PropTypes.any,
+        ]),
         type: PropTypes.oneOf(['button', 'submit']),
         size: PropTypes.oneOf(['sm', 'md', 'lg']),
         color: PropTypes.oneOf([
@@ -76,7 +79,11 @@ class Button extends React.PureComponent {
 
     static contextTypes = {
         formId: PropTypes.string,
-        layout: PropTypes.string,
+        layout: PropTypes.oneOfType([
+            PropTypes.oneOf(['default', 'inline', 'horizontal']),
+            PropTypes.string,
+            PropTypes.bool,
+        ]),
         layoutProps: PropTypes.object,
         size: PropTypes.oneOf(['sm', 'md', 'lg']),
     };
