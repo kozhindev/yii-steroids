@@ -65,15 +65,18 @@ export default (state = {}, action) => {
             };
 
         case LIST_ITEM_ADD:
-            return {
-                ...state,
-                [action.listId]: {
-                    ...state[action.listId],
-                    items: action.prepend
-                        ? [].concat(action.item).concat(state[action.listId].items)
-                        : [].concat(state[action.listId].items).concat(action.item),
-                }
-            };
+            if (state[action.listId]) {
+                return {
+                    ...state,
+                    [action.listId]: {
+                        ...state[action.listId],
+                        items: action.prepend
+                            ? [].concat(action.item).concat(state[action.listId].items)
+                            : [].concat(state[action.listId].items).concat(action.item),
+                    }
+                };
+            }
+            break;
 
         case LIST_ITEM_UPDATE:
             return {

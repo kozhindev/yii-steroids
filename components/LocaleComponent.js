@@ -20,6 +20,7 @@ export default class LocaleComponent {
         this.language = 'en';
         this.sourceLanguage = 'ru';
         this.backendTimeZone = null;
+        this.backendTimeDiff = null; // in microseconds
         this.translations = {};
 
         // Publish to global
