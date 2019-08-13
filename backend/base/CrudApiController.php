@@ -109,8 +109,7 @@ abstract class CrudApiController extends Controller
                 $data[$key] = $value;
             }
         }
-        $model->load($data, '');
-        $this->saveModel($model);
+        $this->loadModel($data);        $this->saveModel($model);
 
         if ($errors = $model->getErrors()) {
             $result = ['errors' => $errors];
@@ -141,8 +140,7 @@ abstract class CrudApiController extends Controller
                 $data[$key] = $value;
             }
         }
-        $model->load($data, '');
-        $this->saveModel($model);
+        $this->loadModel($model);        $this->saveModel($model);
 
         if ($errors = $model->getErrors()) {
             $result = ['errors' => $errors];
@@ -183,6 +181,10 @@ abstract class CrudApiController extends Controller
         $model->deleteOrPanic();
 
         return $model;
+    }
+
+    protected function loadModel($model) {
+        $model->load(Yii::$app->request->post(), '');
     }
 
     /**
