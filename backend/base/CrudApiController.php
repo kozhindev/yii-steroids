@@ -3,7 +3,7 @@
 namespace steroids\base;
 
 use Yii;
-use steroids\widgets\Crud;
+use \ReflectionClass;
 use yii\helpers\ArrayHelper;
 use yii\web\Controller;
 use yii\web\ForbiddenHttpException;
@@ -27,38 +27,38 @@ abstract class CrudApiController extends Controller
         $idParam = $modelClass::getRequestParamName();
         $controls = static::controls();
 
-        $reflectionInfo = new \ReflectionClass($modelClass);
+        $reflectionInfo = new ReflectionClass($modelClass);
 
         return ArrayHelper::merge(
             [
                 'label' => $reflectionInfo->getShortName(),
                 'items' => [
                     'index' => [
-                        'label' => \Yii::t('steroids', 'Список'),
+                        'label' => Yii::t('steroids', 'Список'),
                         'url' => ['index'],
                         'urlRule' => "GET $baseUrl",
                         'visible' => in_array('create', $controls),
                     ],
                     'create' => [
-                        'label' => \Yii::t('steroids', 'Добавление'),
+                        'label' => Yii::t('steroids', 'Добавление'),
                         'url' => ['create'],
                         'urlRule' => "POST $baseUrl",
                         'visible' => in_array('create', $controls),
                     ],
                     'update' => [
-                        'label' => \Yii::t('steroids', 'Редактирование'),
+                        'label' => Yii::t('steroids', 'Редактирование'),
                         'url' => ['update'],
                         'urlRule' => "PUT,POST $baseUrl/<$idParam>",
                         'visible' => in_array('update', $controls),
                     ],
                     'view' => [
-                        'label' => \Yii::t('steroids', 'Просмотр'),
+                        'label' => Yii::t('steroids', 'Просмотр'),
                         'url' => ['view'],
                         'urlRule' => "GET $baseUrl/<$idParam>",
                         'visible' => in_array('view', $controls),
                     ],
                     'delete' => [
-                        'label' => \Yii::t('steroids', 'Удаление'),
+                        'label' => Yii::t('steroids', 'Удаление'),
                         'url' => ['delete'],
                         'urlRule' => "DELETE $baseUrl/<$idParam>",
                         'visible' => in_array('delete', $controls),
@@ -96,20 +96,9 @@ abstract class CrudApiController extends Controller
     {
         /** @var Model $model */
         $model = new static::$modelClass();
-        $user = Yii::$app->user->model;
 
-        $permittedAttributes = $model->canCreate(Yii::$app->user->model);
-        if (!$permittedAttributes) {
-            throw new ForbiddenHttpException();
-        }
-
-        $data = [];
-        foreach (Yii::$app->request->post() as $key => $value) {
-            if ($permittedAttributes === true || in_array($key, $permittedAttributes)) {
-                $data[$key] = $value;
-            }
-        }
-        $this->loadModel($data);        $this->saveModel($model);
+        $this->loadModel($model, true);
+        $this->saveModel($model);
 
         if ($errors = $model->getErrors()) {
             $result = ['errors' => $errors];
@@ -127,20 +116,9 @@ abstract class CrudApiController extends Controller
     public function actionUpdate()
     {
         $model = $this->findModel();
-        $user = Yii::$app->user->model;
 
-        $permittedAttributes = $model->canUpdate(Yii::$app->user->model);
-        if (!$permittedAttributes) {
-            throw new ForbiddenHttpException();
-        }
-
-        $data = [];
-        foreach (Yii::$app->request->post() as $key => $value) {
-            if ($permittedAttributes === true || in_array($key, $permittedAttributes)) {
-                $data[$key] = $value;
-            }
-        }
-        $this->loadModel($model);        $this->saveModel($model);
+        $this->loadModel($model, false);
+        $this->saveModel($model);
 
         if ($errors = $model->getErrors()) {
             $result = ['errors' => $errors];
@@ -183,8 +161,28 @@ abstract class CrudApiController extends Controller
         return $model;
     }
 
-    protected function loadModel($model) {
-        $model->load(Yii::$app->request->post(), '');
+    /**
+     * @param Model $model
+     * @param bool $isCreateMode
+     * @throws ForbiddenHttpException
+     */
+    protected function loadModel($model, $isCreateMode) {
+        $permittedAttributes = $isCreateMode
+            ? $model->canCreate(Yii::$app->user->model)
+            : $model->canUpdate(Yii::$app->user->model);
+
+        if (!$permittedAttributes) {
+            throw new ForbiddenHttpException();
+        }
+
+        $data = [];
+        foreach (Yii::$app->request->post() as $key => $value) {
+            if ($permittedAttributes === true || in_array($key, $permittedAttributes)) {
+                $data[$key] = $value;
+            }
+        }
+
+        $model->load($data, '');
     }
 
     /**
