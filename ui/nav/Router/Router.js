@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Route, Switch} from 'react-router';
+import {Route, Switch, StaticRouter} from 'react-router';
 import {connect} from 'react-redux';
 import {ConnectedRouter} from 'react-router-redux';
 import _get from 'lodash-es/get';
@@ -83,6 +83,22 @@ class Router extends React.PureComponent {
     }
 
     render() {
+        if (process.env.IS_NODE) {
+            return (
+                <StaticRouter location={store.history.location}>
+                    {this.renderContent()}
+                </StaticRouter>
+            );
+        } else {
+            return (
+                <ConnectedRouter history={store.history}>
+                    {this.renderContent()}
+                </ConnectedRouter>
+            )
+        }
+    }
+
+    renderContent() {
         const WrapperComponent = this.props.wrapperView;
         const routes = (
             <Switch>
@@ -98,18 +114,15 @@ class Router extends React.PureComponent {
             </Switch>
         );
 
-        return (
-            <ConnectedRouter history={store.history}>
-                {WrapperComponent && (
-                    <WrapperComponent {...this.props.wrapperProps}>
-                        {routes}
-                    </WrapperComponent>
-                )
-                || (
-                    routes
-                )}
-            </ConnectedRouter>
-        );
+        if (WrapperComponent) {
+            return (
+                <WrapperComponent {...this.props.wrapperProps}>
+                    {routes}
+                </WrapperComponent>
+            );
+        }
+
+        return routes;
     }
 
     _renderItem(route, props) {

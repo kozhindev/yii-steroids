@@ -24,7 +24,11 @@ export default class LocaleComponent {
         this.translations = {};
 
         // Publish to global
-        window.__ = this.translate.bind(this);
+        if (process.env.IS_NODE) {
+            global.__ = this.translate.bind(this);
+        } else {
+            window.__ = this.translate.bind(this);
+        }
     }
 
     moment(date, format) {
