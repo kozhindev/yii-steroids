@@ -3,7 +3,6 @@
 namespace steroids\base;
 
 use Yii;
-use steroids\widgets\Crud;
 use yii\helpers\ArrayHelper;
 use yii\web\Controller;
 use yii\web\ForbiddenHttpException;
@@ -96,65 +95,13 @@ abstract class CrudApiController extends Controller
     {
         /** @var Model $model */
         $model = new static::$modelClass();
-        $user = Yii::$app->user->model;
-
-        $permittedAttributes = $model->canCreate(Yii::$app->user->model);
-        if (!$permittedAttributes) {
-            throw new ForbiddenHttpException();
-        }
-
-        $data = [];
-        foreach (Yii::$app->request->post() as $key => $value) {
-            if ($permittedAttributes === true || in_array($key, $permittedAttributes)) {
-                $data[$key] = $value;
-            }
-        }
-        $model->load($data, '');
-        $this->saveModel($model);
-
-        if ($errors = $model->getErrors()) {
-            $result = ['errors' => $errors];
-        } else {
-            if (static::$viewSchema) {
-                $result = new static::$viewSchema(['model' => $model]);
-            } else {
-                $result = $model;
-            }
-        }
-
-        return $result;
+        return $this->actionSave($model);
     }
 
     public function actionUpdate()
     {
         $model = $this->findModel();
-        $user = Yii::$app->user->model;
-
-        $permittedAttributes = $model->canUpdate(Yii::$app->user->model);
-        if (!$permittedAttributes) {
-            throw new ForbiddenHttpException();
-        }
-
-        $data = [];
-        foreach (Yii::$app->request->post() as $key => $value) {
-            if ($permittedAttributes === true || in_array($key, $permittedAttributes)) {
-                $data[$key] = $value;
-            }
-        }
-        $model->load($data, '');
-        $this->saveModel($model);
-
-        if ($errors = $model->getErrors()) {
-            $result = ['errors' => $errors];
-        } else {
-            if (static::$viewSchema) {
-                $result = new static::$viewSchema(['model' => $model]);
-            } else {
-                $result = $model;
-            }
-        }
-
-        return $result;
+        return $this->actionSave($model);
     }
 
     public function actionView()
@@ -183,6 +130,54 @@ abstract class CrudApiController extends Controller
         $model->deleteOrPanic();
 
         return $model;
+    }
+
+    /**
+     * @param Model $model
+     * @return array
+     * @throws ForbiddenHttpException
+     */
+    protected function actionSave($model)
+    {
+        $attributes = $model->attributes();
+        $permittedAttributes = $model->isNewRecord
+            ? $model->canCreate(Yii::$app->user->model)
+            : $model->canUpdate(Yii::$app->user->model);
+        if (!$permittedAttributes) {
+            throw new ForbiddenHttpException();
+        }
+
+        $data = [];
+        foreach (Yii::$app->request->post() as $key => $value) {
+            if ($permittedAttributes === true || !in_array($key, $attributes) || in_array($key, $permittedAttributes)) {
+                $data[$key] = $value;
+            }
+        }
+
+        $this->loadModel($model, $data);
+        $this->saveModel($model);
+
+        if ($errors = $model->getErrors()) {
+            $result = ['errors' => $errors];
+        } else {
+            if (static::$viewSchema) {
+                $result = new static::$viewSchema(['model' => $model]);
+            } else {
+                $result = $model;
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param Model $model
+     * @param array $data
+     * @throws ForbiddenHttpException
+     */
+    protected function loadModel($model, $data)
+    {
+        $model->load($data, '');
     }
 
     /**
