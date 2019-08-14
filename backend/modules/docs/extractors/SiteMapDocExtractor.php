@@ -38,6 +38,11 @@ class SiteMapDocExtractor extends BaseDocExtractor
                 $this->recursiveExtract($item->items);
             }
         }
+
+        // Add refs
+        foreach (SwaggerTypeExtractor::getInstance()->refs as $name => $ref) {
+            $this->swaggerJson->addDefinition($name, $ref);
+        }
     }
 
     /**

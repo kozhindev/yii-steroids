@@ -47,6 +47,11 @@ class SwaggerTypeExtractor extends BaseObject
     private static $_instance;
 
     /**
+     * @var array
+     */
+    public $refs = [];
+
+    /**
      * @return static
      */
     public static function getInstance()
@@ -119,7 +124,7 @@ class SwaggerTypeExtractor extends BaseObject
                 foreach (explode("\n", $phpdoc) as $line) {
                     $line = preg_replace('/^\s*\\/?\*+/', '', $line);
                     $line = trim($line);
-                    if ($line) {
+                    if ($line && substr($line, 0, 1) !== '@') {
                         $schema['description'] = $line;
                         break;
                     }
@@ -339,10 +344,12 @@ class SwaggerTypeExtractor extends BaseObject
 
                 // Steroids meta model
                 if (method_exists($modelClass, 'meta')) {
-                    $property = array_merge($property, [
-                        'description' => $model->getAttributeLabel($attribute),
-                        'example' => ArrayHelper::getValue($modelClass::meta(), [$attribute, 'example']),
-                    ]);
+                    if (empty($property['description'])) {
+                        $property['description'] = $model->getAttributeLabel($attribute);
+                    }
+                    if (empty($property['example'])) {
+                        $property['example'] = ArrayHelper::getValue($modelClass::meta(), [$attribute, 'example']);
+                    }
 
                     /** @var Type $appType */
                     $appType = \Yii::$app->types->getTypeByModel($model, $attribute);
@@ -363,36 +370,56 @@ class SwaggerTypeExtractor extends BaseObject
 
     public function extractSchema($className, $fields = null)
     {
-        /** @var BaseSchema $schema */
-        $schema = new $className();
+        $schemaName = (new \ReflectionClass($className))->getShortName();
+        if (!isset($this->refs[$schemaName])) {
+            /** @var BaseSchema $schema */
+            $schema = new $className();
 
-        if ($fields === null) {
-            $fields = $schema->fields();
-        }
+            if ($fields === null) {
+                $fields = $schema->fields();
+            }
 
-        $properties = [];
-        foreach ($fields as $key => $attribute) {
-            $property = null;
+            $properties = [];
+            foreach ($fields as $key => $value) {
+                if (is_int($key) && is_string($value)) {
+                    $key = $value;
+                }
 
-            if (is_int($key) && is_string($attribute)) {
-                $key = $attribute;
+                $property = null;
+                $attributes = explode('.', $value);
+                $modelClass = $className;
+                if (count($attributes) > 1) {
+                    $attribute = array_pop($attributes);
+                    foreach ($attributes as $item) {
+                        $modelClass = $this->findAttributeType($modelClass, $item);
+                    }
 
-                if ($schema->canGetProperty($attribute, true, false)) {
-                    $property = $this->extractAttribute($className, $attribute);
-                } else {
-                    $modelClass = $this->findAttributeType($className, 'model');
                     $property = ArrayHelper::getValue($this->extractModel($modelClass, [$attribute]), ['properties', $attribute]);
+                } else {
+                    $attribute = $value;
+
+                    if ($schema->canGetProperty($attribute, true, false)) {
+                        $property = $this->extractAttribute($modelClass, $attribute);
+                    } else {
+                        $modelClass = $this->findAttributeType($modelClass, 'model');
+                        $property = ArrayHelper::getValue($this->extractModel($modelClass, [$attribute]), ['properties', $attribute]);
+                    }
+                }
+
+                if ($property) {
+                    $properties[$key] = $property;
                 }
             }
 
-            if ($property) {
-                $properties[$key] = $property;
-            }
+            $this->refs[$schemaName] = [
+                'type' => 'object',
+                'properties' => $properties,
+            ];
         }
 
         return [
-            'type' => 'object',
-            'properties' => $properties,
+            //'type' => 'schema',
+            '$ref' => '#/definitions/' . $schemaName,
         ];
     }
 

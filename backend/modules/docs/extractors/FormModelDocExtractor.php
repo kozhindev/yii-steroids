@@ -53,15 +53,23 @@ class FormModelDocExtractor extends BaseDocExtractor
             'responses' => [
                 200 => [
                     'description' => 'Successful operation',
-                    'schema' => $responseSchema,
+                    'content' => [
+                        'application/json' => [
+                            'schema' => $responseSchema,
+                        ],
+                    ],
                 ],
                 400 => [
                     'description' => 'Validation errors',
-                    'schema' => [
-                        'type' => 'object',
-                        'properties' => [
-                            'errors' => [
+                    'content' => [
+                        'application/json' => [
+                            'schema' => [
                                 'type' => 'object',
+                                'properties' => [
+                                    'errors' => [
+                                        'type' => 'object',
+                                    ],
+                                ],
                             ],
                         ],
                     ],
