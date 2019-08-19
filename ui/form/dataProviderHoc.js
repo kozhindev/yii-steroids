@@ -3,6 +3,7 @@ import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 import {change} from 'redux-form';
 import _remove from 'lodash-es/remove';
+import _some from 'lodash-es/some';
 import _isString from 'lodash-es/isString';
 import _isArray from 'lodash-es/isArray';
 import _isFunction from 'lodash-es/isFunction';
@@ -80,15 +81,18 @@ class DataProviderHoc extends React.PureComponent {
     static normalizeItems(items) {
         // Array
         if (_isArray(items)) {
-            return items.map(item => {
-                if (_isString(item) || _isInteger(item)) {
-                    return {
-                        id: item,
-                        label: item,
-                    };
-                }
-                return item;
-            });
+            if (_some(items, item => _isString(item) || _isInteger(item))) {
+                return items.map(item => {
+                    if (_isString(item) || _isInteger(item)) {
+                        return {
+                            id: item,
+                            label: item,
+                        };
+                    }
+                    return item;
+                });
+            }
+            return items;
         }
 
         // Enum
@@ -154,7 +158,7 @@ class DataProviderHoc extends React.PureComponent {
         if (this.props.items !== nextProps.items) {
             const sourceItems = DataProviderHoc.normalizeItems(nextProps.items);
             this.setState({sourceItems});
-            
+
             // Select first value on fetch data
             if (this.props.items.length === 0 && nextProps.items.length > 0 && this.props.selectFirst) {
                 this._onItemClick(sourceItems[0]);

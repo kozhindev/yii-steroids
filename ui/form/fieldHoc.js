@@ -34,7 +34,7 @@ const errorSelectors = {};
         // Fetch values
         const values = {};
         props._config.attributes.map(attribute => {
-            values[attribute] = valueSelector(state, FieldHoc.getName(props, attribute));
+            values['value' + _upperFirst(attribute)] = valueSelector(state, FieldHoc.getName(props, attribute));
         });
 
         // Lazy create error selector
@@ -44,7 +44,7 @@ const errorSelectors = {};
         const errorSelector = errorSelectors[props.formId];
 
         return {
-            values,
+            ...values,
             formErrors: errorSelector(state),
             fieldProps: getFieldProps(state, FieldHoc.getFieldId(props)),
         };
@@ -174,7 +174,7 @@ class FieldHoc extends React.PureComponent {
 
     _getValue(attribute) {
         if (this.props.formId) {
-            return _get(this.props.values, attribute);
+            return _get(this.props.values, 'value' + _upperFirst(attribute));
         } else {
             return this.state['value' + attribute];
         }

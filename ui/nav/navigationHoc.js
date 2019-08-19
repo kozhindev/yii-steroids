@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import _isArray from 'lodash-es/isArray';
 import _isObject from 'lodash-es/isObject';
-import _isEqual from 'lodash-es/isEqual';
 import {getCurrentRoute} from '../../reducers/routing';
 import {isInitialized} from '../../reducers/navigation';
 import {initRoutes, initParams} from '../../actions/navigation';
@@ -15,7 +14,7 @@ const stateMap = state => ({
 });
 
 export default routes => WrappedComponent => @connect(stateMap)
-class NavigationHoc extends React.Component {
+class NavigationHoc extends React.PureComponent {
 
     static WrappedComponent = WrappedComponent;
 
