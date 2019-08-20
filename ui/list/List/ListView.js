@@ -10,7 +10,7 @@ export default class ListView extends React.Component {
     static propTypes = {
         isLoading: PropTypes.bool,
         reverse: PropTypes.bool,
-        searchForm: PropTypes.node,
+        outsideSearchForm: PropTypes.node,
         paginationSize: PropTypes.node,
         pagination: PropTypes.node,
         content: PropTypes.node,
@@ -21,7 +21,7 @@ export default class ListView extends React.Component {
         if (this.props.reverse) {
             return (
                 <div className={bem(bem.block({loading: this.props.isLoading}), this.props.className)}>
-                    {this.props.searchForm}
+                    {this.props.outsideSearchForm}
                     {this.props.paginationSize}
                     {this.props.pagination}
                     {this.props.content}
@@ -31,7 +31,7 @@ export default class ListView extends React.Component {
         } else {
             return (
                 <div className={bem(bem.block(), this.props.className)}>
-                    {this.props.searchForm}
+                    {this.props.outsideSearchForm}
                     {this.props.paginationSize}
                     {this.props.content}
                     {this.props.pagination}

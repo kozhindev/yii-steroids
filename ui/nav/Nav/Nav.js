@@ -12,7 +12,10 @@ export default class Nav extends React.PureComponent {
         layout: PropTypes.oneOf(['button', 'icon', 'link', 'tabs', 'navbar']),
         items: PropTypes.arrayOf(PropTypes.shape({
             id: PropTypes.string,
-            label: PropTypes.string,
+            label: PropTypes.oneOfType([
+                PropTypes.string,
+                PropTypes.any,
+            ]),
             url: PropTypes.string,
             onClick: PropTypes.func,
             className: PropTypes.string,
@@ -45,6 +48,14 @@ export default class Nav extends React.PureComponent {
         this.state = {
             activeTab: this.props.activeTab || _get(this.props, 'items.0.id') || 0,
         };
+    }
+
+    componentWillReceiveProps(nextProps) {
+        if (this.props.activeTab !== nextProps.activeTab && nextProps.activeTab) {
+            this.setState({
+                activeTab: nextProps.activeTab,
+            });
+        }
     }
 
     render() {

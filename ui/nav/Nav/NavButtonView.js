@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 
 import {html} from 'components';
 import Button from '../../form/Button';
-import './NavButtonView.scss';
 
 const bem = html.bem('NavButtonView');
 
@@ -18,6 +17,7 @@ export default class NavButtonView extends React.Component {
         return (
             <div className={bem(bem.block(), this.props.className)}>
                 <div className={bem.element('nav mb-3')}>
+
                     {this.props.items.map((item, index) => (
                         <Button
                             key={index}

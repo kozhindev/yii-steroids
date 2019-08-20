@@ -40,11 +40,14 @@ class SiteMap extends Component
         foreach ($items as $item) {
             $url = $item->getNormalizedUrl();
             $urlRule = ArrayHelper::getValue($item, 'urlRule');
+            if (is_array($urlRule)) {
+                $urlRule = ArrayHelper::getValue($urlRule, 'pattern');
+            }
 
             // Detect verb
             $verb = null;
-            if (preg_match('/^(' . implode('|', self::VERBS) . ',?) .+/', $urlRule, $match)) {
-                $verb = explode(',', $match[1]);
+            if (preg_match('/^([a-z,]+) .+/i', $urlRule, $match)) {
+                $verb = array_intersect(explode(',', strtoupper($match[1])), static::VERBS);
                 $urlRule = str_replace($match[1] . ' ', '', $urlRule);
             }
 
@@ -521,7 +524,7 @@ class SiteMap extends Component
                     if ($key === 'url' && !$baseItems[$id]->controllerRoute && $controllerRoute) {
                         $baseItems[$id]->controllerRoute = $controllerRoute;
                     }
-                    
+
                     if ($key === 'items') {
                         $baseItems[$id]->$key = $this->mergeItems($baseItems[$id]->$key, $value, $append, $controllerRoute, $baseItems[$id]);
                     } elseif (is_array($baseItems[$id]) && is_array($value)) {
@@ -592,7 +595,7 @@ class SiteMap extends Component
         if (is_object($module)) {
             $moduleClass = $module::className();
             $children = $module->getModules();
-        } elseif (is_array($module)) {
+        } elseif (is_array($module) && isset($module['class'])) {
             $moduleClass = $module['class'];
             $children = ArrayHelper::getValue($module, 'modules', []);
         } else {

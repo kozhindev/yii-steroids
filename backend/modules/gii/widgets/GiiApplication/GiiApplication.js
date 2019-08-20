@@ -4,6 +4,8 @@ import {connect} from 'react-redux';
 import {Router, Link, Nav} from 'yii-steroids/ui/nav';
 import {Notifications} from 'yii-steroids/ui/layout';
 import {push} from 'react-router-redux';
+import _orderBy from 'lodash/orderBy';
+import _values from 'lodash/values';
 
 import {html, http, widget} from 'components';
 import IndexPage from './routes/IndexPage';
@@ -35,6 +37,7 @@ class GiiApplication extends React.PureComponent {
             classes: null,
             appTypes: null,
             moduleIds: null,
+            sampleAttributes: [],
         };
     }
 
@@ -104,6 +107,7 @@ class GiiApplication extends React.PureComponent {
                                     moduleIds: this.state.moduleIds,
                                     classes: this.state.classes,
                                     appTypes: this.state.appTypes,
+                                    sampleAttributes: this.state.sampleAttributes,
                                     onEntityComplete: this._onEntityComplete,
                                 },
                             },
@@ -119,11 +123,75 @@ class GiiApplication extends React.PureComponent {
         this.fetchData();
     }
 
+    _getSampleAttributes(classes) {
+        const sampleAttributes = {};
+        const defaultSamples = {
+            id: ['primaryKey', 'ID'],
+            title: ['string', 'Название'],
+            email: ['email', 'Email'],
+            phone: ['phone', 'Телефон'],
+            password: ['password', 'Пароль'],
+            photo: ['file', 'Фотография'],
+            photos: ['files', 'Фотографии'],
+            image: ['file', 'Изображение'],
+            images: ['files', 'Изображения'],
+            file: ['file', 'Файл'],
+            files: ['files', 'Файлы'],
+            passwordAgain: ['password', 'Повтор пароля'],
+            description: ['text', 'Описание'],
+            content: ['text', 'Контент'],
+            userId: ['integer', 'Пользователь'],
+            authorId: ['integer', 'Автор'],
+            isEnable: ['boolean', 'Включен?'],
+            isDeleted: ['boolean', 'Удален?'],
+            status: ['enum', 'Статус'],
+            createTime: ['autoTime', 'Добавлен'],
+            updateTime: ['autoTime', 'Обновлен', {touchOnUpdate: true}],
+        };
+        Object.keys(defaultSamples).forEach(id => {
+            sampleAttributes[id] = {
+                counter: 1,
+                params: {
+                    appType: defaultSamples[id][0],
+                    label: defaultSamples[id][1],
+                    ...defaultSamples[id][2],
+                }
+            };
+        });
+
+        [classes.model, classes.form].map(models => {
+            models.forEach(model => {
+                model.attributeItems.map(item => {
+                    if (sampleAttributes[item.name]) {
+                        sampleAttributes[item.name].counter++;
+                    } else {
+                        sampleAttributes[item.name] = {
+                            counter: 1,
+                            params: {
+                                appType: item.appType,
+                                defaultValue: item.defaultValue,
+                                example: item.example,
+                                hint: item.hint,
+                                label: item.label,
+                            },
+                        };
+                    }
+                });
+            });
+        });
+        Object.keys(sampleAttributes).forEach(id => {
+            sampleAttributes[id].id = id;
+            sampleAttributes[id].label = id;
+        });
+        return _orderBy(_values(sampleAttributes), 'counter', 'desc');
+    }
+
     fetchData() {
         this.setState({isLoading: true});
         http.post('/api/gii/get-entities')
             .then(data => this.setState({
                 ...data,
+                sampleAttributes: this._getSampleAttributes(data.classes),
                 isLoading: false,
             }));
     }

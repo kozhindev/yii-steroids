@@ -5,7 +5,7 @@ import _has from 'lodash-es/has';
 import _isFunction from 'lodash-es/isFunction';
 import _upperFirst from 'lodash-es/upperFirst';
 
-import Nav from '../../nav/Nav';
+import {ui} from 'components';
 
 export default class ActionColumn extends React.PureComponent {
 
@@ -45,10 +45,11 @@ export default class ActionColumn extends React.PureComponent {
             },
         };
 
+        const ActionColumnView = this.props.view || ui.getView('list.ActionColumnView');
+
         return (
-            <Nav
+            <ActionColumnView
                 {...this.props}
-                layout='icon'
                 items={actions.map(action => {
                     const canKey = 'can' + _upperFirst(action.id);
                     return {

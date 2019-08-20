@@ -4,6 +4,7 @@ import {connect} from 'react-redux';
 import {Field, FieldArray, formValueSelector, getFormSubmitErrors, change} from 'redux-form';
 import _get from 'lodash-es/get';
 import _upperFirst from 'lodash-es/upperFirst';
+import _isEqual from 'lodash-es/isEqual';
 
 import {ui} from 'components';
 import FieldLayout from './FieldLayout';
@@ -33,7 +34,7 @@ const errorSelectors = {};
         // Fetch values
         const values = {};
         props._config.attributes.map(attribute => {
-            values['formValue' + _upperFirst(attribute)] = valueSelector(state, FieldHoc.getName(props, attribute));
+            values['value' + _upperFirst(attribute)] = valueSelector(state, FieldHoc.getName(props, attribute));
         });
 
         // Lazy create error selector
@@ -82,15 +83,17 @@ class FieldHoc extends React.PureComponent {
         if (this.props.formId) {
             this.props._config.attributes.forEach(attribute => {
                 if (!this.props['attribute' + _upperFirst(attribute)]) {
-                    throw new Error(`Please set attribute names for component "${this.props._wrappedComponent.name}" in form "${this.props.formId}"`);
+                    throw new Error(`Please set attribute name "${attribute}" for component "${this.props._wrappedComponent.name}" in form "${this.props.formId}"`);
                 }
             });
         }
 
         if (!this.props.formId) {
-            this.state = {
-                value: _get(this.props, 'input.value'),
-            };
+            const state = {};
+            this.props._config.attributes.forEach(attribute => {
+                state['value' + attribute] = _get(this.props, ['input', 'value', attribute].filter(Boolean));
+            });
+            this.state = state;
             this._fieldId = FieldHoc.generateUniqueId();
         } else {
             this._fieldId = FieldHoc.getFieldId(this.props);
@@ -171,11 +174,9 @@ class FieldHoc extends React.PureComponent {
 
     _getValue(attribute) {
         if (this.props.formId) {
-            return _get(this.props, 'formValue' + _upperFirst(attribute));
+            return _get(this.props.values, 'value' + _upperFirst(attribute));
         } else {
-            return attribute
-                ? _get(this.state.value, attribute)
-                : this.state.value;
+            return this.state['value' + attribute];
         }
     }
 
@@ -184,12 +185,7 @@ class FieldHoc extends React.PureComponent {
             this.props.dispatch(change(this.props.formId, FieldHoc.getName(this.props, attribute), value));
         } else {
             this.setState({
-                value: attribute
-                    ? {
-                        ...this.state.value,
-                        [attribute]: value,
-                    }
-                    : value,
+                ['value' + attribute]: value,
             });
         }
     }
@@ -211,9 +207,14 @@ export default config => WrappedComponent => class FieldHocWrapper extends React
         model: PropTypes.oneOfType([
             PropTypes.string,
             PropTypes.func,
+            PropTypes.object,
         ]),
         prefix: PropTypes.string,
-        layout: PropTypes.string,
+        layout: PropTypes.oneOfType([
+            PropTypes.oneOf(['default', 'inline', 'horizontal']),
+            PropTypes.string,
+            PropTypes.bool,
+        ]),
         layoutProps: PropTypes.object,
         size: PropTypes.oneOf(['sm', 'md', 'lg']),
     };

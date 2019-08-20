@@ -22,7 +22,6 @@ export default class UserMeta extends Model {
                 'attribute': 'email',
                 'type': 'email',
                 'label': __('Email'),
-                'required': true
             },
             'phone': {
                 'component': 'InputField',
@@ -55,11 +54,6 @@ export default class UserMeta extends Model {
                 'attribute': 'lastLoginIp',
                 'label': __('IP последнего входа')
             },
-            'emailConfirmKey': {
-                'component': 'InputField',
-                'attribute': 'emailConfirmKey',
-                'label': __('Ключ подтверждения почты')
-            },
             'createTime': {
                 'component': 'DateTimeField',
                 'attribute': 'createTime',
@@ -70,10 +64,25 @@ export default class UserMeta extends Model {
                 'attribute': 'updateTime',
                 'label': __('Дата обновления')
             },
+            'emailConfirmKey': {
+                'component': 'InputField',
+                'attribute': 'emailConfirmKey',
+                'label': __('Ключ подтверждения почты')
+            },
             'emailConfirmTime': {
                 'component': 'DateTimeField',
                 'attribute': 'emailConfirmTime',
                 'label': __('Дата подтверждения почты')
+            },
+            'phoneConfirmKey': {
+                'component': 'InputField',
+                'attribute': 'phoneConfirmKey',
+                'label': __('Ключ подтверждения телефона')
+            },
+            'phoneConfirmTime': {
+                'component': 'DateTimeField',
+                'attribute': 'phoneConfirmTime',
+                'label': __('Дата подтверждения телефона')
             },
             'blockedTime': {
                 'component': 'DateTimeField',
@@ -122,17 +131,23 @@ export default class UserMeta extends Model {
             'lastLoginIp': {
                 'label': __('IP последнего входа')
             },
-            'emailConfirmKey': {
-                'label': __('Ключ подтверждения почты')
-            },
             'createTime': {
                 'label': __('Дата регистрации')
             },
             'updateTime': {
                 'label': __('Дата обновления')
             },
+            'emailConfirmKey': {
+                'label': __('Ключ подтверждения почты')
+            },
             'emailConfirmTime': {
                 'label': __('Дата подтверждения почты')
+            },
+            'phoneConfirmKey': {
+                'label': __('Ключ подтверждения телефона')
+            },
+            'phoneConfirmTime': {
+                'label': __('Дата подтверждения телефона')
             },
             'blockedTime': {
                 'label': __('Дата блокировки')

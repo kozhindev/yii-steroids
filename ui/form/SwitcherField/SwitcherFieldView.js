@@ -24,6 +24,7 @@ export default class SwitcherFieldView extends React.PureComponent {
             id: PropTypes.oneOfType([
                 PropTypes.number,
                 PropTypes.string,
+                PropTypes.bool,
             ]),
             label: PropTypes.string,
         })),

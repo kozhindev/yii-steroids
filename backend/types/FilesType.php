@@ -11,7 +11,7 @@ class FilesType extends RelationType
     /**
      * @inheritdoc
      */
-    public function prepareFieldProps($modelClass, $attribute, &$props, &$import = null)
+    public function prepareFieldProps($modelClass, $attribute, &$props)
     {
         $props = array_merge(
             [
@@ -74,6 +74,22 @@ class FilesType extends RelationType
     public function giiDbType($attributeEntity)
     {
         return false;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function prepareSwaggerProperty($modelClass, $attribute, &$property)
+    {
+        $property = array_merge(
+            $property,
+            [
+                'type' => 'array',
+                'items' => [
+                    'type' => 'integer',
+                ],
+            ]
+        );
     }
 
     /**

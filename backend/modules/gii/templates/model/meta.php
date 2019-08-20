@@ -24,11 +24,7 @@ echo "<?php\n";
 
 namespace <?= $modelEntity->getNamespace() ?>\meta;
 
-<?php if ($modelEntity->getOverWriteEntity()) { ?>
-use <?= $modelEntity->getOverWriteEntity()->getClassName() ?>;
-<?php } else { ?>
 use steroids\base\Model;
-<?php } ?>
 <?php foreach (array_unique($useClasses) as $relationClassName) { ?>
 use <?= $relationClassName ?>;
 <?php } ?>
@@ -41,7 +37,7 @@ use <?= $relationClassName ?>;
  * @property-read <?= $relationEntity->relationModelEntry->name ?><?= !$relationEntity->isHasOne ? '[]' : '' ?> <?= "\${$relationEntity->name}\n" ?>
 <?php } ?>
  */
-abstract class <?= $modelEntity->name ?>Meta extends <?= $modelEntity->getOverWriteEntity() ? $modelEntity->name : 'Model' ?><?= "\n" ?>
+abstract class <?= $modelEntity->name ?>Meta extends Model<?= "\n" ?>
 {
 <?php if (count($modelEntity->getProperties()) > 0) { ?>
 <?php foreach ($modelEntity->getProperties() as $key => $value) { ?>
@@ -53,19 +49,17 @@ abstract class <?= $modelEntity->name ?>Meta extends <?= $modelEntity->getOverWr
     {
         return '<?= $modelEntity->tableName ?>';
     }
-<?php if (!$modelEntity->getOverWriteEntity() || count(array_filter(ArrayHelper::getColumn($modelEntity->publicAttributeItems, 'isPublishToFrontend'))) > 0) { ?>
 
     public function fields()
     {
-        return array_merge(parent::fields(), [
+        return [
 <?php foreach ($modelEntity->publicAttributeItems as $attributeEntity) {
 if ($attributeEntity->isPublishToFrontend) {?>
             '<?= $attributeEntity->name ?>',
 <?php }
 } ?>
-        ]);
+        ];<?= "\n" ?>
     }
-<?php } ?>
 <?php if (!empty($rules)) { ?>
 
     public function rules()

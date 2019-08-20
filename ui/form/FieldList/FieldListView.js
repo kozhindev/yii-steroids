@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import {html, locale} from 'components';
+import {html} from 'components';
 
 const bem = html.bem('FieldListView');
 
@@ -31,6 +31,7 @@ export default class FieldListView extends React.PureComponent {
             model: PropTypes.oneOfType([
                 PropTypes.string,
                 PropTypes.func,
+                PropTypes.object,
             ]),
             component: PropTypes.any,
             required: PropTypes.bool,

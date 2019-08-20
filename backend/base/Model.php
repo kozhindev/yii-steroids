@@ -10,6 +10,7 @@ use steroids\traits\MetaTrait;
 use steroids\traits\SecurityTrait;
 use yii\base\InvalidConfigException;
 use yii\db\ActiveRecord;
+use yii\helpers\ArrayHelper;
 use yii\web\NotFoundHttpException;
 
 /**
@@ -20,6 +21,34 @@ class Model extends ActiveRecord
     use MetaTrait;
     use RelationSaveTrait;
     use SecurityTrait;
+
+    protected static $_cans;
+
+    public function getPermissions($user) {
+
+        if (static::$_cans === null) {
+            static::$_cans = [];
+            $info = new \ReflectionClass(get_class($this));
+            foreach ($info->getMethods() as $method) {
+                $parameters = $method->getParameters();
+                if (count($parameters) === 0 || $parameters[0]->getName() !== 'user') {
+                    continue;
+                }
+
+                $name = $method->getName();
+                if (preg_match('/^can((?!Attribute)\w)*$/', $name)) {
+                    static::$_cans[] = $name;
+                }
+            }
+        }
+
+        $result = [];
+        foreach (static::$_cans as $can) {
+            $result[$can] = $this->$can($user) ?: false;
+        }
+
+        return $result;
+    }
 
     /**
      * @return string
@@ -32,6 +61,49 @@ class Model extends ActiveRecord
             $pk = 'id';
         }
         return lcfirst(substr(strrchr(static::className(), "\\"), 1)) . ucfirst($pk);
+    }
+
+    /**
+     * @param array $condition
+     * @param array $additionalFields
+     * @param bool $onlyVisible
+     * @return array
+     * @throws InvalidConfigException
+     */
+    public static function asEnum($condition = [], $additionalFields = [], $onlyVisible = true)
+    {
+        $query = static::find()
+            ->andFilterWhere($condition)
+            ->limit(1000);
+
+        if ($onlyVisible && in_array('isVisible', static::getTableSchema()->columns)) {
+            $query->andWhere(['isVisible' => true]);
+        }
+
+        $result = [];
+        foreach ($query->all() as $model)
+        {
+            $idKey = $model::primaryKey()[0];
+            $labelKey = $idKey;
+            foreach (['title', 'label', 'name'] as $attribute) {
+                if ($model->canGetProperty($attribute)) {
+                    $labelKey = $attribute;
+                    break;
+                }
+            }
+
+            $item = $model->toFrontend(array_merge(
+                [
+                    'id' => $idKey,
+                    'label' => $labelKey,
+                ],
+                $additionalFields
+            ));
+            $result[$item['id']] = $item;
+        }
+
+        ArrayHelper::multisort($result, 'label');
+        return array_values($result);
     }
 
     /**
@@ -203,37 +275,42 @@ class Model extends ActiveRecord
 
     /**
      * @param Model $user
-     * @return bool
+     * @return bool|array
      */
     public function canView($user)
     {
         if (\Yii::$app->has('authManager')) {
-            return \Yii::$app->authManager->checkModelAccess($user, $this, AuthManager::RULE_MODEL_VIEW);
+            return $this->getPermittedAttributes($user, AuthManager::RULE_MODEL_VIEW);
         }
-        return $this->canUpdate($user);
-    }
 
-    /**
-     * @param Model $user
-     * @return bool
-     */
-    public function canCreate($user)
-    {
-        if (\Yii::$app->has('authManager')) {
-            return \Yii::$app->authManager->checkModelAccess($user, $this, AuthManager::RULE_MODEL_CREATE);
-        }
         return true;
     }
 
     /**
      * @param Model $user
-     * @return bool
+     * @return bool|array
+     */
+    public function canCreate($user)
+    {
+        if (\Yii::$app->has('authManager')) {
+            return $this->getPermittedAttributes($user, AuthManager::RULE_MODEL_CREATE);
+        }
+
+        return true;
+    }
+
+    /**
+     * @param Model $user
+     * @return bool|array
      */
     public function canUpdate($user)
     {
         if (\Yii::$app->has('authManager')) {
-            return \Yii::$app->authManager->checkModelAccess($user, $this, AuthManager::RULE_MODEL_UPDATE) && $this->canUpdated();
+            return $this->canUpdated()
+                ? $this->getPermittedAttributes($user, AuthManager::RULE_MODEL_UPDATE)
+                : false;
         }
+
         return $this->canUpdated();
     }
 
@@ -257,9 +334,86 @@ class Model extends ActiveRecord
         return true;
     }
 
+    /**
+     * @return bool
+     */
     public function canDeleted()
     {
         return $this->canUpdated() && !$this->isNewRecord;
+    }
+
+    /**
+     * @param Model $user
+     * @param string $attributeName
+     * @return bool
+     */
+    public function canCreateAttribute($user, $attributeName) {
+        if (\Yii::$app->has('authManager')) {
+            return \Yii::$app->authManager->checkAttributeAccess(
+                $user,
+                $this,
+                $attributeName,
+                AuthManager::RULE_MODEL_CREATE
+            );
+        }
+        return true;
+    }
+
+    /**
+     * @param Model $user
+     * @param string $attributeName
+     * @return bool
+     */
+    public function canUpdateAttribute($user, $attributeName) {
+        if (\Yii::$app->has('authManager')) {
+            return \Yii::$app->authManager->checkAttributeAccess(
+                $user,
+                $this,
+                $attributeName,
+                AuthManager::RULE_MODEL_UPDATE
+            );
+        }
+        return true;
+    }
+
+    /**
+     * @param Model $user
+     * @param string $attributeName
+     * @return bool
+     */
+    public function canViewAttribute($user, $attributeName) {
+        if (\Yii::$app->has('authManager')) {
+            return \Yii::$app->authManager->checkAttributeAccess(
+                $user,
+                $this,
+                $attributeName,
+                AuthManager::RULE_MODEL_VIEW
+            );
+        }
+        return true;
+    }
+
+    /**
+     * @param Model $user
+     * @param string $rule
+     * @return array|bool of attribute names
+     */
+    protected function getPermittedAttributes($user, $rule) {
+        $permissionCheckMethod = 'can' . ucfirst($rule) . 'Attribute';
+
+        $attributes = array_values(
+            array_filter(
+                array_keys(static::meta()),
+                function($attribute) use ($user, $permissionCheckMethod) {
+                    return $this->$permissionCheckMethod($user, $attribute);
+                }
+            )
+        );
+
+        if (count($attributes) === 0 && \Yii::$app->authManager->checkModelAccess($user, $this, $rule)) {
+            return true;
+        }
+        return $attributes;
     }
 
     public function beforeSave($insert)
@@ -271,5 +425,4 @@ class Model extends ActiveRecord
     {
         return parent::beforeDelete() && $this->canDeleted();
     }
-
 }

@@ -2,7 +2,7 @@
 
 namespace app\views;
 
-use app\core\models\User;
+use steroids\modules\user\models\User;
 use Yii;
 use yii\helpers\Html;
 use yii\mail\BaseMessage;

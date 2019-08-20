@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-export default () => WrappedComponent => class FormIdHoc extends React.PureComponent {
+export default (config = {}) => WrappedComponent => class FormIdHoc extends React.PureComponent {
 
     static WrappedComponent = WrappedComponent;
 
@@ -17,9 +17,14 @@ export default () => WrappedComponent => class FormIdHoc extends React.PureCompo
         model: PropTypes.oneOfType([
             PropTypes.string,
             PropTypes.func,
+            PropTypes.object,
         ]),
         prefix: PropTypes.string,
-        layout: PropTypes.string,
+        layout: PropTypes.oneOfType([
+            PropTypes.oneOf(['default', 'inline', 'horizontal']),
+            PropTypes.string,
+            PropTypes.bool,
+        ]),
         layoutProps: PropTypes.object,
         size: PropTypes.oneOf(['sm', 'md', 'lg']),
     };
@@ -30,7 +35,7 @@ export default () => WrappedComponent => class FormIdHoc extends React.PureCompo
                 {...this.props}
                 formId={this.props.formId || this.context.formId}
                 model={this.props.model || this.context.model}
-                prefix={this.props.prefix || this.context.prefix}
+                prefix={config.appendPrefix ? (this.context.prefix || '') + (this.props.prefix || '') : this.props.prefix || this.context.prefix}
                 layout={this.props.layout || this.context.layout}
                 layoutProps={{
                     ...this.context.layoutProps,

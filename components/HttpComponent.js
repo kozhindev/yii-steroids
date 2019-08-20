@@ -3,13 +3,19 @@ import _trimStart from 'lodash-es/trimStart';
 import _trimEnd from 'lodash-es/trimEnd';
 import {setFlashes} from '../actions/notifications';
 import axios from 'axios';
+import _isFunction from 'lodash-es/isFunction';
+import _isObject from 'lodash-es/isObject';
 
 export default class HttpComponent {
 
     constructor() {
-        this.apiUrl = '//' + location.host;
+        this.apiUrl = location.protocol + '//' + location.host;
+        this.accessTokenKey = 'accessToken';
+
         this._lazyRequests = {};
         this._axios = null;
+        this._csrfToken = null;
+        this._accessToken = false;
     }
 
     getAxiosConfig() {
@@ -25,12 +31,60 @@ export default class HttpComponent {
         };
 
         // Add CSRF header
-        const metaToken = document.querySelector('meta[name=csrf-token]');
-        if (metaToken) {
-            config.headers['X-CSRF-Token'] = metaToken.getAttribute('content');
+        if (!this._csrfToken) {
+            const metaElement = document.querySelector('meta[name=csrf-token]');
+            if (metaElement) {
+                this._csrfToken = metaElement.getAttribute('content');
+            }
+        }
+        if (this._csrfToken) {
+            config.headers['X-CSRF-Token'] = this._csrfToken;
+        }
+
+        // Set access token
+        const clientStorage = require('components').clientStorage;
+        if (this._accessToken === false) {
+            this._accessToken = clientStorage.get(this.accessTokenKey) || null;
+        }
+        if (this._accessToken) {
+            config.headers['Authorization'] = 'Bearer ' + this._accessToken;
         }
 
         return config;
+    }
+
+    /**
+     * @param value
+     */
+    setCsrfToken(value) {
+        this._csrfToken = value;
+        this.resetConfig();
+    }
+
+    /**
+     * @param value
+     */
+    setAccessToken(value) {
+        this._accessToken = value;
+        this.resetConfig();
+
+        const clientStorage = require('components').clientStorage;
+        clientStorage.set(this.accessTokenKey, value);
+    }
+
+    /**
+     * @returns {string}
+     */
+    getAccessToken() {
+        if (this._accessToken === false) {
+            const clientStorage = require('components').clientStorage;
+            this._accessToken = clientStorage.get(this.accessTokenKey) || null;
+        }
+        return this._accessToken;
+    }
+
+    resetConfig() {
+        this._axios = null;
     }
 
     getAxiosInstance() {
@@ -38,6 +92,16 @@ export default class HttpComponent {
             this._axios = axios.create(this.getAxiosConfig());
         }
         return this._axios;
+    }
+
+    getUrl(method) {
+        if (method === null) {
+            method = location.pathname;
+        }
+        if (method.indexOf('://') === -1) {
+            method = `${_trimEnd(this.apiUrl, '/')}/${_trimStart(method, '/')}`;
+        }
+        return method;
     }
 
     get(url, params = {}, options = {}) {
@@ -85,11 +149,20 @@ export default class HttpComponent {
                     data: null,
                 };
 
+                this._isRendered = false;
+                this._cancels = [];
                 this._fetch = this._fetch.bind(this);
+                this._createCancelToken = this._createCancelToken.bind(this);
             }
 
             componentDidMount() {
+                this._isRendered = true;
                 this._fetch();
+            }
+
+            componentWillUnmount() {
+                this._isRendered = false;
+                this._cancels.forEach(cancel => cancel('Canceled on unmount component'));
             }
 
             render() {
@@ -102,15 +175,33 @@ export default class HttpComponent {
                 );
             }
 
+            _createCancelToken() {
+                return new axios.CancelToken(cancel => {
+                    this._cancels.push(cancel);
+                });
+            }
+
             _fetch(params) {
-                return requestFunc({
+                const result = requestFunc({
                     ...this.props,
                     ...params,
-                })
-                    .then(data => {
-                        this.setState({data});
-                        return data;
-                    });
+                    createCancelToken: this._createCancelToken,
+                });
+
+                if (_isObject(result)) {
+                    if (_isFunction(result.then)) {
+                        return result.then(data => {
+                            if (this._isRendered) {
+                                this.setState({data});
+                            }
+                            return data;
+                        });
+                    } else {
+                        this.setState({data: result});
+                    }
+                }
+
+                return result;
             }
 
         };
@@ -119,10 +210,12 @@ export default class HttpComponent {
     _send(method, config, options) {
         const axiosConfig = {
             ...config,
-            url: method !== null
-                ? `${_trimEnd(this.apiUrl, '/')}/${_trimStart(method, '/')}`
-                : location.pathname,
+            url: this.getUrl(method),
         };
+
+        if (options.cancelToken) {
+            axiosConfig.cancelToken = options.cancelToken;
+        }
 
         if (options.lazy) {
             if (this._lazyRequests[method]) {

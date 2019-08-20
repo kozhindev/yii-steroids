@@ -157,6 +157,11 @@ class ModelAttributeEntity extends ModelAttributeEntityMeta
                 ? '->defaultValue(' . (preg_match('/^[0-9]+$/', $this->defaultValue) ? $this->defaultValue : "'" . $this->defaultValue . "'") . ')'
                 : '';
 
+            if (!$isPostgres && $parts[0] === 'boolean') {
+                $notNull = '->notNull()';
+                $defaultValue = '->defaultValue(0)';
+            }
+
             return '$this->' . $map[$parts[0]] . '(' . $arguments . ')' . $notNull . $defaultValue;
         } else {
             return "'$dbType'";
@@ -165,19 +170,6 @@ class ModelAttributeEntity extends ModelAttributeEntityMeta
 
     public function getIsProtected()
     {
-        if (!class_exists($this->modelEntity->getClassName())) {
-            return false;
-        }
-
-        $info = new \ReflectionClass($this->modelEntity->getClassName());
-        /** @var Model $parentClassName */
-        $parentClassName = $info->getParentClass()->getParentClass()->name;
-
-        if (method_exists($parentClassName, 'meta')) {
-            $meta = $parentClassName::meta();
-            return ArrayHelper::keyExists($this->name, $meta);
-        }
-
         return false;
     }
 

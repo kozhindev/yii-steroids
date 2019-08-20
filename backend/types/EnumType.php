@@ -22,29 +22,30 @@ class EnumType extends Type
     /**
      * @inheritdoc
      */
-    public function prepareFieldProps($modelClass, $attribute, &$props, &$import = null)
+    public function prepareFieldProps($modelClass, $attribute, &$props)
     {
         $props = array_merge(
             [
                 'component' => 'DropDownField',
                 'attribute' => $attribute,
-                'items' => $this->getItemsProperty($modelClass, $attribute, $import),
+                'items' => $this->getItemsProperty($modelClass, $attribute),
             ],
             $props
         );
     }
 
-    public function prepareFormatterProps($modelClass, $attribute, &$props, &$import = null)
+    public function prepareFormatterProps($modelClass, $attribute, &$props)
     {
         $props = array_merge(
             [
                 'component' => 'EnumFormatter',
                 'attribute' => $attribute,
-                'items' => $this->getItemsProperty($modelClass, $attribute, $import),
+                'items' => $this->getItemsProperty($modelClass, $attribute),
             ],
             $props
         );
     }
+
     /**
      * @inheritdoc
      */
@@ -65,32 +66,14 @@ class EnumType extends Type
     /**
      * @param Model|FormModel|string $modelClass
      * @param string $attribute
-     * @param array|null $import
      * @return mixed
      * @throws \ReflectionException
      */
-    protected function getItemsProperty($modelClass, $attribute, &$import)
+    protected function getItemsProperty($modelClass, $attribute)
     {
         /** @var Enum $enumClass */
         $enumClass = ArrayHelper::getValue($this->getOptions($modelClass, $attribute), self::OPTION_CLASS_NAME);
-        if ($enumClass) {
-            if (is_array($import)) {
-                $info = (new \ReflectionClass($enumClass))->getParentClass();
-                $name = $info->getName();
-                if (strpos('app\\', $name) === 0) {
-                    $path = str_replace('\\', '/', $info->getName());
-                } else {
-                    $path = GiiHelper::getRelativePath((new \ReflectionClass($modelClass))->getParentClass()->getFileName(), $info->getFileName());
-                    $path = preg_replace('/\.php$/', '', $path);
-                }
-                
-                $import[] = "import {$info->getShortName()} from '" . $path . "';";
-                return new JsExpression($info->getShortName());
-            } else {
-                return $enumClass::toFrontend();
-            }
-        }
-        return null;
+        return $enumClass ? trim(str_replace('\\', '.', $enumClass), '.') : null;
     }
 
 
@@ -169,14 +152,9 @@ class EnumType extends Type
         return [
             [
                 'attribute' => self::OPTION_CLASS_NAME,
-                'component' => 'DropDownField',
+                'component' => 'AutoCompleteField',
                 'label' => 'Enum Class',
-                'items' => array_map(function (EnumEntity $enumEntity) {
-                    return [
-                        'id' => $enumEntity->getClassName(),
-                        'label' => $enumEntity->getClassName(),
-                    ];
-                }, EnumEntity::findAll()),
+                'items' => ArrayHelper::getColumn(EnumEntity::findAll(), 'className'),
             ]
         ];
     }

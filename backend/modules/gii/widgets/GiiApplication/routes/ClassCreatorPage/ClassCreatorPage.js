@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import _get from 'lodash-es/get';
-import {Link} from 'yii-steroids/ui/nav';
+import {Link} from '../../../../../../../ui/nav';
 
 import {html} from 'components';
 import ClassTypeMeta from '../../../../enums/meta/ClassTypeMeta';
@@ -46,6 +46,14 @@ export default class ClassCreatorPage extends React.PureComponent {
             })),
         })),
         onEntityComplete: PropTypes.func,
+        sampleAttributes: PropTypes.arrayOf(PropTypes.shape({
+            appType: PropTypes.string,
+            name: PropTypes.string,
+            defaultValue: PropTypes.string,
+            example: PropTypes.string,
+            hint: PropTypes.string,
+            label: PropTypes.string,
+        })),
     };
 
     render() {
@@ -123,7 +131,10 @@ export default class ClassCreatorPage extends React.PureComponent {
                         ...entity,
                     }}
                     classType={values.classType}
+                    moduleIds={this.props.moduleIds}
+                    classes={this.props.classes}
                     appTypes={this.props.appTypes}
+                    sampleAttributes={this.props.sampleAttributes}
                     onEntityComplete={this.props.onEntityComplete}
                 />
             </div>

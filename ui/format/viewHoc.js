@@ -38,8 +38,8 @@ export default config => WrappedComponent => class ViewHoc extends React.Compone
 
         return (
             <WrappedComponent
-                {...this.props}
                 {...valueProps}
+                {...this.props}
             />
         );
     }

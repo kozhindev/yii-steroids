@@ -1,13 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
-import {Router} from 'yii-steroids/ui/nav';
+import {Router} from '../../nav';
 import _get from 'lodash-es/get';
 import _isFunction from 'lodash-es/isFunction';
 import _isString from 'lodash-es/isString';
 import {push} from 'react-router-redux';
 
-import {http, locale, ui} from 'components';
+import {http, ui} from 'components';
 import {refresh} from '../../../actions/list';
 import {getCurrentRoute} from '../../../reducers/routing';
 import Grid from '../../list/Grid';

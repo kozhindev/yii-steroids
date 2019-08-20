@@ -7,8 +7,6 @@ import {object, boolean, text, select} from "@storybook/addon-knobs/react";
 import FileField from './FileField';
 import README from './README.md'
 
-import './FileFieldView.scss';
-
 const sizes = {
     sm: 'Small',
     md: 'Middle',

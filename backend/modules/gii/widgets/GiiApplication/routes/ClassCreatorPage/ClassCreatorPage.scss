@@ -19,4 +19,9 @@
       color: lighten($danger, 15%);
     }
   }
+
+  .AutoCompleteFieldView__drop-down {
+    width: auto;
+    max-width: 300px;
+  }
 }

@@ -20,10 +20,15 @@ use yii\helpers\Url;
  * @property string $fileSize
  * @property integer $createTime
  * @property boolean $isTemp
+ * @property string $sourceType
+ * @property string $amazoneS3Url
  * @property-read string $path
  * @property-read string $url
  * @property-read string $downloadUrl
  * @property-read string $downloadName
+ *
+ * @property string $md5
+ * @property integer $userId
  */
 class File extends Model
 {
@@ -132,6 +137,8 @@ class File extends Model
             'url',
             'downloadUrl',
             'images',
+            'md5',
+            'userId'
         ];
     }
 
@@ -153,6 +160,8 @@ class File extends Model
             ['fileName', 'string'],
             ['fileSize', 'integer'],
             ['fileMimeType', 'default', 'value' => 'text/plain'],
+            ['md5', 'string', 'max' => 255],
+            ['userId', 'number']
         ];
     }
 
@@ -179,6 +188,9 @@ class File extends Model
      */
     public function getUrl()
     {
+        if ($this->sourceType === FileModule::SOURCE_AMAZONE_S3) {
+            return $this->amazoneS3Url;
+        }
         return FileModule::getInstance()->filesRootUrl . $this->getRelativePath();
     }
 
@@ -194,6 +206,9 @@ class File extends Model
      */
     public function getDownloadUrl()
     {
+        if ($this->sourceType === FileModule::SOURCE_AMAZONE_S3) {
+            return $this->amazoneS3Url;
+        }
         return Url::to(['/file/download/index', 'uid' => $this->uid, 'name' => $this->getDownloadName()], true);
     }
 
@@ -316,8 +331,8 @@ class File extends Model
 
     public function getExtendedAttributes($processor = null)
     {
-        if ($processor) {
-            $this->processors = [$processor];
+        if (!empty($processor)) {
+            $this->processors = (array)$processor;
         }
         return $this->toArray();
     }

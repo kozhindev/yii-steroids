@@ -12,6 +12,7 @@ export default class RadioListFieldView extends React.PureComponent {
         label: PropTypes.oneOfType([
             PropTypes.string,
             PropTypes.bool,
+            PropTypes.any,
         ]),
         hint: PropTypes.string,
         required: PropTypes.bool,
@@ -24,8 +25,12 @@ export default class RadioListFieldView extends React.PureComponent {
             id: PropTypes.oneOfType([
                 PropTypes.number,
                 PropTypes.string,
+                PropTypes.bool,
             ]),
-            label: PropTypes.string,
+            label: PropTypes.oneOfType([
+                PropTypes.string,
+                PropTypes.any,
+            ]),
         })),
         onItemClick: PropTypes.func,
     };

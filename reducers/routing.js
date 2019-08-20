@@ -1,4 +1,6 @@
 import _get from 'lodash-es/get';
+import _isEmpty from 'lodash-es/isEmpty';
+import _isEqual from 'lodash-es/isEqual';
 import {matchPath} from 'react-router';
 
 import {ROUTING_REGISTER} from '../actions/routing';
@@ -10,6 +12,7 @@ const initialState = {
     action: null,
     routes: [],
 };
+const routesCache = {};
 
 export default (state = initialState, action) => {
     switch (action.type) {
@@ -35,15 +38,24 @@ export default (state = initialState, action) => {
 
 
 export const getCurrentRoute = (state) => {
+    if (!state || _isEmpty(state)) {
+        return null;
+    }
+
     let currentRoute = null;
     const pathname = _get(state, 'routing.location.pathname');
     state.routing.routes.forEach(route => {
+        if (currentRoute) {
+            return;
+        }
+
         const match = matchPath(pathname, route);
-        if (match) {
-            currentRoute = {
-                id: route.id,
-                ...match,
-            };
+        const finedRoute = match && {id: route.id, ...match};
+        if (finedRoute) {
+            if (!routesCache[route.id] || !_isEqual(routesCache[route.id], finedRoute)) {
+                routesCache[route.id] = finedRoute;
+            }
+            currentRoute = routesCache[route.id];
         }
     });
     return currentRoute;

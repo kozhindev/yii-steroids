@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import Modal from 'react-modal';
 
 import {html} from 'components';
-import './ModalView.scss';
 
 const bem = html.bem('ModalView');
 
@@ -19,10 +18,13 @@ export default class ModalView extends React.PureComponent {
             <div className={bem.block()}>
                 <Modal
                     isOpen={true}
-                    className={bem.element('modal')}
                     overlayClassName={bem.element('overlay')}
                     ariaHideApp={false}
                     {...this.props}
+                    className={bem(
+                        bem.element('modal'),
+                        this.props.className
+                    )}
                 >
                     <div className={bem.element('inner')}>
                         <div className={bem.element('header')}>

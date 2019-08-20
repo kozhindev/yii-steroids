@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
+import { change } from 'redux-form';
 import _get from 'lodash-es/get';
 
 import {ui} from 'components';
@@ -23,6 +24,7 @@ class Pagination extends React.PureComponent {
         view: PropTypes.func,
         pageParam: PropTypes.string,
         size: PropTypes.oneOf(['sm', 'md', 'lg']),
+        syncWithAddressBar: PropTypes.bool,
     };
 
     static defaultProps = {
@@ -93,7 +95,11 @@ class Pagination extends React.PureComponent {
                 // TODO
                 location.href = location.pathname + '?' + this.props.pageParam + '=' + page;
             } else {
-                this.props.dispatch(setPage(this.props.listId, page));
+                if (this.props.syncWithAddressBar) {
+                    this.props.dispatch(change(this.props.listId, 'page', page));
+                } else {
+                    this.props.dispatch(setPage(this.props.listId, page, this.props.loadMore));
+                }
             }
         }
     }

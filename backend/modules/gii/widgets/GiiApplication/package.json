@@ -1,0 +1,11 @@
+{
+  "name": "yii-steroids-gii",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "css-hot-loader": "^1.4.4",
+    "yii-steroids": "^1.12.1",
+    "webpack": "^4.36.1"
+  },
+  "devDependencies": {}
+}

@@ -7,6 +7,7 @@ import {
     LIST_INIT,
     LIST_BEFORE_FETCH,
     LIST_AFTER_FETCH,
+    LIST_ITEM_ADD,
     LIST_ITEM_UPDATE,
     LIST_DESTROY,
     LIST_TOGGLE_ITEM,
@@ -63,14 +64,28 @@ export default (state = {}, action) => {
                 }
             };
 
+        case LIST_ITEM_ADD:
+            if (state[action.listId]) {
+                return {
+                    ...state,
+                    [action.listId]: {
+                        ...state[action.listId],
+                        items: action.prepend
+                            ? [].concat(action.item).concat(state[action.listId].items)
+                            : [].concat(state[action.listId].items).concat(action.item),
+                    }
+                };
+            }
+            break;
+
         case LIST_ITEM_UPDATE:
             return {
                 ...state,
                 [action.listId]: {
                     ...state[action.listId],
-                    items: state[action.listId].map(item => {
+                    items: state[action.listId].items.map(item => {
                         if (_isMatch(item, action.condition)) {
-                            _extend(item, action.item);
+                            item = _extend({}, item, action.item);
                         }
                         return item;
                     }),

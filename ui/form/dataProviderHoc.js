@@ -1,14 +1,29 @@
 import React from 'react';
+import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
+import {change} from 'redux-form';
 import _remove from 'lodash-es/remove';
-import _filter from 'lodash-es/filter';
+import _some from 'lodash-es/some';
+import _isString from 'lodash-es/isString';
 import _isArray from 'lodash-es/isArray';
 import _isFunction from 'lodash-es/isFunction';
 import _isObject from 'lodash-es/isObject';
+import _includes from 'lodash-es/includes';
+import _uniqBy from 'lodash-es/uniqBy';
+import _isInteger from 'lodash-es/isInteger';
+import _orderBy from 'lodash-es/orderBy';
 
-import {http} from 'components';
+import {http, store} from 'components';
+import {getEnumLabels} from '../../reducers/fields';
 
-export default () => WrappedComponent => class DataProviderHoc extends React.PureComponent {
+const stateMap = (state, props) => ({
+    items: _isString(props.items)
+        ? getEnumLabels(state, props.items)
+        : props.items,
+});
+
+export default () => WrappedComponent => @connect(stateMap)
+class DataProviderHoc extends React.PureComponent {
 
     static WrappedComponent = WrappedComponent;
 
@@ -21,13 +36,22 @@ export default () => WrappedComponent => class DataProviderHoc extends React.Pur
         ...WrappedComponent.propTypes,
         multiple: PropTypes.bool,
         items: PropTypes.oneOfType([
-            PropTypes.arrayOf(PropTypes.shape({
-                id: PropTypes.oneOfType([
-                    PropTypes.number,
-                    PropTypes.string,
-                ]),
-                label: PropTypes.string,
-            })),
+            PropTypes.arrayOf(PropTypes.oneOfType([
+                PropTypes.string,
+                PropTypes.number,
+                PropTypes.shape({
+                    id: PropTypes.oneOfType([
+                        PropTypes.number,
+                        PropTypes.string,
+                        PropTypes.bool,
+                    ]),
+                    label: PropTypes.oneOfType([
+                        PropTypes.string,
+                        PropTypes.any,
+                    ]),
+                })
+            ])),
+            PropTypes.string, // Enum from redux state
             PropTypes.func, // Enum
         ]),
         dataProvider: PropTypes.shape({
@@ -40,6 +64,7 @@ export default () => WrappedComponent => class DataProviderHoc extends React.Pur
         autoCompleteDelay: PropTypes.number,
         autoFetch: PropTypes.bool,
         selectFirst: PropTypes.bool,
+        onSelect: PropTypes.func,
     };
 
     static defaultProps = {
@@ -56,6 +81,17 @@ export default () => WrappedComponent => class DataProviderHoc extends React.Pur
     static normalizeItems(items) {
         // Array
         if (_isArray(items)) {
+            if (_some(items, item => _isString(item) || _isInteger(item))) {
+                return items.map(item => {
+                    if (_isString(item) || _isInteger(item)) {
+                        return {
+                            id: item,
+                            label: item,
+                        };
+                    }
+                    return item;
+                });
+            }
             return items;
         }
 
@@ -104,7 +140,7 @@ export default () => WrappedComponent => class DataProviderHoc extends React.Pur
 
         // Check to auto fetch items first page
         if (this.props.autoFetch && this.props.dataProvider) {
-            this._searchDataProvider();
+            this._searchDataProvider('', true);
         }
 
         // Async load selected labels from backend
@@ -120,21 +156,28 @@ export default () => WrappedComponent => class DataProviderHoc extends React.Pur
     componentWillReceiveProps(nextProps) {
         // Refresh normalized source items on change items from props
         if (this.props.items !== nextProps.items) {
-            this.setState({
-                sourceItems: DataProviderHoc.normalizeItems(nextProps.items),
-            });
+            const sourceItems = DataProviderHoc.normalizeItems(nextProps.items);
+            this.setState({sourceItems});
+
+            // Select first value on fetch data
+            if (this.props.items.length === 0 && nextProps.items.length > 0 && this.props.selectFirst) {
+                this._onItemClick(sourceItems[0]);
+            }
         }
 
         // Store selected items in state on change value
         if (this.props.input.value !== nextProps.input.value) {
             this.setState({
-                selectedItems: this._findSelectedItems(this.state.items, nextProps.input.value),
+                selectedItems: this._findSelectedItems(
+                    _uniqBy([].concat(this.state.items, this.state.sourceItems, this.state.selectedItems), 'id'),
+                    nextProps.input.value
+                ),
             });
         }
 
         // Check auto fetch on change autoFetch flag or data provider config
         if (nextProps.autoFetch && nextProps.dataProvider && (!this.props.autoFetch || this.props.dataProvider !== nextProps.dataProvider)) {
-            this._searchDataProvider();
+            this._searchDataProvider('');
         }
     }
 
@@ -153,6 +196,7 @@ export default () => WrappedComponent => class DataProviderHoc extends React.Pur
                 selectedItems={this.state.selectedItems}
                 hoveredItem={this.state.hoveredItem}
                 isOpened={this.state.isOpened}
+                isLoading={this.state.isLoading}
                 items={this.state.items}
                 onOpen={this._onOpen}
                 onClose={this._onClose}
@@ -171,8 +215,8 @@ export default () => WrappedComponent => class DataProviderHoc extends React.Pur
      * @private
      */
     _findSelectedItems(items, value) {
-        const selectedValues = [].concat(value || []);
-        return items.filter(item => selectedValues.indexOf(item.id) !== -1);
+        const selectedValues = value === false || value === 0 ? [value] : [].concat(value || []);
+        return items.filter(item => _includes(selectedValues, item.id));
     }
 
     /**
@@ -183,6 +227,7 @@ export default () => WrappedComponent => class DataProviderHoc extends React.Pur
         this.setState({
             isOpened: !this.state.isOpened,
             items: this.state.sourceItems,
+            hoveredItem: null,
         });
     }
 
@@ -206,7 +251,7 @@ export default () => WrappedComponent => class DataProviderHoc extends React.Pur
 
         this.setState({query});
 
-        if (this.dataProvider) {
+        if (this.props.dataProvider) {
             if (this._delayTimer) {
                 clearTimeout(this._delayTimer);
             }
@@ -228,13 +273,79 @@ export default () => WrappedComponent => class DataProviderHoc extends React.Pur
      * @private
      */
     _searchClientSide(query) {
-        query = query.toLowerCase();
+        if (!query) {
+            this.setState({
+                items: this.state.sourceItems,
+            });
+            return;
+        }
 
-        this.setState({
-            items: query
-                ? _filter(this.state.sourceItems, item => item.label.toLowerCase().indexOf(query) === 0)
-                : this.state.sourceItems,
+        const toWords = str => (str.match(/^[^A-ZА-Я]+/) || []).concat(str.match(/[A-ZА-Я][^A-ZА-Я]*/g) || []);
+        const queryCharacters = query.split('');
+
+        // Match
+        let items = this.state.sourceItems.filter(item => {
+            const id = item.id;
+            const words = toWords(item.label || '');
+            if (words.length === 0 || !id) {
+                return false;
+            }
+
+            let word = null;
+            let highlighted = [['', false]];
+            let index = 0;
+            let wordIndex = 0;
+            let wordChar = null;
+            let wordCharIndex = 0;
+            while(true) {
+                const char = queryCharacters[index];
+                if (!char) {
+                    highlighted.push([word.substr(wordCharIndex) + words.slice(wordIndex + 1).join(''), false]);
+                    break;
+                }
+
+                word = words[wordIndex];
+                wordChar = word && word.split('')[wordCharIndex] || '';
+                if (!word) {
+                    highlighted = [];
+                    break;
+                }
+
+                const isMatch = !char.match(/[A-ZА-Я]/)
+                    ? wordChar.toLowerCase() === char.toLowerCase()
+                    : wordChar === char;
+
+                if (isMatch) {
+                    index++;
+                    wordCharIndex++;
+                    highlighted[highlighted.length - 1][0] += wordChar;
+                    highlighted[highlighted.length - 1][1] = true;
+                } else {
+                    highlighted.push([word.substr(wordCharIndex), false]);
+                    highlighted.push(['', false]);
+
+                    wordIndex++;
+                    wordCharIndex = 0;
+                }
+            }
+            highlighted = highlighted.filter(item => !!item[0]);
+            if (highlighted.findIndex(item => item[1]) !== -1) {
+                item.labelHighlighted = highlighted;
+                return true;
+            }
+
+            return false;
         });
+
+        items = _orderBy(items, item => {
+            // Fined first word is priority
+            if (item.labelHighlighted) {
+                return item.labelHighlighted.findIndex(i => i[1]);
+            }
+            return Infinity;
+        }, 'asc');
+
+        this.setState({items});
     }
 
     /**
@@ -242,7 +353,11 @@ export default () => WrappedComponent => class DataProviderHoc extends React.Pur
      * @param {string} query
      * @private
      */
-    _searchDataProvider(query = '') {
+    _searchDataProvider(query = '', isAutoFetch) {
+        if (!isAutoFetch && query.length < this.props.autoCompleteMinLength) {
+            return;
+        }
+
         const searchHandler = this.props.dataProvider.onSearch || http.post;
         const result = searchHandler(this.props.dataProvider.action, {
             query,
@@ -254,18 +369,22 @@ export default () => WrappedComponent => class DataProviderHoc extends React.Pur
         // Check is promise
         if (result && _isFunction(result.then)) {
             this.setState({isLoading: true});
-            result.then(items => {
+            result.then(items =>  {
+                items = DataProviderHoc.normalizeItems(items);
                 this.setState({
                     isLoading: false,
-                    items: DataProviderHoc.normalizeItems(items),
+                    items,
+                    sourceItems: isAutoFetch ? items : this.state.sourceItems,
                 });
             });
         }
 
         // Check is items list
         if (_isArray(result)) {
+            const items = DataProviderHoc.normalizeItems(result);
             this.setState({
-                items: DataProviderHoc.normalizeItems(result),
+                items,
+                sourceItems: isAutoFetch ? items : this.state.sourceItems,
             });
         }
     }
@@ -273,22 +392,40 @@ export default () => WrappedComponent => class DataProviderHoc extends React.Pur
     /**
      * Handler for user click on item
      * @param {object} item
+     * @param {boolean} skipToggle
      * @private
      */
-    _onItemClick(item) {
+    _onItemClick(item, skipToggle = false) {
         const id = item.id;
 
         if (this.props.multiple) {
-            const values = this.props.input.value || [];
+            const values = [].concat(this.props.input.value || []);
             if (values.indexOf(id) !== -1) {
-                _remove(values, value => value === id);
+                if (!skipToggle) {
+                    _remove(values, value => value === id);
+                }
             } else {
                 values.push(id);
             }
-            this.props.input.onChange([].concat(values));
+            this.props.input.onChange(values);
+
+            // Fix bug. Without this calls component Form is not get differect values
+            // in componentWillReceiveProps and onChange handlers is not called.
+            if (this.props.formId) {
+                store.dispatch(change(this.props.formId, this.props.input.name, values));
+            }
         } else {
-            this.props.input.onChange(this.props.input.value !== id ? id : null);
+            if (this.props.input.value !== id) {
+                this.props.input.onChange(id);
+            }
             this._onClose();
+        }
+
+        if (this.props.onSelect) {
+            this.props.onSelect(item, {
+                prefix: this.props.prefix,
+                name: this.props.input.name,
+            });
         }
     }
 
@@ -331,10 +468,13 @@ export default () => WrappedComponent => class DataProviderHoc extends React.Pur
 
                     if (this.state.hoveredItem) {
                         // Select hovered
-                        this._onItemClick(this.state.hoveredItem);
+                        this._onItemClick(this.state.hoveredItem, true);
+                    } else if (this.state.selectedItems.length > 0) {
+                        // Select first selected
+                        this._onItemClick(this.state.selectedItems[0], true);
                     } else if (this.state.items.length > 0) {
                         // Select first result
-                        this._onItemClick(this.state.items[0]);
+                        this._onItemClick(this.state.items[0], true);
                     }
                 }
                 break;
@@ -355,7 +495,11 @@ export default () => WrappedComponent => class DataProviderHoc extends React.Pur
                 // Navigate on items by keys
                 const direction = isDown > 0 ? 1 : -1;
                 const keys = this.state.items.map(item => item.id);
-                const index = this.state.hoveredItem ? keys.indexOf(this.state.hoveredItem.id) : -1;
+                let index = this.state.hoveredItem ? keys.indexOf(this.state.hoveredItem.id) : -1;
+                if (index === -1 && this.state.selectedItems.length === 1) {
+                    index = keys.indexOf(this.state.selectedItems[0].id);
+                }
+
                 const newIndex = index !== -1 ? Math.min(keys.length - 1, Math.max(0, index + direction)) : 0;
                 this.setState({
                     hoveredItem: this.state.sourceItems.find(item => item.id === keys[newIndex]),

@@ -3,7 +3,7 @@ const fs = require('fs');
 const _ = require('lodash');
 const utils = require('./utils');
 const getConfigDefault = require('./config.default');
-const mergeConfigs = require('@storybook/core/dist/server/mergeConfigs').default;
+const mergeConfigs = require('@storybook/core/dist/server/utils/merge-webpack-config').default;
 
 module.exports = (config) => {
     config = _.merge(getConfigDefault(), config);
@@ -91,7 +91,7 @@ module.exports = (config) => {
         .filter(Boolean);
 
     return storybookConfig => {
-        const finalConfig = mergeConfigs(storybookConfig, webpackConfig);
+        const finalConfig = mergeConfigs(storybookConfig.config, webpackConfig);
 
         // No exclude yii-steroids package - it's es6 code
         finalConfig.module.rules[0].exclude = /node_modules(\/|\\+)(?!yii-steroids)/;

@@ -2,6 +2,7 @@ import React from 'react';
 import {connect} from 'react-redux';
 import {storiesOf} from '@storybook/react';
 import {withInfo} from '@storybook/addon-info';
+import { withReadme } from 'storybook-readme';
 
 import Button from '../../form/Button';
 import ModalWrapper from '../ModalWrapper';

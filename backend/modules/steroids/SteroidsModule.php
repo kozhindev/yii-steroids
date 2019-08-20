@@ -16,8 +16,12 @@ class SteroidsModule extends Module
                     return true;
                 },
                 'items' => [
+                    'meta-fetch' => [
+                        'url' => ['/steroids/steroids-fields/meta-fetch'],
+                        'urlRule' => 'api/steroids/meta-fetch',
+                    ],
                     'fields-fetch' => [
-                        'url' => ['/steroids/steroids-fields/fetch'],
+                        'url' => ['/steroids/steroids-fields/fields-fetch'],
                         'urlRule' => 'api/steroids/fields-fetch',
                     ],
                 ],

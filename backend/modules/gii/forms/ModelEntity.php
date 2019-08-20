@@ -2,7 +2,9 @@
 
 namespace steroids\modules\gii\forms;
 
+use BaconQrCode\Common\Mode;
 use steroids\base\Model;
+use steroids\base\SearchModel;
 use steroids\modules\gii\enums\ClassType;
 use steroids\modules\gii\enums\MigrateMode;
 use steroids\modules\gii\forms\meta\ModelEntityMeta;
@@ -12,7 +14,6 @@ use steroids\modules\gii\models\MigrationMethods;
 use steroids\modules\gii\models\ValueExpression;
 use steroids\modules\gii\traits\EntityTrait;
 use steroids\types\RelationType;
-use steroids\validators\RecordExistValidator;
 use yii\helpers\ArrayHelper;
 
 /**
@@ -92,15 +93,9 @@ class ModelEntity extends ModelEntityMeta implements IEntity
 
             // Lazy create module
             ModuleEntity::findOrCreate($this->moduleId);
-            
+
             // Create/update meta information
-            if (GiiHelper::isOverWriteClass($this->getClassName()) && GiiModule::getInstance()->showSteroidsEntries) {
-                // TODO Save lib class
-            }
             GiiHelper::renderFile('model/meta', $this->getMetaPath(), [
-                'modelEntity' => $this,
-            ]);
-            GiiHelper::renderFile('model/meta_js', $this->getMetaJsPath(), [
                 'modelEntity' => $this,
             ]);
             \Yii::$app->session->addFlash('success', 'Meta  info model ' . $this->name . 'Meta updated');
@@ -111,6 +106,12 @@ class ModelEntity extends ModelEntityMeta implements IEntity
                     'modelEntity' => $this,
                 ]);
                 \Yii::$app->session->addFlash('success', 'Added model ' . $this->name);
+            }
+
+            if (GiiModule::getInstance()->generateJsMeta) {
+                GiiHelper::renderFile('model/meta_js', $this->getMetaJsPath(), [
+                    'modelEntity' => $this,
+                ]);
             }
 
             // Create migration
@@ -142,15 +143,6 @@ class ModelEntity extends ModelEntityMeta implements IEntity
     public function getClassName()
     {
         return $this->className ?: GiiHelper::getClassName(ClassType::MODEL, $this->moduleId, $this->name);
-    }
-
-    public function getOverWriteEntity()
-    {
-        $libClassName = str_replace('app\\', 'steroids\\modules\\', $this->getClassName());
-        if (class_exists($libClassName)) {
-            return static::findOne($libClassName);
-        }
-        return null;
     }
 
     public function getModelsDir()
@@ -245,11 +237,9 @@ class ModelEntity extends ModelEntityMeta implements IEntity
     }
 
     /**
-     * @param string $indent
-     * @param array $import
-     * @return mixed|string
+     * @return array
      */
-    public function renderJsFields($indent = '', &$import = [])
+    public function getJsFields($searchForm = false, $locale = false)
     {
         $result = [];
 
@@ -257,30 +247,36 @@ class ModelEntity extends ModelEntityMeta implements IEntity
             $props = [];
             $type = \Yii::$app->types->getType($this->getAttributeEntity($attribute)->appType);
 
-            // Add label and hint
-            foreach (['label', 'hint'] as $key) {
-                if (empty($item[$key])) {
-                    continue;
+            if ($searchForm) {
+                $type->prepareSearchFieldProps($this->getClassName(), $attribute, $props);
+            } else {
+                // Add label and hint
+                foreach (['label', 'hint'] as $key) {
+                    if (empty($item[$key])) {
+                        continue;
+                    }
+
+                    $text = ArrayHelper::getValue($item, $key);
+                    if ($text) {
+                        $props[$key] = $locale ? GiiHelper::locale($text) : $text;
+                    }
                 }
 
-                $text = ArrayHelper::getValue($item, $key);
-                if ($text) {
-                    $props[$key] = GiiHelper::locale($text);
+                // Add required
+                if (ArrayHelper::getValue($item, 'isRequired')) {
+                    $props['required'] = true;
                 }
+
+                // Add other props
+                $type->prepareFieldProps($this->getClassName(), $attribute, $props);
             }
 
-            // Add required
-            if (ArrayHelper::getValue($item, 'isRequired')) {
-                $props['required'] = true;
+            if (!empty($props)) {
+                $result[$attribute] = $props;
             }
-
-            // Add other props
-            $type->prepareFieldProps($this->getClassName(), $attribute, $props, $import);
-
-            $result[$attribute] = $props;
         }
 
-        return GiiHelper::varJsExport($result, $indent);
+        return $result;
     }
 
     /**
@@ -288,7 +284,32 @@ class ModelEntity extends ModelEntityMeta implements IEntity
      * @param array $import
      * @return mixed|string
      */
-    public function renderJsFormatters($indent = '', &$import = [])
+    public function renderJsFields($indent = '', &$import = [])
+    {
+        return $this->jsExport($this->getJsFields(false, true), $indent, $import);
+    }
+
+    /**
+     * @param Model $user
+     * @return array
+     */
+    public function getStaticPermissions($user)
+    {
+        if (is_subclass_of($this->className, Model::class)) {
+            return [
+                'canCreate' => (new $this->className())->canCreate($user)
+            ];
+        }
+        return null;
+    }
+
+    /**
+     * @param bool $locale
+     * @param string $indent
+     * @param array $import
+     * @return mixed|string
+     */
+    public function getJsFormatters($locale = false)
     {
         $result = [];
         foreach (static::exportMeta($this->publicAttributeItems) as $attribute => $item) {
@@ -303,17 +324,64 @@ class ModelEntity extends ModelEntityMeta implements IEntity
 
                 $text = ArrayHelper::getValue($item, $key);
                 if ($text) {
-                    $props[$key] = GiiHelper::locale($text);
+                    $props[$key] = $locale ? GiiHelper::locale($text) : $text;
                 }
             }
 
             // Add other props
-            $type->prepareFormatterProps($this->getClassName(), $attribute, $props, $import);
+            $type->prepareFormatterProps($this->getClassName(), $attribute, $props);
 
             $result[$attribute] = $props;
         }
 
-        return GiiHelper::varJsExport($result, $indent);
+        return $result;
+    }
+
+    /**
+     * @param string $indent
+     * @param array $import
+     * @return mixed|string
+     * @throws \ReflectionException
+     */
+    public function renderJsFormatters($indent = '', &$import = [])
+    {
+        return $this->jsExport($this->getJsFormatters(true), $indent, $import);
+    }
+
+    /**
+     * @param $result
+     * @param string $indent
+     * @param array $import
+     * @return mixed|string
+     * @throws \ReflectionException
+     */
+    protected function jsExport($result, $indent = '', &$import = [])
+    {
+        $toReplace1 = [];
+        $toReplace2 = [];
+
+        // Detect class names for import
+        foreach (GiiHelper::findClassNamesInMeta($result) as $key => $className) {
+            $info = (new \ReflectionClass($className));
+            $infoParent = $info->getParentClass();
+            $name = $infoParent->getName();
+            if (strpos($name, 'app\\') === 0) {
+                $path = str_replace('\\', '/', $infoParent->getName());
+            } else {
+                $path = GiiHelper::getRelativePath($infoParent->getFileName(), $infoParent->getFileName());
+                $path = preg_replace('/\.php$/', '', $path);
+            }
+
+            $import[] = "import {$info->getShortName()} from '" . $path . "';";
+
+            $toReplace1[] = "'$key'";
+            $toReplace2[] = $info->getShortName();
+        }
+
+        $code = GiiHelper::varJsExport($result, $indent);
+        $code = str_replace($toReplace1, $toReplace2, $code);
+
+        return $code;
     }
 
     /**
@@ -424,45 +492,23 @@ class ModelEntity extends ModelEntityMeta implements IEntity
             $rules[] = "[$attributesRaw, $validatorRaw]";
         }
 
-        $primaryKey = null;
-
-        foreach ($attributeEntities as $attributeEntity) {
-            if ($attributeEntity->appType === 'primaryKey') {
-                $primaryKey = $attributeEntity->name;
-            }
-        }
-
-        // Exist rules for foreign keys
-        foreach ($relationEntities as $relationEntity) {
-            // Checking for existence of the relations with self key == primary key might fail when run on save
-            $isSelfExistCheck = $primaryKey !== null && $relationEntity->isHasOne && $relationEntity->selfKey === $primaryKey;
-
-            if (!$relationEntity->isHasOne || $isSelfExistCheck) {
-                continue;
-            }
-
-            $attribute = $relationEntity->name;
-            $relationModelEntity = ModelEntity::findOne($relationEntity->relationModel);
-            $refClassName = $relationModelEntity->name;
-            $useClasses[] = $relationModelEntity->getClassName();
-            $useClasses[] = RecordExistValidator::class;
-            $targetAttributes = "'{$relationEntity->selfKey}' => '{$relationEntity->relationKey}'";
-
-            $rules[] = "[" . implode(', ', [
-                    "'$attribute'",
-                    "RecordExistValidator::class",
-                    "'skipOnError' => true",
-                    "'targetClass' => $refClassName::class",
-                    "'targetAttribute' => [$targetAttributes]",
-                ]) . "]";
-        }
-
         return $rules;
     }
 
     public function renderBehaviors($indent = '', &$useClasses = [])
     {
         return static::exportBehaviors($this->publicAttributeItems, $indent, $useClasses);
+    }
+
+    public function renderSortFields($indent = '')
+    {
+        $attributes = [];
+        foreach ($this->attributeItems as $item) {
+            if ($item->isSortable) {
+                $attributes[] = $item->name;
+            }
+        }
+        return GiiHelper::varExport($attributes, $indent);
     }
 
     /**

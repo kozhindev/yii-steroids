@@ -1,6 +1,6 @@
 import {createStore, applyMiddleware, compose} from 'redux';
 import {routerMiddleware} from 'react-router-redux';
-import createHistory from 'history/createBrowserHistory';
+import {createBrowserHistory, createMemoryHistory} from 'history';
 import _get from 'lodash-es/get';
 import _merge from 'lodash-es/merge';
 import _isPlainObject from 'lodash-es/isPlainObject';
@@ -9,10 +9,31 @@ import reducers from 'reducers';
 
 export default class StoreComponent {
 
-    constructor() {
-        const initialState = _merge(...(window.APP_REDUX_PRELOAD_STATES || [{}]));
+    constructor(lazyInit = false) {
+        this.history = null;
+        this.store = null;
+        this._asyncReducers = {};
 
-        this.history = createHistory(_get(initialState, 'config.store.history', {}));
+        if (!lazyInit) {
+            this.initStore();
+        }
+    }
+
+    init(config = {}) {
+        this.initStore(config);
+        this.configurate();
+    }
+
+    initStore(config = {}) {
+        const initialState = {
+            ...(!process.env.IS_NODE ? _merge(...(window.APP_REDUX_PRELOAD_STATES || [{}])) : {}),
+            ...config.initialState,
+        };
+        const createHistory = process.env.IS_NODE ? createMemoryHistory : createBrowserHistory;
+        this.history = createHistory({
+            ..._get(initialState, 'config.store.history', {}),
+            ...config.history
+        });
         this.store = createStore(
             reducers(),
             initialState,
@@ -22,8 +43,20 @@ export default class StoreComponent {
                 window.__REDUX_DEVTOOLS_EXTENSION__ ? window.__REDUX_DEVTOOLS_EXTENSION__() : f => f
             )
         );
+    }
 
-        this._asyncReducers = {};
+    configurate() {
+        // Apply configuration
+        const customConfig = this.getState().config || {};
+        const components = require('components');
+        _merge(components.clientStorage, customConfig.clientStorage);
+        _merge(components.html, customConfig.html);
+        _merge(components.http, customConfig.http);
+        _merge(components.locale, customConfig.locale);
+        _merge(components.resource, customConfig.resource);
+        _merge(components.store, customConfig.store);
+        _merge(components.ui, customConfig.ui);
+        _merge(components.widget, customConfig.widget);
     }
 
     dispatch(action) {

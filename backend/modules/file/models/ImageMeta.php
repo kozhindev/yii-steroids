@@ -21,6 +21,7 @@ use steroids\modules\file\FileModule;
  * @property integer $height
  * @property string $processor
  * @property integer $createTime
+ * @property string $amazoneS3Url
  * @property-read string $path
  * @property-read string $url
  */
@@ -87,6 +88,10 @@ class ImageMeta extends Model
      */
     public function getUrl()
     {
+        if ($this->amazoneS3Url) {
+            return $this->amazoneS3Url;
+        }
+
         return FileModule::getInstance()->filesRootUrl . $this->getRelativePath();
     }
 
@@ -155,6 +160,14 @@ class ImageMeta extends Model
      */
     public function process($params)
     {
+        if (!$this->isNewRecord) {
+            // Clone from original file
+            $originalMeta = static::findOriginal($this->fileId);
+            if (!unlink($this->getPath()) || !copy($originalMeta->getPath(), $this->getPath())) {
+                throw new FileException('Can not re-create image meta file from original `' . $originalMeta->getRelativePath() . '` to `' . $imageMeta->getRelativePath() . '`.');
+            }
+        }
+
         if (is_string($params)) {
             $processors = FileModule::getInstance()->processors;
             if (!isset($processors[$params])) {

@@ -3,14 +3,16 @@ import PropTypes from 'prop-types';
 import _isString from 'lodash-es/isString';
 
 import {html} from 'components';
-import './ButtonView.scss';
 
 const bem = html.bem('ButtonView');
 
 export default class ButtonView extends React.PureComponent {
 
     static propTypes = {
-        label: PropTypes.string,
+        label: PropTypes.oneOfType([
+            PropTypes.string,
+            PropTypes.any,
+        ]),
         type: PropTypes.oneOf(['button', 'submit']),
         size: PropTypes.oneOf(['sm', 'md', 'lg']),
         color: PropTypes.oneOf([
@@ -29,6 +31,7 @@ export default class ButtonView extends React.PureComponent {
         onClick: PropTypes.func,
         disabled: PropTypes.bool,
         submitting: PropTypes.bool,
+        isLoading: PropTypes.bool,
         block: PropTypes.bool,
         className: PropTypes.string,
         view: PropTypes.func,
@@ -65,20 +68,36 @@ export default class ButtonView extends React.PureComponent {
 
     renderLabel() {
         return (
-            <span>
-                {this.props.icon && (
-                    <span
-                        className={bem(bem.element('icon'), 'material-icons')}
-                        title={_isString(this.props.label) ? this.props.label : null}
-                    >
-                        {this.props.icon}
-                    </span>
+            <>
+                {this.props.isLoading && (
+                    <div className={bem.element('preloader')}>
+                        <span
+                            className='spinner-border spinner-border-sm'
+                            role="status"
+                            aria-hidden="true"
+                        />
+                    </div>
                 )}
-                {this.props.children}
-            </span>
+                <span
+                    className={bem.element('label')}
+                >
+                    {this.props.icon && (
+                        <span
+                            className={bem(
+                                bem.element('icon', !this.props.label && 'without-label'),
+                                'material-icons'
+                            )}
+                            title={_isString(this.props.label) ? this.props.label : null}
+                        >
+                            {this.props.icon}
+                        </span>
+                    )}
+                    {this.props.children}
+                </span>
+            </>
         );
     }
-    
+
     _getClassName(modifiers) {
         return bem(
             bem.block({
@@ -87,6 +106,7 @@ export default class ButtonView extends React.PureComponent {
                 size: this.props.size,
                 disabled: this.props.disabled,
                 submitting: this.props.submitting,
+                'is-loading': this.props.isLoading,
                 ...modifiers,
             }),
             this.props.className,

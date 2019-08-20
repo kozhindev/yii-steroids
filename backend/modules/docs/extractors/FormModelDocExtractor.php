@@ -2,6 +2,7 @@
 
 namespace steroids\modules\docs\extractors;
 
+use steroids\base\BaseSchema;
 use steroids\base\FormModel;
 use steroids\base\Model;
 use steroids\base\Type;
@@ -14,7 +15,7 @@ use yii\helpers\ArrayHelper;
 class FormModelDocExtractor extends BaseDocExtractor
 {
     /**
-     * @var FormModel|Model
+     * @var FormModel|Model|BaseSchema
      */
     public $className;
 
@@ -35,8 +36,9 @@ class FormModelDocExtractor extends BaseDocExtractor
         $model = new $className();
 
         $required = [];
-        $requestSchema = SwaggerTypeExtractor::getInstance()->extractModel($this->className, $this->getRequestFields($model, $required));
-        $responseSchema = SwaggerTypeExtractor::getInstance()->extractModel($this->className, $model->fields());
+        $fields = array_merge($this->listenRelations, $this->getRequestFields($model, $required));
+        $requestSchema = SwaggerTypeExtractor::getInstance()->extractModelRequest($this->className, $fields);
+        $responseSchema = SwaggerTypeExtractor::getInstance()->extractObject($this->className, $model->fields());
 
         $this->swaggerJson->updatePath($this->url, $this->method, [
             'parameters' => empty($requestSchema) ? null : [
@@ -51,15 +53,23 @@ class FormModelDocExtractor extends BaseDocExtractor
             'responses' => [
                 200 => [
                     'description' => 'Successful operation',
-                    'schema' => $responseSchema,
+                    'content' => [
+                        'application/json' => [
+                            'schema' => $responseSchema,
+                        ],
+                    ],
                 ],
                 400 => [
                     'description' => 'Validation errors',
-                    'schema' => [
-                        'type' => 'object',
-                        'properties' => [
-                            'errors' => [
+                    'content' => [
+                        'application/json' => [
+                            'schema' => [
                                 'type' => 'object',
+                                'properties' => [
+                                    'errors' => [
+                                        'type' => 'object',
+                                    ],
+                                ],
                             ],
                         ],
                     ],
@@ -84,6 +94,10 @@ class FormModelDocExtractor extends BaseDocExtractor
      */
     protected function getRequestFields($model, &$required)
     {
+        if ($model instanceof BaseSchema) {
+            return [];
+        }
+
         $requestFields = [];
         if (strtoupper($this->method) !== 'GET' || !($model instanceof Model)) {
             foreach ($model->safeAttributes() as $attribute) {

@@ -1,13 +1,18 @@
 import _get from 'lodash-es/get';
+import _isArray from 'lodash-es/isArray';
 
 import {http} from 'components';
 
 export const FIELDS_BEFORE_FETCH = 'FIELDS_BEFORE_FETCH';
 export const FIELDS_AFTER_FETCH = 'FIELDS_AFTER_FETCH';
+export const FIELDS_SET_META = 'FIELDS_SET_META';
 export const FIELDS_ADD_SECURITY = 'FIELDS_ADD_SECURITY';
+export const FIELDS_REMOVE_SECURITY = 'FIELDS_REMOVE_SECURITY';
 
 let timer = null;
 let queue = [];
+
+export const normalizeName = name => name.replace(/\\/g, '.').replace(/^\./, '');
 
 export const fetch = (fieldId, model, attribute, params = {}) => dispatch => {
     model = _get(model, 'className', String(model));
@@ -40,8 +45,38 @@ export const fetch = (fieldId, model, attribute, params = {}) => dispatch => {
     }, 10);
 };
 
+export const fetchMeta = (names, force = false) => (dispatch, getState) => {
+    if (_isArray(names)) {
+        throw new Error('This format is deprecated, use {models: ..., enums: ...} format.');
+    }
+
+    // Normalize names
+    Object.keys(names).forEach(key => {
+        names[key] = names[key].map(normalizeName);
+    });
+
+    const isMetaFetched = getState().fields.meta !== null;
+    if (isMetaFetched && !force) {
+        return;
+    }
+
+    // Send request
+    return http.post('/api/steroids/meta-fetch', names)
+        .then(meta => setMeta(meta));
+};
+
+export const setMeta = meta => ({
+    type: FIELDS_SET_META,
+    meta,
+});
+
 export const addSecurity = (formId, params) => ({
     type: FIELDS_ADD_SECURITY,
     formId,
     params,
+});
+
+export const removeSecurity = (formId) => ({
+    type: FIELDS_REMOVE_SECURITY,
+    formId,
 });

@@ -7,9 +7,14 @@ export default class FieldSet extends React.PureComponent {
         model: PropTypes.oneOfType([
             PropTypes.string,
             PropTypes.func,
+            PropTypes.object,
         ]),
         prefix: PropTypes.string,
-        layout: PropTypes.string,
+        layout: PropTypes.oneOfType([
+            PropTypes.oneOf(['default', 'inline', 'horizontal']),
+            PropTypes.string,
+            PropTypes.bool,
+        ]),
         layoutProps: PropTypes.object,
         size: PropTypes.oneOf(['sm', 'md', 'lg']),
     };
@@ -18,9 +23,14 @@ export default class FieldSet extends React.PureComponent {
         model: PropTypes.oneOfType([
             PropTypes.string,
             PropTypes.func,
+            PropTypes.object,
         ]),
         prefix: PropTypes.string,
-        layout: PropTypes.string,
+        layout: PropTypes.oneOfType([
+            PropTypes.oneOf(['default', 'inline', 'horizontal']),
+            PropTypes.string,
+            PropTypes.bool,
+        ]),
         layoutProps: PropTypes.object,
         size: PropTypes.oneOf(['sm', 'md', 'lg']),
     };
@@ -29,9 +39,14 @@ export default class FieldSet extends React.PureComponent {
         model: PropTypes.oneOfType([
             PropTypes.string,
             PropTypes.func,
+            PropTypes.object,
         ]),
         prefix: PropTypes.string,
-        layout: PropTypes.string,
+        layout: PropTypes.oneOfType([
+            PropTypes.oneOf(['default', 'inline', 'horizontal']),
+            PropTypes.string,
+            PropTypes.bool,
+        ]),
         layoutProps: PropTypes.object,
         size: PropTypes.oneOf(['sm', 'md', 'lg']),
     };

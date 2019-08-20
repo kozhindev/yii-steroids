@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 
 import {html} from 'components';
 const bem = html.bem('DateTimeFieldView');
-import './DateTimeFieldView.scss';
 
 export default class DateTimeFieldView extends React.PureComponent {
 

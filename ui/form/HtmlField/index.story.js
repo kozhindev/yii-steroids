@@ -5,8 +5,6 @@ import { withInfo } from '@storybook/addon-info';
 
 import HtmlField from './HtmlField';
 
-import './HtmlFieldView.scss';
-
 storiesOf('Form', module)
     .add('HtmlField', context => (
         <div>

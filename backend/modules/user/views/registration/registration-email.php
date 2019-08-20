@@ -3,13 +3,13 @@
 namespace app\views;
 
 use Yii;
-use steroids\modules\user\forms\RegistrationForm;
+use steroids\modules\user\forms\RegistrationEmailForm;
 use steroids\widgets\ActiveForm;
 use yii\helpers\Html;
 use yii\web\View;
 
 /* @var $this View */
-/* @var $model RegistrationForm */
+/* @var $model RegistrationEmailForm */
 
 ?>
 

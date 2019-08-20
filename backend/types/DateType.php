@@ -13,7 +13,7 @@ class DateType extends Type
     /**
      * @inheritdoc
      */
-    public function prepareFieldProps($modelClass, $attribute, &$props, &$import = null)
+    public function prepareFieldProps($modelClass, $attribute, &$props)
     {
         $props = array_merge(
             [
@@ -23,7 +23,7 @@ class DateType extends Type
             $props
         );
     }
-    
+
     /**
      * @inheritdoc
      */

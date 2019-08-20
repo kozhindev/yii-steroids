@@ -10,13 +10,27 @@ class PrimaryKeyType extends Type
     /**
      * @inheritdoc
      */
-    public function prepareFieldProps($modelClass, $attribute, &$props, &$import = null)
+    public function prepareFieldProps($modelClass, $attribute, &$props)
     {
         $props = array_merge(
             [
                 'component' => 'InputField',
                 'attribute' => $attribute,
                 'type' => 'hidden',
+            ],
+            $props
+        );
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function prepareSearchFieldProps($modelClass, $attribute, &$props)
+    {
+        $props = array_merge(
+            [
+                'component' => 'NumberField',
+                'attribute' => $attribute,
             ],
             $props
         );

@@ -4,6 +4,7 @@ namespace steroids\modules\gii\forms;
 
 use steroids\modules\gii\enums\ClassType;
 use steroids\modules\gii\forms\meta\EnumEntityMeta;
+use steroids\modules\gii\GiiModule;
 use steroids\modules\gii\helpers\GiiHelper;
 use steroids\modules\gii\models\ValueExpression;
 use steroids\modules\gii\traits\EntityTrait;
@@ -25,7 +26,7 @@ class EnumEntity extends EnumEntityMeta implements IEntity
             $items[] = static::findOne($className);
         }
 
-        ArrayHelper::multisort($items, 'name');
+        ArrayHelper::multisort($items, ['moduleId', 'name']);
         return $items;
     }
 
@@ -57,9 +58,11 @@ class EnumEntity extends EnumEntityMeta implements IEntity
             GiiHelper::renderFile('enum/meta', $this->getMetaPath(), [
                 'enumEntity' => $this,
             ]);
-            GiiHelper::renderFile('enum/meta_js', $this->getMetaJsPath(), [
-                'enumEntity' => $this,
-            ]);
+            if (GiiModule::getInstance()->generateJsMeta) {
+                GiiHelper::renderFile('enum/meta_js', $this->getMetaJsPath(), [
+                    'enumEntity' => $this,
+                ]);
+            }
             \Yii::$app->session->addFlash('success', 'Meta info enum ' . $this->name . 'Meta updated');
 
             // Create enum, if not exists

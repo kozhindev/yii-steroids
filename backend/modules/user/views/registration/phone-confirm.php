@@ -2,15 +2,14 @@
 
 namespace app\views;
 
-use app\auth\forms\RegistrationForm;
+use steroids\modules\user\forms\PhoneConfirmForm;
 use Yii;
 use steroids\widgets\ActiveForm;
 use yii\helpers\Html;
 use yii\web\View;
 
 /* @var $this View */
-/* @var $form ActiveForm */
-/* @var $model RegistrationForm */
+/* @var $model PhoneConfirmForm */
 
 ?>
 
@@ -19,9 +18,7 @@ use yii\web\View;
 <?= ActiveForm::widget([
     'model' => $model,
     'fields' => [
-        'email',
         'code',
     ],
-    'submitLabel' => Yii::t('steroids', 'Подтвердить почту'),
+    'submitLabel' => Yii::t('steroids', 'Зарегистрироваться'),
 ]); ?>
-

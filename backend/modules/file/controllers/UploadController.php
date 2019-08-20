@@ -16,12 +16,13 @@ class UploadController extends Controller
     {
         $mimeTypes = \Yii::$app->request->get('mimeTypes');
         $fixedSize = \Yii::$app->request->get('fixedSize');
+        $source = \Yii::$app->request->get('source');
 
         $result = FileModule::getInstance()->upload([
-            'mimeTypes' => $mimeTypes ? explode(',', $mimeTypes) : null,
+            'mimeTypes' => is_string($mimeTypes) ? explode(',', $mimeTypes) : $mimeTypes,
         ], [
-            'fixedSize' => $fixedSize ? explode(',', $fixedSize) : null,
-        ]);
+            'fixedSize' => is_string($fixedSize) ? explode(',', $fixedSize) : $fixedSize,
+        ], $source);
 
         if (isset($result['errors'])) {
             return [
@@ -29,7 +30,7 @@ class UploadController extends Controller
             ];
         }
 
-        $processor = \Yii::$app->request->get('processor');
+        $processor = array_filter(explode(',', (string)\Yii::$app->request->get('imagesProcessor') ?: \Yii::$app->request->get('processor')));
 
         // Send responses data
         return array_map(

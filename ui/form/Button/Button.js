@@ -6,12 +6,13 @@ import {push} from 'react-router-redux';
 
 import {ui} from 'components';
 import FieldLayout from '../FieldLayout';
+import {getNavUrl} from '../../../reducers/navigation';
 
 class ButtonInternal extends React.PureComponent {
 
     render() {
         const ButtonView = this.props.view || ui.getView('form.ButtonView');
-        const disabled = this.props.submitting || this.props.disabled;
+        const disabled = this.props.submitting || this.props.disabled || this.props.isLoading;
         return (
             <ButtonView
                 {...this.props}
@@ -28,13 +29,17 @@ class ButtonInternal extends React.PureComponent {
 export default
 @connect(
     (state, props) => ({
-        submitting: props.formId ? isSubmitting('myForm')(state) : !!props.submitting,
+        submitting: props.formId ? isSubmitting(props.formId)(state) : !!props.submitting,
+        to: props.toRoute ? getNavUrl(state, props.toRoute, props.toRouteParams) : props.to,
     })
 )
 class Button extends React.PureComponent {
 
     static propTypes = {
-        label: PropTypes.string,
+        label: PropTypes.oneOfType([
+            PropTypes.string,
+            PropTypes.any,
+        ]),
         type: PropTypes.oneOf(['button', 'submit']),
         size: PropTypes.oneOf(['sm', 'md', 'lg']),
         color: PropTypes.oneOf([
@@ -58,6 +63,8 @@ class Button extends React.PureComponent {
         block: PropTypes.bool,
         className: PropTypes.string,
         view: PropTypes.func,
+        toRoute: PropTypes.string,
+        toRouteParams: PropTypes.object,
     };
 
     static defaultProps = {
@@ -72,7 +79,11 @@ class Button extends React.PureComponent {
 
     static contextTypes = {
         formId: PropTypes.string,
-        layout: PropTypes.string,
+        layout: PropTypes.oneOfType([
+            PropTypes.oneOf(['default', 'inline', 'horizontal']),
+            PropTypes.string,
+            PropTypes.bool,
+        ]),
         layoutProps: PropTypes.object,
         size: PropTypes.oneOf(['sm', 'md', 'lg']),
     };
@@ -80,14 +91,31 @@ class Button extends React.PureComponent {
     constructor() {
         super(...arguments);
 
+        this._isMounted = false;
+
+        this.state = {
+            isLoading: false,
+        };
+
         this._onClick = this._onClick.bind(this);
+    }
+
+    componentDidMount() {
+        this._isMounted = true;
+    }
+
+    componentWillUnmount() {
+        this._isMounted = false;
     }
 
     render() {
         const button = (
             <ButtonInternal
                 {...this.props}
-                url={this.props.link && !this.props.url ? 'javascript:void(0)' : this.props.url}
+                isLoading={this.state.isLoading}
+                url={this.props.link && !(this.props.url || this.props.to)
+                    ? 'javascript:void(0)'
+                    : this.props.url || this.props.to}
                 onClick={this._onClick}
                 formId={this.context.formId}
                 layout={this.context.layout}
@@ -117,17 +145,42 @@ class Button extends React.PureComponent {
     }
 
     _onClick(e) {
+        e.stopPropagation();
+
         if (this.props.confirm && !confirm(this.props.confirm)) {
             e.preventDefault();
-            e.stopPropagation();
             return;
         }
-        if (this.props.to) {
-            this.props.dispatch(push(this.props.to));
+        if (this.props.to || this.props.to === '') {
+            this._onLinkClick(e, this.props.to);
         }
 
         if (this.props.onClick) {
-            this.props.onClick();
+            const result = this.props.onClick(e);
+
+            if (result instanceof Promise) {
+                this.setState({isLoading: true});
+                result
+                    .then(() => {
+                        if (this._isMounted) {
+                            this.setState({isLoading: false});
+                        }
+                    })
+                    .catch(e => {
+                        if (this._isMounted) {
+                            this.setState({isLoading: false});
+                        }
+                        throw e;
+                    })
+            }
         }
     }
+
+    _onLinkClick(e, url) {
+        if (!e.ctrlKey && !e.shiftKey && !e.metaKey) {
+            e.preventDefault();
+            this.props.dispatch(push(url));
+        }
+    };
+
 }

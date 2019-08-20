@@ -1,5 +1,22 @@
 .ButtonView {
+  position: relative;
+
   &__icon {
     margin-right: 3px;
+
+    &_without-label {
+      margin: 0;
+    }
+  }
+
+  &_is-loading &__label {
+    opacity: 0;
+  }
+
+  &__preloader {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
   }
 }

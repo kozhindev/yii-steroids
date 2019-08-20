@@ -16,10 +16,12 @@ use \Yii;
  * @property string $sessionKey
  * @property string $language
  * @property string $lastLoginIp
- * @property string $emailConfirmKey
  * @property string $createTime
  * @property string $updateTime
+ * @property string $emailConfirmKey
  * @property string $emailConfirmTime
+ * @property string $phoneConfirmKey
+ * @property string $phoneConfirmTime
  * @property string $blockedTime
  * @property string $lastLoginTime
  * @property string $name
@@ -42,13 +44,12 @@ abstract class UserMeta extends Model
         return [
             [['login', 'email', 'role', 'name'], 'string', 'max' => 255],
             ['email', 'email'],
-            ['email', 'required'],
             ['phone', 'string', 'max' => 32],
             ['passwordHash', 'string'],
-            [['sessionKey', 'emailConfirmKey'], 'string', 'max' => '32'],
+            [['sessionKey', 'emailConfirmKey', 'phoneConfirmKey'], 'string', 'max' => '32'],
             ['language', 'string', 'max' => '10'],
             ['lastLoginIp', 'string', 'max' => '45'],
-            [['emailConfirmTime', 'blockedTime', 'lastLoginTime'], 'date', 'format' => 'php:Y-m-d H:i'],
+            [['emailConfirmTime', 'phoneConfirmTime', 'blockedTime', 'lastLoginTime'], 'date', 'format' => 'php:Y-m-d H:i:s'],
         ];
     }
 
@@ -97,10 +98,6 @@ abstract class UserMeta extends Model
                 'label' => Yii::t('steroids', 'IP последнего входа'),
                 'stringLength' => '45'
             ],
-            'emailConfirmKey' => [
-                'label' => Yii::t('steroids', 'Ключ подтверждения почты'),
-                'stringLength' => '32'
-            ],
             'createTime' => [
                 'label' => Yii::t('steroids', 'Дата регистрации'),
                 'appType' => 'autoTime'
@@ -110,8 +107,20 @@ abstract class UserMeta extends Model
                 'appType' => 'autoTime',
                 'touchOnUpdate' => true
             ],
+            'emailConfirmKey' => [
+                'label' => Yii::t('steroids', 'Ключ подтверждения почты'),
+                'stringLength' => '32'
+            ],
             'emailConfirmTime' => [
                 'label' => Yii::t('steroids', 'Дата подтверждения почты'),
+                'appType' => 'dateTime'
+            ],
+            'phoneConfirmKey' => [
+                'label' => Yii::t('steroids', 'Ключ подтверждения телефона'),
+                'stringLength' => '32'
+            ],
+            'phoneConfirmTime' => [
+                'label' => Yii::t('steroids', 'Дата подтверждения телефона'),
                 'appType' => 'dateTime'
             ],
             'blockedTime' => [

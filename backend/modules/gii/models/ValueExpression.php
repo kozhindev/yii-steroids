@@ -2,9 +2,9 @@
 
 namespace steroids\modules\gii\models;
 
-use yii\base\Object;
+use yii\base\BaseObject;
 
-class ValueExpression extends Object
+class ValueExpression extends BaseObject
 {
     public $expression;
 

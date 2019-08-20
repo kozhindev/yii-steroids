@@ -17,6 +17,7 @@ class CheckboxField extends React.PureComponent {
         label: PropTypes.oneOfType([
             PropTypes.string,
             PropTypes.bool,
+            PropTypes.any,
         ]),
         hint: PropTypes.string,
         attribute: PropTypes.string,

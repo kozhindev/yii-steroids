@@ -116,7 +116,7 @@ class SwaggerJson extends Component
             ],
             'host' => $this->hostName,
             'basePath' => $this->getBasePath(),
-            'schemes' => \Yii::$app->request->isSecureConnection ? 'https' : 'http',
+            'schemes' => [\Yii::$app->request->isSecureConnection ? 'https' : 'http'],
             'tags' => $this->tags,
             'paths' => $this->paths,
             'definitions' => $this->definitions ?: (object)[],

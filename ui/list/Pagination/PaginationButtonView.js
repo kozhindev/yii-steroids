@@ -5,8 +5,6 @@ import {html} from 'components';
 
 const bem = html.bem('PaginationButtonView');
 
-import './PaginationButtonView.scss';
-
 export default class PaginationButtonView extends React.Component {
 
     static propTypes = {

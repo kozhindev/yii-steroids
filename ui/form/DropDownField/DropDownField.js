@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import enhanceWithClickOutside from 'react-click-outside';
 
-import {ui, locale} from 'components';
+import {ui} from 'components';
 import fieldHoc from '../fieldHoc';
 import dataProviderHoc from '../dataProviderHoc';
 
@@ -41,6 +41,7 @@ class DropDownField extends React.PureComponent {
             id: PropTypes.oneOfType([
                 PropTypes.number,
                 PropTypes.string,
+                PropTypes.bool,
             ]),
             label: PropTypes.string,
         })),
@@ -48,6 +49,7 @@ class DropDownField extends React.PureComponent {
             id: PropTypes.oneOfType([
                 PropTypes.number,
                 PropTypes.string,
+                PropTypes.bool,
             ]),
             label: PropTypes.string,
         })),
@@ -55,6 +57,7 @@ class DropDownField extends React.PureComponent {
             id: PropTypes.oneOfType([
                 PropTypes.number,
                 PropTypes.string,
+                PropTypes.bool,
             ]),
             label: PropTypes.string,
         }),
@@ -62,6 +65,7 @@ class DropDownField extends React.PureComponent {
         autoCompleteMinLength: PropTypes.number,
         autoCompleteDelay: PropTypes.number,
         isOpened: PropTypes.bool,
+        isLoading: PropTypes.bool,
         onOpen: PropTypes.func,
         onClose: PropTypes.func,
         onSearch: PropTypes.func,
@@ -108,6 +112,7 @@ class DropDownField extends React.PureComponent {
                 }))}
                 selectedItems={this.props.selectedItems}
                 isOpened={this.props.isOpened}
+                isLoading={this.props.isLoading}
                 showReset={this.props.showReset}
                 onOpen={this.props.onOpen}
                 onReset={this._onReset}

@@ -1,9 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import {html, locale} from 'components';
-import './PaginationSizeView.scss';
-
+import {html} from 'components';
 const bem = html.bem('PaginationSizeView');
 
 export default class PaginationSizeView extends React.Component {

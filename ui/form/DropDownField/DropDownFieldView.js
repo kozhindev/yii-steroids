@@ -1,9 +1,9 @@
 import React from 'react';
+import {findDOMNode} from 'react-dom';
 import PropTypes from 'prop-types';
 
 import {html} from 'components';
 const bem = html.bem('DropDownFieldView');
-import './DropDownFieldView.scss';
 
 export default class DropDownFieldView extends React.PureComponent {
 
@@ -21,11 +21,13 @@ export default class DropDownFieldView extends React.PureComponent {
         disabled: PropTypes.bool,
         className: PropTypes.string,
         searchInputProps: PropTypes.object,
+        searchAutoFocus: PropTypes.bool,
         multiple: PropTypes.bool,
         items: PropTypes.arrayOf(PropTypes.shape({
             id: PropTypes.oneOfType([
                 PropTypes.number,
                 PropTypes.string,
+                PropTypes.bool,
             ]),
             label: PropTypes.string,
         })),
@@ -33,6 +35,7 @@ export default class DropDownFieldView extends React.PureComponent {
             id: PropTypes.oneOfType([
                 PropTypes.number,
                 PropTypes.string,
+                PropTypes.bool,
             ]),
             label: PropTypes.string,
             isSelected: PropTypes.bool,
@@ -48,6 +51,20 @@ export default class DropDownFieldView extends React.PureComponent {
         onItemClick: PropTypes.func,
         onItemMouseOver: PropTypes.func,
     };
+
+    static defaultProps = {
+        searchAutoFocus: true,
+    };
+
+    componentDidUpdate(prevProps) {
+        // Auto focus on search
+        if (this.props.searchAutoFocus && this.props.autoComplete && !prevProps.isOpened && this.props.isOpened) {
+            const input = findDOMNode(this).querySelector('.' + bem.element('search-input'));
+            if (input) {
+                input.focus();
+            }
+        }
+    }
 
     render() {
         return (

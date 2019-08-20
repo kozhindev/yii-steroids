@@ -5,6 +5,7 @@ const _ = require('lodash');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const ExportTranslationKeysPlugin = require('./plugins/ExportTranslationKeysPlugin');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 const utils = require('./utils');
 const getConfigDefault = require('./config.default');
@@ -34,20 +35,21 @@ module.exports = (config, entry) => {
             ? {
                 publicPath: '/',
                 path: config.outputPath,
-                filename: 'assets/bundle-[name].js',
-                chunkFilename: 'assets/bundle-[name].js',
+                filename: `${config.baseUrl}bundle-[name]${config.useHash ? '.[hash]' : ''}.js`,
+                chunkFilename: `${config.baseUrl}bundle-[name]${config.useHash ? '.[hash]' : ''}.js`,
             }
             : {
                 publicPath: `http://${config.host}:${config.port}/`,
                 path: config.outputPath,
-                filename: `${config.staticPath}assets/bundle-[name].js`,
-                chunkFilename: `${config.staticPath}assets/bundle-[name].js`,
+                filename: `${config.staticPath}${config.baseUrl}bundle-[name]${config.useHash ? '.[hash]' : ''}.js`,
+                chunkFilename: `${config.staticPath}${config.baseUrl}bundle-[name]${config.useHash ? '.[hash]' : ''}.js`,
             },
         module: {
             rules: {
                 js: {
                     test: /\.js$/,
                     use: {
+                        cache: utils.isProduction() && 'cache-loader',
                         babel: {
                             loader: 'babel-loader',
                             options: {
@@ -57,7 +59,7 @@ module.exports = (config, entry) => {
                                     //'transform-export-extensions',
                                     ['@babel/plugin-proposal-decorators', {legacy: true}],
                                     '@babel/plugin-proposal-class-properties',
-                                    utils.isProduction() && '@babel/plugin-transform-runtime',
+                                    '@babel/plugin-transform-runtime',
                                     !utils.isProduction() && 'react-hot-loader/babel',
                                 ].filter(Boolean),
                                 presets: [
@@ -75,16 +77,13 @@ module.exports = (config, entry) => {
                             loader: 'eslint-loader',
                             options: {
                                 configFile: config.cwd + '/.eslintrc',
+                                ignoreFile: fs.existsSync(config.cwd + '/.eslintignore')
+                                    ? config.cwd + '/.eslintignore'
+                                    : null,
                             }
                         },
                     },
                     exclude: /node_modules(\/|\\+)(?!yii-steroids)/,
-                },
-                json: {
-                    test: /\.json$/,
-                    use: {
-                        json: 'json-loader'
-                    },
                 },
                 less: {
                     test: /\.less$/,
@@ -97,18 +96,27 @@ module.exports = (config, entry) => {
                 sass: {
                     test: /\.scss$/,
                     use: [
+                        'css-hot-loader',
                         MiniCssExtractPlugin.loader,
                         'css-loader',
-                        'sass-loader',
+                        {
+                            loader: 'sass-loader',
+                            options: {
+                                includePaths: [
+                                    config.sourcePath,
+                                ],
+                            },
+                        }
                     ],
                 },
                 font: {
                     test: /(\/|\\)fonts(\/|\\).*\.(ttf|otf|eot|svg|woff(2)?)(\?[a-z0-9]+)?$/,
                     use: {
+                        cache: utils.isProduction() && 'cache-loader',
                         file: {
                             loader: 'file-loader',
                             options: {
-                                name: 'fonts/[name].[ext]'
+                                name: `${config.staticPath}${config.baseUrl}fonts/[name].[hash].[ext]`,
                             },
                         },
                     },
@@ -116,41 +124,65 @@ module.exports = (config, entry) => {
                 image: {
                     test: /\.(jpe?g|gif|png|svg)$/,
                     use: {
+                        cache: utils.isProduction() && 'cache-loader',
                         file: {
-                            loader: 'file-loader'
+                            loader: 'file-loader',
+                            options: {
+                                name: `${config.staticPath}${config.baseUrl}images/[hash].[ext]`,
+                            },
                         },
                     },
                 },
             },
         },
         resolve: {
-            extensions: ['.js'],
+            extensions: ['.js', '.jsx', '.json'],
             alias: {
                 app: path.resolve(config.cwd, 'app'),
-                actions: 'core/frontend/actions',
-                components: 'core/frontend/components',
-                reducers: 'core/frontend/reducers',
-                shared: 'core/frontend/shared',
+                actions: `${config.sourcePath}/actions`,
+                components: `${config.sourcePath}/components`,
+                enums: `${config.sourcePath}/enums`,
+                reducers: `${config.sourcePath}/reducers`,
+                routes: `${config.sourcePath}/routes`,
+                shared: `${config.sourcePath}/shared`,
+                types: `${config.sourcePath}/types`,
+                ui: `${config.sourcePath}/ui`,
             },
             modules: [
                 path.resolve(config.cwd, 'node_modules'), // the old 'fallback' option (needed for npm link-ed packages)
                 fs.existsSync(path.resolve(config.cwd, '../node_modules')) ? path.resolve(config.cwd, '../node_modules') : null,
                 path.resolve(config.cwd, 'app'),
+                config.sourcePath,
             ].filter(Boolean),
         },
         plugins: [
             utils.isAnalyze() && new BundleAnalyzerPlugin(),
             new ExportTranslationKeysPlugin(),
             new MiniCssExtractPlugin({
-                filename: `${config.staticPath}assets/bundle-[name].css`,
-                chunkFilename: `${config.staticPath}assets/bundle-[id].css`,
+                filename: `${config.staticPath}${config.baseUrl}bundle-[name]${config.useHash ? '.[hash]' : ''}.css`,
+                chunkFilename: `${config.staticPath}${config.baseUrl}bundle-[id]${config.useHash ? '.[hash]' : ''}.css`,
             }),
             new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/), // Skip moment locale files (0.3 mb!)
             utils.isProduction() && new webpack.optimize.OccurrenceOrderPlugin(),
             !utils.isProduction() && new webpack.ProgressPlugin(),
             new webpack.NamedModulesPlugin(),
-            new webpack.NamedChunksPlugin(),,
-            !utils.isProduction() && new webpack.HotModuleReplacementPlugin()
+            new webpack.NamedChunksPlugin(),
+            !utils.isProduction() && new webpack.HotModuleReplacementPlugin(),
+
+            // Index html
+            fs.existsSync(config.sourcePath + '/index.html') && new HtmlWebpackPlugin({
+                inject: true,
+                template: config.sourcePath + '/index.html',
+                filename: `${config.baseUrl}index.html`
+            }),
+
+            // Proxy all APP_* env variables
+            new webpack.DefinePlugin(Object.keys(process.env).reduce((obj, key) => {
+                if (key.indexOf('APP_') === 0) {
+                    obj['process.env.' + key] = JSON.stringify(process.env[key]);
+                }
+                return obj;
+            }, {})),
         ].filter(Boolean),
         performance: {
             maxEntrypointSize: 12000000,

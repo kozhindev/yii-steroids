@@ -42,17 +42,16 @@ class ControllerDocExtractor extends BaseDocExtractor
             return null;
         }
 
-        $httpMethod = 'get';
-        if (preg_match('/^([A-Z]+) .+/', $this->url, $match)) {
-            $httpMethod = strtolower($match[1]);
-        }
-
         $url = $this->url;
-        $url = preg_replace('/^' . $httpMethod . ' /i', '', $url);
+        $httpMethod = 'get';
+        if (preg_match('/^([A-Z,]+) .+/', $url, $match)) {
+            $url = substr($url, strlen($match[1]) + 1);
+            $httpMethod = strtolower(explode(',', $match[1])[0]);
+        }
         $url = preg_replace('/^\/?api\/[^\\/]+\//', '', $url);
         $url = preg_replace('/<([^>:]+)(:[^>]+)?>/', '{$1}', $url);
         $this->swaggerJson->addPath($url, $httpMethod, [
-            'summary' => $this->title,
+            'summary' => $this->title ?: $url,
             'tags' => [
                 $this->moduleId,
             ],
@@ -70,6 +69,9 @@ class ControllerDocExtractor extends BaseDocExtractor
             $type = ExtractorHelper::resolveType($match[1], get_class($controller));
             $extractor = $this->createTypeExtractor($type, $url, $httpMethod);
             if ($extractor) {
+                if (preg_match_all('/@request-listen-relation\s+([^\s]+)/i', $method->getDocComment(), $match)) {
+                    $extractor->listenRelations = $match[1];
+                }
                 $extractor->run();
             }
         }

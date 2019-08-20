@@ -161,7 +161,8 @@ export default () => WrappedComponent => class FileHoc extends React.PureCompone
         return (
             <WrappedComponent
                 {...this.props}
-                files={this._uploader.queue.getFiles()}
+                uploader={this._uploader}
+                files={[].concat(this._uploader.queue.getFiles())}
                 onBrowse={this._onBrowse}
                 onRemove={this._onRemove}
             />
@@ -218,6 +219,8 @@ export default () => WrappedComponent => class FileHoc extends React.PureCompone
         } else if (toRemove.indexOf(this.props.input.value) !== -1) {
             this.props.input.onChange(null);
         }
+
+        this.forceUpdate();
     }
 
     /**

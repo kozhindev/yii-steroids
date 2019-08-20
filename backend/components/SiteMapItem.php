@@ -166,11 +166,12 @@ class SiteMapItem extends BaseObject
     }
 
     /**
+     * @param bool $checkAccess
      * @return bool
      */
-    public function getVisible()
+    public function getVisible($checkAccess = true)
     {
-        return $this->_visible && $this->checkVisible($this->normalizedUrl);
+        return $this->_visible && (!$checkAccess || $this->checkVisible($this->normalizedUrl));
     }
 
     /**

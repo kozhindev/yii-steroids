@@ -10,7 +10,7 @@ class DateTimeType extends DateType
     /**
      * @inheritdoc
      */
-    public function prepareFieldProps($modelClass, $attribute, &$props, &$import = null)
+    public function prepareFieldProps($modelClass, $attribute, &$props)
     {
         $props = array_merge(
             [
@@ -58,7 +58,7 @@ class DateTimeType extends DateType
     public function giiRules($attributeEntity, &$useClasses = [])
     {
         return [
-            [$attributeEntity->name, 'date', 'format' => $attributeEntity->format ?: 'php:Y-m-d H:i'],
+            [$attributeEntity->name, 'date', 'format' => $attributeEntity->format ?: 'php:Y-m-d H:i:s'],
         ];
     }
 }

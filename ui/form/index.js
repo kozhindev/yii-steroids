@@ -1,3 +1,4 @@
+import AutoCompleteField from './AutoCompleteField';
 import Button from './Button';
 import BlankField from './BlankField';
 import CheckboxField from './CheckboxField';
@@ -24,6 +25,7 @@ import SwitcherField from './SwitcherField';
 import TextField from './TextField';
 
 export {
+    AutoCompleteField,
     Button,
     BlankField,
     CheckboxField,

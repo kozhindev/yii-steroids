@@ -5,7 +5,7 @@ namespace steroids\components;
 use yii\web\User;
 
 /**
- * @property-read \app\core\models\User $model
+ * @property-read \app\user\models\User|\steroids\modules\user\models\User $model
  * @property-read string $id
  * @property-read string $name
  * @package app\core\components
@@ -13,7 +13,7 @@ use yii\web\User;
 class ContextUser extends User
 {
     /**
-     * @return \app\core\models\User
+     * @return \app\user\models\User|\steroids\modules\user\models\User
      */
     public function getModel()
     {

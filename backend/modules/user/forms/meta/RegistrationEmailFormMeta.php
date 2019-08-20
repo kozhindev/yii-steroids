@@ -5,7 +5,7 @@ namespace steroids\modules\user\forms\meta;
 use steroids\base\FormModel;
 use \Yii;
 
-abstract class RegistrationFormMeta extends FormModel
+abstract class RegistrationEmailFormMeta extends FormModel
 {
     public $email;
     public $password;

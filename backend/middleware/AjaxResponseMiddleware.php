@@ -2,6 +2,7 @@
 
 namespace steroids\middleware;
 
+use steroids\base\BaseSchema;
 use steroids\base\FormModel;
 use steroids\base\Model;
 use steroids\base\SearchModel;
@@ -11,7 +12,6 @@ use yii\base\BaseObject;
 use yii\data\BaseDataProvider;
 use yii\web\Application;
 use yii\web\Controller;
-use yii\web\ForbiddenHttpException;
 use yii\web\Response;
 
 class AjaxResponseMiddleware extends BaseObject
@@ -22,13 +22,13 @@ class AjaxResponseMiddleware extends BaseObject
     public static function register($app)
     {
         if ($app instanceof Application) {
-            $app->on(Controller::EVENT_AFTER_ACTION, [static::className(), 'checkAjaxResponse']);
+            $app->on(Controller::EVENT_AFTER_ACTION, [static::class, 'checkAjaxResponse']);
         }
     }
 
     /**
      * @param ActionEvent $event
-     * @throws ForbiddenHttpException
+     * @throws
      */
     public static function checkAjaxResponse($event)
     {
@@ -49,9 +49,9 @@ class AjaxResponseMiddleware extends BaseObject
             || $event->result instanceof \yii\base\Model) {
 
             // Detect data provider
-            if ($event->result instanceof SearchModel || $event->result instanceof Model) {
-                $data = $event->result->toFrontend();
-            } elseif ($event->result instanceof FormModel) {
+            if ($event->result instanceof SearchModel || $event->result instanceof BaseSchema) {
+                $data = $event->result->toFrontend(null, \Yii::$app->user->identity);
+            } elseif ($event->result instanceof Model || $event->result instanceof FormModel) {
                 $data = ActiveForm::renderAjax($event->result, '');
             } elseif ($event->result instanceof BaseDataProvider) {
                 $data = [

@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 
 import {html} from 'components';
 const bem = html.bem('CheckboxFieldView');
-import './CheckboxFieldView.scss';
 
 export default class CheckboxFieldView extends React.PureComponent {
 
@@ -11,6 +10,7 @@ export default class CheckboxFieldView extends React.PureComponent {
         label: PropTypes.oneOfType([
             PropTypes.string,
             PropTypes.bool,
+            PropTypes.any,
         ]),
         hint: PropTypes.string,
         required: PropTypes.bool,

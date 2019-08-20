@@ -2,6 +2,7 @@
 
 namespace steroids\modules\docs\extractors;
 
+use steroids\base\BaseSchema;
 use steroids\base\FormModel;
 use steroids\base\Model;
 use steroids\base\SearchModel;
@@ -16,6 +17,11 @@ abstract class BaseDocExtractor extends BaseObject
      */
     public $swaggerJson;
 
+    /**
+     * @var string[]
+     */
+    public $listenRelations = [];
+
     public function createTypeExtractor($type, $url, $method)
     {
         if (ExtractorHelper::isPrimitiveType($type)) {
@@ -29,7 +35,7 @@ abstract class BaseDocExtractor extends BaseObject
                     'method' => $method,
                 ]);
             }
-            if (is_subclass_of($type, FormModel::class) || is_subclass_of($type, Model::class)) {
+            if (is_subclass_of($type, FormModel::class) || is_subclass_of($type, Model::class) || is_subclass_of($type, BaseSchema::class)) {
                 return new FormModelDocExtractor([
                     'swaggerJson' => $this->swaggerJson,
                     'className' => $type,
@@ -42,7 +48,3 @@ abstract class BaseDocExtractor extends BaseObject
 
     abstract function run();
 }
-
-
-
-

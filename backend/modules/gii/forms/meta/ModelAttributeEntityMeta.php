@@ -15,6 +15,7 @@ abstract class ModelAttributeEntityMeta extends FormModel
     public $appType;
     public $defaultValue;
     public $isRequired;
+    public $isSortable;
     public $isPublishToFrontend;
 
     public function rules()
@@ -22,7 +23,7 @@ abstract class ModelAttributeEntityMeta extends FormModel
         return [
             [['name', 'prevName', 'label', 'hint', 'example', 'appType', 'defaultValue'], 'string', 'max' => 255],
             [['name', 'appType'], 'required'],
-            [['isRequired', 'isPublishToFrontend'], 'boolean'],
+            [['isRequired', 'isSortable', 'isPublishToFrontend'], 'boolean'],
         ];
     }
 
@@ -54,6 +55,10 @@ abstract class ModelAttributeEntityMeta extends FormModel
             ],
             'isRequired' => [
                 'label' => Yii::t('steroids', 'Required'),
+                'appType' => 'boolean'
+            ],
+            'isSortable' => [
+                'label' => Yii::t('steroids', 'Sortable'),
                 'appType' => 'boolean'
             ],
             'isPublishToFrontend' => [

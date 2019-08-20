@@ -36,9 +36,10 @@ class FormEntity extends ModelEntity implements IEntity
         $entity->className = $className;
         $entity->attributes = GiiHelper::parseClassName($className);
 
-        if (method_exists($className, 'createQuery')) {
-            /** @var SearchModel $searchModel */
-            $searchModel = new $className();
+        /** @var SearchModel $searchModel */
+        $searchModel = new $className();
+
+        if (method_exists($searchModel, 'createQuery')) {
             $query = $searchModel->createQuery();
             if (property_exists(get_class($query), 'modelClass')) {
                 $entity->queryModel = $query->modelClass;
@@ -47,6 +48,13 @@ class FormEntity extends ModelEntity implements IEntity
 
         $entity->populateRelation('relationItems', FormRelationEntity::findAll($entity));
         $entity->populateRelation('attributeItems', FormAttributeEntity::findAll($entity));
+
+        if (method_exists($searchModel, 'sortFields')) {
+            $sortFields = $searchModel->sortFields();
+            foreach ($entity->attributeItems as $item) {
+                $item->isSortable = in_array($item->name, $sortFields);
+            }
+        }
 
         return $entity;
     }
@@ -68,13 +76,7 @@ class FormEntity extends ModelEntity implements IEntity
             // Lazy create module
             ModuleEntity::findOrCreate($this->moduleId);
 
-            if (GiiHelper::isOverWriteClass($this->getClassName()) && GiiModule::getInstance()->showSteroidsEntries) {
-                // TODO Save lib class
-            }
             GiiHelper::renderFile($this->queryModel ? 'form/meta_search' : 'form/meta_form', $this->getMetaPath(), [
-                'formEntity' => $this,
-            ]);
-            GiiHelper::renderFile('form/meta_js', $this->getMetaJsPath(), [
                 'formEntity' => $this,
             ]);
             \Yii::$app->session->addFlash('success', 'Meta info form ' . $this->name . 'Meta update');
@@ -85,6 +87,12 @@ class FormEntity extends ModelEntity implements IEntity
                     'formEntity' => $this,
                 ]);
                 \Yii::$app->session->addFlash('success', 'Added form ' . $this->name);
+            }
+
+            if (GiiModule::getInstance()->generateJsMeta) {
+                GiiHelper::renderFile('form/meta_js', $this->getMetaJsPath(), [
+                    'formEntity' => $this,
+                ]);
             }
 
             return true;
