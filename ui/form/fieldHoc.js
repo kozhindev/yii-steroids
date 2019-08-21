@@ -174,7 +174,7 @@ class FieldHoc extends React.PureComponent {
 
     _getValue(attribute) {
         if (this.props.formId) {
-            return _get(this.props.values, 'value' + _upperFirst(attribute));
+            return _get(this.props, 'value' + _upperFirst(attribute));
         } else {
             return this.state['value' + attribute];
         }
