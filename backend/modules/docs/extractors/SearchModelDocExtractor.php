@@ -67,23 +67,31 @@ class SearchModelDocExtractor extends FormModelDocExtractor
             'responses' => [
                 200 => [
                     'description' => 'Successful operation',
-                    'schema' => empty($responseSchema) ? null : [
-                        'type' => 'object',
-                        'properties' => $responseProperties,
+                    'content' => [
+                        'application/json' => [
+                            'schema' => empty($responseSchema) ? null : [
+                                'type' => 'object',
+                                'properties' => $responseProperties,
+                            ],
+                        ],
                     ],
                 ],
                 400 => [
                     'description' => 'Validation errors',
-                    'schema' => [
-                        'type' => 'object',
-                        'properties' => array_merge(
-                            $responseProperties,
-                            [
-                                'errors' => [
-                                    'type' => 'object',
-                                ],
-                            ]
-                        ),
+                    'content' => [
+                        'application/json' => [
+                            'schema' => [
+                                'type' => 'object',
+                                'properties' => array_merge(
+                                    $responseProperties,
+                                    [
+                                        'errors' => [
+                                            'type' => 'object',
+                                        ],
+                                    ]
+                                ),
+                            ],
+                        ],
                     ],
                 ],
             ],
