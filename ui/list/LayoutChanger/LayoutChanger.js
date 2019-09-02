@@ -3,11 +3,6 @@ import PropTypes from 'prop-types';
 
 import { ui } from 'components';
 
-const LAYOUT_DEFAULT = 'layout_default';
-const LAYOUT_ONE = 'layout_one';
-const LAYOUT_TWO = 'layout_two';
-const LAYOUT_THREE = 'layout_three';
-
 export default class LayoutChanger extends React.PureComponent {
 
     static propTypes = {
@@ -22,28 +17,7 @@ export default class LayoutChanger extends React.PureComponent {
     };
 
     static defaultProps = {
-        layoutItems: [
-            {
-                id: LAYOUT_DEFAULT,
-                label: LAYOUT_DEFAULT,
-                component: null,
-            },
-            {
-                id: LAYOUT_ONE,
-                label: LAYOUT_ONE,
-                component: null,
-            },
-            {
-                id: LAYOUT_TWO,
-                label: LAYOUT_TWO,
-                component: null,
-            },
-            {
-                id: LAYOUT_THREE,
-                label: LAYOUT_THREE,
-                component: null,
-            },
-        ],
+        layoutItems: [],
     };
 
     constructor() {
@@ -52,7 +26,7 @@ export default class LayoutChanger extends React.PureComponent {
         this._onSelect = this._onSelect.bind(this);
 
         this.state = {
-            layout: LAYOUT_DEFAULT,
+            layout: null,
         };
     }
 
