@@ -63,6 +63,7 @@ export default
             list,
             formValues: formId && formValuesSelectors[formId](state) || null,
             locationSearch: _get(state, 'routing.location.search', ''),
+            layout: _get(list, 'layout', null),
         };
     }
 )
@@ -145,6 +146,7 @@ export default
                 PropTypes.bool,
             ]),
             layoutProps: PropTypes.object,
+            layout: PropTypes.string,
             list: PropTypes.shape({
                 meta: PropTypes.object,
                 isFetched: PropTypes.bool,
@@ -267,6 +269,7 @@ export default
                     {...this.props}
                     searchForm={searchForm}
                     isLoading={_get(this.props, 'list.isLoading')}
+                    layout={this.props.layout}
                     items={items}
                     empty={this.renderEmpty()}
                     pagination={this.renderPagination()}

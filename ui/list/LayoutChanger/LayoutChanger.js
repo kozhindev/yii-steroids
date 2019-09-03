@@ -1,15 +1,25 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+import _get from 'lodash-es/get';
 
 import { ui } from 'components';
+import { setLayoutType } from '../../../actions/list';
 
-export default class LayoutChanger extends React.PureComponent {
+export default
+@connect()
+class LayoutChanger extends React.PureComponent {
 
     static propTypes = {
         listId: PropTypes.string,
         className: PropTypes.string,
         view: PropTypes.func,
         layoutItems: PropTypes.arrayOf({
+            id: PropTypes.string,
+            label: PropTypes.string,
+            component: PropTypes.node,
+        }),
+        defaultLayoutItem: PropTypes.shape({
             id: PropTypes.string,
             label: PropTypes.string,
             component: PropTypes.node,
@@ -26,8 +36,12 @@ export default class LayoutChanger extends React.PureComponent {
         this._onSelect = this._onSelect.bind(this);
 
         this.state = {
-            layout: null,
+            layout: _get(this.props, 'defaultLayoutItem.id', null),
         };
+    }
+
+    componentDidMount() {
+        this._onSelect(_get(this.props, 'defaultLayoutItem', null), true);
     }
 
     render() {
@@ -45,9 +59,12 @@ export default class LayoutChanger extends React.PureComponent {
         );
     }
 
-    _onSelect(layout) {
-        if (layout && layout.id !== this.state.layout) {
-            this.setState({layout: layout.id});
+    _onSelect(layout, isInit) {
+        if (layout && (isInit ? true : layout.id !== this.state.layout)) {
+            this.setState(
+                {layout: layout.id},
+                () => this.props.dispatch(setLayoutType(this.props.listId, layout.id),
+            ));
         }
     }
 }
