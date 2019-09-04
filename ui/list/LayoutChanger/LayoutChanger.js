@@ -1,10 +1,11 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import _get from 'lodash-es/get';
 
-import { ui } from 'components';
+import { ui, clientStorage } from 'components';
 import { setLayoutType } from '../../../actions/list';
+
+const LAYOUT_STORAGE_KEY = 'listLayout';
 
 export default
 @connect()
@@ -17,13 +18,12 @@ class LayoutChanger extends React.PureComponent {
         layoutItems: PropTypes.arrayOf({
             id: PropTypes.string,
             label: PropTypes.string,
-            component: PropTypes.node,
+            component: PropTypes.oneOf([
+                PropTypes.ReactComponent,
+                PropTypes.node,
+            ]),
         }),
-        defaultLayoutItem: PropTypes.shape({
-            id: PropTypes.string,
-            label: PropTypes.string,
-            component: PropTypes.node,
-        }),
+        defaultLayoutItemId: PropTypes.string,
     };
 
     static defaultProps = {
@@ -36,12 +36,12 @@ class LayoutChanger extends React.PureComponent {
         this._onSelect = this._onSelect.bind(this);
 
         this.state = {
-            layout: _get(this.props, 'defaultLayoutItem.id', null),
+            layout: clientStorage.get(LAYOUT_STORAGE_KEY) || this.props.defaultLayoutItemId || null,
         };
     }
 
     componentDidMount() {
-        this._onSelect(_get(this.props, 'defaultLayoutItem', null), true);
+        this._onSelect(this.state.layout, true);
     }
 
     render() {
@@ -59,12 +59,15 @@ class LayoutChanger extends React.PureComponent {
         );
     }
 
-    _onSelect(layout, isInit) {
-        if (layout && (isInit ? true : layout.id !== this.state.layout)) {
+    _onSelect(layoutId, isInit) {
+        if (layoutId && (isInit ? true : layoutId !== this.state.layout)) {
             this.setState(
-                {layout: layout.id},
-                () => this.props.dispatch(setLayoutType(this.props.listId, layout.id),
-            ));
+                {layout: layoutId},
+                () => {
+                    clientStorage.set(LAYOUT_STORAGE_KEY, layoutId);
+                    this.props.dispatch(setLayoutType(this.props.listId, layoutId));
+                },
+            );
         }
     }
 }

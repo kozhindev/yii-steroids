@@ -38,7 +38,7 @@ export default class LayoutChangerView extends React.PureComponent {
                                 item.isSelected && 'active',
                             )}
                             disabled={item.isSelected}
-                            onClick={() => this.props.onSelect(item)}
+                            onClick={() => this.props.onSelect(item.id)}
                         >
                             {item.label}
                         </LayoutChangerView>
