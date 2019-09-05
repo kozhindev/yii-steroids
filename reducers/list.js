@@ -12,6 +12,7 @@ import {
     LIST_DESTROY,
     LIST_TOGGLE_ITEM,
     LIST_TOGGLE_ALL,
+    LIST_SET_LAYOUT,
 } from '../actions/list';
 
 export default (state = {}, action) => {
@@ -21,6 +22,7 @@ export default (state = {}, action) => {
                 ...state,
                 [action.listId]: {
                     meta: {},
+                    layout: null,
                     selectedIds: {},
                     total: action.total || (action.items ? action.items.length : 0),
                     isFetched: !!action.items,
@@ -127,6 +129,15 @@ export default (state = {}, action) => {
                 };
             }
             break;
+
+        case LIST_SET_LAYOUT:
+            return {
+                ...state,
+                [action.listId]: {
+                    ...state[action.listId],
+                    layout: action.layoutId,
+                }
+            };
     }
 
     return state;

@@ -10,6 +10,7 @@ export const LIST_ITEM_UPDATE = 'LIST_ITEM_UPDATE';
 export const LIST_DESTROY = 'LIST_DESTROY';
 export const LIST_TOGGLE_ITEM = 'LIST_TOGGLE_ITEM';
 export const LIST_TOGGLE_ALL = 'LIST_TOGGLE_ALL';
+export const LIST_SET_LAYOUT = 'LIST_SET_LAYOUT';
 
 const lazyTimers = {};
 
@@ -132,4 +133,10 @@ export const toggleItem = (listId, itemId) => ({
 export const toggleAll = listId => ({
     listId,
     type: LIST_TOGGLE_ALL,
+});
+
+export const setLayoutType = (listId, layoutId) => ({
+    listId,
+    layoutId,
+    type: LIST_SET_LAYOUT,
 });

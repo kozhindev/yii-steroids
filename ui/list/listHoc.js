@@ -16,6 +16,7 @@ import {init, lazyFetch, fetch, setSort, destroy} from '../../actions/list';
 import {getList} from '../../reducers/list';
 import Empty from './Empty';
 import Pagination from './Pagination';
+import LayoutChanger from './LayoutChanger';
 import PaginationSize from './PaginationSize';
 import Form from '../form/Form';
 import {getMeta} from '../../reducers/fields';
@@ -62,6 +63,7 @@ export default
             list,
             formValues: formId && formValuesSelectors[formId](state) || null,
             locationSearch: _get(state, 'routing.location.search', ''),
+            layout: _get(list, 'layout', null),
         };
     }
 )
@@ -139,6 +141,12 @@ export default
                 PropTypes.bool,
             ]),
             paginationSizeProps: PropTypes.object,
+            layoutView: PropTypes.oneOfType([
+                PropTypes.func,
+                PropTypes.bool,
+            ]),
+            layoutProps: PropTypes.object,
+            layout: PropTypes.string,
             list: PropTypes.shape({
                 meta: PropTypes.object,
                 isFetched: PropTypes.bool,
@@ -261,10 +269,12 @@ export default
                     {...this.props}
                     searchForm={searchForm}
                     isLoading={_get(this.props, 'list.isLoading')}
+                    layout={this.props.layout}
                     items={items}
                     empty={this.renderEmpty()}
                     pagination={this.renderPagination()}
                     paginationSize={this.renderPaginationSize()}
+                    layoutChanger={this.renderLayoutChanger()}
                     outsideSearchForm={this.renderOutsideSearchForm()}
                     fetch={this._onFetch}
                     sort={this._onSort}
@@ -328,6 +338,20 @@ export default
                         view={_isFunction(this.props.paginationSizeView) ? this.props.paginationSizeView : undefined}
                     />
                 </div>
+            );
+        }
+
+        renderLayoutChanger() {
+            if (this.props.layoutView === false) {
+                return null;
+            }
+
+            return (
+                <LayoutChanger
+                    {...this.props}
+                    {...this.props.layoutProps}
+                    view={_isFunction(this.props.layoutView) ? this.props.layoutView : undefined}
+                />
             );
         }
 
