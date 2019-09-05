@@ -22,7 +22,8 @@ class SearchModelDocExtractor extends FormModelDocExtractor
         $modelObject = new $modelClassName();
 
         $required = [];
-        $requestSchema = SwaggerTypeExtractor::getInstance()->extractModel($this->className, $this->getRequestFields($searchModel, $required));
+        $requestSchema = SwaggerTypeExtractor::getInstance()->extractModelByMeta($this->className);
+
         $responseSchema = is_subclass_of($modelObject, BaseSchema::class)
             ? SwaggerTypeExtractor::getInstance()->extractSchema($modelClassName, $modelObject->fields())
             : SwaggerTypeExtractor::getInstance()->extractModel($modelClassName, $searchModel->fields());
@@ -67,23 +68,31 @@ class SearchModelDocExtractor extends FormModelDocExtractor
             'responses' => [
                 200 => [
                     'description' => 'Successful operation',
-                    'schema' => empty($responseSchema) ? null : [
-                        'type' => 'object',
-                        'properties' => $responseProperties,
+                    'content' => [
+                        'application/json' => [
+                            'schema' => empty($responseSchema) ? null : [
+                                'type' => 'object',
+                                'properties' => $responseProperties,
+                            ],
+                        ],
                     ],
                 ],
                 400 => [
                     'description' => 'Validation errors',
-                    'schema' => [
-                        'type' => 'object',
-                        'properties' => array_merge(
-                            $responseProperties,
-                            [
-                                'errors' => [
-                                    'type' => 'object',
-                                ],
-                            ]
-                        ),
+                    'content' => [
+                        'application/json' => [
+                            'schema' => [
+                                'type' => 'object',
+                                'properties' => array_merge(
+                                    $responseProperties,
+                                    [
+                                        'errors' => [
+                                            'type' => 'object',
+                                        ],
+                                    ]
+                                ),
+                            ],
+                        ],
                     ],
                 ],
             ],

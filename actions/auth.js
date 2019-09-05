@@ -51,16 +51,16 @@ export const init = (initAction) => (dispatch, getState) => {
         });
 };
 
-export const login = token => dispatch => {
+export const login = (token, redirectPageId = 'root') => dispatch => {
     http.setAccessToken(token);
     return dispatch(init(lastInitAction))
-        .then(() => dispatch(goToPage('root')));
+        .then(() => dispatch(goToPage(redirectPageId)));
 };
 
 export const addSocial = social => ({
     type: AUTH_ADD_SOCIAL,
     social,
-})
+});
 
 export const setUser = user => ({
     type: AUTH_INIT_USER,
