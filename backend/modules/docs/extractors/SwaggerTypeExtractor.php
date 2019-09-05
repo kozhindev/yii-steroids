@@ -433,17 +433,6 @@ class SwaggerTypeExtractor extends BaseObject
     public function extractMethod($className, $methodName)
     {
         $comment = '';
-
-        if (is_string($methodName)) {
-            if (method_exists($className, 'getFieldsSwaggerSchema')) {
-                if (array_key_exists($methodName, $className::getFieldsSwaggerSchema())) {
-                    return $className::getFieldsSwaggerSchema()[$methodName];
-                }
-            }
-        } else {
-            // TODO other formats
-        }
-
         if (preg_match('/@return ([a-z0-9_]+)/i', $comment, $match)) {
             return $this->extractType($match[1], $className, $comment);
         }
