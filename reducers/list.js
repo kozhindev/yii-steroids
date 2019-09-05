@@ -22,7 +22,7 @@ export default (state = {}, action) => {
                 ...state,
                 [action.listId]: {
                     meta: {},
-                    layout: null,
+                    layoutName: null,
                     selectedIds: {},
                     total: action.total || (action.items ? action.items.length : 0),
                     isFetched: !!action.items,
@@ -135,7 +135,7 @@ export default (state = {}, action) => {
                 ...state,
                 [action.listId]: {
                     ...state[action.listId],
-                    layout: action.layoutId,
+                    layoutName: action.layoutName,
                 }
             };
     }

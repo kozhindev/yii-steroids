@@ -1,6 +1,6 @@
 import _get from 'lodash-es/get';
 
-import {http} from 'components';
+import {http, clientStorage} from 'components';
 
 export const LIST_INIT = 'LIST_INIT';
 export const LIST_BEFORE_FETCH = 'LIST_BEFORE_FETCH';
@@ -11,6 +11,8 @@ export const LIST_DESTROY = 'LIST_DESTROY';
 export const LIST_TOGGLE_ITEM = 'LIST_TOGGLE_ITEM';
 export const LIST_TOGGLE_ALL = 'LIST_TOGGLE_ALL';
 export const LIST_SET_LAYOUT = 'LIST_SET_LAYOUT';
+
+const STORAGE_LAYOUT_KEY_PREFIX = 'listLayout_';
 
 const lazyTimers = {};
 
@@ -42,6 +44,7 @@ export const init = (listId, props) => dispatch => dispatch({
     items: props.items || null,
     loadMore: props.loadMore,
     primaryKey: props.primaryKey,
+    layoutName: clientStorage.get(STORAGE_LAYOUT_KEY_PREFIX + listId) || props.selectedLayoutName || _get(props, 'layoutNames.0.id') || null,
     listId,
     type: LIST_INIT,
 });
@@ -135,8 +138,11 @@ export const toggleAll = listId => ({
     type: LIST_TOGGLE_ALL,
 });
 
-export const setLayoutType = (listId, layoutId) => ({
-    listId,
-    layoutId,
-    type: LIST_SET_LAYOUT,
-});
+export const setLayoutName = (listId, layoutName) => {
+    clientStorage.set(STORAGE_LAYOUT_KEY_PREFIX + listId, layoutName);
+    return {
+        listId,
+        layoutName,
+        type: LIST_SET_LAYOUT,
+    };
+};

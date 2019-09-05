@@ -12,13 +12,13 @@ import _isEmpty from 'lodash-es/isEmpty';
 import _mergeWith from 'lodash-es/mergeWith';
 import queryString from 'query-string';
 
-import {init, lazyFetch, fetch, setSort, destroy} from '../../actions/list';
+import {init, lazyFetch, fetch, setSort, destroy, setLayoutName} from '../../actions/list';
 import {getList} from '../../reducers/list';
 import Empty from './Empty';
 import Pagination from './Pagination';
-import LayoutChanger from './LayoutChanger';
 import PaginationSize from './PaginationSize';
 import Form from '../form/Form';
+import Nav from '../nav/Nav';
 import {getMeta} from '../../reducers/fields';
 import SyncAddressBarHelper from '../../ui/form/Form/SyncAddressBarHelper';
 
@@ -63,7 +63,6 @@ export default
             list,
             formValues: formId && formValuesSelectors[formId](state) || null,
             locationSearch: _get(state, 'routing.location.search', ''),
-            layout: _get(list, 'layout', null),
         };
     }
 )
@@ -141,12 +140,17 @@ export default
                 PropTypes.bool,
             ]),
             paginationSizeProps: PropTypes.object,
-            layoutView: PropTypes.oneOfType([
-                PropTypes.func,
-                PropTypes.bool,
-            ]),
             layoutProps: PropTypes.object,
-            layout: PropTypes.string,
+            selectedLayoutName: PropTypes.string,
+            layoutNames: PropTypes.arrayOf(PropTypes.shape({
+                id: PropTypes.string,
+                label: PropTypes.oneOfType([
+                    PropTypes.string,
+                    PropTypes.any,
+                ]),
+            })),
+            layoutNamesView: PropTypes.func,
+            layoutNamesProps: PropTypes.object,
             list: PropTypes.shape({
                 meta: PropTypes.object,
                 isFetched: PropTypes.bool,
@@ -269,12 +273,12 @@ export default
                     {...this.props}
                     searchForm={searchForm}
                     isLoading={_get(this.props, 'list.isLoading')}
-                    layout={this.props.layout}
+                    selectedLayoutName={this.props.list.layoutName}
                     items={items}
                     empty={this.renderEmpty()}
                     pagination={this.renderPagination()}
                     paginationSize={this.renderPaginationSize()}
-                    layoutChanger={this.renderLayoutChanger()}
+                    layoutNames={this.renderLayoutNames()}
                     outsideSearchForm={this.renderOutsideSearchForm()}
                     fetch={this._onFetch}
                     sort={this._onSort}
@@ -341,16 +345,18 @@ export default
             );
         }
 
-        renderLayoutChanger() {
-            if (this.props.layoutView === false) {
+        renderLayoutNames() {
+            if (!this.props.layoutNames) {
                 return null;
             }
 
+            const NavComponent = this.props.layoutNamesView || Nav;
             return (
-                <LayoutChanger
-                    {...this.props}
-                    {...this.props.layoutProps}
-                    view={_isFunction(this.props.layoutView) ? this.props.layoutView : undefined}
+                <NavComponent
+                    {...this.props.layoutNamesProps}
+                    items={this.props.layoutNames}
+                    activeTab={this.props.selectedLayoutName}
+                    onChange={layoutName => this.props.dispatch(setLayoutName(this.props.listId, layoutName))}
                 />
             );
         }
