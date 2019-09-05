@@ -113,6 +113,7 @@ class DefaultConfig
                 'siteMap',
                 'frontendState',
                 'multiFactorAuth',
+                'cors',
             ],
             'components' => [
                 'authEnhancer' => [
@@ -176,6 +177,9 @@ class DefaultConfig
                 ],
                 'view' => [
                     'class' => 'steroids\components\View',
+                ],
+                'cors' => [
+                    'class' => 'steroids\components\Cors',
                 ],
             ],
         ];
