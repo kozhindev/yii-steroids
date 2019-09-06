@@ -51,7 +51,7 @@ export const init = (listId, props) => dispatch => dispatch({
 
 export const fetch = (listId, params = {}) => (dispatch, getState) => {
     const list = {
-        ..._get(getState(), ['list', listId]),
+        ..._get(getState(), ['list', 'lists', listId]),
         ...params,
     };
     if (!list.action && list.action !== '') {
@@ -67,7 +67,7 @@ export const fetch = (listId, params = {}) => (dispatch, getState) => {
             type: LIST_BEFORE_FETCH,
         },
         onFetch(list).then(data => {
-            if (!getState().list[listId]) {
+            if (!getState().list.lists[listId]) {
                 return [];
             }
 

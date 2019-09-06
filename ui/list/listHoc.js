@@ -13,7 +13,7 @@ import _mergeWith from 'lodash-es/mergeWith';
 import queryString from 'query-string';
 
 import {init, lazyFetch, fetch, setSort, destroy, setLayoutName} from '../../actions/list';
-import {getList} from '../../reducers/list';
+import {getCheckedIds, getList, isCheckedAll} from '../../reducers/list';
 import Empty from './Empty';
 import Pagination from './Pagination';
 import PaginationSize from './PaginationSize';
@@ -61,6 +61,8 @@ export default
             model,
             searchForm,
             list,
+            //checkedIds: getCheckedIds(state, props.listId),
+            //isCheckedAll: isCheckedAll(state, props.listId),
             formValues: formId && formValuesSelectors[formId](state) || null,
             locationSearch: _get(state, 'routing.location.search', ''),
         };
@@ -391,4 +393,4 @@ export default
             this.props.dispatch(setSort(this.props.listId, sort));
         }
 
-};
+    };
