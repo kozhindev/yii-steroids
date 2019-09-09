@@ -7,6 +7,7 @@ use steroids\base\BaseSchema;
 use steroids\base\Type;
 use yii\base\BaseObject;
 use yii\base\Model;
+use yii\db\ActiveQueryInterface;
 use yii\db\ActiveRecord;
 use yii\db\BaseActiveRecord;
 use yii\helpers\ArrayHelper;
@@ -124,7 +125,7 @@ class SwaggerTypeExtractor extends BaseObject
                 foreach (explode("\n", $phpdoc) as $line) {
                     $line = preg_replace('/^\s*\\/?\*+/', '', $line);
                     $line = trim($line);
-                    if ($line && substr($line, 0, 1) !== '@') {
+                    if ($line && $line !== '/' && substr($line, 0, 1) !== '@') {
                         $schema['description'] = $line;
                         break;
                     }
@@ -308,12 +309,20 @@ class SwaggerTypeExtractor extends BaseObject
                 $key = $attributes;
             }
 
+            $isRelation = false;
+            if ($model instanceof BaseActiveRecord) {
+                try {
+                    $isRelation = !!$model->getRelation($attributes, false);
+                } catch(\Exception $e) {
+                }
+            }
+
             $property = null;
             if (is_callable($attributes)) {
 
                 $property = $this->extractMethod($className, $key);
 
-            } elseif (is_array($attributes) || (is_string($attributes) && $model instanceof BaseActiveRecord && $model->getRelation($attributes, false))) {
+            } elseif (is_array($attributes) || (is_string($attributes) && $isRelation)) {
                 // Relation
                 $relation = $model->getRelation($key);
                 $property = $this->extractModel($relation->modelClass, is_array($attributes) ? $attributes : null);
@@ -392,7 +401,12 @@ class SwaggerTypeExtractor extends BaseObject
                 if (count($attributes) > 1) {
                     $attribute = array_pop($attributes);
                     foreach ($attributes as $item) {
-                        $modelClass = $this->findAttributeType($modelClass, $item);
+                        $nextModelClass = $this->findAttributeType($modelClass, $item);
+                        if (is_subclass_of($nextModelClass, ActiveQueryInterface::class)) {
+                            $modelClass = (new $modelClass())->getRelation($item)->modelClass;
+                        } else {
+                            $modelClass = $nextModelClass;
+                        }
                     }
 
                     $property = ArrayHelper::getValue($this->extractModel($modelClass, [$attribute]), ['properties', $attribute]);

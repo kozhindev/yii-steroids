@@ -44,6 +44,12 @@ abstract class CrudApiController extends Controller
                         'urlRule' => "POST $baseUrl",
                         'visible' => in_array('create', $controls),
                     ],
+                    'update-batch' => [
+                        'label' => \Yii::t('steroids', 'Множественное редактирование'),
+                        'url' => ['update-batch'],
+                        'urlRule' => "PUT,POST $baseUrl/update-batch",
+                        'visible' => in_array('update-batch', $controls),
+                    ],
                     'update' => [
                         'label' => \Yii::t('steroids', 'Редактирование'),
                         'url' => ['update'],
@@ -74,6 +80,7 @@ abstract class CrudApiController extends Controller
             'index',
             'create',
             'update',
+            'update-batch',
             'view',
             'delete',
         ];
@@ -95,13 +102,27 @@ abstract class CrudApiController extends Controller
     {
         /** @var Model $model */
         $model = new static::$modelClass();
-        return $this->actionSave($model);
+        return $this->actionSave($model, Yii::$app->request->post());
     }
 
     public function actionUpdate()
     {
         $model = $this->findModel();
-        return $this->actionSave($model);
+        return $this->actionSave($model, Yii::$app->request->post());
+    }
+
+    public function actionUpdateBatch()
+    {
+        /** @var Model $modelClass */
+        $modelClass = static::$modelClass;
+        $primaryKey = $modelClass::primaryKey()[0];
+
+        $result = [];
+        foreach (Yii::$app->request->post() as $id => $data) {
+            $model = $modelClass::findOrPanic([$primaryKey => $id]);
+            $result[$id] = $this->actionSave($model, $data);
+        }
+        return $result;
     }
 
     public function actionView()
@@ -134,10 +155,11 @@ abstract class CrudApiController extends Controller
 
     /**
      * @param Model $model
+     * @param array $post
      * @return array
      * @throws ForbiddenHttpException
      */
-    protected function actionSave($model)
+    protected function actionSave($model, $post)
     {
         $attributes = $model->attributes();
         $permittedAttributes = $model->isNewRecord
@@ -148,7 +170,7 @@ abstract class CrudApiController extends Controller
         }
 
         $data = [];
-        foreach (Yii::$app->request->post() as $key => $value) {
+        foreach ($post as $key => $value) {
             if ($permittedAttributes === true || !in_array($key, $attributes) || in_array($key, $permittedAttributes)) {
                 $data[$key] = $value;
             }

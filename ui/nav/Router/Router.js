@@ -94,7 +94,7 @@ class Router extends React.PureComponent {
                 <ConnectedRouter history={store.history}>
                     {this.renderContent()}
                 </ConnectedRouter>
-            )
+            );
         }
     }
 
