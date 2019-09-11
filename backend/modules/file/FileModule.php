@@ -287,7 +287,8 @@ class FileModule extends Module
     {
         $folder = trim($file->folder, '/');
         $fileName = ($folder ? $folder . '/' : '') . $file->fileName;
-        $sourceStream = Psr7\stream_for($sourcePath ?: $file->path);
+        $sourceResource = Psr7\try_fopen($sourcePath ?: $file->path, 'r+');
+        $sourceStream = Psr7\stream_for($sourceResource);
 
         ob_start();
         $this->amazoneStorage
@@ -297,5 +298,7 @@ class FileModule extends Module
             ->execute();
         $file->amazoneS3Url = $this->amazoneStorage->getUrl($fileName);
         ob_end_clean();
+
+        $sourceStream->close();
     }
 }
