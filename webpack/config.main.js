@@ -133,6 +133,18 @@ module.exports = (config, entry) => {
                         },
                     },
                 },
+                favicon: {
+                    test: /favicon\.ico$/,
+                    use: {
+                        cache: utils.isProduction() && 'cache-loader',
+                        file: {
+                            loader: 'file-loader',
+                            options: {
+                                name: `${config.staticPath}${config.baseUrl}[name].[ext]`,
+                            },
+                        },
+                    },
+                },
             },
         },
         resolve: {
@@ -171,6 +183,7 @@ module.exports = (config, entry) => {
 
             // Index html
             fs.existsSync(config.sourcePath + '/index.html') && new HtmlWebpackPlugin({
+                favicon: fs.existsSync(`${config.sourcePath}/favicon.ico`) ? `${config.sourcePath}/favicon.ico` : null,
                 inject: true,
                 template: config.sourcePath + '/index.html',
                 filename: `${config.baseUrl}index.html`

@@ -12,12 +12,13 @@ import _isEmpty from 'lodash-es/isEmpty';
 import _mergeWith from 'lodash-es/mergeWith';
 import queryString from 'query-string';
 
-import {init, lazyFetch, fetch, setSort, destroy} from '../../actions/list';
-import {getList} from '../../reducers/list';
+import {init, lazyFetch, fetch, setSort, destroy, setLayoutName} from '../../actions/list';
+import {getCheckedIds, getList, isCheckedAll} from '../../reducers/list';
 import Empty from './Empty';
 import Pagination from './Pagination';
 import PaginationSize from './PaginationSize';
 import Form from '../form/Form';
+import Nav from '../nav/Nav';
 import {getMeta} from '../../reducers/fields';
 import SyncAddressBarHelper from '../../ui/form/Form/SyncAddressBarHelper';
 
@@ -60,6 +61,8 @@ export default
             model,
             searchForm,
             list,
+            //checkedIds: getCheckedIds(state, props.listId),
+            //isCheckedAll: isCheckedAll(state, props.listId),
             formValues: formId && formValuesSelectors[formId](state) || null,
             locationSearch: _get(state, 'routing.location.search', ''),
         };
@@ -139,6 +142,17 @@ export default
                 PropTypes.bool,
             ]),
             paginationSizeProps: PropTypes.object,
+            layoutProps: PropTypes.object,
+            selectedLayoutName: PropTypes.string,
+            layoutNames: PropTypes.arrayOf(PropTypes.shape({
+                id: PropTypes.string,
+                label: PropTypes.oneOfType([
+                    PropTypes.string,
+                    PropTypes.any,
+                ]),
+            })),
+            layoutNamesView: PropTypes.func,
+            layoutNamesProps: PropTypes.object,
             list: PropTypes.shape({
                 meta: PropTypes.object,
                 isFetched: PropTypes.bool,
@@ -187,7 +201,7 @@ export default
             this.props.dispatch(init(this.props.listId, this.props));
         }
 
-        componentWillReceiveProps(nextProps) {
+    UNSAFE_componentWillReceiveProps(nextProps) {
             const customizer = (objValue, srcValue) => {
                 if (_isArray(objValue)) {
                     return srcValue;
@@ -261,10 +275,12 @@ export default
                     {...this.props}
                     searchForm={searchForm}
                     isLoading={_get(this.props, 'list.isLoading')}
+                    selectedLayoutName={this.props.list.layoutName}
                     items={items}
                     empty={this.renderEmpty()}
                     pagination={this.renderPagination()}
                     paginationSize={this.renderPaginationSize()}
+                    layoutNames={this.renderLayoutNames()}
                     outsideSearchForm={this.renderOutsideSearchForm()}
                     fetch={this._onFetch}
                     sort={this._onSort}
@@ -331,6 +347,22 @@ export default
             );
         }
 
+        renderLayoutNames() {
+            if (!this.props.layoutNames) {
+                return null;
+            }
+
+            const NavComponent = this.props.layoutNamesView || Nav;
+            return (
+                <NavComponent
+                    {...this.props.layoutNamesProps}
+                    items={this.props.layoutNames}
+                    activeTab={this.props.list.layoutName}
+                    onChange={layoutName => this.props.dispatch(setLayoutName(this.props.listId, layoutName))}
+                />
+            );
+        }
+
         renderOutsideSearchForm() {
             if (!this.props.searchForm || !this.props.searchForm.fields) {
                 return null;
@@ -361,4 +393,4 @@ export default
             this.props.dispatch(setSort(this.props.listId, sort));
         }
 
-};
+    };

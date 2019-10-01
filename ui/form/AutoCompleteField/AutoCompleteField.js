@@ -99,7 +99,7 @@ class AutoCompleteField extends React.PureComponent {
         this.props.onClose();
     }
 
-    componentWillReceiveProps(nextProps, nextContext) {
+    UNSAFE_componentWillReceiveProps(nextProps, nextContext) {
         if (_get(this.props, 'input.value') !== _get(nextProps, 'input.value')) {
             this.props.onSearch(nextProps.input.value);
         }

@@ -1,34 +1,30 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
-import {Router} from '../../nav';
-import _get from 'lodash-es/get';
-import _isFunction from 'lodash-es/isFunction';
-import _isString from 'lodash-es/isString';
-import {push} from 'react-router-redux';
 
 import {http, ui} from 'components';
-import {refresh} from '../../../actions/list';
 import {getCurrentRoute} from '../../../reducers/routing';
+import {goToPage} from '../../../actions/navigation';
+import {refresh} from '../../../actions/list';
 import Grid from '../../list/Grid';
+import Form from '../../form/Form';
+import {showNotification} from '../../../actions/notifications';
 
-export default
+const getCrudId = props => props.crudId || props.baseRouteId;
+
 @connect(
     state => ({
         route: getCurrentRoute(state),
     })
 )
-class Crud extends React.PureComponent {
+export default class Crud extends React.PureComponent {
 
     static propTypes = {
-        crudId: PropTypes.string.isRequired,
+        editMode: PropTypes.oneOf(['page', 'modal']),
+        crudId: PropTypes.string,
+        baseRouteId: PropTypes.string,
+        restUrl: PropTypes.string,
         controls: PropTypes.array,
-        listProps: PropTypes.object,
-        formProps: PropTypes.object,
-        className: PropTypes.string,
-        formView: PropTypes.func,
-        wrapperView: PropTypes.func,
-        primaryKey: PropTypes.string,
         route: PropTypes.shape({
             id: PropTypes.string,
             isExact: PropTypes.bool,
@@ -36,173 +32,199 @@ class Crud extends React.PureComponent {
             path: PropTypes.string,
             url: PropTypes.string,
         }),
+        grid: PropTypes.object,
+        form: PropTypes.object,
+        view: PropTypes.func,
+        gridView: PropTypes.func,
+        formView: PropTypes.func,
+        detailView: PropTypes.func,
     };
 
     static defaultProps = {
-        primaryKey: PropTypes.stirng,
+        primaryKey: 'id',
     };
 
+    constructor() {
+        super(...arguments);
+
+        this._actionsHandler = this._actionsHandler.bind(this);
+    }
+
     render() {
-        const CrudWrapperView = this.props.wrapperView || ui.getView('crud.CrudWrapperView');
-        const CrudFormView = this.props.formView || ui.getView('crud.CrudFormView');
+        const defaultControls = {
+            index: {
+                visible: true,
+                toRoute: this.props.baseRouteId,
+            },
+            view: {
+                visible: false,
+            },
+            create: {
+                visible: true,
+                toRoute: this.props.baseRouteId + '_create',
+            },
+            update: {
+                visible: false,
+            },
+            delete: {
+                visible: false,
+                position: 'right',
+                onClick: async () => {
+                    await http.delete(`${this.props.restUrl}/${this.props.route.params.id}`);
+                    this.props.dispatch(goToPage(this.props.baseRouteId));
+                }
+            },
+        };
+
+        // Append default controls
+        const controls = [].concat(this.props.controls || []);
+        const controlsIds = controls.map(item => item.id).filter(Boolean);
+        Object.keys(defaultControls).forEach(id => {
+            if (!controlsIds.includes(id)) {
+                controls.push({id});
+            }
+        });
+
+        // Resolve content
+        let content = null;
+        switch (this.props.route.id) {
+            case this.props.baseRouteId:
+                content = this.renderGrid();
+                defaultControls.index.visible = false;
+                break;
+
+            case this.props.baseRouteId + '_create':
+                content = this.renderForm();
+                defaultControls.create.visible = false;
+                break;
+
+            case this.props.baseRouteId + '_update':
+                content = this.renderForm();
+                defaultControls.create.visible = false;
+                defaultControls.delete.visible = true;
+                defaultControls.view = {
+                    visible: !!this.props.detailView,
+                    toRoute: this.props.baseRouteId + '_view',
+                    toRouteParams: {
+                        id: this.props.route.params.id,
+                    },
+                };
+                break;
+
+            case this.props.baseRouteId + '_view':
+                content = this.renderDetail();
+                defaultControls.create.visible = false;
+                defaultControls.delete.visible = true;
+                defaultControls.update = {
+                    visible: true,
+                    toRoute: this.props.baseRouteId + '_update',
+                    toRouteParams: {
+                        id: this.props.route.params.id,
+                    },
+                };
+                break;
+        }
+
+        const CrudView = this.props.view || ui.getView('crud.CrudView');
         return (
-            <Router
-                wrapperView={CrudWrapperView}
-                wrapperProps={{
-                    ...this.props,
-                    controls: this.getControls('list'),
-                }}
-                routes={[
-                    {
-                        id: 'index',
-                        exact: true,
-                        path: '/',
-                        component: Grid,
-                        componentProps: {
-                            listId: this.props.crudId,
-                            primaryKey: this.props.primaryKey,
-                            emptyText: __('Нет записей'),
-                            ...this.props.listProps,
-                            actions: (item, primaryKey) => this.getControls('item', item[primaryKey]),
-                        },
-                    },
-                    {
-                        id: 'create',
-                        path: '/create',
-                        component: CrudFormView,
-                        componentProps: {
-                            formProps: {
-                                formId: this.props.crudId,
-                                ...this.props.formProps,
-                                onComplete: () => this.props.dispatch(push('/')),
-                            },
-                        },
-                    },
-                    {
-                        id: 'update',
-                        path: '/:id/update',
-                        component: CrudFormView,
-                        componentProps: {
-                            formProps: {
-                                formId: this.props.crudId,
-                                ...this.props.formProps,
-                                onComplete: () => this.props.dispatch(push('/')),
-                            },
-                        },
-                    },
-                ]}
+            <CrudView
+                {...this.props}
+                controls={controls.map(item => ({
+                    ...defaultControls[item.id],
+                    ...item,
+                }))}
+            >
+                {content}
+            </CrudView>
+        );
+    }
+
+    renderGrid() {
+        const restUrl = this.props.restUrl
+            ? this.props.restUrl + (this.props.restUrl.indexOf('?') !== -1 ? '&' : '?') + 'scope=model,permissions'
+            : undefined;
+
+        const GridComponent = this.props.gridView || Grid;
+        return (
+            <GridComponent
+                listId={getCrudId(this.props)}
+                action={restUrl}
+                actionMethod='get'
+                defaultPageSize={50}
+                paginationSizeView={false}
+                loadMore={false}
+                primaryKey={this.props.primaryKey}
+                emptyText={__('Нет записей')}
+                columns={[this.props.primaryKey]}
+                {...this.props.grid}
+                actions={this._actionsHandler}
             />
         );
     }
 
-    getControls(actionType, itemId) {
-        itemId = itemId || _get(this.props, 'route.params.id') || '';
+    renderForm() {
+        const FormComponent = this.props.formView || Form;
+        return (
+            <FormComponent
+                formId={getCrudId(this.props)}
+                initialValues={this.props.item}
+                action={this.props.restUrl + (this.props.route.params.id ? '/' + this.props.route.params.id : '')}
+                autoFocus
+                onComplete={() => {
+                    window.scrollTo(0, 0);
+                    this.props.dispatch(showNotification('success', __('Запись успешно обновлена.')));
+                }}
+                {...this.props.form}
+            />
+        );
+    }
 
-        const actionId = _get(this.props, 'route.id');
-        const available = this.props.controls.map(item => item.id);
-        const defaultItems = {
-            index: {
-                actionType: 'list',
-                label: __('К списку'),
-                icon: 'keyboard_arrow_left',
-                to: '/',
-                color: 'secondary',
-                outline: true,
-                visible: actionId !== 'index',
-            },
-            create: {
-                actionType: 'list',
-                label: __('Добавить'),
-                icon: 'add_circle',
-                to: '/create',
-                color: 'success',
-                outline: true,
-                visible: actionId === 'index' && available.indexOf('create') !== -1 && actionType === 'list',
-            },
+    renderDetail() {
+        const DetailView = this.props.detailView;
+        if (DetailView) {
+            return <DetailView />
+        } else {
+            return null;
+        }
+    }
+
+    _actionsHandler(item, primaryKey) {
+        const itemId = item[primaryKey];
+        const defaultActions = {
             view: {
-                label: __('Просмотр'),
-                color: 'secondary',
-                outline: true,
-                to: `/${itemId}`,
-                visible: available.indexOf('view') !== -1,
+                visible: false,
+                toRoute: this.props.baseRouteId + '_view',
+                toRouteParams: {
+                    id: itemId,
+                },
             },
             update: {
-                label: __('Редактировать'),
-                color: 'secondary',
-                outline: true,
-                to: `/${itemId}/update`,
-                visible: available.indexOf('update') !== -1,
+                toRoute: this.props.baseRouteId + '_update',
+                toRouteParams: {
+                    id: itemId,
+                },
             },
             delete: {
-                icon: 'delete',
-                label: __('Удалить'),
-                confirm: __('Удалить запись?'),
-                color: 'danger',
-                outline: true,
-                visible: available.indexOf('delete') !== -1,
-                position: 'right',
-                onClick: () => this._onDelete(itemId),
+                onClick: async () => {
+                    await http.delete(`${this.props.restUrl}/${itemId}`);
+                    this.props.dispatch(refresh(getCrudId(this.props)))
+                }
             },
         };
 
-        const controls = [].concat(this.props.controls);
-        if (available.indexOf('index') === -1) {
-            controls.unshift({id: 'index'});
-        }
-
-        return controls
-            .map(item => {
-                if (!item) {
-                    return null;
-                }
-
-                // Merge with defaults
-                item = {
-                    actionType: 'item', // Default action type
-                    url: null, // TODO Reset url for grid actions
-                    ...defaultItems[item.id],
-                    ...item,
-                };
-
-                // Normalize url
-                ['to', 'url'].forEach(key => {
-                    const patternKey = key + 'Pattern';
-                    if (_isFunction(item[patternKey])) {
-                        item[key] = item[patternKey].call(null, itemId, item);
-                    } else if (_isString(item[patternKey])) {
-                        item[key] = item[patternKey].replace(/__ID__/g, itemId);
-                    }
-                });
-
-                // TODO access check
-
-                // Check visible
-                if (item.visible === false) {
-                    return null;
-                }
-                if (item.id === actionId) {
-                    return null;
-                }
-                if (item.actionType === 'item' && !itemId) {
-                    return null;
-                }
-
-                return item;
-            })
-            .filter(Boolean);
-    }
-
-    _onDelete(itemId) {
-        http.delete(null, {
-            [this.props.primaryKey]: itemId
-        }).then(() => {
-            const actionId = _get(this.props, 'route.id');
-            if (actionId === 'index') {
-                this.props.dispatch(refresh(this.props.crudId));
-            } else {
-                this.props.dispatch(push('/'));
+        // Append default actions
+        const actions = [].concat(this.props.grid && this.props.grid.actions || []);
+        const actionsIds = actions.map(item => item.id).filter(Boolean);
+        Object.keys(defaultActions).forEach(id => {
+            if (!actionsIds.includes(id)) {
+                actions.push({id});
             }
         });
+
+        return actions.map(action => ({
+            ...defaultActions[action.id],
+            ...action,
+        }));
     }
 
 }

@@ -10,6 +10,8 @@ use steroids\modules\file\processors\ImageResize;
 use steroids\modules\file\uploaders\BaseUploader;
 use Yii;
 use yii\helpers\ArrayHelper;
+use frostealth\yii2\aws\s3\Service as AmazonService;
+use GuzzleHttp\Psr7;
 
 class FileModule extends Module
 {
@@ -78,7 +80,7 @@ class FileModule extends Module
     public $prioritySource = 'file';
 
     /**
-     * @var frostealth\yii2\aws\s3\Service
+     * @var AmazonService
      */
     public $amazoneStorage;
 
@@ -285,14 +287,18 @@ class FileModule extends Module
     {
         $folder = trim($file->folder, '/');
         $fileName = ($folder ? $folder . '/' : '') . $file->fileName;
+        $sourceResource = Psr7\try_fopen($sourcePath ?: $file->path, 'r+');
+        $sourceStream = Psr7\stream_for($sourceResource);
 
         ob_start();
         $this->amazoneStorage
             ->commands()
-            ->upload($fileName, $sourcePath ?: $file->path)
+            ->upload($fileName, $sourceStream)
             ->withContentType($file->fileMimeType)
             ->execute();
         $file->amazoneS3Url = $this->amazoneStorage->getUrl($fileName);
         ob_end_clean();
+
+        $sourceStream->close();
     }
 }

@@ -2,12 +2,23 @@ import pathToRegexp from 'path-to-regexp';
 import {matchPath} from 'react-router';
 import _get from 'lodash-es/get';
 
-import {NAVIGATION_INIT_ROUTES, NAVIGATION_SET_PARAMS} from '../actions/navigation';
+import {
+    NAVIGATION_INIT_ROUTES,
+    NAVIGATION_SET_PARAMS,
+    NAVIGATION_ADD_CONFIGS,
+    NAVIGATION_REMOVE_CONFIGS,
+    NAVIGATION_SET_DATA,
+    getConfigId
+} from '../actions/navigation';
+
 import {getCurrentRoute} from './routing';
 
 const initialState = {
     routesTree: null,
     params: {},
+    configs: [],
+    data: {},
+    counters: {},
 };
 
 const findRecursive = (items, pageId, pathItems) => {
@@ -76,6 +87,53 @@ export default (state = initialState, action) => {
                 params: {
                     ...state.params,
                     ...action.params,
+                },
+            };
+
+        case NAVIGATION_ADD_CONFIGS:
+            const configs = [].concat(state.configs);
+            const counters = {...state.counters};
+            action.configs.forEach(config => {
+                const id = getConfigId(config);
+                if (counters[id]) {
+                    counters[id]++;
+                } else {
+                    counters[id] = 1;
+                    configs.push(config);
+                }
+            });
+
+            return {
+                ...state,
+                configs,
+                counters,
+            };
+
+        case NAVIGATION_REMOVE_CONFIGS:
+            let configs2 = [].concat(state.configs);
+            const counters2 = {...state.counters};
+            action.configs.forEach(config => {
+                const id = getConfigId(config);
+                if (counters2[id]) {
+                    counters2[id]--;
+
+                    if (counters2[id] <= 0) {
+                        configs2 = configs2.filter(item => getConfigId(item) !== id);
+                    }
+                }
+            });
+            return {
+                ...state,
+                configs: configs2,
+                counters: counters2,
+            };
+
+        case NAVIGATION_SET_DATA:
+            return {
+                ...state,
+                data: {
+                    ...state.data,
+                    [getConfigId(action.config)]: action.data,
                 },
             };
     }

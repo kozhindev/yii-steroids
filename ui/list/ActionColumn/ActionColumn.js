@@ -28,20 +28,20 @@ export default class ActionColumn extends React.PureComponent {
                 rule: 'view',
                 icon: 'visibility',
                 label: __('Просмотреть'),
-                url: location.pathname + `/view/${id}`,
+                //url: location.pathname + `/view/${id}`,
             },
             update: {
                 rule: 'update',
                 icon: 'mode_edit',
                 label: __('Редактировать'),
-                url: location.pathname + `/update/${id}`,
+                //url: location.pathname + `/update/${id}`,
             },
             delete: {
                 rule: 'delete',
                 icon: 'delete',
                 label: __('Удалить'),
                 confirm: __('Удалить запись?'),
-                url: location.pathname + `/delete/${id}`,
+                //url: location.pathname + `/delete/${id}`,
             },
         };
 
@@ -55,7 +55,7 @@ export default class ActionColumn extends React.PureComponent {
                     return {
                         ...defaultActions[action.id],
                         ...action,
-                        visible: !_has(this.props.item, canKey) || !!this.props.item[canKey],
+                        visible: action.visible !== false && (!_has(this.props.item, canKey) || !!this.props.item[canKey]),
                     };
                 })}
             />

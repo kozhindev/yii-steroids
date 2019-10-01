@@ -3,7 +3,6 @@
 namespace steroids\components;
 
 use steroids\base\WebApplication;
-use yii\base\Application;
 use yii\base\BootstrapInterface;
 use yii\base\Component;
 
@@ -50,10 +49,8 @@ class Cors extends Component implements BootstrapInterface
             if ($cors->request->isOptions && $cors->request->headers->has('Access-Control-Request-Method')) {
                 // it is CORS preflight request, respond with 200 OK without further processing
                 $cors->response->setStatusCode(200);
-                return false;
+                \Yii::$app->end();
             }
-
-            return true;
         }
     }
 }

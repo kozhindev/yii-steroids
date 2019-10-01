@@ -26,7 +26,7 @@ class NumberField extends React.PureComponent {
         size: PropTypes.oneOf(['sm', 'md', 'lg']),
         min: PropTypes.number,
         max: PropTypes.number,
-        step: PropTypes.number,
+        step: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
         placeholder: PropTypes.string,
         isInvalid: PropTypes.bool,
         disabled: PropTypes.bool,

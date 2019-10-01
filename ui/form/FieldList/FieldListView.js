@@ -85,9 +85,12 @@ export default class FieldListView extends React.PureComponent {
                 </table>
                 {this.props.showAdd && !this.props.disabled && (
                     <a
-                        href='javascript:void(0)'
+                        href='#'
                         className={bem.element('link-add')}
-                        onClick={this.props.onAdd}
+                        onClick={e => {
+                            e.preventDefault();
+                            this.props.onAdd(e);
+                        }}
                     >
                         {__('Добавить ещё')}
                     </a>

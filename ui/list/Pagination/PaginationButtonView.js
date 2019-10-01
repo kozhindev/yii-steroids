@@ -38,8 +38,11 @@ export default class PaginationButtonView extends React.Component {
                                 bem.element('page-link', {hidden: !item.page}),
                                 'page-link'
                             )}
-                            href='javascript:void(0)'
-                            onClick={() => this.props.onSelect(item.page)}
+                            href='#'
+                            onClick={e => {
+                                e.preventDefault();
+                                this.props.onSelect(item.page);
+                            }}
                         >
                             {item.label}
                         </a>

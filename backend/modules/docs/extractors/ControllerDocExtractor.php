@@ -74,6 +74,21 @@ class ControllerDocExtractor extends BaseDocExtractor
                 }
                 $extractor->run();
             }
+
+            // Find first comment line as title
+            if (!$this->title) {
+                foreach (explode("\n", $method->getDocComment()) as $line) {
+                    $line = preg_replace('/^\s*\\/?\*+/', '', $line);
+                    $line = trim($line);
+                    if ($line && $line !== '/' && substr($line, 0, 1) !== '@') {
+                        $this->title = $line;
+                        $this->swaggerJson->updatePath($url, $httpMethod, [
+                            'summary' => '/' . $url . ' ' . $this->title,
+                        ]);
+                        break;
+                    }
+                }
+            }
         }
     }
 

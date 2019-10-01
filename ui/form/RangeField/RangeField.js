@@ -71,7 +71,7 @@ class RangeField extends React.PureComponent {
         this._timer = null;
     }
 
-    componentWillReceiveProps(nextProps) {
+    UNSAFE_componentWillReceiveProps(nextProps) {
         // Auto focus on set 'from' value
         if (!this.props.inputFrom.value && nextProps.inputFrom.value && !nextProps.inputTo.value) {
             this._timer = setTimeout(() => {
