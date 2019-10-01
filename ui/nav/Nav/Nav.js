@@ -50,7 +50,7 @@ export default class Nav extends React.PureComponent {
         };
     }
 
-    componentWillReceiveProps(nextProps) {
+    UNSAFE_componentWillReceiveProps(nextProps) {
         if (this.props.activeTab !== nextProps.activeTab && nextProps.activeTab) {
             this.setState({
                 activeTab: nextProps.activeTab,

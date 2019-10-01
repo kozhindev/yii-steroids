@@ -10,6 +10,7 @@ import _isObject from 'lodash-es/isObject';
 import {store} from 'components';
 import {registerRoutes} from '../../../actions/routing';
 import navigationHoc from '../navigationHoc';
+import fetchHoc from '../fetchHoc';
 
 export default
 @navigationHoc()
@@ -71,7 +72,7 @@ class Router extends React.PureComponent {
         this.props.dispatch(registerRoutes(this.state.routes));
     }
 
-    componentWillReceiveProps(nextProps) {
+    UNSAFE_componentWillReceiveProps(nextProps) {
         if (this.props.routes !== nextProps.routes) {
             this.setState({routes: nextProps.routes});
         }
@@ -83,6 +84,8 @@ class Router extends React.PureComponent {
     }
 
     render() {
+        // TODO double render!!..
+
         if (process.env.IS_NODE) {
             return (
                 <StaticRouter location={store.history.location}>
@@ -126,7 +129,11 @@ class Router extends React.PureComponent {
     }
 
     _renderItem(route, props) {
-        const Component = route.component;
+        let Component = route.component;
+
+        if (route.fetch) {
+            Component = fetchHoc(route.fetch)(Component);
+        }
 
         return (
             <Component

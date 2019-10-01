@@ -124,7 +124,7 @@ export default () => WrappedComponent => class FileHoc extends React.PureCompone
         this._uploader.queue.off(QueueCollection.EVENT_REMOVE, this._onQueueRemove);
     }
 
-    componentWillReceiveProps(nextProps) {
+    UNSAFE_componentWillReceiveProps(nextProps) {
         // Check backend url changes
         const urlPropKeys = ['backendUrl', 'mimeTypes', 'imagesOnly', 'imagesProcessor', 'imagesExactSize'];
         if (!_isEqual(_pick(this.props, urlPropKeys), _pick(nextProps, urlPropKeys))) {

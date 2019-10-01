@@ -75,7 +75,7 @@ storiesOf('Nav', module)
                 <div className='col'>
                     <nav className='navbar navbar-expand-lg navbar-light bg-light'>
                         <div className='container'>
-                            <a className='navbar-brand' href='javascript:void(0)'>Navbar</a>
+                            <a className='navbar-brand' href='#'>Navbar</a>
                             <Nav
                                 layout='navbar'
                                 items={[

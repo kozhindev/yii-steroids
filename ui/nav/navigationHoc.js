@@ -42,7 +42,7 @@ class NavigationHoc extends React.PureComponent {
         this._initParams(this.props);
     }
 
-    componentWillReceiveProps(nextProps) {
+    UNSAFE_componentWillReceiveProps(nextProps) {
         if (!this.props.route && nextProps.route) {
             this._initParams(nextProps);
         }

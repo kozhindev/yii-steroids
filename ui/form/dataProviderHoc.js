@@ -153,7 +153,7 @@ class DataProviderHoc extends React.PureComponent {
         }*/
     }
 
-    componentWillReceiveProps(nextProps) {
+    UNSAFE_componentWillReceiveProps(nextProps) {
         // Refresh normalized source items on change items from props
         if (this.props.items !== nextProps.items) {
             const sourceItems = DataProviderHoc.normalizeItems(nextProps.items);

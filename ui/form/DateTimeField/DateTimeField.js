@@ -56,7 +56,7 @@ class DateTimeField extends React.PureComponent {
         this.state = this._parseToState(this.props);
     }
 
-    componentWillReceiveProps(nextProps) {
+    UNSAFE_componentWillReceiveProps(nextProps) {
         const newState = this._parseToState(nextProps);
         if (!_isEqual(this.state, newState)) {
             this.setState(newState);

@@ -201,7 +201,7 @@ export default
             this.props.dispatch(init(this.props.listId, this.props));
         }
 
-        componentWillReceiveProps(nextProps) {
+    UNSAFE_componentWillReceiveProps(nextProps) {
             const customizer = (objValue, srcValue) => {
                 if (_isArray(objValue)) {
                     return srcValue;
