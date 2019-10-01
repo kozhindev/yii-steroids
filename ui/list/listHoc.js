@@ -357,7 +357,7 @@ export default
                 <NavComponent
                     {...this.props.layoutNamesProps}
                     items={this.props.layoutNames}
-                    activeTab={this.props.selectedLayoutName}
+                    activeTab={this.props.list.layoutName}
                     onChange={layoutName => this.props.dispatch(setLayoutName(this.props.listId, layoutName))}
                 />
             );
