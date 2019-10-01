@@ -166,7 +166,7 @@ export default class Crud extends React.PureComponent {
         const FormComponent = this.props.formView || Form;
         return (
             <FormComponent
-                formId={getCrudId(this.props)}
+                formId={getCrudId(this.props) + this.props.item.id}
                 initialValues={this.props.item}
                 action={this.props.restUrl + (this.props.route.params.id ? '/' + this.props.route.params.id : '')}
                 autoFocus
