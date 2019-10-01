@@ -8,7 +8,7 @@ import {goToPage} from '../../../actions/navigation';
 import {refresh} from '../../../actions/list';
 import Grid from '../../list/Grid';
 import Form from '../../form/Form';
-import {showNotification} from 'lib/yii-steroids/actions/notifications';
+import {showNotification} from '../../../actions/notifications';
 
 const getCrudId = props => props.crudId || props.baseRouteId;
 
