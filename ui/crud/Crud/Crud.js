@@ -8,6 +8,7 @@ import {goToPage} from '../../../actions/navigation';
 import {refresh} from '../../../actions/list';
 import Grid from '../../list/Grid';
 import Form from '../../form/Form';
+import {showNotification} from 'lib/yii-steroids/actions/notifications';
 
 const getCrudId = props => props.crudId || props.baseRouteId;
 
@@ -32,6 +33,7 @@ export default class Crud extends React.PureComponent {
             url: PropTypes.string,
         }),
         grid: PropTypes.object,
+        form: PropTypes.object,
         view: PropTypes.func,
         gridView: PropTypes.func,
         formView: PropTypes.func,
@@ -166,6 +168,13 @@ export default class Crud extends React.PureComponent {
             <FormComponent
                 formId={getCrudId(this.props)}
                 initialValues={this.props.item}
+                action={this.props.restUrl + (this.props.route.params.id ? '/' + this.props.route.params.id : '')}
+                autoFocus
+                onComplete={() => {
+                    window.scrollTo(0, 0);
+                    this.props.dispatch(showNotification('success', __('Запись успешно обновлена.')));
+                }}
+                {...this.props.form}
             />
         );
     }

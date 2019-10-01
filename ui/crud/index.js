@@ -19,6 +19,7 @@ export const generatePagesCrud = (id, props = {}) => ({
             {
                 component: Crud,
                 exact: true,
+                isNavVisible: false,
                 ...props,
                 id: id + '_create',
                 path: props.path + '/create',
@@ -33,6 +34,7 @@ export const generatePagesCrud = (id, props = {}) => ({
                     url: `${props.componentProps.restUrl}/${params.id}`,
                     key: 'item',
                 }),
+                isNavVisible: false,
                 ...props,
                 id: id + '_update',
                 path: props.path + '/:id/update',
@@ -43,6 +45,7 @@ export const generatePagesCrud = (id, props = {}) => ({
             },
             {
                 component: Crud,
+                isNavVisible: false,
                 ...props,
                 id: id + '_view',
                 path: props.path + '/:id/view',
