@@ -217,7 +217,7 @@ export default
                 }));
             }
 
-            if (!_isEqual(this.props.items, nextProps.items)) {
+            if (this.props.items !== nextProps.items) {
                 this.props.dispatch(init(this.props.listId, nextProps));
             }
         }
