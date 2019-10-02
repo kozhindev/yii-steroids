@@ -157,7 +157,10 @@ class DataProviderHoc extends React.PureComponent {
         // Refresh normalized source items on change items from props
         if (this.props.items !== nextProps.items) {
             const sourceItems = DataProviderHoc.normalizeItems(nextProps.items);
-            this.setState({sourceItems});
+            this.setState({
+                sourceItems,
+                items: sourceItems,
+            });
 
             // Select first value on fetch data
             if (this.props.items.length === 0 && nextProps.items.length > 0 && this.props.selectFirst) {
@@ -167,9 +170,10 @@ class DataProviderHoc extends React.PureComponent {
 
         // Store selected items in state on change value
         if (this.props.input.value !== nextProps.input.value) {
+            const sourceItems = DataProviderHoc.normalizeItems(nextProps.items);
             this.setState({
                 selectedItems: this._findSelectedItems(
-                    _uniqBy([].concat(this.state.items, this.state.sourceItems, this.state.selectedItems), 'id'),
+                    sourceItems,
                     nextProps.input.value
                 ),
             });
