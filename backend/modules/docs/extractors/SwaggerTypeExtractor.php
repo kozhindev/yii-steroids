@@ -7,6 +7,7 @@ use steroids\base\BaseSchema;
 use steroids\base\Type;
 use yii\base\BaseObject;
 use yii\base\Model;
+use yii\db\ActiveQueryInterface;
 use yii\db\ActiveRecord;
 use yii\db\BaseActiveRecord;
 use yii\helpers\ArrayHelper;
@@ -124,7 +125,7 @@ class SwaggerTypeExtractor extends BaseObject
                 foreach (explode("\n", $phpdoc) as $line) {
                     $line = preg_replace('/^\s*\\/?\*+/', '', $line);
                     $line = trim($line);
-                    if ($line && substr($line, 0, 1) !== '@') {
+                    if ($line && $line !== '/' && substr($line, 0, 1) !== '@') {
                         $schema['description'] = $line;
                         break;
                     }
@@ -308,11 +309,20 @@ class SwaggerTypeExtractor extends BaseObject
                 $key = $attributes;
             }
 
+            $isRelation = false;
+            if ($model instanceof BaseActiveRecord) {
+                try {
+                    $isRelation = !!$model->getRelation($attributes, false);
+                } catch(\Exception $e) {
+                }
+            }
+
             $property = null;
             if (is_callable($attributes)) {
-                // Method
-                $property = $this->extractMethod($className, $attributes);
-            } elseif (is_array($attributes) || (is_string($attributes) && $model instanceof BaseActiveRecord && $model->getRelation($attributes, false))) {
+
+                $property = $this->extractMethod($className, $key);
+
+            } elseif (is_array($attributes) || (is_string($attributes) && $isRelation)) {
                 // Relation
                 $relation = $model->getRelation($key);
                 $property = $this->extractModel($relation->modelClass, is_array($attributes) ? $attributes : null);
@@ -391,7 +401,12 @@ class SwaggerTypeExtractor extends BaseObject
                 if (count($attributes) > 1) {
                     $attribute = array_pop($attributes);
                     foreach ($attributes as $item) {
-                        $modelClass = $this->findAttributeType($modelClass, $item);
+                        $nextModelClass = $this->findAttributeType($modelClass, $item);
+                        if (is_subclass_of($nextModelClass, ActiveQueryInterface::class)) {
+                            $modelClass = (new $modelClass())->getRelation($item)->modelClass;
+                        } else {
+                            $modelClass = $nextModelClass;
+                        }
                     }
 
                     $property = ArrayHelper::getValue($this->extractModel($modelClass, [$attribute]), ['properties', $attribute]);
@@ -432,14 +447,6 @@ class SwaggerTypeExtractor extends BaseObject
     public function extractMethod($className, $methodName)
     {
         $comment = '';
-
-        if (is_array($methodName) && count($methodName) === 2 && is_object($methodName[0]) && is_string($methodName[1])) {
-            $info = new \ReflectionClass(get_class($methodName[0]));
-            $comment = $info->getMethod($methodName[1])->getDocComment();
-        } else {
-            // TODO other formats
-        }
-
         if (preg_match('/@return ([a-z0-9_]+)/i', $comment, $match)) {
             return $this->extractType($match[1], $className, $comment);
         }
@@ -498,6 +505,37 @@ class SwaggerTypeExtractor extends BaseObject
             return $this->resolveClassName($type, $inClassName);
         }
         return null;
+    }
+
+    public function extractModelByMeta($className)
+    {
+        if (!method_exists($className, 'meta')) {
+            return;
+        }
+
+        /** @var Model|ActiveRecord $model */
+        $model = new $className();
+
+        $properties = [];
+        $metaFields = $className::meta();
+
+        foreach ($metaFields as $attribute => $metaAttributeData) {
+            $property = array_merge([
+                'description' => $model->getAttributeLabel($attribute),
+                'example' => ArrayHelper::getValue($metaAttributeData, 'example'),
+            ]);
+
+            /** @var Type $appType */
+            $appType = \Yii::$app->types->getTypeByModel($model, $attribute);
+            $appType->prepareSwaggerProperty($className, $attribute, $property);
+
+            $properties[$attribute] = $property;
+        }
+
+        return [
+            'type' => 'object',
+            'properties' => $properties,
+        ];
     }
 
     protected function parseSingleType($type)

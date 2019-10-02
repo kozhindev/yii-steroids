@@ -85,6 +85,21 @@ class ModelAttributeEntity extends ModelAttributeEntityMeta
         );
     }
 
+    public function rules()
+    {
+        return array_merge(
+            [
+                ['example', 'filter', 'filter' => function ($value) {
+                    if (is_bool($value)) {
+                        return $value ? 'true' : 'false';
+                    }
+                    return $value ? (string)$value : '';
+                }],
+            ],
+            parent::rules()
+        );
+    }
+
     /**
      * Formats:
      *  - string

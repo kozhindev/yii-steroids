@@ -114,7 +114,7 @@ class Button extends React.PureComponent {
                 {...this.props}
                 isLoading={this.state.isLoading}
                 url={this.props.link && !(this.props.url || this.props.to)
-                    ? 'javascript:void(0)'
+                    ? '#'
                     : this.props.url || this.props.to}
                 onClick={this._onClick}
                 formId={this.context.formId}

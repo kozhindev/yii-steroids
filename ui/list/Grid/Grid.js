@@ -35,6 +35,8 @@ class Grid extends React.PureComponent {
                 hint: PropTypes.node,
                 headerClassName: PropTypes.string,
                 visible: PropTypes.bool,
+                headerView: PropTypes.func,
+                headerProps: PropTypes.object,
                 valueView: PropTypes.func,
                 valueProps: PropTypes.object,
             }),
@@ -89,6 +91,17 @@ class Grid extends React.PureComponent {
     }
 
     renderLabel(column) {
+        if (column.headerView) {
+            const HeaderView = column.headerView;
+            return (
+                <HeaderView
+                    {...column}
+                    {...column.headerProps}
+                    listId={this.props.listId}
+                />
+            );
+        }
+
         if (column.label || column.label === '') {
             return column.label;
         }
@@ -122,6 +135,7 @@ class Grid extends React.PureComponent {
                 <ValueView
                     {...column}
                     {...column.valueProps}
+                    listId={this.props.listId}
                     primaryKey={this.props.primaryKey}
                     item={item}
                 />

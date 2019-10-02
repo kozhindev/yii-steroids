@@ -41,12 +41,15 @@ export default class PaginationSizeView extends React.Component {
                             )}
                         >
                             <a
-                                href='javascript:void(0)'
                                 className={bem(
                                     bem.element('link'),
                                     'page-link'
                                 )}
-                                onClick={() => this.props.onSelect(item.size)}
+                                href='#'
+                                onClick={e => {
+                                    e.preventDefault();
+                                    this.props.onSelect(item.size);
+                                }}
                             >
                                 {item.label}
                             </a>

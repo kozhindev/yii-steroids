@@ -7,6 +7,7 @@ import AutoSaveHelper from './Form/AutoSaveHelper';
 import _isUndefined from 'lodash-es/isUndefined';
 import _set from 'lodash-es/set';
 import _get from 'lodash-es/get';
+import validate from './validate';
 
 export default () => WrappedComponent => class FormSubmitHoc extends React.PureComponent {
 
@@ -55,6 +56,10 @@ export default () => WrappedComponent => class FormSubmitHoc extends React.PureC
         // Event onBeforeSubmit
         if (this.props.onBeforeSubmit && this.props.onBeforeSubmit(values) === false) {
             return;
+        }
+
+        if (this.props.validators) {
+            validate(values, this.props.validators);
         }
 
         if (this.props.onSubmit) {

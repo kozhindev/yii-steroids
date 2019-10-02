@@ -67,6 +67,7 @@ class Form extends React.PureComponent {
         layoutProps: PropTypes.object,
         size: PropTypes.oneOf(['sm', 'md', 'lg']),
         onSubmit: PropTypes.func,
+        validators: PropTypes.array,
         onBeforeSubmit: PropTypes.func,
         onAfterSubmit: PropTypes.func,
         onChange: PropTypes.func,
@@ -160,7 +161,7 @@ class Form extends React.PureComponent {
         }
     }
 
-    componentWillReceiveProps(nextProps) {
+    UNSAFE_componentWillReceiveProps(nextProps) {
         // Check update values for trigger event
         if ((this.props.onChange || this.props.autoSave || this.props.syncWithAddressBar) && !_isEqual(this.props.formValues, nextProps.formValues)) {
             if (this.props.onChange) {
