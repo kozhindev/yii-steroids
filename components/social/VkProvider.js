@@ -6,6 +6,7 @@ export default class VkProvider {
 
     constructor() {
         this.clientId = '';
+        this.redirectUrl = http.getUrl('/api/v1/auth/social/proxy');
     }
 
     async init() {
@@ -17,7 +18,7 @@ export default class VkProvider {
             // Generate url
             const url = 'https://oauth.vk.com/authorize/?' + queryString.stringify({
                 client_id: this.clientId,
-                redirect_uri: http.getUrl('/api/v1/auth/social/proxy'),
+                redirect_uri: this.redirectUrl,
                 scope: 'offline,public_profile',
                 response_type: 'code',
             });
