@@ -13,6 +13,30 @@ const stateMap = state => ({
     route: getCurrentRoute(state),
 });
 
+export const walkRoutesRecursive = item => {
+    let items = null;
+    if (_isArray(item.items)) {
+        items = item.items.map(walkRoutesRecursive);
+    } else if (_isObject(item.items)) {
+        items = Object.keys(item.items).map(id => walkRoutesRecursive({
+            ...item.items[id],
+            id,
+        }));
+    }
+    return {
+        ...item,
+        id: item.id,
+        exact: item.exact,
+        path: item.path,
+        label: item.label,
+        title: item.title,
+        isVisible: item.isVisible,
+        component: null,
+        componentProps: null,
+        items,
+    };
+};
+
 export default routes => WrappedComponent => @connect(stateMap)
 class NavigationHoc extends React.PureComponent {
 
@@ -27,16 +51,10 @@ class NavigationHoc extends React.PureComponent {
         isInitialized: PropTypes.bool,
     };
 
-    constructor() {
-        super(...arguments);
-
-        this._walkRoutesRecursive = this._walkRoutesRecursive.bind(this);
-    }
-
     componentWillMount() {
         const routesTree = routes || (!_isArray(this.props.routes) ? this.props.routes : null);
         if (routesTree) {
-            store.dispatch(initRoutes(this._walkRoutesRecursive({id: 'root', ...routesTree})));
+            store.dispatch(initRoutes(walkRoutesRecursive({id: 'root', ...routesTree})));
         }
 
         this._initParams(this.props);
@@ -62,30 +80,6 @@ class NavigationHoc extends React.PureComponent {
         if (props.route) {
             store.dispatch(initParams(props.route.params));
         }
-    }
-
-    _walkRoutesRecursive(item) {
-        let items = null;
-        if (_isArray(item.items)) {
-            items = item.items.map(this._walkRoutesRecursive);
-        } else if (_isObject(item.items)) {
-            items = Object.keys(item.items).map(id => this._walkRoutesRecursive({
-                ...item.items[id],
-                id,
-            }));
-        }
-        return {
-            ...item,
-            id: item.id,
-            exact: item.exact,
-            path: item.path,
-            label: item.label,
-            title: item.title,
-            isVisible: item.isVisible,
-            component: null,
-            componentProps: null,
-            items,
-        };
     }
 
 };

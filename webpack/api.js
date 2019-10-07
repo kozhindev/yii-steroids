@@ -16,6 +16,10 @@ module.exports = {
         return utils.isProduction();
     },
 
+    isSSR() {
+        return utils.isSSR();
+    },
+
     /**
      * Index js. Core module at first
      * @param {string} path

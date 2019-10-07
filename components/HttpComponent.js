@@ -31,7 +31,7 @@ export default class HttpComponent {
         };
 
         // Add CSRF header
-        if (!this._csrfToken) {
+        if (!this._csrfToken && !process.env.IS_NODE) {
             const metaElement = document.querySelector('meta[name=csrf-token]');
             if (metaElement) {
                 this._csrfToken = metaElement.getAttribute('content');
