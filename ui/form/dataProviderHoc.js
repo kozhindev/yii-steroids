@@ -173,7 +173,7 @@ class DataProviderHoc extends React.PureComponent {
             const sourceItems = DataProviderHoc.normalizeItems(nextProps.items);
             this.setState({
                 selectedItems: this._findSelectedItems(
-                    sourceItems,
+                    _uniqBy([].concat(sourceItems, this.state.items, this.state.sourceItems, this.state.selectedItems), 'id'),
                     nextProps.input.value
                 ),
             });
