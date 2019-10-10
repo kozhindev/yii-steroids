@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
-import {getFormValues} from 'redux-form';
+import { change, getFormValues } from 'redux-form';
 import _get from 'lodash-es/get';
 import _has from 'lodash-es/has';
 import _isEqual from 'lodash-es/isEqual';
@@ -189,6 +189,15 @@ export default
 
         componentWillMount() {
             // Restore values from address bar
+            if (this.props.syncWithAddressBar) {
+                const page = _get(this.props, 'list.page', this.props.defaultPage);
+                this.props.dispatch(change(this.props.listId, 'page', page));
+                SyncAddressBarHelper.restore(this.props.listId, {
+                    page,
+                    ...queryString.parse(this.props.locationSearch),
+                }, true);
+            }
+
             if (this.props.searchForm && this.props.searchForm.syncWithAddressBar) {
                 SyncAddressBarHelper.restore(getFormId(this.props), {
                     ...this.props.searchForm.initialValues,
@@ -201,7 +210,7 @@ export default
             this.props.dispatch(init(this.props.listId, this.props));
         }
 
-    UNSAFE_componentWillReceiveProps(nextProps) {
+        UNSAFE_componentWillReceiveProps(nextProps) {
             const customizer = (objValue, srcValue) => {
                 if (_isArray(objValue)) {
                     return srcValue;
@@ -229,6 +238,12 @@ export default
                     page: Number(_get(nextQuery, 'page', this.props.defaultPage)),
                     query: nextQuery,
                 }));
+                if (this.props.syncWithAddressBar) {
+                    SyncAddressBarHelper.save({
+                        page: Number(_get(nextQuery, 'page', this.props.defaultPage)),
+                        query: nextQuery,
+                    }, false);
+                }
             }
 
             if (this.props.items !== nextProps.items) {
@@ -320,9 +335,11 @@ export default
                     {...this.props.paginationProps}
                     view={_isFunction(this.props.paginationSizeView) ? this.props.paginationSizeView : undefined}
                     syncWithAddressBar={Boolean(
-                        this.props.searchForm
-                        && this.props.searchForm.fields
-                        && this.props.searchForm.syncWithAddressBar
+                        (
+                            this.props.searchForm
+                            && this.props.searchForm.fields
+                            && this.props.searchForm.syncWithAddressBar
+                        ) || this.props.syncWithAddressBar
                     )}
                 />
             );
