@@ -241,8 +241,8 @@ export default
                 }));
                 if (this.props.syncWithAddressBar) {
                     SyncAddressBarHelper.save({
+                        ...nextQuery,
                         page: Number(_get(nextQuery, 'page', this.props.defaultPage)),
-                        query: nextQuery,
                     }, false);
                 }
             }
