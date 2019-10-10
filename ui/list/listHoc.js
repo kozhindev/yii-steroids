@@ -97,6 +97,7 @@ export default
             total: PropTypes.number,
             reverse: PropTypes.bool,
             itemsIndexing: PropTypes.bool,
+            syncWithAddressBar: PropTypes.bool,
             searchForm: PropTypes.shape({
                 formId: PropTypes.string,
                 prefix: PropTypes.string,
