@@ -221,30 +221,30 @@ export default
                 const query = _get(props, 'list.query') || {};
                 const formValues = _get(props, 'formValues') || {};
 
-                Object.keys(query).forEach(attribute => {
-                    if (!_has(formValues, attribute)) {
-                        formValues[attribute] = null;
-                    }
-                });
+                if (this.props.searchForm) {
+                    Object.keys(query).forEach(attribute => {
+                        if (!_has(formValues, attribute)) {
+                            formValues[attribute] = null;
+                        }
+                    });
+                }
 
                 return _mergeWith({}, query, formValues, customizer)
             };
 
             // Send fetch request on change query or init list
-
             const prevQuery = getQuery(this.props);
-            const nextQuery = getQuery(nextProps);
+            let nextQuery = getQuery(nextProps);
+            if (!_isEqual(this.props.query, nextProps.query)) {
+                nextQuery = {...nextQuery, ...nextProps.query};
+            }
+
             if (!_isEqual(prevQuery, nextQuery) || (!this.props.list && nextProps.list)) {
                 this.props.dispatch(lazyFetch(this.props.listId, {
                     page: Number(_get(nextQuery, 'page', this.props.defaultPage)),
+                    ...nextProps.query,
                     query: nextQuery,
                 }));
-                if (this.props.syncWithAddressBar) {
-                    SyncAddressBarHelper.save({
-                        ...nextQuery,
-                        page: Number(_get(nextQuery, 'page', this.props.defaultPage)),
-                    }, false);
-                }
             }
 
             if (this.props.items !== nextProps.items) {
