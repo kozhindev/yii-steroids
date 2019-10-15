@@ -245,6 +245,12 @@ export default
                     ...nextProps.query,
                     query: nextQuery,
                 }));
+                if (this.props.syncWithAddressBar) {
+                    SyncAddressBarHelper.save({
+                        ...nextQuery,
+                        page: Number(_get(nextQuery, 'page', this.props.defaultPage)),
+                    }, false);
+                }
             }
 
             if (this.props.items !== nextProps.items) {
