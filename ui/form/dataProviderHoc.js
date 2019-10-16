@@ -355,6 +355,7 @@ class DataProviderHoc extends React.PureComponent {
     /**
      * Search by data provider (for example: http requests)
      * @param {string} query
+     * @param {boolean} isAutoFetch
      * @private
      */
     _searchDataProvider(query = '', isAutoFetch) {
@@ -362,7 +363,7 @@ class DataProviderHoc extends React.PureComponent {
             return;
         }
 
-        const searchHandler = this.props.dataProvider.onSearch || http.post;
+        const searchHandler = this.props.dataProvider.onSearch || http.post.bind(http);
         const result = searchHandler(this.props.dataProvider.action, {
             query,
             model: this.props.modelClass,
