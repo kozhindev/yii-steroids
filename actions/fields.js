@@ -62,7 +62,7 @@ export const fetchMeta = (names, force = false) => (dispatch, getState) => {
 
     // Send request
     return http.post('/api/steroids/meta-fetch', names)
-        .then(meta => setMeta(meta));
+        .then(meta => dispatch(setMeta(meta)));
 };
 
 export const setMeta = meta => ({
