@@ -17,7 +17,7 @@ export default (media) => WrappedComponent => class ScreenWatcherHoc extends Rea
         store.dispatch(setWidth(window.innerWidth));
     }
 
-    componentWillMount() {
+    componentDidMount() {
         if (_isObject(media)) {
             store.dispatch(setMedia(media));
         }

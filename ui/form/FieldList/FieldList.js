@@ -132,7 +132,7 @@ class FieldList extends React.PureComponent {
         this._onKeyDown = this._onKeyDown.bind(this);
     }
 
-    componentWillMount() {
+    componentDidMount() {
         if (this.props.fields.length === 0) {
             for (let i = 0; i < this.props.initialRowsCount; i++) {
                 this._onAdd();

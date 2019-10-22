@@ -16,6 +16,7 @@ export default class HttpComponent {
         this._axios = null;
         this._csrfToken = null;
         this._accessToken = false;
+        this._promises = [];
     }
 
     getAxiosConfig() {
@@ -155,9 +156,12 @@ export default class HttpComponent {
                 this._createCancelToken = this._createCancelToken.bind(this);
             }
 
+            componentWillMount() {
+                this._fetch();
+            }
+
             componentDidMount() {
                 this._isRendered = true;
-                this._fetch();
             }
 
             componentWillUnmount() {
@@ -207,6 +211,10 @@ export default class HttpComponent {
         };
     }
 
+    ssrWaitAll() {
+        return Promise.all(this._promises);
+    }
+
     _send(method, config, options) {
         const axiosConfig = {
             ...config,
@@ -236,11 +244,22 @@ export default class HttpComponent {
     }
 
     _sendAxios(config) {
-        return this.getAxiosInstance()(config)
+        const promise = this.getAxiosInstance()(config)
             .then(response => {
                 this.afterRequest(response);
                 return response;
+            })
+            .catch(error => {
+                console.error('Error, request/response: ', config, String(error));
+                throw error;
             });
+
+        // Store promises for SSR
+        if (process.env.IS_NODE) {
+            this._promises.push(promise);
+        }
+
+        return promise;
     }
 
     afterRequest(response) {

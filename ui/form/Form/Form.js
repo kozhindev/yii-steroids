@@ -134,7 +134,7 @@ class Form extends React.PureComponent {
         };
     }
 
-    componentWillMount() {
+    componentDidMount() {
         // Restore values from query, when autoSave flag is set
         if (this.props.autoSave) {
             AutoSaveHelper.restore(this.props.formId, this.props.initialValues);

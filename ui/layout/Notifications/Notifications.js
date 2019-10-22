@@ -36,7 +36,7 @@ class Notifications extends React.PureComponent {
         itemView: PropTypes.func,
     };
 
-    componentWillMount() {
+    componentDidMount() {
         if (this.props.initialFlashes) {
             this.props.dispatch(setFlashes(this.props.initialFlashes));
 

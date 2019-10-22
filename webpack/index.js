@@ -94,8 +94,9 @@ setTimeout(() => Promise.all(api._entries)
                     defaultConfig.sourcePath,
                 ],
             });
-            require.extensions['.scss'] = () => {};
-            require.extensions['.less'] = () => {};
+            // Ignore .css and other includes
+            ['css', 'less', 'scss', 'sass', 'ttf', 'woff', 'woff2', 'svg', 'png', 'jpg']
+                .forEach(ext => require.extensions['.' + ext] = () => {});
             require('./ssr/require-context')();
 
             if (!expressApp) {
@@ -106,7 +107,7 @@ setTimeout(() => Promise.all(api._entries)
             require('./ssr/index').default(expressApp, defaultConfig, getStats);
         }
 
-        if (expressApp) {
+        if (expressApp && httpListen) {
             console.log(`Listening at http://${defaultConfig.host}:${defaultConfig.port}`);
             httpListen(defaultConfig.port, defaultConfig.host, (err) => {
                 if (err) {

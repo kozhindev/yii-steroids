@@ -1,6 +1,6 @@
 export default (html, state, cssAssets, jsAssets) => {
-    const css = cssAssets.map(asset => `<link rel="stylesheet" href="./${asset.name}">`);
-    const js = jsAssets.map(asset => `<script src="./${asset.name}"></script>`);
+    const css = cssAssets.map(asset => `<link rel="stylesheet" href="/${asset.name}">`).join('\n');
+    const js = jsAssets.map(asset => `<script src="/${asset.name}"></script>`).join('\n');
 
     return `
     <!DOCTYPE html>

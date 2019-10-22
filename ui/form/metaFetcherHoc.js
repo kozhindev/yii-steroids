@@ -29,7 +29,7 @@ export default (names = []) => WrappedComponent => @connect(
         isMetaFetched: false,
     };
 
-    componentWillMount() {
+    componentDidMount() {
         this.props.dispatch(fetchMeta(names));
     }
 

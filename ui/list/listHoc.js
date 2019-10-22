@@ -188,7 +188,7 @@ export default
             this._onSort = this._onSort.bind(this);
         }
 
-        componentWillMount() {
+        componentDidMount() {
             // Restore values from address bar
             if (this.props.syncWithAddressBar) {
                 const page = _get(this.props, 'list.page', this.props.defaultPage);
@@ -205,9 +205,7 @@ export default
                     ...queryString.parse(this.props.locationSearch),
                 }, true);
             }
-        }
 
-        componentDidMount() {
             this.props.dispatch(init(this.props.listId, this.props));
         }
 

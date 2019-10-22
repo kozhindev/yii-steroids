@@ -4,6 +4,7 @@ import path from 'path';
 import {Provider} from 'react-redux';
 import IntlMessageFormat from 'intl-messageformat';
 import {renderToString} from 'react-dom/server';
+import _merge from 'lodash/merge';
 
 import template from './template';
 
@@ -12,16 +13,25 @@ global.location = {};
 global.IntlMessageFormat = IntlMessageFormat;
 process.env.IS_NODE = true;
 
-const render = (defaultConfig, routes, assets, request) => {
+const render = async (defaultConfig, routes, assets, request) => {
 
     const store = require('components').store;
     const {walkRoutesRecursive} = require('../../ui/nav/navigationHoc');
     store.init({
-        initialState: {
-            navigation: {
-                routesTree: walkRoutesRecursive(routes),
-            },
-        },
+        initialState: _merge(
+            {},
+            defaultConfig.ssr.initialState || {},
+            {
+                config: {
+                    http: {
+                        apiUrl: process.env.APP_BACKEND_URL || '',
+                    },
+                },
+                navigation: {
+                    routesTree: walkRoutesRecursive(routes),
+                },
+            }
+        ),
         history: {
             initialEntries: [
                 request.url,
@@ -35,20 +45,35 @@ const render = (defaultConfig, routes, assets, request) => {
         return 'Not found Application component in ' + appPath;
     }
 
-    return template(
-        renderToString((
-            <Provider store={store.store}>
-                <Application/>
-            </Provider>
-        )),
-        store.getState(),
-        assets.filter(asset => /\.css/.test(asset.name)),
-        assets.filter(asset => /\.js/.test(asset.name)),
+    // Temp render for fill store
+    renderToString(
+        <Provider store={store.store}>
+            <Application/>
+        </Provider>
     );
+
+    // Wait http requests
+    const http = require('components').http;
+    await http.ssrWaitAll();
+
+    return new Promise(resolve => {
+        setTimeout(() => {
+            resolve(template(
+                renderToString(
+                    <Provider store={store.store}>
+                        <Application/>
+                    </Provider>
+                ),
+                store.getState(),
+                assets.filter(asset => /\.css/.test(asset.name)),
+                assets.filter(asset => /\.js/.test(asset.name)),
+            ))
+        }, 10);
+    });
 };
 
 export default (app, defaultConfig, getStats) => {
-    app.get('*', (request, response, next) => {
+    app.get('*', async (request, response, next) => {
         // Skip for webpack dev server
         if (/^\/sockjs-node/.test(request.url)) {
             next();
@@ -65,11 +90,14 @@ export default (app, defaultConfig, getStats) => {
                 const assets = stats.toJson({all: false, assets: true}).assets
                     .filter(asset => asset.chunks.includes('index') || asset.chunks.includes('common'));
 
-                content = render(defaultConfig, routes, assets, request);
+                try {
+                    content = await render(defaultConfig, routes, assets, request);
+                } catch(e) {
+                    console.error('Render error in url ' + request.url);
+                }
             }
         }
 
-        console.log(77777);
         response.writeHead(200, {'Content-Type': 'text/html'});
         response.end(content);
     });
