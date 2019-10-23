@@ -242,7 +242,7 @@ export default
                     ...nextProps.query,
                     query: nextQuery,
                 }));
-                if (this.props.syncWithAddressBar || (this.props.searchForm && this.props.searchForm.syncWithAddressBar)) {
+                if (this.props.syncWithAddressBar) {
                     const page = Number(_get(nextQuery, 'page', this.props.defaultPage));
                     SyncAddressBarHelper.save({
                         ...nextQuery,
