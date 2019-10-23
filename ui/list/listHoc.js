@@ -191,11 +191,10 @@ export default
         componentDidMount() {
             // Restore values from address bar
             if (this.props.syncWithAddressBar) {
-                const page = _get(this.props, 'list.page', this.props.defaultPage);
-                this.props.dispatch(change(this.props.listId, 'page', page));
+                const page = Number(_get(this.props, 'list.page', this.props.defaultPage));
                 SyncAddressBarHelper.restore(this.props.listId, {
-                    page,
                     ...queryString.parse(this.props.locationSearch),
+                    page: page > 0 ? page : 1,
                 }, true);
             }
 
@@ -244,9 +243,10 @@ export default
                     query: nextQuery,
                 }));
                 if (this.props.syncWithAddressBar) {
+                    const page = Number(_get(nextQuery, 'page', this.props.defaultPage));
                     SyncAddressBarHelper.save({
                         ...nextQuery,
-                        page: Number(_get(nextQuery, 'page', this.props.defaultPage)),
+                        page: page > 1 && page,
                     }, false);
                 }
             }
