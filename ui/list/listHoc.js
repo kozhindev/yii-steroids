@@ -191,7 +191,7 @@ export default
         componentDidMount() {
             // Restore values from address bar
             if (this.props.syncWithAddressBar) {
-                const page = Number(_get(this.props, 'list.page', this.props.defaultPage));
+                const page = Number(_get(queryString.parse(this.props.locationSearch), 'page', this.props.defaultPage));
                 SyncAddressBarHelper.restore(this.props.listId, {
                     ...queryString.parse(this.props.locationSearch),
                     page: page > 0 ? page : 1,
