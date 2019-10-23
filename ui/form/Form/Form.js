@@ -148,9 +148,7 @@ class Form extends React.PureComponent {
             );
             SyncAddressBarHelper.restore(this.props.formId, query, true);
         }
-    }
 
-    componentDidMount() {
         if (this.props.autoFocus) {
             const inputEl = findDOMNode(this).querySelector('input:not([type=hidden])');
             setTimeout(() => {
