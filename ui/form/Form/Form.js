@@ -21,9 +21,9 @@ let valuesSelector = null;
 let invalidSelector = null;
 const filterValues = (values = {}) => {
     let obj = {...values};
-    Object.keys(values).forEach(key => {
-        if (!values[key] || (_isArray(values[key]) && !values[key].length)) {
-            delete values[key];
+    Object.keys(obj).forEach(key => {
+        if (!obj[key] || (_isArray(obj[key]) && !obj[key].length)) {
+            delete obj[key];
         }
     });
 
