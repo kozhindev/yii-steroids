@@ -98,6 +98,7 @@ export default
             reverse: PropTypes.bool,
             itemsIndexing: PropTypes.bool,
             syncWithAddressBar: PropTypes.bool,
+            restoreCustomizer: PropTypes.func,
             searchForm: PropTypes.shape({
                 formId: PropTypes.string,
                 prefix: PropTypes.string,
@@ -195,14 +196,7 @@ export default
                 SyncAddressBarHelper.restore(this.props.listId, {
                     ...queryString.parse(this.props.locationSearch),
                     page: page > 0 ? page : 1,
-                }, true);
-            }
-
-            if (this.props.searchForm && this.props.searchForm.syncWithAddressBar) {
-                SyncAddressBarHelper.restore(getFormId(this.props), {
-                    ...this.props.searchForm.initialValues,
-                    ...queryString.parse(this.props.locationSearch),
-                }, true);
+                }, true, this.props.restoreCustomizer);
             }
 
             this.props.dispatch(init(this.props.listId, this.props));
@@ -237,13 +231,13 @@ export default
             }
 
             if (!_isEqual(prevQuery, nextQuery) || (!this.props.list && nextProps.list)) {
+                const page = Number(_get(nextQuery, 'page', this.props.defaultPage));
                 this.props.dispatch(lazyFetch(this.props.listId, {
-                    page: Number(_get(nextQuery, 'page', this.props.defaultPage)),
+                    page,
                     ...nextProps.query,
                     query: nextQuery,
                 }));
                 if (this.props.syncWithAddressBar) {
-                    const page = Number(_get(nextQuery, 'page', this.props.defaultPage));
                     SyncAddressBarHelper.save({
                         ...nextQuery,
                         page: page > 1 && page,
