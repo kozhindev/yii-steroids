@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
-import _isEqual from 'lodash-es/isEqual';
 
 import {navigationAddConfigs, navigationRemoveConfigs, getConfigId} from '../../actions/navigation';
 import {getCurrentRoute} from '../../reducers/routing';
@@ -11,7 +10,7 @@ const stateMap = state => ({
     route: getCurrentRoute(state),
 });
 
-export default configsFunc => WrappedComponent => @connect(stateMap)
+export default (configsFunc, options) => WrappedComponent => @connect(stateMap)
 class FetchHoc extends React.PureComponent {
 
     static WrappedComponent = WrappedComponent;
@@ -66,7 +65,7 @@ class FetchHoc extends React.PureComponent {
             params: this.props.route.params,
         }));
         for (let i = 0; i < Math.max(prevConfigs.length, nextConfigs.length); i++) {
-            if (!_isEqual(prevConfigs[i], nextConfigs[i])) {
+            if (getConfigId(prevConfigs[i]) !== getConfigId(nextConfigs[i])) {
                 this.props.dispatch([
                     navigationRemoveConfigs(prevConfigs[i]),
                     navigationAddConfigs(nextConfigs[i]),
@@ -98,7 +97,7 @@ class FetchHoc extends React.PureComponent {
             });
         }
 
-        if (isLoading) {
+        if (isLoading && options.waitLoading !== false) {
             // TODO Loader
             return null;
         }
