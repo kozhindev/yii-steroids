@@ -4,6 +4,7 @@ import _isObject from 'lodash/isObject';
 import _isBoolean from 'lodash/isBoolean';
 import _isEqual from 'lodash/isEqual';
 import _isEmpty from 'lodash/isEmpty';
+import _isFunction from 'lodash/isFunction';
 import {initialize} from 'redux-form';
 import {push} from 'react-router-redux';
 
@@ -12,11 +13,14 @@ import {getCurrentRoute} from '../../../reducers/routing';
 
 export default class SyncAddressBarHelper {
 
-    static restore(formId, initialValues, forceRestore = false) {
-        const newValues = {
+    static restore(formId, initialValues, forceRestore = false, customizer) {
+        let newValues = {
             ...initialValues,
             ...queryString.parse(location.hash),
         };
+        if (customizer && _isFunction(customizer)) {
+            newValues = customizer(initialValues, queryString.parse(location.hash));
+        }
         if (forceRestore || !_isEqual(initialValues, newValues)) {
             store.dispatch(initialize(formId, newValues));
         }
@@ -38,6 +42,8 @@ export default class SyncAddressBarHelper {
 
             if (_isObject(value) && !_isArray(value)) {
                 delete values[key];
+            } else if (_isArray(value)) {
+                values[key] = value.join(',');
             } else if (_isBoolean(value)) {
                 if (!value) {
                     delete values[key];

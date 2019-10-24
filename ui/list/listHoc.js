@@ -98,6 +98,7 @@ export default
             reverse: PropTypes.bool,
             itemsIndexing: PropTypes.bool,
             syncWithAddressBar: PropTypes.bool,
+            restoreCustomizer: PropTypes.func,
             searchForm: PropTypes.shape({
                 formId: PropTypes.string,
                 prefix: PropTypes.string,
@@ -202,19 +203,11 @@ export default
         componentDidMount() {
             // Restore values from address bar
             if (this.props.syncWithAddressBar) {
-                const page = _get(this.props, 'list.page', this.props.defaultPage);
-                this.props.dispatch(change(this.props.listId, 'page', page));
+                const page = Number(_get(queryString.parse(this.props.locationSearch), 'page', this.props.defaultPage));
                 SyncAddressBarHelper.restore(this.props.listId, {
-                    page,
                     ...queryString.parse(this.props.locationSearch),
-                }, true);
-            }
-
-            if (this.props.searchForm && this.props.searchForm.syncWithAddressBar) {
-                SyncAddressBarHelper.restore(getFormId(this.props), {
-                    ...this.props.searchForm.initialValues,
-                    ...queryString.parse(this.props.locationSearch),
-                }, true);
+                    page: page > 0 ? page : 1,
+                }, true, this.props.restoreCustomizer);
             }
 
             if (!this.props.list) {
@@ -251,15 +244,16 @@ export default
             }
 
             if (!_isEqual(prevQuery, nextQuery) || (!this.props.list && nextProps.list)) {
+                const page = Number(_get(nextQuery, 'page', this.props.defaultPage));
                 this.props.dispatch(lazyFetch(this.props.listId, {
-                    page: Number(_get(nextQuery, 'page', this.props.defaultPage)),
+                    page,
                     ...nextProps.query,
                     query: nextQuery,
                 }));
                 if (this.props.syncWithAddressBar) {
                     SyncAddressBarHelper.save({
                         ...nextQuery,
-                        page: Number(_get(nextQuery, 'page', this.props.defaultPage)),
+                        page: page > 1 && page,
                     }, false);
                 }
             }
