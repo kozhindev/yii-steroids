@@ -58,7 +58,7 @@ export default (initAction) => WrappedComponent => @connect(stateMap)
         };
     }
 
-    componentWillMount() {
+    UNSAFE_componentWillMount() {
         // Callback for load initial page data (return promise)
         if (_isFunction(initAction)) {
             this.props.dispatch(init(initAction))
@@ -68,7 +68,7 @@ export default (initAction) => WrappedComponent => @connect(stateMap)
                     });
 
                     throw e;
-                })
+                });
         }
     }
 

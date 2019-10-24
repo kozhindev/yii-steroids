@@ -1,22 +1,56 @@
 import React from 'react';
 import fs from 'fs';
 import path from 'path';
+import {parse} from 'url';
 import {Provider} from 'react-redux';
 import IntlMessageFormat from 'intl-messageformat';
 import {renderToString} from 'react-dom/server';
 import _merge from 'lodash/merge';
 
 import template from './template';
+import SsrProvider from '../../ui/nav/Router/SsrProvider';
 
 global.window = {};
 global.location = {};
 global.IntlMessageFormat = IntlMessageFormat;
-process.env.IS_NODE = true;
+process.env.IS_SSR = true;
 
-const render = async (defaultConfig, routes, assets, request) => {
+const renderReact = async (Application, store, history, staticContext, level = 0) => {
+    const content = renderToString(
+        <Provider>
+            <SsrProvider
+                store={store}
+                history={history}
+                staticContext={staticContext}
+            >
+                <Application/>
+            </SsrProvider>
+        </Provider>
+    );
 
-    const store = require('components').store;
-    const {walkRoutesRecursive} = require('../../ui/nav/navigationHoc');
+    const http = require('components').http;
+    if (http._promises.length > 0 && level < 2) {
+        await Promise.all(http._promises);
+        http._promises = [];
+
+        return renderReact(Application, store, history, staticContext,level + 1);
+    }
+
+    return content;
+};
+
+const renderContent = async (defaultConfig, routes, assets, request) => {
+    const parsedUrl = parse(request.url);
+    const location = {
+        pathname: parsedUrl.pathname,
+        search: parsedUrl.search,
+        hash: parsedUrl.hash,
+        key: '1r9orr'
+    };
+
+    const {walkRoutesRecursive, treeToList} = require('../../ui/nav/navigationHoc');
+    const StoreComponent = require('../../components/StoreComponent').default;
+    const store = new StoreComponent();
     store.init({
         initialState: _merge(
             {},
@@ -26,6 +60,10 @@ const render = async (defaultConfig, routes, assets, request) => {
                     http: {
                         apiUrl: process.env.APP_BACKEND_URL || '',
                     },
+                },
+                routing: {
+                    location,
+                    routes: treeToList(routes),
                 },
                 navigation: {
                     routesTree: walkRoutesRecursive(routes),
@@ -38,51 +76,48 @@ const render = async (defaultConfig, routes, assets, request) => {
             ],
         },
     });
-
-    const appPath = path.join(defaultConfig.sourcePath, 'Application.js');
+    const appPath = resolveFileExtension(path.join(defaultConfig.sourcePath, 'Application'));
     const Application = fs.existsSync(appPath) ? require(appPath).default : null;
     if (!Application) {
         return 'Not found Application component in ' + appPath;
     }
 
+    const staticContext = {};
+
     // Temp render for fill store
-    renderToString(
-        <Provider store={store.store}>
-            <Application/>
-        </Provider>
+    return template(
+        await renderReact(Application, store.store, store.history, staticContext),
+        store.getState(),
+        assets.filter(asset => /\.css/.test(asset.name)),
+        assets.filter(asset => /\.js/.test(asset.name)),
     );
+};
 
-    // Wait http requests
-    const http = require('components').http;
-    await http.ssrWaitAll();
-
-    return new Promise(resolve => {
-        setTimeout(() => {
-            resolve(template(
-                renderToString(
-                    <Provider store={store.store}>
-                        <Application/>
-                    </Provider>
-                ),
-                store.getState(),
-                assets.filter(asset => /\.css/.test(asset.name)),
-                assets.filter(asset => /\.js/.test(asset.name)),
-            ))
-        }, 10);
+const resolveFileExtension = path => {
+    let result = null;
+    ['js', 'ts', 'jsx', 'tsx', 'es6', 'es', 'mjs'].forEach(ext => {
+        if (!result) {
+            if (fs.existsSync(path + '.' + ext)) {
+                result = path + '.' + ext;
+            }
+        }
     });
+    return result;
 };
 
 export default (app, defaultConfig, getStats) => {
     app.get('*', async (request, response, next) => {
         // Skip for webpack dev server
-        if (/^\/sockjs-node/.test(request.url)) {
+        if (/^\/sockjs-node/.test(request.url) || /hot-update/.test(request.url)
+            || /(jpe?g|gif|css|png|js|ico|xml|less|eot|svg|tff|woff2?|txt|map|mp4|ogg|webm|pdf|dmg|exe|html)$/.test(request.url)) {
             next();
             return;
         }
 
         let content = '';
 
-        const routesPath = path.join(defaultConfig.sourcePath, 'routes', 'index.js');
+        // Find routes tree
+        const routesPath = resolveFileExtension(path.join(defaultConfig.sourcePath, 'routes', 'index'));
         const routes = fs.existsSync(routesPath) ? require(routesPath) : null;
         if (routes) {
             const stats = getStats();
@@ -91,9 +126,9 @@ export default (app, defaultConfig, getStats) => {
                     .filter(asset => asset.chunks.includes('index') || asset.chunks.includes('common'));
 
                 try {
-                    content = await render(defaultConfig, routes, assets, request);
+                    content = await renderContent(defaultConfig, routes, assets, request);
                 } catch(e) {
-                    console.error('Render error in url ' + request.url);
+                    console.error('Render error in url ' + request.url, e);
                 }
             }
         }

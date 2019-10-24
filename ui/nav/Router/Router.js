@@ -4,12 +4,10 @@ import {Route, Switch, StaticRouter} from 'react-router';
 import {connect} from 'react-redux';
 import {ConnectedRouter} from 'react-router-redux';
 import _get from 'lodash-es/get';
-import _isArray from 'lodash-es/isArray';
-import _isObject from 'lodash-es/isObject';
 
 import {store} from 'components';
 import {registerRoutes} from '../../../actions/routing';
-import navigationHoc from '../navigationHoc';
+import navigationHoc, {treeToList} from '../navigationHoc';
 import fetchHoc from '../fetchHoc';
 
 export default
@@ -34,27 +32,9 @@ class Router extends React.PureComponent {
         pathname: PropTypes.string,
     };
 
-    static treeToList(item, isRoot) {
-        if (isRoot && !item.id) {
-            item.id = 'root';
-        }
-
-        let items = item.path ? [item] : [];
-        if (_isArray(item.items)) {
-            item.items.forEach(sub => {
-                items = items.concat(Router.treeToList(sub));
-            });
-        } else if (_isObject(item.items)) {
-            Object.keys(item.items).map(id => {
-                items = items.concat(Router.treeToList({
-                    ...item.items[id],
-                    id,
-                }));
-            });
-        }
-
-        return items;
-    }
+    static contextTypes = {
+        history: PropTypes.object,
+    };
 
     constructor() {
         super(...arguments);
@@ -62,13 +42,11 @@ class Router extends React.PureComponent {
         this._renderItem = this._renderItem.bind(this);
 
         this.state = {
-            routes: !_isArray(this.props.routes)
-                ? Router.treeToList(this.props.routes, true)
-                : this.props.routes,
+            routes: treeToList(this.props.routes),
         };
     }
 
-    componentWillMount() {
+    UNSAFE_componentWillMount() {
         this.props.dispatch(registerRoutes(this.state.routes));
     }
 
@@ -86,9 +64,12 @@ class Router extends React.PureComponent {
     render() {
         // TODO double render!!..
 
-        if (process.env.IS_NODE) {
+        if (process.env.IS_SSR) {
             return (
-                <StaticRouter location={store.history.location}>
+                <StaticRouter
+                    location={this.context.history.location}
+                    context={this.context.staticContext}
+                >
                     {this.renderContent()}
                 </StaticRouter>
             );

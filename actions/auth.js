@@ -13,7 +13,7 @@ export const AUTH_ADD_SOCIAL = 'AUTH_ADD_SOCIAL';
 
 let lastInitAction = null;
 
-export const init = (initAction) => (dispatch, getState) => {
+export const init = initAction => (dispatch, getState) => {
     lastInitAction = initAction;
 
     return initAction(getState())

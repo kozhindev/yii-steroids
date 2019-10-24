@@ -6,6 +6,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const ExportTranslationKeysPlugin = require('./plugins/ExportTranslationKeysPlugin');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const Dotenv = require('dotenv-webpack');
 
 const utils = require('./utils');
 const getConfigDefault = require('./config.default');
@@ -46,8 +47,8 @@ module.exports = (config, entry) => {
             },
         module: {
             rules: {
-                js: {
-                    test: /\.js$/,
+                ts: {
+                    test: /\.tsx?$/,
                     use: {
                         cache: utils.isProduction() && 'cache-loader',
                         babel: {
@@ -59,6 +60,42 @@ module.exports = (config, entry) => {
                                     //'transform-export-extensions',
                                     ['@babel/plugin-proposal-decorators', {legacy: true}],
                                     '@babel/plugin-proposal-class-properties',
+                                    '@babel/plugin-syntax-dynamic-import',
+                                    '@babel/plugin-transform-modules-commonjs',
+                                    '@babel/plugin-transform-runtime',
+                                    !utils.isProduction() && 'react-hot-loader/babel',
+                                ].filter(Boolean),
+                                presets: [
+                                    '@babel/preset-env',
+                                    '@babel/preset-react',
+                                    utils.isProduction() && ['minify', {
+                                        builtIns: false,
+                                        evaluate: false,
+                                        mangle: false,
+                                    }],
+                                ].filter(Boolean),
+                            }
+                        },
+                        ts: {
+                            loader: 'ts-loader',
+                        }
+                    },
+                },
+                js: {
+                    test: /\.jsx?$/,
+                    use: {
+                        cache: utils.isProduction() && 'cache-loader',
+                        babel: {
+                            loader: 'babel-loader',
+                            options: {
+                                cacheDirectory: true,
+                                plugins: [
+                                    //'transform-object-rest-spread',
+                                    //'transform-export-extensions',
+                                    ['@babel/plugin-proposal-decorators', {legacy: true}],
+                                    '@babel/plugin-proposal-class-properties',
+                                    '@babel/plugin-syntax-dynamic-import',
+                                    '@babel/plugin-transform-modules-commonjs',
                                     '@babel/plugin-transform-runtime',
                                     !utils.isProduction() && 'react-hot-loader/babel',
                                 ].filter(Boolean),
@@ -128,7 +165,7 @@ module.exports = (config, entry) => {
                         file: {
                             loader: 'file-loader',
                             options: {
-                                name: `${config.staticPath}${config.baseUrl}images/[hash].[ext]`,
+                                name: `${config.staticPath}${config.baseUrl}images/[name].[hash].[ext]`,
                             },
                         },
                     },
@@ -148,7 +185,7 @@ module.exports = (config, entry) => {
             },
         },
         resolve: {
-            extensions: ['.js', '.jsx', '.json'],
+            extensions: ['.ts', '.tsx', '.js', '.jsx', '.json'],
             alias: {
                 app: path.resolve(config.cwd, 'app'),
                 actions: `${config.sourcePath}/actions`,
@@ -180,6 +217,11 @@ module.exports = (config, entry) => {
             new webpack.NamedModulesPlugin(),
             new webpack.NamedChunksPlugin(),
             !utils.isProduction() && new webpack.HotModuleReplacementPlugin(),
+
+            // .env
+            fs.existsSync(config.cwd + '/.env') && new Dotenv({
+                path: config.cwd + '/.env',
+            }),
 
             // Index html
             fs.existsSync(config.sourcePath + '/index.html') && new HtmlWebpackPlugin({

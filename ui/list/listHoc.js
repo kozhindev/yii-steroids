@@ -12,7 +12,7 @@ import _isEmpty from 'lodash-es/isEmpty';
 import _mergeWith from 'lodash-es/mergeWith';
 import queryString from 'query-string';
 
-import {init, lazyFetch, fetch, setSort, destroy, setLayoutName} from '../../actions/list';
+import {init, lazyFetch, fetch, setSort, destroy, setLayoutName, initSSR} from '../../actions/list';
 import {getCheckedIds, getList, isCheckedAll} from '../../reducers/list';
 import Empty from './Empty';
 import Pagination from './Pagination';
@@ -188,6 +188,17 @@ export default
             this._onSort = this._onSort.bind(this);
         }
 
+        UNSAFE_componentWillMount() {
+            if (process.env.IS_SSR) {
+                const query = queryString.parse(this.props.locationSearch);
+                this.props.dispatch(initSSR(this.props.listId, {
+                    ...this.props,
+                    page: Number(_get(query, 'page', this.props.defaultPage)),
+                    query,
+                }));
+            }
+        }
+
         componentDidMount() {
             // Restore values from address bar
             if (this.props.syncWithAddressBar) {
@@ -206,7 +217,9 @@ export default
                 }, true);
             }
 
-            this.props.dispatch(init(this.props.listId, this.props));
+            if (!this.props.list) {
+                this.props.dispatch(init(this.props.listId, this.props));
+            }
         }
 
         UNSAFE_componentWillReceiveProps(nextProps) {

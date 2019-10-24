@@ -1,5 +1,7 @@
 const webpack = require('webpack');
 const _ = require('lodash');
+const fs = require('fs');
+const path = require('path');
 const express = require('express');
 const WebpackDevServer = require('webpack-dev-server');
 
@@ -27,6 +29,7 @@ setTimeout(() => Promise.all(api._entries)
         let expressApp = null;
         let getStats = null;
         let httpListen = null;
+        let devServer = null;
 
         if (api.isProduction()) {
             // Production
@@ -52,7 +55,7 @@ setTimeout(() => Promise.all(api._entries)
                     'setup',
                     'before',
                     'headers',
-                    'middleware',
+                    //'middleware', - Will be run after ssr
                     'proxy',
                     //'contentBaseFiles',
                     //'historyApiFallback',
@@ -63,40 +66,85 @@ setTimeout(() => Promise.all(api._entries)
             }
 
             // Development
-            const devServer = new WebpackDevServer(compiler, devServerConfig);
+            devServer = new WebpackDevServer(compiler, devServerConfig);
             expressApp = devServer.app;
             httpListen = devServer.listen.bind(devServer);
             getStats = () => devServer._stats;
         }
 
         if (api.isSSR()) {
-            require('@babel/register')({
-                presets: [
-                    '@babel/preset-env',
-                    '@babel/preset-react'
-                ],
-                plugins: [
-                    ['@babel/plugin-proposal-decorators', {legacy: true}],
-                    '@babel/plugin-proposal-class-properties',
-                    '@babel/plugin-transform-runtime',
-                    //'@babel/plugin-syntax-dynamic-import',
-                    //'@babel/plugin-transform-modules-commonjs',
-                    ['module-resolver', {
-                        //root: webpackConfig.resolve.modules,
-                        root: [defaultConfig.sourcePath],
-                        alias: webpackConfig.resolve.alias,
-                    }],
-                    'require-context-hook',
-                ],
-                only: [
-                    /lodash-es/,
-                    /yii-steroids/,
-                    defaultConfig.sourcePath,
-                ],
-            });
+            console.log('SSR Enabled, source dir: ' + defaultConfig.sourcePath);
+            require('@babel/register')(_.merge(
+                {
+                    extensions: ['.js', '.jsx', '.es6', '.es', '.mjs', '.ts', '.tsx'],
+                    presets: [
+                        '@babel/preset-env',
+                        '@babel/preset-react',
+                        '@babel/typescript',
+                    ],
+                    plugins: [
+                        ['@babel/plugin-proposal-decorators', {legacy: true}],
+                        '@babel/plugin-proposal-class-properties',
+                        '@babel/plugin-transform-runtime',
+                        ['module-resolver', {
+                            //root: webpackConfig.resolve.modules,
+                            root: [defaultConfig.sourcePath],
+                            alias: webpackConfig.resolve.alias,
+                            "extensions": ['.js', '.jsx', '.es6', '.es', '.mjs', '.ts', '.tsx'],
+                        }],
+                        'require-context-hook',
+                    ],
+                    only: [
+                        /lodash-es|yii-steroids/,
+                        defaultConfig.sourcePath,
+                    ],
+                    cache: api.isProduction(),
+                },
+                defaultConfig.ssr.register || {}
+            ));
             // Ignore .css and other includes
-            ['css', 'less', 'scss', 'sass', 'ttf', 'woff', 'woff2', 'svg', 'png', 'jpg']
+            ['css', 'less', 'scss', 'sass']
                 .forEach(ext => require.extensions['.' + ext] = () => {});
+            ['ttf', 'woff', 'woff2', 'png', 'jpg', 'jpeg', 'gif']
+                .forEach(ext => require.extensions['.' + ext] = (module, file) => {
+                    const fileName = path.basename(file);
+                    const assets = getStats().compilation.assets;
+                    Object.keys(assets).find(publicUrl => {
+                        let publicName = path.basename(publicUrl);
+                        publicName = publicName.replace(new RegExp('\.?[a-z0-9]{32}\.' + ext), '.' + ext);
+
+                        // TODO Логика соответствия по имени файла хрупкая и не всегда будет правильной. Но пока
+                        // TODO не удалось достать полные пути исходного файла и публичного url
+                        if (publicName === fileName) {
+                            module.exports = '/' + _.trimStart(publicUrl, '/');
+                            return true;
+                        }
+                        return false;
+                    });
+                    return module;
+                });
+            require.extensions['.svg'] = function(module, filename) {
+                const svgStr = fs.readFileSync(filename, 'utf8');
+
+                // TODO Structure this code
+                // Code from https://github.com/webpack-contrib/svg-inline-loader/blob/master/index.js#L11
+                var regexSequences = [
+                    // Remove XML stuffs and comments
+                    [/<\?xml[\s\S]*?>/gi, ""],
+                    [/<!doctype[\s\S]*?>/gi, ""],
+                    [/<!--.*-->/gi, ""],
+                    // SVG XML -> HTML5
+                    [/\<([A-Za-z]+)([^\>]*)\/\>/g, "<$1$2></$1>"], // convert self-closing XML SVG nodes to explicitly closed HTML5 SVG nodes
+                    [/\s+/g, " "],                                 // replace whitespace sequences with a single space
+                    [/\> \</g, "><"]                               // remove whitespace between tags
+                ];
+                // Clean-up XML crusts like comments and doctype, etc.
+                module.exports = regexSequences.reduce(function (prev, regexSequence) {
+                    return ''.replace.apply(prev, regexSequence);
+                }, svgStr).trim();
+
+                return module;
+            };
             require('./ssr/require-context')();
 
             if (!expressApp) {
@@ -105,13 +153,18 @@ setTimeout(() => Promise.all(api._entries)
                 httpListen = expressApp.listen.bind(expressApp);
             }
             require('./ssr/index').default(expressApp, defaultConfig, getStats);
+
+            // Use devServer middleware after ssr
+            if (devServer) {
+                devServer.setupMiddleware();
+            }
         }
 
         if (expressApp && httpListen) {
             console.log(`Listening at http://${defaultConfig.host}:${defaultConfig.port}`);
             httpListen(defaultConfig.port, defaultConfig.host, (err) => {
                 if (err) {
-                    return console.log(err);
+                    return console.error(err);
                 }
             });
         }

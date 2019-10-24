@@ -116,9 +116,6 @@ class DefaultConfig
                 'cors',
             ],
             'components' => [
-                'authEnhancer' => [
-                    'class' => 'steroids\auth\AuthEnhancer',
-                ],
                 'authManager' => [
                     'class' => 'steroids\components\AuthManager',
                 ],
@@ -171,6 +168,9 @@ class DefaultConfig
                 ],
                 'sms' => [
                     'class' => 'steroids\sms\SmsRu',
+                ],
+                'notifier' => [
+                    'class' => 'steroids\notifier\Notifier',
                 ],
                 'urlManager' => [
                     'class' => 'steroids\components\UrlManager',

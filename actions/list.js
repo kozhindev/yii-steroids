@@ -31,7 +31,7 @@ const defaultFetchHandler = list => {
         .then(response => response.data);
 };
 
-export const init = (listId, props) => dispatch => dispatch({
+const createList = (listId, props) => ({
     action: props.action || props.action === '' ? props.action : null,
     actionMethod: props.actionMethod || 'post',
     onFetch: props.onFetch,
@@ -48,6 +48,37 @@ export const init = (listId, props) => dispatch => dispatch({
     listId,
     type: LIST_INIT,
 });
+
+export const init = (listId, props) => dispatch => dispatch({
+    ...createList(listId, props),
+    type: LIST_INIT,
+});
+
+export const initSSR = (listId, props) => (dispatch, getState) => {
+    const stateList = _get(getState(), ['list', 'lists', listId]);
+    const list = {
+        ...createList(listId, props),
+        ...stateList,
+    };
+    if ((!list.action && list.action !== '') || list.items) {
+        if (!stateList) {
+            return dispatch({
+                ...list,
+                type: LIST_INIT,
+            });
+        }
+        return;
+    }
+
+    const onFetch = list.onFetch || defaultFetchHandler;
+    return onFetch(list).then(data => {
+        return dispatch({
+            ...list,
+            ...data,
+            type: LIST_INIT,
+        });
+    });
+};
 
 export const fetch = (listId, params = {}) => (dispatch, getState) => {
     const list = {

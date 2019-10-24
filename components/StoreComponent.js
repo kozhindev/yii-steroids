@@ -26,10 +26,10 @@ export default class StoreComponent {
 
     initStore(config = {}) {
         const initialState = {
-            ...(!process.env.IS_NODE ? _merge(...(window.APP_REDUX_PRELOAD_STATES || [{}])) : {}),
+            ...(!process.env.IS_SSR ? _merge(...(window.APP_REDUX_PRELOAD_STATES || [{}])) : {}),
             ...config.initialState,
         };
-        const createHistory = process.env.IS_NODE ? createMemoryHistory : createBrowserHistory;
+        const createHistory = process.env.IS_SSR ? createMemoryHistory : createBrowserHistory;
         this.history = createHistory({
             ..._get(initialState, 'config.store.history', {}),
             ...config.history

@@ -24,7 +24,7 @@ export default class LocaleComponent {
         this.translations = {};
 
         // Publish to global
-        if (process.env.IS_NODE) {
+        if (process.env.IS_SSR) {
             global.__ = this.translate.bind(this);
         } else {
             window.__ = this.translate.bind(this);

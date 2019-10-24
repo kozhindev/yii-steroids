@@ -13,7 +13,7 @@ import _uniqBy from 'lodash-es/uniqBy';
 import _isInteger from 'lodash-es/isInteger';
 import _orderBy from 'lodash-es/orderBy';
 
-import {http, store} from 'components';
+import {http} from 'components';
 import {getEnumLabels} from '../../reducers/fields';
 
 const stateMap = (state, props) => ({
@@ -132,7 +132,7 @@ class DataProviderHoc extends React.PureComponent {
         };
     }
 
-    componentWillMount() {
+    UNSAFE_componentWillMount() {
         // Select first value on mount
         if (this.props.selectFirst && this.state.items.length > 0) {
             this._onItemClick(this.state.items[0]);
@@ -417,7 +417,7 @@ class DataProviderHoc extends React.PureComponent {
             // Fix bug. Without this calls component Form is not get differect values
             // in componentWillReceiveProps and onChange handlers is not called.
             if (this.props.formId) {
-                store.dispatch(change(this.props.formId, this.props.input.name, values));
+                this.props.dispatch(change(this.props.formId, this.props.input.name, values));
             }
         } else {
             if (this.props.input.value !== id) {

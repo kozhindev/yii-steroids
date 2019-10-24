@@ -20,7 +20,7 @@ export default class HtmlFieldView extends React.PureComponent {
 
     render() {
         // TODO Component quill is breaked on SSR when import
-        const ReactQuill = process.env.IS_NODE ? () => null : require('react-quill').default;
+        const ReactQuill = process.env.IS_SSR ? () => null : require('react-quill').default;
         return (
             <div className={bem.block()}>
                 <ReactQuill {...this.props.editorProps} />

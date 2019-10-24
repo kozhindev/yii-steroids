@@ -32,7 +32,7 @@ export default class HttpComponent {
         };
 
         // Add CSRF header
-        if (!this._csrfToken && !process.env.IS_NODE) {
+        if (!this._csrfToken && !process.env.IS_SSR) {
             const metaElement = document.querySelector('meta[name=csrf-token]');
             if (metaElement) {
                 this._csrfToken = metaElement.getAttribute('content');
@@ -156,7 +156,7 @@ export default class HttpComponent {
                 this._createCancelToken = this._createCancelToken.bind(this);
             }
 
-            componentWillMount() {
+            UNSAFE_componentWillMount() {
                 this._fetch();
             }
 
@@ -211,10 +211,6 @@ export default class HttpComponent {
         };
     }
 
-    ssrWaitAll() {
-        return Promise.all(this._promises);
-    }
-
     _send(method, config, options) {
         const axiosConfig = {
             ...config,
@@ -255,7 +251,7 @@ export default class HttpComponent {
             });
 
         // Store promises for SSR
-        if (process.env.IS_NODE) {
+        if (process.env.IS_SSR) {
             this._promises.push(promise);
         }
 

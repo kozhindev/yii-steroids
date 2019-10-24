@@ -38,7 +38,7 @@ class FetchHoc extends React.PureComponent {
         this._onUpdate = this._onUpdate.bind(this);
     }
 
-    componentDidMount() {
+    UNSAFE_componentWillMount() {
         this.props.dispatch(navigationAddConfigs(configsFunc({
             ...this.props,
             ...this.state.overwritedProps,
@@ -76,8 +76,8 @@ class FetchHoc extends React.PureComponent {
     }
 
     render() {
-        let isLoading = false;
-        const data = {};
+        let isLoading = !this.props.navigationData;
+        let dataProps = {};
         const configs = [].concat(configsFunc({
             ...this.props,
             ...this.state.overwritedProps,
@@ -85,8 +85,14 @@ class FetchHoc extends React.PureComponent {
         }));
         if (this.props.navigationData) {
             configs.forEach(config => {
-                data[config.key] = this.props.navigationData[getConfigId(config)];
-                if (!data[config.key]) {
+                const dataItem = this.props.navigationData[getConfigId(config)];
+                if (dataItem) {
+                    if (config.key) {
+                        dataProps[config.key] = dataItem;
+                    } else {
+                        dataProps = {...dataProps, ...dataItem};
+                    }
+                } else {
                     isLoading = true;
                 }
             });
@@ -101,7 +107,7 @@ class FetchHoc extends React.PureComponent {
             <WrappedComponent
                 {...this.props}
                 {...this.state.overwritedProps}
-                {...data}
+                {...dataProps}
                 updateApiConfig={this._onUpdate}
             />
         );
