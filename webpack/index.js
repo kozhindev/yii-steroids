@@ -15,7 +15,7 @@ module.exports = api;
 
 // Auto start after define config
 setTimeout(() => Promise.all(api._entries)
-    .then(async result => {
+    .then(result => {
         const webpackConfig = getConfigMain(
             api._config,
             Object.assign.apply(null, result)
@@ -68,11 +68,11 @@ setTimeout(() => Promise.all(api._entries)
 
                     if (api.isTestSSR()) {
                         console.log('Run SSR Test...');
-                        const content = await require('./ssr/index').default('/', defaultConfig, getStats);
-                        if (!content && content !== false) {
-                            console.error('SSR test failed!');
-                            process.exit(1);
-                        }
+                        require('./ssr/index').default('/', defaultConfig, getStats)
+                            .catch(e => {
+                                console.error('SSR test failed!', e);
+                                process.exit(1);
+                            });
                     }
                 });
             } else if (fs.existsSync(statsPath)) {
