@@ -15,7 +15,7 @@ module.exports = api;
 
 // Auto start after define config
 setTimeout(() => Promise.all(api._entries)
-    .then(result => {
+    .then(async result => {
         const webpackConfig = getConfigMain(
             api._config,
             Object.assign.apply(null, result)
@@ -31,23 +31,53 @@ setTimeout(() => Promise.all(api._entries)
         let httpListen = null;
         let devServer = null;
 
-        if (api.isProduction()) {
-            // Production
-            let _stats = null;
-            compiler.run((err, stats) => {
-                _stats = stats;
-                if (err) {
-                    console.error(err);
-                } else {
-                    console.log(stats.toString({
-                        chunks: false,
-                        children: false,
-                        colors: true,
-                        publicPath: true,
-                    }));
-                }
+        // Get env params
+        if (fs.existsSync(path.resolve(defaultConfig.cwd, '.env'))) {
+            require('dotenv').config({
+                cwd: path.resolve(defaultConfig.cwd, '.env'),
             });
+        }
+
+        // Stats save path
+        const statsPath = (defaultConfig.ssr.statsPath || defaultConfig.outputPath) + '/stats.json';
+
+        if (api.isProduction()) {
+            let _stats = null;
             getStats = () => _stats;
+
+            if (!api.isSSR()) {
+                // Production
+                compiler.run(async (err, stats) => {
+                    _stats = {
+                        ...stats.toJson({all: false, assets: true}),
+                        assetsUrls: Object.keys(stats.compilation.assets),
+                    };
+
+                    if (err) {
+                        console.error(err);
+                    } else {
+                        fs.writeFileSync(statsPath, JSON.stringify(_stats, null, 2));
+
+                        console.log(stats.toString({
+                            chunks: false,
+                            children: false,
+                            colors: true,
+                            publicPath: true,
+                        }));
+                    }
+
+                    if (api.isTestSSR()) {
+                        console.log('Run SSR Test...');
+                        const content = await require('./ssr/index').default('/', defaultConfig, getStats);
+                        if (!content && content !== false) {
+                            console.error('SSR test failed!');
+                            process.exit(1);
+                        }
+                    }
+                });
+            } else if (fs.existsSync(statsPath)) {
+                _stats = JSON.parse(fs.readFileSync(statsPath));
+            }
         } else {
             const devServerConfig = getConfigDevServer(api._config);
             if (api.isSSR()) {
@@ -69,11 +99,17 @@ setTimeout(() => Promise.all(api._entries)
             devServer = new WebpackDevServer(compiler, devServerConfig);
             expressApp = devServer.app;
             httpListen = devServer.listen.bind(devServer);
-            getStats = () => devServer._stats;
+            getStats = () => ({
+                ...devServer._stats.toJson({all: false, assets: true}),
+                assetsUrls: Object.keys(devServer._stats.compilation.assets),
+            });
         }
 
-        if (api.isSSR()) {
-            console.log('SSR Enabled, source dir: ' + defaultConfig.sourcePath);
+        if (api.isSSR() || api.isTestSSR()) {
+            if (api.isSSR()) {
+                console.log('SSR Enabled, source dir: ' + defaultConfig.sourcePath);
+            }
+
             require('@babel/register')(_.merge(
                 {
                     extensions: ['.js', '.jsx', '.es6', '.es', '.mjs', '.ts', '.tsx'],
@@ -108,8 +144,7 @@ setTimeout(() => Promise.all(api._entries)
             ['ttf', 'woff', 'woff2', 'png', 'jpg', 'jpeg', 'gif']
                 .forEach(ext => require.extensions['.' + ext] = (module, file) => {
                     const fileName = path.basename(file);
-                    const assets = getStats().compilation.assets;
-                    Object.keys(assets).find(publicUrl => {
+                    getStats().assetsUrls.find(publicUrl => {
                         let publicName = path.basename(publicUrl);
                         publicName = publicName.replace(new RegExp('\.?[a-z0-9]{32}\.' + ext), '.' + ext);
 
@@ -147,16 +182,27 @@ setTimeout(() => Promise.all(api._entries)
             };
             require('./ssr/require-context')();
 
-            if (!expressApp) {
-                expressApp = express();
-                expressApp.use(express.static(defaultConfig.outputPath));
-                httpListen = expressApp.listen.bind(expressApp);
-            }
-            require('./ssr/index').default(expressApp, defaultConfig, getStats);
+            if (api.isSSR()) {
+                if (!expressApp) {
+                    expressApp = express();
+                    expressApp.use(express.static(defaultConfig.outputPath));
+                    httpListen = expressApp.listen.bind(expressApp);
+                }
 
-            // Use devServer middleware after ssr
-            if (devServer) {
-                devServer.setupMiddleware();
+                expressApp.get('*', async (request, response, next) => {
+                    const content = await require('./ssr/index').default(request.url, defaultConfig, getStats);
+                    if (content === false) {
+                        next();
+                    } else {
+                        response.writeHead(200, {'Content-Type': 'text/html'});
+                        response.end(content);
+                    }
+                });
+
+                // Use devServer middleware after ssr
+                if (devServer) {
+                    devServer.setupMiddleware();
+                }
             }
         }
 

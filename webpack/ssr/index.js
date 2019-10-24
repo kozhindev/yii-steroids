@@ -10,10 +10,11 @@ import _merge from 'lodash/merge';
 import template from './template';
 import SsrProvider from '../../ui/nav/Router/SsrProvider';
 
-global.window = {};
+//global.window = {};
 global.location = {};
 global.IntlMessageFormat = IntlMessageFormat;
 process.env.IS_SSR = true;
+process.env.NODE_ENV = 'production';
 
 const renderReact = async (Application, store, history, staticContext, level = 0) => {
     const content = renderToString(
@@ -39,8 +40,8 @@ const renderReact = async (Application, store, history, staticContext, level = 0
     return content;
 };
 
-const renderContent = async (defaultConfig, routes, assets, request) => {
-    const parsedUrl = parse(request.url);
+const renderContent = async (defaultConfig, routes, assets, url) => {
+    const parsedUrl = parse(url);
     const location = {
         pathname: parsedUrl.pathname,
         search: parsedUrl.search,
@@ -72,7 +73,7 @@ const renderContent = async (defaultConfig, routes, assets, request) => {
         ),
         history: {
             initialEntries: [
-                request.url,
+                url,
             ],
         },
     });
@@ -105,35 +106,31 @@ const resolveFileExtension = path => {
     return result;
 };
 
-export default (app, defaultConfig, getStats) => {
-    app.get('*', async (request, response, next) => {
-        // Skip for webpack dev server
-        if (/^\/sockjs-node/.test(request.url) || /hot-update/.test(request.url)
-            || /(jpe?g|gif|css|png|js|ico|xml|less|eot|svg|tff|woff2?|txt|map|mp4|ogg|webm|pdf|dmg|exe|html)$/.test(request.url)) {
-            next();
-            return;
-        }
+export default async (url, defaultConfig, getStats) => {
+    // Skip for webpack dev server
+    if (/^\/sockjs-node/.test(url) || /hot-update/.test(url)
+        || /(jpe?g|gif|css|png|js|ico|xml|less|eot|svg|tff|woff2?|txt|map|mp4|ogg|webm|pdf|dmg|exe|html)$/.test(url)) {
+        return false;
+    }
 
-        let content = '';
+    let content = '';
 
-        // Find routes tree
-        const routesPath = resolveFileExtension(path.join(defaultConfig.sourcePath, 'routes', 'index'));
-        const routes = fs.existsSync(routesPath) ? require(routesPath) : null;
-        if (routes) {
-            const stats = getStats();
-            if (stats) {
-                const assets = stats.toJson({all: false, assets: true}).assets
-                    .filter(asset => asset.chunks.includes('index') || asset.chunks.includes('common'));
+    // Find routes tree
+    const routesPath = resolveFileExtension(path.join(defaultConfig.sourcePath, 'routes', 'index'));
+    const routes = fs.existsSync(routesPath) ? require(routesPath) : null;
+    if (routes) {
+        const stats = getStats();
+        if (stats) {
+            const assets = stats.assets
+                .filter(asset => asset.chunks.includes('index') || asset.chunks.includes('common'));
 
-                try {
-                    content = await renderContent(defaultConfig, routes, assets, request);
-                } catch(e) {
-                    console.error('Render error in url ' + request.url, e);
-                }
+            try {
+                content = await renderContent(defaultConfig, routes, assets, url);
+            } catch(e) {
+                console.error('Render error in url ' + url, e);
             }
         }
+    }
 
-        response.writeHead(200, {'Content-Type': 'text/html'});
-        response.end(content);
-    });
+    return content;
 };

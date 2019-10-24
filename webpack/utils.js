@@ -19,7 +19,11 @@ module.exports = {
     },
 
     isSSR() {
-        return process.argv.slice(2).filter(a => a.match(/(--)?ssr/i) !== null).length > 0;
+        return !this.isTestSSR() && process.argv.slice(2).filter(a => a.match(/(--)?ssr/i) !== null).length > 0;
+    },
+
+    isTestSSR() {
+        return process.argv.slice(2).filter(a => a.match(/(--)?ssr-test/i) !== null).length > 0;
     },
 
     isAnalyze() {

@@ -20,6 +20,10 @@ module.exports = {
         return utils.isSSR();
     },
 
+    isTestSSR() {
+        return utils.isTestSSR();
+    },
+
     /**
      * Index js. Core module at first
      * @param {string} path

@@ -40,7 +40,7 @@ export default class StoreComponent {
             compose(
                 applyMiddleware(({getState}) => next => action => this._prepare(action, next, getState)),
                 applyMiddleware(routerMiddleware(this.history)),
-                window.__REDUX_DEVTOOLS_EXTENSION__ ? window.__REDUX_DEVTOOLS_EXTENSION__() : f => f
+                !process.env.IS_SSR && window.__REDUX_DEVTOOLS_EXTENSION__ ? window.__REDUX_DEVTOOLS_EXTENSION__() : f => f
             )
         );
     }
@@ -103,7 +103,7 @@ export default class StoreComponent {
 
         // Default case
         if (_isPlainObject(action) && action.type) {
-            if (process.env.NODE_ENV !== 'production') {
+            if (!process.env.IS_SSR && process.env.NODE_ENV !== 'production') {
                 window.__snapshot = (window.__snapshot || []).concat({action});
             }
 

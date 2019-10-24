@@ -1,6 +1,6 @@
 {
   "name": "yii-steroids",
-  "version": "1.15.0",
+  "version": "1.15.1",
   "description": "JavaScript part for php library yii-steroids",
   "main": "index.js",
   "author": "Vladimir Kozhin <hello@kozhindev.com>",
@@ -91,6 +91,7 @@
     "webpack-bundle-analyzer": "^3.3.2",
     "webpack-cli": "^3.3.6",
     "webpack-dev-server": "^3.7.2",
+    "dotenv": "^8.1.0",
     "dotenv-webpack": "^1.7.0",
     "ts-loader": "^6.0.4"
   },

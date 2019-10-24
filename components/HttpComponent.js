@@ -267,7 +267,7 @@ export default class HttpComponent {
         }
 
         // Ajax redirect
-        if (response.data.redirectUrl) {
+        if (response.data.redirectUrl && !process.env.IS_SSR) {
             if (location.href === response.data.redirectUrl.split('#')[0]) {
                 window.location.href = response.data.redirectUrl;
                 window.location.reload();
