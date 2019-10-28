@@ -19,7 +19,7 @@ export default class Nav extends React.PureComponent {
             url: PropTypes.string,
             onClick: PropTypes.func,
             className: PropTypes.string,
-            view: PropTypes.func,
+            view: PropTypes.elementType,
             visible: PropTypes.bool,
             content: PropTypes.oneOfType([
                 PropTypes.node,
@@ -32,7 +32,7 @@ export default class Nav extends React.PureComponent {
             PropTypes.string,
         ]),
         className: PropTypes.string,
-        view: PropTypes.func,
+        view: PropTypes.elementType,
         onChange: PropTypes.func,
     };
 

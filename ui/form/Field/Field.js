@@ -54,11 +54,12 @@ export default class Field extends React.Component {
         component: PropTypes.oneOfType([
             PropTypes.string,
             PropTypes.func,
+            PropTypes.elementType,
         ]),
         onChange: PropTypes.func,
         className: PropTypes.string,
         layoutClassName: PropTypes.string,
-        view: PropTypes.func,
+        view: PropTypes.elementType,
     };
 
     render() {

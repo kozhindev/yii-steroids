@@ -33,7 +33,7 @@ class NumberField extends React.PureComponent {
         inputProps: PropTypes.object,
         onChange: PropTypes.func,
         className: PropTypes.string,
-        view: PropTypes.func,
+        view: PropTypes.elementType,
     };
 
     static defaultProps = {

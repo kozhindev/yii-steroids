@@ -28,7 +28,7 @@ TextField.propTypes = {
     inputProps: PropTypes.object,
     onChange: PropTypes.func,
     className: PropTypes.string,
-    view: PropTypes.func,
+    view: PropTypes.elementType,
 };
 
 

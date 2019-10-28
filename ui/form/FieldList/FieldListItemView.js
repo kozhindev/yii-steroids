@@ -41,7 +41,7 @@ export default class FieldListItemView extends React.PureComponent {
             onChange: PropTypes.func,
             className: PropTypes.string,
             headerClassName: PropTypes.string,
-            view: PropTypes.func,
+            view: PropTypes.elementType,
         })),
         showRemove: PropTypes.bool,
         onRemove: PropTypes.func,

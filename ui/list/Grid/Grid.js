@@ -17,7 +17,7 @@ class Grid extends React.PureComponent {
 
     static propTypes = {
         primaryKey: PropTypes.string,
-        view: PropTypes.func,
+        view: PropTypes.elementType,
         columns: PropTypes.arrayOf(PropTypes.oneOfType([
             PropTypes.string,
             PropTypes.shape({
@@ -35,9 +35,9 @@ class Grid extends React.PureComponent {
                 hint: PropTypes.node,
                 headerClassName: PropTypes.string,
                 visible: PropTypes.bool,
-                headerView: PropTypes.func,
+                headerView: PropTypes.elementType,
                 headerProps: PropTypes.object,
-                valueView: PropTypes.func,
+                valueView: PropTypes.elementType,
                 valueProps: PropTypes.object,
             }),
         ])).isRequired,

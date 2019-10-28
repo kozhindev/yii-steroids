@@ -196,6 +196,7 @@ module.exports = (config, entry) => {
                 shared: `${config.sourcePath}/shared`,
                 types: `${config.sourcePath}/types`,
                 ui: `${config.sourcePath}/ui`,
+                'react-dom': '@hot-loader/react-dom',
             },
             modules: [
                 path.resolve(config.cwd, 'node_modules'), // the old 'fallback' option (needed for npm link-ed packages)

@@ -42,7 +42,7 @@ export default
             security: getSecurity(state, props.formId),
             isInvalid: invalidSelector(state),
             formRegisteredFields: _get(state, `form.${props.formId}.registeredFields`),
-            locationSearch: _get(state, 'routing.location.search', ''),
+            locationSearch: _get(state, 'router.location.search', ''),
         };
     }
 )
@@ -76,7 +76,7 @@ class Form extends React.PureComponent {
         autoSave: PropTypes.bool,
         initialValues: PropTypes.object,
         className: PropTypes.string,
-        view: PropTypes.func,
+        view: PropTypes.elementType,
         formValues: PropTypes.object,
         isInvalid: PropTypes.bool,
         formRegisteredFields: PropTypes.object,

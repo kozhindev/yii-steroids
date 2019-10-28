@@ -28,7 +28,7 @@ class HtmlField extends React.PureComponent {
         editorProps: PropTypes.object,
         onChange: PropTypes.func,
         className: PropTypes.string,
-        view: PropTypes.func,
+        view: PropTypes.elementType,
     };
 
     static defaultProps = {

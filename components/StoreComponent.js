@@ -1,5 +1,5 @@
 import {createStore, applyMiddleware, compose} from 'redux';
-import {routerMiddleware} from 'connected-react-router';
+import {routerMiddleware, connectRouter} from 'connected-react-router';
 import {createBrowserHistory, createMemoryHistory} from 'history';
 import _get from 'lodash-es/get';
 import _merge from 'lodash-es/merge';
@@ -34,8 +34,11 @@ export default class StoreComponent {
             ..._get(initialState, 'config.store.history', {}),
             ...config.history
         });
+        this._routerReducer = connectRouter(this.history);
         this.store = createStore(
-            reducers(),
+            reducers({
+                router: this._routerReducer,
+            }),
             initialState,
             compose(
                 applyMiddleware(({getState}) => next => action => this._prepare(action, next, getState)),
@@ -69,6 +72,7 @@ export default class StoreComponent {
 
     addReducers(asyncReducers) {
         this._asyncReducers = {
+            router: this._routerReducer,
             ...this._asyncReducers,
             ...asyncReducers,
         };

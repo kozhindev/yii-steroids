@@ -32,7 +32,7 @@ class DateField extends React.PureComponent {
         displayFormat: PropTypes.string,
         valueFormat: PropTypes.string,
         className: PropTypes.string,
-        view: PropTypes.func,
+        view: PropTypes.elementType,
         isInvalid: PropTypes.bool,
     };
 

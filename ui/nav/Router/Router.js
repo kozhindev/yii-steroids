@@ -6,7 +6,6 @@ import {ConnectedRouter} from 'connected-react-router';
 import _get from 'lodash-es/get';
 
 import {store} from 'components';
-import {registerRoutes} from '../../../actions/routing';
 import navigationHoc, {treeToList} from '../navigationHoc';
 import fetchHoc from '../fetchHoc';
 
@@ -14,19 +13,19 @@ export default
 @navigationHoc()
 @connect(
     state => ({
-        pathname: _get(state, 'routing.location.pathname'),
+        pathname: _get(state, 'router.location.pathname'),
     })
 )
 class Router extends React.PureComponent {
 
     static propTypes = {
-        wrapperView: PropTypes.func,
+        wrapperView: PropTypes.elementType,
         wrapperProps: PropTypes.object,
         routes: PropTypes.oneOfType([
             PropTypes.object,
             PropTypes.arrayOf(PropTypes.shape({
                 path: PropTypes.string,
-                component: PropTypes.func,
+                component: PropTypes.elementType,
             })),
         ]),
         pathname: PropTypes.string,
@@ -44,10 +43,6 @@ class Router extends React.PureComponent {
         this.state = {
             routes: treeToList(this.props.routes),
         };
-    }
-
-    UNSAFE_componentWillMount() {
-        this.props.dispatch(registerRoutes(this.state.routes));
     }
 
     UNSAFE_componentWillReceiveProps(nextProps) {

@@ -9,7 +9,7 @@ import {initialize} from 'redux-form';
 import {push} from 'connected-react-router';
 
 import {store} from 'components';
-import {getCurrentRoute} from '../../../reducers/routing';
+import {getCurrentRoute} from '../../../reducers/navigation';
 
 export default class SyncAddressBarHelper {
 

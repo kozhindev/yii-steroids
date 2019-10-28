@@ -62,9 +62,8 @@ const renderContent = async (defaultConfig, routes, assets, url) => {
                         apiUrl: process.env.APP_BACKEND_URL || '',
                     },
                 },
-                routing: {
+                router: {
                     location,
-                    routes: treeToList(routes),
                 },
                 navigation: {
                     routesTree: walkRoutesRecursive(routes),

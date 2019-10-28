@@ -18,11 +18,11 @@ export default class CrudView extends React.Component {
             url: PropTypes.string,
             onClick: PropTypes.func,
             className: PropTypes.string,
-            view: PropTypes.func,
+            view: PropTypes.elementType,
             visible: PropTypes.bool,
             content: PropTypes.oneOfType([
                 PropTypes.node,
-                PropTypes.func,
+                PropTypes.elementType,
             ]),
             contentProps: PropTypes.object,
             position: PropTypes.oneOf(['left', 'right']),

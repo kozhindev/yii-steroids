@@ -12,9 +12,9 @@ class List extends React.PureComponent {
     static propTypes = {
         primaryKey: PropTypes.string,
         items: PropTypes.array,
-        itemView: PropTypes.func.isRequired,
+        itemView: PropTypes.elementType.isRequired,
         itemProps: PropTypes.object,
-        view: PropTypes.func,
+        view: PropTypes.elementType,
     };
 
     constructor() {

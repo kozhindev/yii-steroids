@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 
 import {navigationAddConfigs, navigationRemoveConfigs, getConfigId} from '../../actions/navigation';
-import {getCurrentRoute} from '../../reducers/routing';
+import {getCurrentRoute} from '../../reducers/navigation';
 
 const stateMap = state => ({
     navigationData: state.navigation && state.navigation.data || null,

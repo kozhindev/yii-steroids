@@ -39,7 +39,7 @@ class AutoCompleteField extends React.PureComponent {
         inputProps: PropTypes.object,
         onChange: PropTypes.func,
         className: PropTypes.string,
-        view: PropTypes.func,
+        view: PropTypes.elementType,
         showReset: PropTypes.bool,
         multiple: PropTypes.bool,
         items: PropTypes.arrayOf(PropTypes.shape({

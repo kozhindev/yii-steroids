@@ -62,7 +62,7 @@ class Button extends React.PureComponent {
         submitting: PropTypes.bool,
         block: PropTypes.bool,
         className: PropTypes.string,
-        view: PropTypes.func,
+        view: PropTypes.elementType,
         toRoute: PropTypes.string,
         toRouteParams: PropTypes.object,
     };

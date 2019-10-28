@@ -21,7 +21,7 @@ class BlankField extends React.PureComponent {
             PropTypes.node,
         ]),
         isInvalid: PropTypes.bool,
-        view: PropTypes.func,
+        view: PropTypes.elementType,
     };
 
     render() {

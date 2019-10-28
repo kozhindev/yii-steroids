@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import _isArray from 'lodash-es/isArray';
 import _isObject from 'lodash-es/isObject';
-import {getCurrentRoute} from '../../reducers/routing';
+import {getCurrentRoute} from '../../reducers/navigation';
 import {isInitialized} from '../../reducers/navigation';
 import {initRoutes, initParams} from '../../actions/navigation';
 

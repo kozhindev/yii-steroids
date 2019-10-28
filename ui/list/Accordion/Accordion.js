@@ -12,12 +12,12 @@ class Accordion extends React.PureComponent {
     static propTypes = {
         primaryKey: PropTypes.string,
         items: PropTypes.array,
-        itemView: PropTypes.func.isRequired,
+        itemView: PropTypes.elementType.isRequired,
         itemProps: PropTypes.object,
-        headerView: PropTypes.func.isRequired,
+        headerView: PropTypes.elementType.isRequired,
         headerProps: PropTypes.object,
         headerLabelAttribute: PropTypes.string,
-        view: PropTypes.func,
+        view: PropTypes.elementType,
         openFirst: PropTypes.bool,
         openedId: PropTypes.oneOfType([
             PropTypes.number,

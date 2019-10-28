@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 
 import {http, ui} from 'components';
-import {getCurrentRoute} from '../../../reducers/routing';
+import {getCurrentRoute} from '../../../reducers/navigation';
 import {goToPage} from '../../../actions/navigation';
 import {refresh} from '../../../actions/list';
 import Grid from '../../list/Grid';
@@ -34,10 +34,10 @@ export default class Crud extends React.PureComponent {
         }),
         grid: PropTypes.object,
         form: PropTypes.object,
-        view: PropTypes.func,
-        gridView: PropTypes.func,
-        formView: PropTypes.func,
-        detailView: PropTypes.func,
+        view: PropTypes.elementType,
+        gridView: PropTypes.elementType,
+        formView: PropTypes.elementType,
+        detailView: PropTypes.elementType,
     };
 
     static defaultProps = {

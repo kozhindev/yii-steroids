@@ -64,7 +64,7 @@ export default
             //checkedIds: getCheckedIds(state, props.listId),
             //isCheckedAll: isCheckedAll(state, props.listId),
             formValues: formId && formValuesSelectors[formId](state) || null,
-            locationSearch: _get(state, 'routing.location.search', ''),
+            locationSearch: _get(state, 'router.location.search', ''),
         };
     }
 )
@@ -122,6 +122,7 @@ export default
                         component: PropTypes.oneOfType([
                             PropTypes.string,
                             PropTypes.func,
+                            PropTypes.elementType,
                         ]),
                     })
                 ])),
@@ -135,12 +136,12 @@ export default
             emptyView: PropTypes.func,
             emptyProps: PropTypes.object,
             paginationView: PropTypes.oneOfType([
-                PropTypes.func,
+                PropTypes.elementType,
                 PropTypes.bool,
             ]),
             paginationProps: PropTypes.object,
             paginationSizeView: PropTypes.oneOfType([
-                PropTypes.func,
+                PropTypes.elementType,
                 PropTypes.bool,
             ]),
             paginationSizeProps: PropTypes.object,
@@ -153,7 +154,7 @@ export default
                     PropTypes.any,
                 ]),
             })),
-            layoutNamesView: PropTypes.func,
+            layoutNamesView: PropTypes.elementType,
             layoutNamesProps: PropTypes.object,
             list: PropTypes.shape({
                 meta: PropTypes.object,
