@@ -202,7 +202,8 @@ export const getCurrentRoute = (state) => {
         return null;
     }
 
-    return findRecursive(
+    let currentRoute = null;
+    findRecursive(
         [root],
         item => {
             const match = matchPath(String(pathname), {
@@ -216,10 +217,13 @@ export const getCurrentRoute = (state) => {
                 if (!routesCache[item.id] || !_isEqual(routesCache[item.id], finedRoute)) {
                     routesCache[item.id] = finedRoute;
                 }
-                return routesCache[item.id];
+                currentRoute = routesCache[item.id];
+                return true;
             }
+             return false;
         }
-    )
+    );
+    return currentRoute;
 };
 
 export const getCurrentItem = (state) => {
