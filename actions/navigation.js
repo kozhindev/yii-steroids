@@ -1,6 +1,6 @@
 import _isArray from 'lodash-es/isArray';
 import _trim from 'lodash-es/trim';
-import {push} from 'react-router-redux';
+import {push} from 'connected-react-router';
 
 import {http} from 'components';
 

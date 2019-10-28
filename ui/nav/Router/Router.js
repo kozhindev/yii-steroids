@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {Route, Switch, StaticRouter} from 'react-router';
 import {connect} from 'react-redux';
-import {ConnectedRouter} from 'react-router-redux';
+import {ConnectedRouter} from 'connected-react-router';
 import _get from 'lodash-es/get';
 
 import {store} from 'components';

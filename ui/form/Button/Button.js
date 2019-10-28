@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import {isSubmitting} from 'redux-form';
-import {push} from 'react-router-redux';
+import {push} from 'connected-react-router';
 
 import {ui} from 'components';
 import FieldLayout from '../FieldLayout';

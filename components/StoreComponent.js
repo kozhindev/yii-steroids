@@ -1,5 +1,5 @@
 import {createStore, applyMiddleware, compose} from 'redux';
-import {routerMiddleware} from 'react-router-redux';
+import {routerMiddleware} from 'connected-react-router';
 import {createBrowserHistory, createMemoryHistory} from 'history';
 import _get from 'lodash-es/get';
 import _merge from 'lodash-es/merge';

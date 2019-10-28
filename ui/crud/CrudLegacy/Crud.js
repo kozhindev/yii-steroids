@@ -5,7 +5,7 @@ import {Router} from '../../nav';
 import _get from 'lodash-es/get';
 import _isFunction from 'lodash-es/isFunction';
 import _isString from 'lodash-es/isString';
-import {push} from 'react-router-redux';
+import {push} from 'connected-react-router';
 
 import {http, ui} from 'components';
 import {refresh} from '../../../actions/list';

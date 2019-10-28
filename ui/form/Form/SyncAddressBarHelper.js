@@ -6,7 +6,7 @@ import _isEqual from 'lodash/isEqual';
 import _isEmpty from 'lodash/isEmpty';
 import _isFunction from 'lodash/isFunction';
 import {initialize} from 'redux-form';
-import {push} from 'react-router-redux';
+import {push} from 'connected-react-router';
 
 import {store} from 'components';
 import {getCurrentRoute} from '../../../reducers/routing';

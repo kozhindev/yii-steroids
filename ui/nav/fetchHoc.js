@@ -10,7 +10,7 @@ const stateMap = state => ({
     route: getCurrentRoute(state),
 });
 
-export default (configsFunc, options) => WrappedComponent => @connect(stateMap)
+export default (configsFunc, options = {}) => WrappedComponent => @connect(stateMap)
 class FetchHoc extends React.PureComponent {
 
     static WrappedComponent = WrappedComponent;
