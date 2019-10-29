@@ -1,4 +1,5 @@
 const glob = require('glob-promise');
+const _ = require('lodash');
 const utils = require('./utils');
 
 module.exports = {

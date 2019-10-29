@@ -18,15 +18,13 @@ process.env.NODE_ENV = 'production';
 
 const renderReact = async (Application, store, history, staticContext, level = 0) => {
     const content = renderToString(
-        <Provider>
-            <SsrProvider
-                store={store}
-                history={history}
-                staticContext={staticContext}
-            >
-                <Application/>
-            </SsrProvider>
-        </Provider>
+        <SsrProvider
+            store={store}
+            history={history}
+            staticContext={staticContext}
+        >
+            <Application/>
+        </SsrProvider>
     );
 
     const http = require('components').http;
@@ -34,7 +32,7 @@ const renderReact = async (Application, store, history, staticContext, level = 0
         await Promise.all(http._promises);
         http._promises = [];
 
-        return renderReact(Application, store, history, staticContext,level + 1);
+        return renderReact(Application, store, history, staticContext, level + 1);
     }
 
     return content;
@@ -61,9 +59,6 @@ const renderContent = async (defaultConfig, routes, assets, url) => {
                     http: {
                         apiUrl: process.env.APP_BACKEND_URL || '',
                     },
-                },
-                router: {
-                    location,
                 },
                 navigation: {
                     routesTree: walkRoutesRecursive(routes),
@@ -125,7 +120,7 @@ export default async (url, defaultConfig, getStats) => {
 
             try {
                 content = await renderContent(defaultConfig, routes, assets, url);
-            } catch(e) {
+            } catch (e) {
                 console.error('Render error in url ' + url, e);
             }
         }
