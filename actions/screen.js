@@ -7,12 +7,12 @@ export const setMedia = media => ({
 });
 
 let timer = null;
-export const setWidth = (width, isMount = false) => dispatch => {
+export const setWidth = (width, skipTimeout = false) => dispatch => {
     if (timer) {
         clearTimeout(timer);
     }
 
-    if (isMount) {
+    if (skipTimeout) {
         dispatch({
             type: SCREEN_SET_WIDTH,
             width,

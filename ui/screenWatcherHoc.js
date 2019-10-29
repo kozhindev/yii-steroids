@@ -18,18 +18,24 @@ export default (media) => WrappedComponent => class ScreenWatcherHoc extends Rea
     }
 
     componentWillMount() {
-        store.dispatch(setWidth(window.innerWidth, true));
-        if (_isObject(media)) {
-            store.dispatch(setMedia(media));
+        if (typeof window !== 'undefined') {
+            store.dispatch(setWidth(window.innerWidth, true));
+            if (_isObject(media)) {
+                store.dispatch(setMedia(media));
+            }
         }
     }
 
     componentDidMount() {
-        window.addEventListener('resize', ScreenWatcherHoc._onResize, false);
+        if (typeof window !== 'undefined') {
+            window.addEventListener('resize', ScreenWatcherHoc._onResize, false);
+        }
     }
 
     componentWillUnmount() {
-        window.removeEventListener('resize', ScreenWatcherHoc._onResize);
+        if (typeof window !== 'undefined') {
+            window.removeEventListener('resize', ScreenWatcherHoc._onResize);
+        }
     }
 
     render() {
