@@ -1,12 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import _merge from 'lodash-es/merge';
+import File from 'fileup-core/lib/models/File';
+import XhrUploader from 'fileup-core/lib/uploaders/XhrUploader';
+import _get from 'lodash/get';
 
 import {ui} from 'components';
 import fieldHoc from '../fieldHoc';
 
-export default
-@fieldHoc({
+export default @fieldHoc({
     componentId: 'form.HtmlField',
 })
 class HtmlField extends React.PureComponent {
@@ -28,6 +30,7 @@ class HtmlField extends React.PureComponent {
         editorProps: PropTypes.object,
         onChange: PropTypes.func,
         className: PropTypes.string,
+        uploadUrl: PropTypes.string,
         view: PropTypes.elementType,
     };
 
@@ -42,7 +45,7 @@ class HtmlField extends React.PureComponent {
                 [{'header': [2, 3, false]}],
                 ['bold', 'italic', 'underline', 'strike', 'blockquote'],
                 [{'list': 'ordered'}, {'list': 'bullet'}, {'indent': '-1'}, {'indent': '+1'}],
-                ['link', 'video'],
+                ['link', 'image', 'video'],
                 ['clean']
             ],
         },
@@ -58,7 +61,7 @@ class HtmlField extends React.PureComponent {
             'indent',
             'link',
             'video',
-            //'image', TODO Image implement
+            'image',
         ],
     };
 
@@ -69,6 +72,32 @@ class HtmlField extends React.PureComponent {
                 {...this.props}
                 editorProps={_merge(
                     HtmlField.defaultEditorConfig,
+                    {
+                        modules: {
+                            imageUploader: {
+                                upload: nativeFile => {
+                                    return new Promise(resolve => {
+                                        const file = new File({
+                                            index: 0,
+                                            native: nativeFile,
+                                            path: nativeFile.name,
+                                            type: nativeFile.type || '',
+                                            bytesTotal: nativeFile.fileSize || nativeFile.size || 0
+                                        });
+                                        const uploader = new XhrUploader({
+                                            url: this.props.uploadUrl,
+                                            file,
+                                        });
+                                        file.setUploader(uploader);
+                                        uploader.on(XhrUploader.EVENT_END, () => {
+                                            resolve(_get(file.getResultHttpMessage(), 'images.default.url'));
+                                        });
+                                        uploader.start();
+                                    });
+                                }
+                            }
+                        },
+                    },
                     this.props.editorProps,
                     {
                         value: this.props.input.value || '',

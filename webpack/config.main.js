@@ -122,6 +122,13 @@ module.exports = (config, entry) => {
                     },
                     exclude: /node_modules(\/|\\+)(?!yii-steroids)/,
                 },
+                css: {
+                    test: /\.css$/,
+                    use: [
+                        MiniCssExtractPlugin.loader,
+                        'css-loader',
+                    ],
+                },
                 less: {
                     test: /\.less$/,
                     use: [

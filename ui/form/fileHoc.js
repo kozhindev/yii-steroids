@@ -128,7 +128,7 @@ export default () => WrappedComponent => class FileHoc extends React.PureCompone
         // Check backend url changes
         const urlPropKeys = ['backendUrl', 'mimeTypes', 'imagesOnly', 'imagesProcessor', 'imagesExactSize'];
         if (!_isEqual(_pick(this.props, urlPropKeys), _pick(nextProps, urlPropKeys))) {
-            this._uploader = FileHoc.generateBackendUrl(nextProps);
+            this._uploader.backendUrl = FileHoc.generateBackendUrl(nextProps);
         }
 
         // Check multiple flag update

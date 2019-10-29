@@ -507,7 +507,7 @@ class DataProviderHoc extends React.PureComponent {
 
                 const newIndex = index !== -1 ? Math.min(keys.length - 1, Math.max(0, index + direction)) : 0;
                 this.setState({
-                    hoveredItem: this.state.sourceItems.find(item => item.id === keys[newIndex]),
+                    hoveredItem: this.state.items.find(item => item.id === keys[newIndex]),
                 });
                 break;
         }
