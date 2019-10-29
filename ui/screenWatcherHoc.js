@@ -17,12 +17,14 @@ export default (media) => WrappedComponent => class ScreenWatcherHoc extends Rea
         store.dispatch(setWidth(window.innerWidth));
     }
 
-    componentDidMount() {
+    componentWillMount() {
+        store.dispatch(setWidth(window.innerWidth, true));
         if (_isObject(media)) {
             store.dispatch(setMedia(media));
         }
+    }
 
-        ScreenWatcherHoc._onResize();
+    componentDidMount() {
         window.addEventListener('resize', ScreenWatcherHoc._onResize, false);
     }
 
