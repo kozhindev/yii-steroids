@@ -36,8 +36,8 @@ module.exports = (config, entry) => {
             ? {
                 publicPath: '/',
                 path: config.outputPath,
-                filename: `${config.baseUrl}bundle-[name]${config.useHash ? '.[hash]' : ''}.js`,
-                chunkFilename: `${config.baseUrl}bundle-[name]${config.useHash ? '.[hash]' : ''}.js`,
+                filename: `${config.staticPath}${config.baseUrl}bundle-[name]${config.useHash ? '.[hash]' : ''}.js`,
+                chunkFilename: `${config.staticPath}${config.baseUrl}bundle-[name]${config.useHash ? '.[hash]' : ''}.js`,
             }
             : {
                 publicPath: `http://${config.host}:${config.port}/`,
@@ -229,7 +229,7 @@ module.exports = (config, entry) => {
                 favicon: fs.existsSync(`${config.sourcePath}/favicon.ico`) ? `${config.sourcePath}/favicon.ico` : null,
                 inject: true,
                 template: config.sourcePath + '/index.html',
-                filename: `${config.baseUrl}index.html`
+                filename: `${config.staticPath}${config.baseUrl}index.html`
             }),
 
             // Proxy all APP_* env variables
