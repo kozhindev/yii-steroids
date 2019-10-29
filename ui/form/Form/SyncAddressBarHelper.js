@@ -1,3 +1,4 @@
+import pathToRegexp from 'path-to-regexp';
 import queryString from 'query-string';
 import _isArray from 'lodash/isArray';
 import _isObject from 'lodash/isObject';
@@ -59,13 +60,21 @@ export default class SyncAddressBarHelper {
         const currentRoute = getCurrentRoute(store.getState() || {});
         if (_isEmpty(values)) {
             if (currentRoute) {
-                store.dispatch(push(currentRoute.path));
+                store.dispatch(
+                    push(
+                        pathToRegexp.compile(currentRoute.path)(currentRoute.params)
+                    )
+                );
             } else {
                 location.hash = null;
             }
         } else {
             if (currentRoute) {
-                store.dispatch(push(currentRoute.path + querySeparator + queryString.stringify(values)));
+                store.dispatch(
+                    push(
+                        pathToRegexp.compile(currentRoute.path + querySeparator + queryString.stringify(values))(currentRoute.params)
+                    )
+                );
             } else {
                 location.hash = querySeparator + queryString.stringify(values);
             }
