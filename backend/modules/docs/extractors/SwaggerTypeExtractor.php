@@ -249,8 +249,10 @@ class SwaggerTypeExtractor extends BaseObject
                 // Steroids meta model
                 if (method_exists($className, 'meta')) {
                     $property = array_merge($property, [
-                        'description' => $model->getAttributeLabel($attribute),
-                        'example' => ArrayHelper::getValue($className::meta(), [$attribute, 'example']),
+                        'description' => $model->getAttributeLabel($attribute)
+                            ? $model->getAttributeLabel($attribute)
+                            : ArrayHelper::getValue($property, 'description'),
+                        'example' => ArrayHelper::getValue($className::meta(), [$attribute, 'example'], ArrayHelper::getValue($property, 'example')),
                     ]);
 
                     /** @var Type $appType */
@@ -313,7 +315,7 @@ class SwaggerTypeExtractor extends BaseObject
             if ($model instanceof BaseActiveRecord) {
                 try {
                     $isRelation = !!$model->getRelation($attributes, false);
-                } catch(\Exception $e) {
+                } catch (\Exception $e) {
                 }
             }
 
