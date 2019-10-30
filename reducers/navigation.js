@@ -206,6 +206,9 @@ export const getCurrentRoute = (state) => {
     findRecursive(
         [root],
         item => {
+            if (currentRoute) {
+                return true;
+            }
             const match = matchPath(String(pathname), {
                 id: item.id,
                 exact: item.exact,
