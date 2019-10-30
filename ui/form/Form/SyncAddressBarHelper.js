@@ -72,7 +72,7 @@ export default class SyncAddressBarHelper {
             if (currentRoute) {
                 store.dispatch(
                     push(
-                        pathToRegexp.compile(currentRoute.path + querySeparator + queryString.stringify(values))(currentRoute.params)
+                        pathToRegexp.compile(currentRoute.path)(currentRoute.params) + querySeparator + queryString.stringify(values)
                     )
                 );
             } else {
