@@ -141,7 +141,7 @@ setTimeout(() => Promise.all(api._entries)
             // Ignore .css and other includes
             ['css', 'less', 'scss', 'sass']
                 .forEach(ext => require.extensions['.' + ext] = () => {});
-            ['ttf', 'woff', 'woff2', 'png', 'jpg', 'jpeg', 'gif', !config.inlineSvg ? 'svg' : null]
+            ['ttf', 'woff', 'woff2', 'png', 'jpg', 'jpeg', 'gif', !defaultConfig.inlineSvg ? 'svg' : null]
                 .filter(Boolean)
                 .forEach(ext => require.extensions['.' + ext] = (module, file) => {
                     const fileName = path.basename(file);
@@ -159,7 +159,7 @@ setTimeout(() => Promise.all(api._entries)
                     });
                     return module;
                 });
-            if (config.inlineSvg) {
+            if (defaultConfig.inlineSvg) {
                 require.extensions['.svg'] = function(module, filename) {
                     const svgStr = fs.readFileSync(filename, 'utf8');
 

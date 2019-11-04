@@ -2,7 +2,6 @@ import React from 'react';
 import fs from 'fs';
 import path from 'path';
 import {parse} from 'url';
-import {Provider} from 'react-redux';
 import IntlMessageFormat from 'intl-messageformat';
 import {renderToString} from 'react-dom/server';
 import _merge from 'lodash/merge';
@@ -10,7 +9,6 @@ import _merge from 'lodash/merge';
 import template from './template';
 import SsrProvider from '../../ui/nav/Router/SsrProvider';
 
-//global.window = {};
 global.location = {};
 global.IntlMessageFormat = IntlMessageFormat;
 process.env.IS_SSR = true;
@@ -28,9 +26,12 @@ const renderReact = async (Application, store, history, staticContext, level = 0
     );
 
     const http = require('components').http;
-    if (http._promises.length > 0 && level < 2) {
+    if (http._promises.length > 0 && level < 3) {
         await Promise.all(http._promises);
         http._promises = [];
+
+        // Wait redux update
+        await new Promise(resolve => setTimeout(resolve));
 
         return renderReact(Application, store, history, staticContext, level + 1);
     }
@@ -55,6 +56,9 @@ const renderContent = async (defaultConfig, routes, assets, url) => {
             {},
             defaultConfig.ssr.initialState || {},
             {
+                auth: {
+                    isInitialized: false,
+                },
                 config: {
                     http: {
                         apiUrl: process.env.APP_BACKEND_URL || '',
