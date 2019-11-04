@@ -8,12 +8,14 @@ import _get from 'lodash-es/get';
 import {store} from 'components';
 import navigationHoc, {treeToList} from '../navigationHoc';
 import fetchHoc from '../fetchHoc';
+import {getCurrentItemParam} from '../../../reducers/navigation';
 
 export default
 @navigationHoc()
 @connect(
     state => ({
         pathname: _get(state, 'router.location.pathname'),
+        pageId: getCurrentItemParam(state, 'id'),
     })
 )
 class Router extends React.PureComponent {
@@ -29,6 +31,12 @@ class Router extends React.PureComponent {
             })),
         ]),
         pathname: PropTypes.string,
+        pageId: PropTypes.string,
+        autoScrollTop: PropTypes.bool,
+    };
+
+    static defaultProps = {
+        autoScrollTop: true,
     };
 
     static contextTypes = {
@@ -53,6 +61,10 @@ class Router extends React.PureComponent {
         // Fix end slash on switch to base route
         if (window.history && nextProps.pathname === '/' && location.pathname.match(/\/$/)) {
             window.history.replaceState({}, '', store.history.basename);
+        }
+
+        if (this.props.autoScrollTop && this.props.pageId && nextProps.pageId && this.props.pageId !== nextProps.pageId) {
+            window.scrollTo(0, 0);
         }
     }
 

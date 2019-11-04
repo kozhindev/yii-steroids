@@ -166,7 +166,7 @@ module.exports = (config, entry) => {
                     },
                 },
                 image: {
-                    test: /\.(jpe?g|gif|png|svg)$/,
+                    test: config.inlineSvg ? /\.(jpe?g|gif|png)$/ : /\.(jpe?g|gif|png|svg)$/,
                     use: {
                         cache: utils.isProduction() && 'cache-loader',
                         file: {
@@ -185,6 +185,17 @@ module.exports = (config, entry) => {
                             loader: 'file-loader',
                             options: {
                                 name: `${config.staticPath}${config.baseUrl}[name].[ext]`,
+                            },
+                        },
+                    },
+                },
+                svg: config.inlineSvg && {
+                    test: /\.svg$/,
+                    use: {
+                        file: {
+                            loader: 'svg-inline-loader',
+                            options: {
+                                removeSVGTagAttrs: false,
                             },
                         },
                     },
@@ -307,7 +318,7 @@ module.exports = (config, entry) => {
     webpackConfig.module.rules = Object.keys(webpackConfig.module.rules)
         .map(key => {
             const item = webpackConfig.module.rules[key];
-            if (item.use) {
+            if (item && item.use) {
                 item.use = _.values(item.use).filter(Boolean);
             }
 

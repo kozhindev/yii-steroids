@@ -141,7 +141,8 @@ setTimeout(() => Promise.all(api._entries)
             // Ignore .css and other includes
             ['css', 'less', 'scss', 'sass']
                 .forEach(ext => require.extensions['.' + ext] = () => {});
-            ['ttf', 'woff', 'woff2', 'png', 'jpg', 'jpeg', 'gif']
+            ['ttf', 'woff', 'woff2', 'png', 'jpg', 'jpeg', 'gif', !config.inlineSvg ? 'svg' : null]
+                .filter(Boolean)
                 .forEach(ext => require.extensions['.' + ext] = (module, file) => {
                     const fileName = path.basename(file);
                     getStats().assetsUrls.find(publicUrl => {
@@ -158,28 +159,30 @@ setTimeout(() => Promise.all(api._entries)
                     });
                     return module;
                 });
-            require.extensions['.svg'] = function(module, filename) {
-                const svgStr = fs.readFileSync(filename, 'utf8');
+            if (config.inlineSvg) {
+                require.extensions['.svg'] = function(module, filename) {
+                    const svgStr = fs.readFileSync(filename, 'utf8');
 
-                // TODO Structure this code
-                // Code from https://github.com/webpack-contrib/svg-inline-loader/blob/master/index.js#L11
-                var regexSequences = [
-                    // Remove XML stuffs and comments
-                    [/<\?xml[\s\S]*?>/gi, ""],
-                    [/<!doctype[\s\S]*?>/gi, ""],
-                    [/<!--.*-->/gi, ""],
-                    // SVG XML -> HTML5
-                    [/\<([A-Za-z]+)([^\>]*)\/\>/g, "<$1$2></$1>"], // convert self-closing XML SVG nodes to explicitly closed HTML5 SVG nodes
-                    [/\s+/g, " "],                                 // replace whitespace sequences with a single space
-                    [/\> \</g, "><"]                               // remove whitespace between tags
-                ];
-                // Clean-up XML crusts like comments and doctype, etc.
-                module.exports = regexSequences.reduce(function (prev, regexSequence) {
-                    return ''.replace.apply(prev, regexSequence);
-                }, svgStr).trim();
+                    // TODO Structure this code
+                    // Code from https://github.com/webpack-contrib/svg-inline-loader/blob/master/index.js#L11
+                    var regexSequences = [
+                        // Remove XML stuffs and comments
+                        [/<\?xml[\s\S]*?>/gi, ""],
+                        [/<!doctype[\s\S]*?>/gi, ""],
+                        [/<!--.*-->/gi, ""],
+                        // SVG XML -> HTML5
+                        [/\<([A-Za-z]+)([^\>]*)\/\>/g, "<$1$2></$1>"], // convert self-closing XML SVG nodes to explicitly closed HTML5 SVG nodes
+                        [/\s+/g, " "],                                 // replace whitespace sequences with a single space
+                        [/\> \</g, "><"]                               // remove whitespace between tags
+                    ];
+                    // Clean-up XML crusts like comments and doctype, etc.
+                    module.exports = regexSequences.reduce(function (prev, regexSequence) {
+                        return ''.replace.apply(prev, regexSequence);
+                    }, svgStr).trim();
 
-                return module;
-            };
+                    return module;
+                };
+            }
             require('./ssr/require-context')();
 
             if (api.isSSR()) {
