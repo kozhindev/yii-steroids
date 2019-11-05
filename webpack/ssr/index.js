@@ -56,9 +56,6 @@ const renderContent = async (defaultConfig, routes, assets, url) => {
             {},
             defaultConfig.ssr.initialState || {},
             {
-                auth: {
-                    isInitialized: false,
-                },
                 config: {
                     http: {
                         apiUrl: process.env.APP_BACKEND_URL || '',
@@ -86,7 +83,14 @@ const renderContent = async (defaultConfig, routes, assets, url) => {
     // Temp render for fill store
     return template(
         await renderReact(Application, store.store, store.history, staticContext),
-        store.getState(),
+        _merge(
+            store.getState(),
+            {
+                auth: {
+                    isInitialized: false,
+                },
+            }
+        ),
         assets.filter(asset => /\.css/.test(asset.name)),
         assets.filter(asset => /\.js/.test(asset.name)),
     );
