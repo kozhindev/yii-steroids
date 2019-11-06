@@ -38,8 +38,14 @@ setTimeout(() => Promise.all(api._entries)
             });
         }
 
+        // Create output path
+        const outputPath = (defaultConfig.ssr.statsPath || defaultConfig.outputPath);
+        if (!fs.existsSync(outputPath)) {
+            fs.mkdirSync(outputPath);
+        }
+
         // Stats save path
-        const statsPath = (defaultConfig.ssr.statsPath || defaultConfig.outputPath) + '/stats.json';
+        const statsPath = outputPath + '/stats.json';
 
         if (api.isProduction()) {
             let _stats = null;

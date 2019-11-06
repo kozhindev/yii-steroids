@@ -1,6 +1,6 @@
 {
   "name": "yii-steroids",
-  "version": "1.15.16",
+  "version": "1.15.17",
   "description": "JavaScript part for php library yii-steroids",
   "main": "index.js",
   "author": "Vladimir Kozhin <hello@kozhindev.com>",
@@ -29,7 +29,7 @@
     "axios": "^0.19.0",
     "babel-eslint": "^10.0.2",
     "babel-loader": "^8.0.6",
-    "babel-preset-minify": "^0.5.0",
+    "babel-preset-minify": "^0.5.1",
     "bootstrap": "^4.3.1",
     "cache-loader": "^2.0.1",
     "css-hot-loader": "^1.4.4",
