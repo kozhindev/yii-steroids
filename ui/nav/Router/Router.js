@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {Route, Switch, StaticRouter} from 'react-router';
+import {HashRouter} from 'react-router-dom';
 import {connect} from 'react-redux';
 import {ConnectedRouter} from 'connected-react-router';
 import _get from 'lodash-es/get';
@@ -79,6 +80,12 @@ class Router extends React.PureComponent {
                 >
                     {this.renderContent()}
                 </StaticRouter>
+            );
+        } else if (location.protocol === 'file:') {
+            return (
+                <HashRouter>
+                    {this.renderContent()}
+                </HashRouter>
             );
         } else {
             return (

@@ -1,6 +1,6 @@
 import {createStore, applyMiddleware, compose} from 'redux';
 import {routerMiddleware, connectRouter} from 'connected-react-router';
-import {createBrowserHistory, createMemoryHistory} from 'history';
+import {createBrowserHistory, createMemoryHistory, createHashHistory} from 'history';
 import _get from 'lodash-es/get';
 import _merge from 'lodash-es/merge';
 import _isPlainObject from 'lodash-es/isPlainObject';
@@ -29,7 +29,11 @@ export default class StoreComponent {
             ...(!process.env.IS_SSR ? _merge(...(window.APP_REDUX_PRELOAD_STATES || [{}])) : {}),
             ...config.initialState,
         };
-        const createHistory = process.env.IS_SSR ? createMemoryHistory : createBrowserHistory;
+        const createHistory = process.env.IS_SSR
+            ? createMemoryHistory
+            : location.protocol === 'file:'
+                ? createHashHistory
+                : createBrowserHistory;
         this.history = createHistory({
             ..._get(initialState, 'config.store.history', {}),
             ...config.history
