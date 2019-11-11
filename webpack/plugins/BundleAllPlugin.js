@@ -30,13 +30,22 @@ BundleAllPlugin.prototype.apply = function(compiler) {
             }
 
             if (/.css$/.test(path)) {
-                return `<link href=${path} rel="stylesheet">`;
+                //css loading after DOM
+                //<script>
+                //     document.addEventListener("DOMContentLoaded", function() {
+                //         const link = document.createElement("link");
+                //         link.rel = "stylesheet";
+                //         link.href = "${path}";
+                //         document.getElementsByTagName("head")[0].appendChild(link);
+                //     });
+                // </script>
+                return `<script>document.addEventListener("DOMContentLoaded",function(){const e=document.createElement("link");e.rel="stylesheet",e.href="${path}",document.getElementsByTagName("head")[0].appendChild(e)});</script>`;
             }
 
             return null;
         }).filter(Boolean);
 
-        const bundleAll = `document.write(\'${scripts.join('')}\');`;
+        const bundleAll = `document.write('${scripts.join('')}');`;
 
         compilation.assets[`${staticPath}/bundle-all.js`] = {
             source: function() {
