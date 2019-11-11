@@ -14,7 +14,7 @@ export default
 class ModalWrapper extends React.PureComponent {
     static propTypes = {
         opened: PropTypes.arrayOf(PropTypes.shape({
-            modal: PropTypes.func,
+            modal: PropTypes.elementType,
             props: PropTypes.object,
         })),
     };

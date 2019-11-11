@@ -13,10 +13,15 @@ export const AUTH_ADD_SOCIAL = 'AUTH_ADD_SOCIAL';
 
 let lastInitAction = null;
 
-export const init = (initAction) => (dispatch, getState) => {
+export const init = initAction => (dispatch, getState) => {
     lastInitAction = initAction;
 
-    return initAction(getState())
+    const state = getState();
+    if (state.auth && state.auth.isInitialized) {
+        return Promise.resolve([]);
+    }
+
+    return initAction(state)
         .then(data => {
             // Configure components
             if (_isObject(data.config)) {

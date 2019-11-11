@@ -11,6 +11,8 @@ module.exports = () => {
         sourcePath: path.resolve(process.cwd(), 'app/core/frontend'),
         baseUrl: 'assets/',
         useHash: false,
+        inlineSvg: false,
+        ssr: {}, // you custom ssr config
         webpack: {}, // you custom webpack config
         devServer: {}, // you custom dev server config
     };

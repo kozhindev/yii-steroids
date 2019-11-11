@@ -15,11 +15,19 @@ module.exports = {
     },
 
     isProduction() {
-        return process.argv.slice(2).filter(a => a.match(/(--)?production/) !== null).length > 0;
+        return process.argv.slice(2).filter(a => a.match(/(--)?production/i) !== null).length > 0;
+    },
+
+    isSSR() {
+        return !this.isTestSSR() && process.argv.slice(2).filter(a => a.match(/(--)?ssr/i) !== null).length > 0;
+    },
+
+    isTestSSR() {
+        return process.argv.slice(2).filter(a => a.match(/(--)?ssr-test/i) !== null).length > 0;
     },
 
     isAnalyze() {
-        return !this.isProduction() && process.argv.slice(2).filter(a => a.match(/(--)?analyze/) !== null).length > 0;
+        return !this.isProduction() && process.argv.slice(2).filter(a => a.match(/(--)?analyze/i) !== null).length > 0;
     },
 
 };

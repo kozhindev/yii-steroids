@@ -6,9 +6,15 @@ import 'moment/locale/it';
 import 'moment/locale/ru';
 
 // Fix load locale data
-window.IntlMessageFormat = IntlMessageFormat;
-require('intl-messageformat/dist/locale-data/ru');
-delete window.IntlMessageFormat;
+if (process.env.IS_SSR) {
+    global.IntlMessageFormat = IntlMessageFormat;
+    require('intl-messageformat/dist/locale-data/ru');
+    delete global.IntlMessageFormat;
+} else {
+    window.IntlMessageFormat = IntlMessageFormat;
+    require('intl-messageformat/dist/locale-data/ru');
+    delete window.IntlMessageFormat;
+}
 
 /**
  * @example
@@ -24,7 +30,7 @@ export default class LocaleComponent {
         this.translations = {};
 
         // Publish to global
-        if (process.env.IS_NODE) {
+        if (process.env.IS_SSR) {
             global.__ = this.translate.bind(this);
         } else {
             window.__ = this.translate.bind(this);

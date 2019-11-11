@@ -17,7 +17,7 @@ class PaginationSize extends React.PureComponent {
             pageSize: PropTypes.number,
         }),
         className: PropTypes.string,
-        view: PropTypes.func,
+        view: PropTypes.elementType,
         size: PropTypes.oneOf(['sm', 'md', 'lg']),
     };
 

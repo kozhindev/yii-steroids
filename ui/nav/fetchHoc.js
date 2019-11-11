@@ -1,17 +1,16 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
-import _isEqual from 'lodash-es/isEqual';
 
 import {navigationAddConfigs, navigationRemoveConfigs, getConfigId} from '../../actions/navigation';
-import {getCurrentRoute} from '../../reducers/routing';
+import {getCurrentRoute} from '../../reducers/navigation';
 
 const stateMap = state => ({
     navigationData: state.navigation && state.navigation.data || null,
     route: getCurrentRoute(state),
 });
 
-export default configsFunc => WrappedComponent => @connect(stateMap)
+export default (configsFunc, options = {}) => WrappedComponent => @connect(stateMap)
 class FetchHoc extends React.PureComponent {
 
     static WrappedComponent = WrappedComponent;
@@ -38,7 +37,7 @@ class FetchHoc extends React.PureComponent {
         this._onUpdate = this._onUpdate.bind(this);
     }
 
-    componentDidMount() {
+    UNSAFE_componentWillMount() {
         this.props.dispatch(navigationAddConfigs(configsFunc({
             ...this.props,
             ...this.state.overwritedProps,
@@ -66,7 +65,7 @@ class FetchHoc extends React.PureComponent {
             params: this.props.route.params,
         }));
         for (let i = 0; i < Math.max(prevConfigs.length, nextConfigs.length); i++) {
-            if (!_isEqual(prevConfigs[i], nextConfigs[i])) {
+            if (getConfigId(prevConfigs[i]) !== getConfigId(nextConfigs[i])) {
                 this.props.dispatch([
                     navigationRemoveConfigs(prevConfigs[i]),
                     navigationAddConfigs(nextConfigs[i]),
@@ -76,8 +75,8 @@ class FetchHoc extends React.PureComponent {
     }
 
     render() {
-        let isLoading = false;
-        const data = {};
+        let isLoading = !this.props.navigationData;
+        let dataProps = {};
         const configs = [].concat(configsFunc({
             ...this.props,
             ...this.state.overwritedProps,
@@ -85,14 +84,20 @@ class FetchHoc extends React.PureComponent {
         }));
         if (this.props.navigationData) {
             configs.forEach(config => {
-                data[config.key] = this.props.navigationData[getConfigId(config)];
-                if (!data[config.key]) {
+                const dataItem = this.props.navigationData[getConfigId(config)];
+                if (dataItem) {
+                    if (config.key) {
+                        dataProps[config.key] = dataItem;
+                    } else {
+                        dataProps = {...dataProps, ...dataItem};
+                    }
+                } else {
                     isLoading = true;
                 }
             });
         }
 
-        if (isLoading) {
+        if (isLoading && options.waitLoading !== false) {
             // TODO Loader
             return null;
         }
@@ -101,7 +106,7 @@ class FetchHoc extends React.PureComponent {
             <WrappedComponent
                 {...this.props}
                 {...this.state.overwritedProps}
-                {...data}
+                {...dataProps}
                 updateApiConfig={this._onUpdate}
             />
         );

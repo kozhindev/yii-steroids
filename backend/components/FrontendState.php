@@ -4,7 +4,6 @@ namespace steroids\components;
 
 use steroids\helpers\DateHelper;
 use yii\base\Component;
-use yii\helpers\ArrayHelper;
 use yii\helpers\Json;
 use yii\web\View;
 

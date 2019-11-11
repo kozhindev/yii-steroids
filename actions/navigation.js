@@ -1,6 +1,6 @@
 import _isArray from 'lodash-es/isArray';
 import _trim from 'lodash-es/trim';
-import {push} from 'react-router-redux';
+import {push} from 'connected-react-router';
 
 import {http} from 'components';
 
@@ -19,8 +19,8 @@ const normalizeConfigs = configs => {
     }
 
     configs.forEach((config, index) => {
-        if (!config.key || !config.url) {
-            throw new Error('key and url is required');
+        if (!config.url && !config.id) {
+            throw new Error('id or url is required');
         }
 
         configs[index] = {
@@ -33,7 +33,7 @@ const normalizeConfigs = configs => {
     return configs;
 };
 
-const fetch = config => http.send(config.method, config.url, config.params).then(result => result.data);
+const defaultFetchHandler = config => http.send(config.method, config.url, config.params).then(result => result.data);
 
 export const initRoutes = routesTree => ({
     type: NAVIGATION_INIT_ROUTES,
@@ -61,7 +61,8 @@ export const navigationAddConfigs = configs => dispatch => {
     });
 
     configs.forEach(config => {
-        fetch(config)
+        const onFetch = config.onFetch || defaultFetchHandler;
+        onFetch(config)
             .then(data => dispatch({
                 type: NAVIGATION_SET_DATA,
                 config,

@@ -23,6 +23,7 @@ const initialState = {
 export default (state = initialState, action) => {
     switch (action.type) {
         case LIST_INIT:
+            const {type, ...payload} = action;
             return {
                 ...state,
                 lists: {
@@ -33,7 +34,7 @@ export default (state = initialState, action) => {
                         total: action.total || (action.items ? action.items.length : 0),
                         isFetched: !!action.items,
                         isLoading: false,
-                        ...action,
+                        ...payload,
                     },
                 },
             };

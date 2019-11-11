@@ -34,7 +34,7 @@ export default class ButtonView extends React.PureComponent {
         isLoading: PropTypes.bool,
         block: PropTypes.bool,
         className: PropTypes.string,
-        view: PropTypes.func,
+        view: PropTypes.elementType,
     };
 
     render() {

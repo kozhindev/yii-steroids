@@ -28,7 +28,7 @@ class SliderField extends React.PureComponent {
         sliderProps: PropTypes.object,
         onChange: PropTypes.func,
         className: PropTypes.string,
-        view: PropTypes.func,
+        view: PropTypes.elementType,
         min: PropTypes.number,
         max: PropTypes.number,
     };

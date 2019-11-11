@@ -1,6 +1,6 @@
 import {createStore, applyMiddleware, compose} from 'redux';
-import {routerMiddleware} from 'react-router-redux';
-import {createBrowserHistory, createMemoryHistory} from 'history';
+import {routerMiddleware, connectRouter} from 'connected-react-router';
+import {createBrowserHistory, createMemoryHistory, createHashHistory} from 'history';
 import _get from 'lodash-es/get';
 import _merge from 'lodash-es/merge';
 import _isPlainObject from 'lodash-es/isPlainObject';
@@ -26,21 +26,28 @@ export default class StoreComponent {
 
     initStore(config = {}) {
         const initialState = {
-            ...(!process.env.IS_NODE ? _merge(...(window.APP_REDUX_PRELOAD_STATES || [{}])) : {}),
+            ...(!process.env.IS_SSR ? _merge(...(window.APP_REDUX_PRELOAD_STATES || [{}])) : {}),
             ...config.initialState,
         };
-        const createHistory = process.env.IS_NODE ? createMemoryHistory : createBrowserHistory;
+        const createHistory = process.env.IS_SSR
+            ? createMemoryHistory
+            : location.protocol === 'file:'
+                ? createHashHistory
+                : createBrowserHistory;
         this.history = createHistory({
             ..._get(initialState, 'config.store.history', {}),
             ...config.history
         });
+        this._routerReducer = connectRouter(this.history);
         this.store = createStore(
-            reducers(),
+            reducers({
+                router: this._routerReducer,
+            }),
             initialState,
             compose(
                 applyMiddleware(({getState}) => next => action => this._prepare(action, next, getState)),
                 applyMiddleware(routerMiddleware(this.history)),
-                window.__REDUX_DEVTOOLS_EXTENSION__ ? window.__REDUX_DEVTOOLS_EXTENSION__() : f => f
+                !process.env.IS_SSR && window.__REDUX_DEVTOOLS_EXTENSION__ ? window.__REDUX_DEVTOOLS_EXTENSION__() : f => f
             )
         );
     }
@@ -69,6 +76,7 @@ export default class StoreComponent {
 
     addReducers(asyncReducers) {
         this._asyncReducers = {
+            router: this._routerReducer,
             ...this._asyncReducers,
             ...asyncReducers,
         };
@@ -103,7 +111,7 @@ export default class StoreComponent {
 
         // Default case
         if (_isPlainObject(action) && action.type) {
-            if (process.env.NODE_ENV !== 'production') {
+            if (!process.env.IS_SSR && process.env.NODE_ENV !== 'production') {
                 window.__snapshot = (window.__snapshot || []).concat({action});
             }
 

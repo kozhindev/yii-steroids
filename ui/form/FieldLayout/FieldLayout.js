@@ -27,7 +27,7 @@ export default class FieldLayout extends React.PureComponent {
             PropTypes.arrayOf(PropTypes.string),
         ]),
         layoutClassName: PropTypes.string,
-        layoutView: PropTypes.func,
+        layoutView: PropTypes.elementType,
     };
 
     static defaultProps = {

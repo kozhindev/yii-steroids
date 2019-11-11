@@ -31,7 +31,7 @@ class RadioListField extends React.PureComponent {
         inputProps: PropTypes.object,
         onChange: PropTypes.func,
         className: PropTypes.string,
-        view: PropTypes.func,
+        view: PropTypes.elementType,
         items: PropTypes.arrayOf(PropTypes.shape({
             id: PropTypes.oneOfType([
                 PropTypes.number,

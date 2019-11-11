@@ -1,60 +1,48 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {Route, Switch, StaticRouter} from 'react-router';
+import {HashRouter} from 'react-router-dom';
 import {connect} from 'react-redux';
-import {ConnectedRouter} from 'react-router-redux';
+import {ConnectedRouter} from 'connected-react-router';
 import _get from 'lodash-es/get';
-import _isArray from 'lodash-es/isArray';
-import _isObject from 'lodash-es/isObject';
 
 import {store} from 'components';
-import {registerRoutes} from '../../../actions/routing';
-import navigationHoc from '../navigationHoc';
+import navigationHoc, {treeToList} from '../navigationHoc';
 import fetchHoc from '../fetchHoc';
+import {getCurrentItemParam} from '../../../reducers/navigation';
 
 export default
 @navigationHoc()
 @connect(
     state => ({
-        pathname: _get(state, 'routing.location.pathname'),
+        pathname: _get(state, 'router.location.pathname'),
+        pageId: getCurrentItemParam(state, 'id'),
     })
 )
 class Router extends React.PureComponent {
 
     static propTypes = {
-        wrapperView: PropTypes.func,
+        wrapperView: PropTypes.elementType,
         wrapperProps: PropTypes.object,
         routes: PropTypes.oneOfType([
             PropTypes.object,
             PropTypes.arrayOf(PropTypes.shape({
                 path: PropTypes.string,
-                component: PropTypes.func,
+                component: PropTypes.elementType,
             })),
         ]),
         pathname: PropTypes.string,
+        pageId: PropTypes.string,
+        autoScrollTop: PropTypes.bool,
     };
 
-    static treeToList(item, isRoot) {
-        if (isRoot && !item.id) {
-            item.id = 'root';
-        }
+    static defaultProps = {
+        autoScrollTop: true,
+    };
 
-        let items = item.path ? [item] : [];
-        if (_isArray(item.items)) {
-            item.items.forEach(sub => {
-                items = items.concat(Router.treeToList(sub));
-            });
-        } else if (_isObject(item.items)) {
-            Object.keys(item.items).map(id => {
-                items = items.concat(Router.treeToList({
-                    ...item.items[id],
-                    id,
-                }));
-            });
-        }
-
-        return items;
-    }
+    static contextTypes = {
+        history: PropTypes.object,
+    };
 
     constructor() {
         super(...arguments);
@@ -62,14 +50,8 @@ class Router extends React.PureComponent {
         this._renderItem = this._renderItem.bind(this);
 
         this.state = {
-            routes: !_isArray(this.props.routes)
-                ? Router.treeToList(this.props.routes, true)
-                : this.props.routes,
+            routes: treeToList(this.props.routes),
         };
-    }
-
-    componentWillMount() {
-        this.props.dispatch(registerRoutes(this.state.routes));
     }
 
     UNSAFE_componentWillReceiveProps(nextProps) {
@@ -81,16 +63,29 @@ class Router extends React.PureComponent {
         if (window.history && nextProps.pathname === '/' && location.pathname.match(/\/$/)) {
             window.history.replaceState({}, '', store.history.basename);
         }
+
+        if (this.props.autoScrollTop && this.props.pageId && nextProps.pageId && this.props.pageId !== nextProps.pageId) {
+            window.scrollTo(0, 0);
+        }
     }
 
     render() {
         // TODO double render!!..
 
-        if (process.env.IS_NODE) {
+        if (process.env.IS_SSR) {
             return (
-                <StaticRouter location={store.history.location}>
+                <StaticRouter
+                    location={this.context.history.location}
+                    context={this.context.staticContext}
+                >
                     {this.renderContent()}
                 </StaticRouter>
+            );
+        } else if (location.protocol === 'file:') {
+            return (
+                <HashRouter>
+                    {this.renderContent()}
+                </HashRouter>
             );
         } else {
             return (

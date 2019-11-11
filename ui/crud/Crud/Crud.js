@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 
 import {http, ui} from 'components';
-import {getCurrentRoute} from '../../../reducers/routing';
+import {getCurrentRoute} from '../../../reducers/navigation';
 import {goToPage} from '../../../actions/navigation';
 import {refresh} from '../../../actions/list';
 import Grid from '../../list/Grid';
@@ -34,10 +34,10 @@ export default class Crud extends React.PureComponent {
         }),
         grid: PropTypes.object,
         form: PropTypes.object,
-        view: PropTypes.func,
-        gridView: PropTypes.func,
-        formView: PropTypes.func,
-        detailView: PropTypes.func,
+        view: PropTypes.elementType,
+        gridView: PropTypes.elementType,
+        formView: PropTypes.elementType,
+        detailView: PropTypes.elementType,
     };
 
     static defaultProps = {
@@ -166,7 +166,7 @@ export default class Crud extends React.PureComponent {
         const FormComponent = this.props.formView || Form;
         return (
             <FormComponent
-                formId={getCrudId(this.props) + this.props.item.id}
+                formId={getCrudId(this.props) + '_' + this.props.item.id}
                 initialValues={this.props.item}
                 action={this.props.restUrl + (this.props.route.params.id ? '/' + this.props.route.params.id : '')}
                 autoFocus

@@ -36,7 +36,7 @@ class DateTimeField extends React.PureComponent {
         timeProps: PropTypes.object,
         onChange: PropTypes.func,
         className: PropTypes.string,
-        view: PropTypes.func,
+        view: PropTypes.elementType,
         isInvalid: PropTypes.bool,
     };
 

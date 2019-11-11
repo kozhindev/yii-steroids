@@ -1,22 +1,27 @@
+import pathToRegexp from 'path-to-regexp';
 import queryString from 'query-string';
 import _isArray from 'lodash/isArray';
 import _isObject from 'lodash/isObject';
 import _isBoolean from 'lodash/isBoolean';
 import _isEqual from 'lodash/isEqual';
 import _isEmpty from 'lodash/isEmpty';
+import _isFunction from 'lodash/isFunction';
 import {initialize} from 'redux-form';
-import {push} from 'react-router-redux';
+import {push} from 'connected-react-router';
 
 import {store} from 'components';
-import {getCurrentRoute} from '../../../reducers/routing';
+import {getCurrentRoute} from '../../../reducers/navigation';
 
 export default class SyncAddressBarHelper {
 
-    static restore(formId, initialValues, forceRestore = false) {
-        const newValues = {
+    static restore(formId, initialValues, forceRestore = false, customizer) {
+        let newValues = {
             ...initialValues,
             ...queryString.parse(location.hash),
         };
+        if (customizer && _isFunction(customizer)) {
+            newValues = customizer(initialValues, queryString.parse(location.hash));
+        }
         if (forceRestore || !_isEqual(initialValues, newValues)) {
             store.dispatch(initialize(formId, newValues));
         }
@@ -38,6 +43,8 @@ export default class SyncAddressBarHelper {
 
             if (_isObject(value) && !_isArray(value)) {
                 delete values[key];
+            } else if (_isArray(value)) {
+                values[key] = value.join(',');
             } else if (_isBoolean(value)) {
                 if (!value) {
                     delete values[key];
@@ -53,13 +60,21 @@ export default class SyncAddressBarHelper {
         const currentRoute = getCurrentRoute(store.getState() || {});
         if (_isEmpty(values)) {
             if (currentRoute) {
-                store.dispatch(push(currentRoute.path));
+                store.dispatch(
+                    push(
+                        pathToRegexp.compile(currentRoute.path)(currentRoute.params)
+                    )
+                );
             } else {
                 location.hash = null;
             }
         } else {
             if (currentRoute) {
-                store.dispatch(push(currentRoute.path + querySeparator + queryString.stringify(values)));
+                store.dispatch(
+                    push(
+                        pathToRegexp.compile(currentRoute.path)(currentRoute.params) + querySeparator + queryString.stringify(values)
+                    )
+                );
             } else {
                 location.hash = querySeparator + queryString.stringify(values);
             }

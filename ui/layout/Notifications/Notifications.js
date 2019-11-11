@@ -32,11 +32,11 @@ class Notifications extends React.PureComponent {
             isClosing: PropTypes.bool,
         })),
         className: PropTypes.string,
-        view: PropTypes.func,
-        itemView: PropTypes.func,
+        view: PropTypes.elementType,
+        itemView: PropTypes.elementType,
     };
 
-    componentWillMount() {
+    componentDidMount() {
         if (this.props.initialFlashes) {
             this.props.dispatch(setFlashes(this.props.initialFlashes));
 

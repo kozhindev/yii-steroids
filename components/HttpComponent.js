@@ -16,6 +16,7 @@ export default class HttpComponent {
         this._axios = null;
         this._csrfToken = null;
         this._accessToken = false;
+        this._promises = [];
     }
 
     getAxiosConfig() {
@@ -31,7 +32,7 @@ export default class HttpComponent {
         };
 
         // Add CSRF header
-        if (!this._csrfToken) {
+        if (!this._csrfToken && !process.env.IS_SSR) {
             const metaElement = document.querySelector('meta[name=csrf-token]');
             if (metaElement) {
                 this._csrfToken = metaElement.getAttribute('content');
@@ -155,9 +156,12 @@ export default class HttpComponent {
                 this._createCancelToken = this._createCancelToken.bind(this);
             }
 
+            UNSAFE_componentWillMount() {
+                this._fetch();
+            }
+
             componentDidMount() {
                 this._isRendered = true;
-                this._fetch();
             }
 
             componentWillUnmount() {
@@ -236,11 +240,22 @@ export default class HttpComponent {
     }
 
     _sendAxios(config) {
-        return this.getAxiosInstance()(config)
+        const promise = this.getAxiosInstance()(config)
             .then(response => {
                 this.afterRequest(response);
                 return response;
+            })
+            .catch(error => {
+                console.error('Error, request/response: ', config, String(error));
+                throw error;
             });
+
+        // Store promises for SSR
+        if (process.env.IS_SSR) {
+            this._promises.push(promise);
+        }
+
+        return promise;
     }
 
     afterRequest(response) {
@@ -252,7 +267,7 @@ export default class HttpComponent {
         }
 
         // Ajax redirect
-        if (response.data.redirectUrl) {
+        if (response.data.redirectUrl && !process.env.IS_SSR) {
             if (location.href === response.data.redirectUrl.split('#')[0]) {
                 window.location.href = response.data.redirectUrl;
                 window.location.reload();

@@ -7,7 +7,6 @@ import list from './list';
 import config from './config';
 import notifications from './notifications';
 import modal from './modal';
-import routing from './routing';
 import navigation from './navigation';
 import screen from './screen';
 
@@ -19,7 +18,6 @@ export {
     config,
     notifications,
     modal,
-    routing,
     navigation,
     screen,
 };
@@ -32,7 +30,6 @@ export default asyncReducers => combineReducers({
     config,
     notifications,
     modal,
-    routing,
     navigation,
     screen,
     ...asyncReducers,

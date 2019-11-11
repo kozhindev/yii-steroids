@@ -1,9 +1,15 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import ReactQuill from 'react-quill';
 
 import {html} from 'components';
 const bem = html.bem('HtmlFieldView');
+
+let ReactQuill = null;
+if (!process.env.IS_SSR) {
+    ReactQuill = require('react-quill').default;
+    const ImageUpload = require('quill-image-uploader').default;
+    ReactQuill.Quill.register('modules/imageUploader', ImageUpload);
+}
 
 export default class HtmlFieldView extends React.PureComponent {
 
@@ -20,6 +26,10 @@ export default class HtmlFieldView extends React.PureComponent {
     };
 
     render() {
+        if (process.env.IS_SSR) {
+            return null;
+        }
+
         return (
             <div className={bem.block()}>
                 <ReactQuill {...this.props.editorProps} />

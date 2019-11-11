@@ -69,7 +69,7 @@ class FieldList extends React.PureComponent {
             onChange: PropTypes.func,
             className: PropTypes.string,
             headerClassName: PropTypes.string,
-            view: PropTypes.func,
+            view: PropTypes.elementType,
         })),
         fields: PropTypes.object,
         required: PropTypes.bool,
@@ -80,7 +80,7 @@ class FieldList extends React.PureComponent {
         showRemove: PropTypes.bool,
         onChange: PropTypes.func,
         className: PropTypes.string,
-        view: PropTypes.func,
+        view: PropTypes.elementType,
         viewProps: PropTypes.object,
         itemView: PropTypes.func,
         itemViewProps: PropTypes.object,
@@ -132,7 +132,7 @@ class FieldList extends React.PureComponent {
         this._onKeyDown = this._onKeyDown.bind(this);
     }
 
-    componentWillMount() {
+    componentDidMount() {
         if (this.props.fields.length === 0) {
             for (let i = 0; i < this.props.initialRowsCount; i++) {
                 this._onAdd();

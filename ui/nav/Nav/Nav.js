@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import _get from 'lodash-es/get';
 import _has from 'lodash-es/has';
 import _isFunction from 'lodash-es/isFunction';
+import _isObject from 'lodash-es/isObject';
 
 import {ui} from 'components';
 
@@ -19,11 +20,12 @@ export default class Nav extends React.PureComponent {
             url: PropTypes.string,
             onClick: PropTypes.func,
             className: PropTypes.string,
-            view: PropTypes.func,
+            view: PropTypes.elementType,
             visible: PropTypes.bool,
             content: PropTypes.oneOfType([
                 PropTypes.node,
                 PropTypes.func,
+                PropTypes.elementType,
             ]),
             contentProps: PropTypes.object,
         })),
@@ -32,7 +34,7 @@ export default class Nav extends React.PureComponent {
             PropTypes.string,
         ]),
         className: PropTypes.string,
-        view: PropTypes.func,
+        view: PropTypes.elementType,
         onChange: PropTypes.func,
     };
 
@@ -94,7 +96,7 @@ export default class Nav extends React.PureComponent {
             return null;
         }
 
-        if (_isFunction(activeItem.content)) {
+        if (_isFunction(activeItem.content) || _isObject(activeItem.content)) {
             const ContentComponent = activeItem.content;
             return (
                 <ContentComponent

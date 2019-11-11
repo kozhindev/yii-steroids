@@ -21,7 +21,7 @@ class Pagination extends React.PureComponent {
             total: PropTypes.number,
         }),
         className: PropTypes.string,
-        view: PropTypes.func,
+        view: PropTypes.elementType,
         pageParam: PropTypes.string,
         size: PropTypes.oneOf(['sm', 'md', 'lg']),
         syncWithAddressBar: PropTypes.bool,

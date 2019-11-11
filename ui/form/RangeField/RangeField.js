@@ -45,7 +45,7 @@ class RangeField extends React.PureComponent {
         toProps: PropTypes.object,
         onChange: PropTypes.func,
         className: PropTypes.string,
-        view: PropTypes.func,
+        view: PropTypes.elementType,
         isInvalid: PropTypes.bool,
     };
 

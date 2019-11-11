@@ -5,6 +5,7 @@ import {connect} from 'react-redux';
 import {reduxForm, getFormValues, isInvalid} from 'redux-form';
 import _isEqual from 'lodash-es/isEqual';
 import _isString from 'lodash-es/isString';
+import _isArray from 'lodash-es/isArray';
 import _get from 'lodash-es/get';
 import queryString from 'query-string';
 
@@ -20,9 +21,9 @@ let valuesSelector = null;
 let invalidSelector = null;
 const filterValues = (values = {}) => {
     let obj = {...values};
-    Object.keys(values).forEach(key => {
-        if (!values[key]) {
-            delete values[key];
+    Object.keys(obj).forEach(key => {
+        if (!obj[key] || (_isArray(obj[key]) && !obj[key].length)) {
+            delete obj[key];
         }
     });
 
@@ -41,7 +42,7 @@ export default
             security: getSecurity(state, props.formId),
             isInvalid: invalidSelector(state),
             formRegisteredFields: _get(state, `form.${props.formId}.registeredFields`),
-            locationSearch: _get(state, 'routing.location.search', ''),
+            locationSearch: _get(state, 'router.location.search', ''),
         };
     }
 )
@@ -75,7 +76,7 @@ class Form extends React.PureComponent {
         autoSave: PropTypes.bool,
         initialValues: PropTypes.object,
         className: PropTypes.string,
-        view: PropTypes.func,
+        view: PropTypes.elementType,
         formValues: PropTypes.object,
         isInvalid: PropTypes.bool,
         formRegisteredFields: PropTypes.object,
@@ -93,6 +94,7 @@ class Form extends React.PureComponent {
         ])),
         submitLabel: PropTypes.string,
         syncWithAddressBar: PropTypes.bool,
+        restoreCustomizer: PropTypes.func,
         useHash: PropTypes.bool,
         security: PropTypes.shape({
             component: PropTypes.oneOfType([
@@ -134,7 +136,7 @@ class Form extends React.PureComponent {
         };
     }
 
-    componentWillMount() {
+    componentDidMount() {
         // Restore values from query, when autoSave flag is set
         if (this.props.autoSave) {
             AutoSaveHelper.restore(this.props.formId, this.props.initialValues);
@@ -144,13 +146,11 @@ class Form extends React.PureComponent {
         if (this.props.syncWithAddressBar) {
             const query = Object.assign(
                 this.props.initialValues || {},
-                queryString.parse(this.props.locationSearch)
+                filterValues(queryString.parse(this.props.locationSearch)),
             );
-            SyncAddressBarHelper.restore(this.props.formId, query, true);
+            SyncAddressBarHelper.restore(this.props.formId, query, true, this.props.restoreCustomizer);
         }
-    }
 
-    componentDidMount() {
         if (this.props.autoFocus) {
             const inputEl = findDOMNode(this).querySelector('input:not([type=hidden])');
             setTimeout(() => {
@@ -171,7 +171,12 @@ class Form extends React.PureComponent {
                 AutoSaveHelper.save(this.props.formId, nextProps.formValues);
             }
             if (this.props.syncWithAddressBar) {
-                SyncAddressBarHelper.save(filterValues(nextProps.formValues), nextProps.useHash);
+                const page = Number(_get(nextProps.formValues, 'page', 1));
+                const values = {
+                  ...nextProps.formValues,
+                    page: page > 1 && page,
+                };
+                SyncAddressBarHelper.save(filterValues(values), nextProps.useHash);
             }
         }
     }

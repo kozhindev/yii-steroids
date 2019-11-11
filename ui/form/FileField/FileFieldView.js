@@ -18,7 +18,7 @@ export default class FileFieldView extends React.PureComponent {
         size: PropTypes.oneOf(['sm', 'md', 'lg']),
         buttonComponent: PropTypes.node,
         buttonProps: PropTypes.object,
-        itemView: PropTypes.func,
+        itemView: PropTypes.elementType,
         itemProps: PropTypes.func,
         disabled: PropTypes.bool,
         imagesOnly: PropTypes.bool,

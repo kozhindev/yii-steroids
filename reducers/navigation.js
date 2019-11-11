@@ -1,6 +1,8 @@
 import pathToRegexp from 'path-to-regexp';
 import {matchPath} from 'react-router';
 import _get from 'lodash-es/get';
+import _isEmpty from 'lodash-es/isEmpty';
+import _isEqual from 'lodash-es/isEqual';
 
 import {
     NAVIGATION_INIT_ROUTES,
@@ -11,8 +13,6 @@ import {
     getConfigId
 } from '../actions/navigation';
 
-import {getCurrentRoute} from './routing';
-
 const initialState = {
     routesTree: null,
     params: {},
@@ -20,21 +20,30 @@ const initialState = {
     data: {},
     counters: {},
 };
+const routesCache = {};
 
-const findRecursive = (items, pageId, pathItems) => {
+const findRecursive = (items, checkHandler, pathItems) => {
     let finedItem = null;
     (items || []).forEach(item => {
-        if (item.id === pageId) {
+        if (checkHandler(item)) {
             finedItem = item;
         }
         if (!finedItem) {
-            finedItem = findRecursive(item.items, pageId, pathItems);
+            finedItem = findRecursive(item.items, checkHandler, pathItems);
             if (finedItem && pathItems) {
                 pathItems.push(item);
             }
         }
     });
     return finedItem;
+};
+
+const findRecursivePage = (items, pageId, pathItems) => {
+    return findRecursive(
+        items,
+            item => item.id === pageId,
+        pathItems
+    );
 };
 
 const checkActiveRecursive = (pathname, item) => {
@@ -50,7 +59,7 @@ const checkActiveRecursive = (pathname, item) => {
 };
 
 const buildNavItem = (state, item, params) => {
-    const pathname = _get(state, 'routing.location.pathname');
+    const pathname = _get(state, 'router.location.pathname');
     let url = item.path;
     try {
         url = pathToRegexp.compile(item.path)({
@@ -148,7 +157,7 @@ export const getBreadcrumbs = (state, pageId = null, params = {}) => {
     const root = state.navigation.routesTree;
     if (root) {
         if (root.id !== pageId) {
-            const route = findRecursive(root.items, pageId, items);
+            const route = findRecursivePage(root.items, pageId, items);
             items.push(root);
             items.reverse();
             items.push(route);
@@ -175,7 +184,49 @@ export const getRoute = (state, pageId) => {
         return null;
     }
 
-    return root.id === pageId ? root : findRecursive(root.items, pageId);
+    return root.id === pageId ? root : findRecursivePage(root.items, pageId);
+};
+
+export const getCurrentRoute = (state) => {
+    if (!state || _isEmpty(state)) {
+        return null;
+    }
+
+    const root = state.navigation.routesTree;
+    if (!root) {
+        return null;
+    }
+
+    const pathname = _get(state, 'router.location.pathname');
+    if (pathname === null) {
+        return null;
+    }
+
+    let currentRoute = null;
+    findRecursive(
+        [root],
+        item => {
+            if (currentRoute) {
+                return true;
+            }
+            const match = matchPath(String(pathname), {
+                id: item.id,
+                exact: item.exact,
+                strict: item.strict,
+                path: item.path,
+            });
+            const finedRoute = match && {id: item.id, ...match};
+            if (finedRoute) {
+                if (!routesCache[item.id] || !_isEqual(routesCache[item.id], finedRoute)) {
+                    routesCache[item.id] = finedRoute;
+                }
+                currentRoute = routesCache[item.id];
+                return true;
+            }
+             return false;
+        }
+    );
+    return currentRoute;
 };
 
 export const getCurrentItem = (state) => {
@@ -190,6 +241,7 @@ export const getCurrentItemParam = (state, param) => {
 
 export const getNavItems = (state, parentPageId = null, params = {}) => {
     const route = getRoute(state, parentPageId);
+
     return route
         ? (route.items || []).filter(item => item.isVisible !== false).map(item => buildNavItem(state, item, params))
         : [];

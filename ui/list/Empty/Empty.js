@@ -8,7 +8,7 @@ export default class Empty extends React.PureComponent {
     static propTypes = {
         text: PropTypes.string,
         className: PropTypes.string,
-        view: PropTypes.func,
+        view: PropTypes.elementType,
     };
 
     render() {

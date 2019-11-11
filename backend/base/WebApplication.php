@@ -2,11 +2,11 @@
 
 namespace steroids\base;
 
-use steroids\auth\AuthEnhancer;
 use steroids\components\MultiFactorAuthManager;
 use steroids\components\Types;
 use steroids\components\UrlManager;
 use steroids\components\View;
+use steroids\notifier\Notifier;
 use Yii;
 use steroids\components\AuthManager;
 use steroids\components\FrontendState;
@@ -20,8 +20,8 @@ use yii\web\Application;
  * @property-read Types $types
  * @property-read UrlManager $urlManager
  * @property-read MultiFactorAuthManager $multiFactorAuth
- * @property-read AuthEnhancer $authEnhancer
  * @property-read View $view
+ * @property-read Notifier $notifier
  */
 class WebApplication extends Application
 {

@@ -6,6 +6,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const ExportTranslationKeysPlugin = require('./plugins/ExportTranslationKeysPlugin');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const Dotenv = require('dotenv-webpack');
 
 const utils = require('./utils');
 const getConfigDefault = require('./config.default');
@@ -35,8 +36,8 @@ module.exports = (config, entry) => {
             ? {
                 publicPath: '/',
                 path: config.outputPath,
-                filename: `${config.baseUrl}bundle-[name]${config.useHash ? '.[hash]' : ''}.js`,
-                chunkFilename: `${config.baseUrl}bundle-[name]${config.useHash ? '.[hash]' : ''}.js`,
+                filename: `${config.staticPath}${config.baseUrl}bundle-[name]${config.useHash ? '.[hash]' : ''}.js`,
+                chunkFilename: `${config.staticPath}${config.baseUrl}bundle-[name]${config.useHash ? '.[hash]' : ''}.js`,
             }
             : {
                 publicPath: `http://${config.host}:${config.port}/`,
@@ -46,8 +47,8 @@ module.exports = (config, entry) => {
             },
         module: {
             rules: {
-                js: {
-                    test: /\.js$/,
+                ts: {
+                    test: /\.tsx?$/,
                     use: {
                         cache: utils.isProduction() && 'cache-loader',
                         babel: {
@@ -59,6 +60,42 @@ module.exports = (config, entry) => {
                                     //'transform-export-extensions',
                                     ['@babel/plugin-proposal-decorators', {legacy: true}],
                                     '@babel/plugin-proposal-class-properties',
+                                    '@babel/plugin-syntax-dynamic-import',
+                                    '@babel/plugin-transform-modules-commonjs',
+                                    '@babel/plugin-transform-runtime',
+                                    !utils.isProduction() && 'react-hot-loader/babel',
+                                ].filter(Boolean),
+                                presets: [
+                                    '@babel/preset-env',
+                                    '@babel/preset-react',
+                                    utils.isProduction() && ['minify', {
+                                        builtIns: false,
+                                        evaluate: false,
+                                        mangle: false,
+                                    }],
+                                ].filter(Boolean),
+                            }
+                        },
+                        ts: {
+                            loader: 'ts-loader',
+                        }
+                    },
+                },
+                js: {
+                    test: /\.jsx?$/,
+                    use: {
+                        cache: utils.isProduction() && 'cache-loader',
+                        babel: {
+                            loader: 'babel-loader',
+                            options: {
+                                cacheDirectory: true,
+                                plugins: [
+                                    //'transform-object-rest-spread',
+                                    //'transform-export-extensions',
+                                    ['@babel/plugin-proposal-decorators', {legacy: true}],
+                                    '@babel/plugin-proposal-class-properties',
+                                    '@babel/plugin-syntax-dynamic-import',
+                                    '@babel/plugin-transform-modules-commonjs',
                                     '@babel/plugin-transform-runtime',
                                     !utils.isProduction() && 'react-hot-loader/babel',
                                 ].filter(Boolean),
@@ -84,6 +121,13 @@ module.exports = (config, entry) => {
                         },
                     },
                     exclude: /node_modules(\/|\\+)(?!yii-steroids)/,
+                },
+                css: {
+                    test: /\.css$/,
+                    use: [
+                        MiniCssExtractPlugin.loader,
+                        'css-loader',
+                    ],
                 },
                 less: {
                     test: /\.less$/,
@@ -122,13 +166,13 @@ module.exports = (config, entry) => {
                     },
                 },
                 image: {
-                    test: /\.(jpe?g|gif|png|svg)$/,
+                    test: config.inlineSvg ? /\.(jpe?g|gif|png)$/ : /\.(jpe?g|gif|png|svg)$/,
                     use: {
                         cache: utils.isProduction() && 'cache-loader',
                         file: {
                             loader: 'file-loader',
                             options: {
-                                name: `${config.staticPath}${config.baseUrl}images/[hash].[ext]`,
+                                name: `${config.staticPath}${config.baseUrl}images/[name].[hash].[ext]`,
                             },
                         },
                     },
@@ -145,10 +189,21 @@ module.exports = (config, entry) => {
                         },
                     },
                 },
+                svg: config.inlineSvg && {
+                    test: /\.svg$/,
+                    use: {
+                        file: {
+                            loader: 'svg-inline-loader',
+                            options: {
+                                removeSVGTagAttrs: false,
+                            },
+                        },
+                    },
+                },
             },
         },
         resolve: {
-            extensions: ['.js', '.jsx', '.json'],
+            extensions: ['.ts', '.tsx', '.js', '.jsx', '.json'],
             alias: {
                 app: path.resolve(config.cwd, 'app'),
                 actions: `${config.sourcePath}/actions`,
@@ -159,6 +214,7 @@ module.exports = (config, entry) => {
                 shared: `${config.sourcePath}/shared`,
                 types: `${config.sourcePath}/types`,
                 ui: `${config.sourcePath}/ui`,
+                'react-dom': '@hot-loader/react-dom',
             },
             modules: [
                 path.resolve(config.cwd, 'node_modules'), // the old 'fallback' option (needed for npm link-ed packages)
@@ -181,12 +237,17 @@ module.exports = (config, entry) => {
             new webpack.NamedChunksPlugin(),
             !utils.isProduction() && new webpack.HotModuleReplacementPlugin(),
 
+            // .env
+            fs.existsSync(config.cwd + '/.env') && new Dotenv({
+                path: config.cwd + '/.env',
+            }),
+
             // Index html
             fs.existsSync(config.sourcePath + '/index.html') && new HtmlWebpackPlugin({
                 favicon: fs.existsSync(`${config.sourcePath}/favicon.ico`) ? `${config.sourcePath}/favicon.ico` : null,
                 inject: true,
                 template: config.sourcePath + '/index.html',
-                filename: `${config.baseUrl}index.html`
+                filename: `${config.staticPath}${config.baseUrl}index.html`
             }),
 
             // Proxy all APP_* env variables
@@ -257,7 +318,7 @@ module.exports = (config, entry) => {
     webpackConfig.module.rules = Object.keys(webpackConfig.module.rules)
         .map(key => {
             const item = webpackConfig.module.rules[key];
-            if (item.use) {
+            if (item && item.use) {
                 item.use = _.values(item.use).filter(Boolean);
             }
 

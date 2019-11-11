@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
-import {getFormValues} from 'redux-form';
+import { change, getFormValues } from 'redux-form';
 import _get from 'lodash-es/get';
 import _has from 'lodash-es/has';
 import _isEqual from 'lodash-es/isEqual';
@@ -12,7 +12,7 @@ import _isEmpty from 'lodash-es/isEmpty';
 import _mergeWith from 'lodash-es/mergeWith';
 import queryString from 'query-string';
 
-import {init, lazyFetch, fetch, setSort, destroy, setLayoutName} from '../../actions/list';
+import {init, lazyFetch, fetch, setSort, destroy, setLayoutName, initSSR} from '../../actions/list';
 import {getCheckedIds, getList, isCheckedAll} from '../../reducers/list';
 import Empty from './Empty';
 import Pagination from './Pagination';
@@ -64,7 +64,7 @@ export default
             //checkedIds: getCheckedIds(state, props.listId),
             //isCheckedAll: isCheckedAll(state, props.listId),
             formValues: formId && formValuesSelectors[formId](state) || null,
-            locationSearch: _get(state, 'routing.location.search', ''),
+            locationSearch: _get(state, 'router.location.search', ''),
         };
     }
 )
@@ -97,6 +97,8 @@ export default
             total: PropTypes.number,
             reverse: PropTypes.bool,
             itemsIndexing: PropTypes.bool,
+            syncWithAddressBar: PropTypes.bool,
+            restoreCustomizer: PropTypes.func,
             searchForm: PropTypes.shape({
                 formId: PropTypes.string,
                 prefix: PropTypes.string,
@@ -120,6 +122,7 @@ export default
                         component: PropTypes.oneOfType([
                             PropTypes.string,
                             PropTypes.func,
+                            PropTypes.elementType,
                         ]),
                     })
                 ])),
@@ -133,12 +136,12 @@ export default
             emptyView: PropTypes.func,
             emptyProps: PropTypes.object,
             paginationView: PropTypes.oneOfType([
-                PropTypes.func,
+                PropTypes.elementType,
                 PropTypes.bool,
             ]),
             paginationProps: PropTypes.object,
             paginationSizeView: PropTypes.oneOfType([
-                PropTypes.func,
+                PropTypes.elementType,
                 PropTypes.bool,
             ]),
             paginationSizeProps: PropTypes.object,
@@ -151,7 +154,7 @@ export default
                     PropTypes.any,
                 ]),
             })),
-            layoutNamesView: PropTypes.func,
+            layoutNamesView: PropTypes.elementType,
             layoutNamesProps: PropTypes.object,
             list: PropTypes.shape({
                 meta: PropTypes.object,
@@ -187,21 +190,33 @@ export default
             this._onSort = this._onSort.bind(this);
         }
 
-        componentWillMount() {
-            // Restore values from address bar
-            if (this.props.searchForm && this.props.searchForm.syncWithAddressBar) {
-                SyncAddressBarHelper.restore(getFormId(this.props), {
-                    ...this.props.searchForm.initialValues,
-                    ...queryString.parse(this.props.locationSearch),
-                }, true);
+        UNSAFE_componentWillMount() {
+            if (process.env.IS_SSR) {
+                const query = queryString.parse(this.props.locationSearch);
+                this.props.dispatch(initSSR(this.props.listId, {
+                    ...this.props,
+                    page: Number(_get(query, 'page', this.props.defaultPage)),
+                    query,
+                }));
             }
         }
 
         componentDidMount() {
-            this.props.dispatch(init(this.props.listId, this.props));
+            // Restore values from address bar
+            if (this.props.syncWithAddressBar) {
+                const page = Number(_get(queryString.parse(this.props.locationSearch), 'page', this.props.defaultPage));
+                SyncAddressBarHelper.restore(this.props.listId, {
+                    ...queryString.parse(this.props.locationSearch),
+                    page: page > 0 ? page : 1,
+                }, true, this.props.restoreCustomizer);
+            }
+
+            if (!this.props.list) {
+                this.props.dispatch(init(this.props.listId, this.props));
+            }
         }
 
-    UNSAFE_componentWillReceiveProps(nextProps) {
+        UNSAFE_componentWillReceiveProps(nextProps) {
             const customizer = (objValue, srcValue) => {
                 if (_isArray(objValue)) {
                     return srcValue;
@@ -211,24 +226,37 @@ export default
                 const query = _get(props, 'list.query') || {};
                 const formValues = _get(props, 'formValues') || {};
 
-                Object.keys(query).forEach(attribute => {
-                    if (!_has(formValues, attribute)) {
-                        formValues[attribute] = null;
-                    }
-                });
+                if (this.props.searchForm) {
+                    Object.keys(query).forEach(attribute => {
+                        if (!_has(formValues, attribute)) {
+                            formValues[attribute] = null;
+                        }
+                    });
+                }
 
                 return _mergeWith({}, query, formValues, customizer)
             };
 
             // Send fetch request on change query or init list
-
             const prevQuery = getQuery(this.props);
-            const nextQuery = getQuery(nextProps);
+            let nextQuery = getQuery(nextProps);
+            if (!_isEqual(this.props.query, nextProps.query)) {
+                nextQuery = {...nextQuery, ...nextProps.query};
+            }
+
             if (!_isEqual(prevQuery, nextQuery) || (!this.props.list && nextProps.list)) {
+                const page = Number(_get(nextQuery, 'page', this.props.defaultPage));
                 this.props.dispatch(lazyFetch(this.props.listId, {
-                    page: Number(_get(nextQuery, 'page', this.props.defaultPage)),
+                    page,
+                    ...nextProps.query,
                     query: nextQuery,
                 }));
+                if (this.props.syncWithAddressBar) {
+                    SyncAddressBarHelper.save({
+                        ...nextQuery,
+                        page: page > 1 && page,
+                    }, false);
+                }
             }
 
             if (this.props.items !== nextProps.items) {
@@ -320,9 +348,11 @@ export default
                     {...this.props.paginationProps}
                     view={_isFunction(this.props.paginationSizeView) ? this.props.paginationSizeView : undefined}
                     syncWithAddressBar={Boolean(
-                        this.props.searchForm
-                        && this.props.searchForm.fields
-                        && this.props.searchForm.syncWithAddressBar
+                        (
+                            this.props.searchForm
+                            && this.props.searchForm.fields
+                            && this.props.searchForm.syncWithAddressBar
+                        ) || this.props.syncWithAddressBar
                     )}
                 />
             );

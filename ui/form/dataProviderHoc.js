@@ -13,7 +13,7 @@ import _uniqBy from 'lodash-es/uniqBy';
 import _isInteger from 'lodash-es/isInteger';
 import _orderBy from 'lodash-es/orderBy';
 
-import {http, store} from 'components';
+import {http} from 'components';
 import {getEnumLabels} from '../../reducers/fields';
 
 const stateMap = (state, props) => ({
@@ -132,7 +132,7 @@ class DataProviderHoc extends React.PureComponent {
         };
     }
 
-    componentWillMount() {
+    UNSAFE_componentWillMount() {
         // Select first value on mount
         if (this.props.selectFirst && this.state.items.length > 0) {
             this._onItemClick(this.state.items[0]);
@@ -157,7 +157,10 @@ class DataProviderHoc extends React.PureComponent {
         // Refresh normalized source items on change items from props
         if (this.props.items !== nextProps.items) {
             const sourceItems = DataProviderHoc.normalizeItems(nextProps.items);
-            this.setState({sourceItems});
+            this.setState({
+                sourceItems,
+                items: sourceItems,
+            });
 
             // Select first value on fetch data
             if (this.props.items.length === 0 && nextProps.items.length > 0 && this.props.selectFirst) {
@@ -167,9 +170,10 @@ class DataProviderHoc extends React.PureComponent {
 
         // Store selected items in state on change value
         if (this.props.input.value !== nextProps.input.value) {
+            const sourceItems = DataProviderHoc.normalizeItems(nextProps.items);
             this.setState({
                 selectedItems: this._findSelectedItems(
-                    _uniqBy([].concat(this.state.items, this.state.sourceItems, this.state.selectedItems), 'id'),
+                    _uniqBy([].concat(sourceItems, this.state.items, this.state.sourceItems, this.state.selectedItems), 'id'),
                     nextProps.input.value
                 ),
             });
@@ -351,6 +355,7 @@ class DataProviderHoc extends React.PureComponent {
     /**
      * Search by data provider (for example: http requests)
      * @param {string} query
+     * @param {boolean} isAutoFetch
      * @private
      */
     _searchDataProvider(query = '', isAutoFetch) {
@@ -358,7 +363,7 @@ class DataProviderHoc extends React.PureComponent {
             return;
         }
 
-        const searchHandler = this.props.dataProvider.onSearch || http.post;
+        const searchHandler = this.props.dataProvider.onSearch || http.post.bind(http);
         const result = searchHandler(this.props.dataProvider.action, {
             query,
             model: this.props.modelClass,
@@ -412,7 +417,7 @@ class DataProviderHoc extends React.PureComponent {
             // Fix bug. Without this calls component Form is not get differect values
             // in componentWillReceiveProps and onChange handlers is not called.
             if (this.props.formId) {
-                store.dispatch(change(this.props.formId, this.props.input.name, values));
+                this.props.dispatch(change(this.props.formId, this.props.input.name, values));
             }
         } else {
             if (this.props.input.value !== id) {
@@ -502,7 +507,7 @@ class DataProviderHoc extends React.PureComponent {
 
                 const newIndex = index !== -1 ? Math.min(keys.length - 1, Math.max(0, index + direction)) : 0;
                 this.setState({
-                    hoveredItem: this.state.sourceItems.find(item => item.id === keys[newIndex]),
+                    hoveredItem: this.state.items.find(item => item.id === keys[newIndex]),
                 });
                 break;
         }

@@ -1,4 +1,5 @@
 const glob = require('glob-promise');
+const _ = require('lodash');
 const utils = require('./utils');
 
 module.exports = {
@@ -14,6 +15,14 @@ module.exports = {
 
     isProduction() {
         return utils.isProduction();
+    },
+
+    isSSR() {
+        return utils.isSSR();
+    },
+
+    isTestSSR() {
+        return utils.isTestSSR();
     },
 
     /**

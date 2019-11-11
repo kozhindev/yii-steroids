@@ -7,7 +7,7 @@ export default class Modal extends React.PureComponent {
 
     static propTypes = {
         onClose: PropTypes.func,
-        view: PropTypes.func,
+        view: PropTypes.elementType,
     };
 
     render() {
