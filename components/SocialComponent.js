@@ -1,4 +1,3 @@
-import React from 'react';
 import providers from './social';
 
 export default class SocialComponent {

@@ -27,7 +27,7 @@ export default class GoogleProvider {
                             scope: 'profile email',
                             access_type: 'online',
                         })
-                            .then(resolve)
+                            .then(resolve);
                     });
                 });
             }

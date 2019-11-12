@@ -2,14 +2,14 @@ import cookie from 'js-cookie';
 
 export default class ClientStorageComponent {
 
-    static STORAGE_SESSION = 'session';
-    static STORAGE_LOCAL = 'local';
-    static STORAGE_COOKIE = 'cookie';
-
     constructor() {
         this.localStorageAvailable = !process.env.IS_SSR;
         this.sessionStorageAvailable = !process.env.IS_SSR;
         this.cookieAvailable = !process.env.IS_SSR;
+
+        this.STORAGE_SESSION = 'session';
+        this.STORAGE_LOCAL = 'local';
+        this.STORAGE_COOKIE = 'cookie';
 
         if (this.localStorageAvailable) {
             try {

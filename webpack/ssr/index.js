@@ -8,13 +8,14 @@ import _merge from 'lodash/merge';
 
 import template from './template';
 import SsrProvider from '../../ui/nav/Router/SsrProvider';
+import utils from '../utils';
 
 global.location = {};
 global.IntlMessageFormat = IntlMessageFormat;
 process.env.IS_SSR = true;
 process.env.NODE_ENV = 'production';
 
-const renderReact = async (Application, store, history, staticContext, level = 0) => {
+const renderReact = async (Application, store, history, staticContext, accessToken, level = 0) => {
     const content = renderToString(
         <SsrProvider
             store={store}
@@ -26,20 +27,26 @@ const renderReact = async (Application, store, history, staticContext, level = 0
     );
 
     const http = require('components').http;
+    http.setAccessToken(accessToken);
     if (http._promises.length > 0 && level < 3) {
-        await Promise.all(http._promises);
+        try {
+            await Promise.all(http._promises);
+        } catch (e) {
+            http._promises = [];
+            throw e;
+        }
         http._promises = [];
 
         // Wait redux update
         await new Promise(resolve => setTimeout(resolve));
 
-        return renderReact(Application, store, history, staticContext, level + 1);
+        return renderReact(Application, store, history, staticContext, accessToken, level + 1);
     }
 
     return content;
 };
 
-const renderContent = async (defaultConfig, routes, assets, url) => {
+const renderContent = async (defaultConfig, routes, assets, url, accessToken) => {
     const parsedUrl = parse(url);
     const location = {
         pathname: parsedUrl.pathname,
@@ -48,7 +55,7 @@ const renderContent = async (defaultConfig, routes, assets, url) => {
         key: '1r9orr'
     };
 
-    const {walkRoutesRecursive, treeToList} = require('../../ui/nav/navigationHoc');
+    const {walkRoutesRecursive} = require('../../ui/nav/navigationHoc');
     const StoreComponent = require('../../components/StoreComponent').default;
     const store = new StoreComponent();
     store.init({
@@ -58,7 +65,7 @@ const renderContent = async (defaultConfig, routes, assets, url) => {
             {
                 config: {
                     http: {
-                        apiUrl: process.env.APP_BACKEND_URL || '',
+                        apiUrl: utils.getArgv('backendUrl') || process.env.APP_BACKEND_URL || '',
                     },
                 },
                 navigation: {
@@ -78,11 +85,18 @@ const renderContent = async (defaultConfig, routes, assets, url) => {
         return 'Not found Application component in ' + appPath;
     }
 
+    // Render with graceful degradation on error
     const staticContext = {};
+    let content = '';
+    try {
+        content = await renderReact(Application, store.store, store.history, staticContext, accessToken);
+    } catch (e) {
+        console.error('Render error in url ' + url, e);
+    }
 
     // Temp render for fill store
     return template(
-        await renderReact(Application, store.store, store.history, staticContext),
+        content,
         _merge(
             store.getState(),
             {
@@ -108,7 +122,7 @@ const resolveFileExtension = path => {
     return result;
 };
 
-export default async (url, defaultConfig, getStats) => {
+export default async (url, accessToken, defaultConfig, getStats) => {
     // Skip for webpack dev server
     if (/^\/sockjs-node/.test(url) || /hot-update/.test(url)
         || /(jpe?g|gif|css|png|js|ico|xml|less|eot|svg|tff|woff2?|txt|map|mp4|ogg|webm|pdf|dmg|exe|html)$/.test(url)) {
@@ -127,7 +141,7 @@ export default async (url, defaultConfig, getStats) => {
                 .filter(asset => asset.chunks.includes('index') || asset.chunks.includes('common'));
 
             try {
-                content = await renderContent(defaultConfig, routes, assets, url);
+                content = await renderContent(defaultConfig, routes, assets, url, accessToken);
             } catch (e) {
                 console.error('Render error in url ' + url, e);
             }

@@ -1,4 +1,4 @@
-'use strict';
+const path = require('path');
 
 /**
  * @param {Object} options
@@ -47,7 +47,7 @@ BundleAllPlugin.prototype.apply = function(compiler) {
 
         const bundleAll = `document.write('${scripts.join('')}');`;
 
-        compilation.assets[`${staticPath}/bundle-all.js`] = {
+        compilation.assets[path.join(staticPath, 'bundle-all.js')] = {
             source: function() {
                 return bundleAll;
             },

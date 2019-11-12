@@ -74,7 +74,7 @@ setTimeout(() => Promise.all(api._entries)
 
                     if (api.isTestSSR()) {
                         console.log('Run SSR Test...');
-                        require('./ssr/index').default('/', defaultConfig, getStats)
+                        require('./ssr/index').default('/', null, defaultConfig, getStats)
                             .catch(e => {
                                 console.error('SSR test failed!', e);
                                 process.exit(1);
@@ -114,6 +114,9 @@ setTimeout(() => Promise.all(api._entries)
         if (api.isSSR() || api.isTestSSR()) {
             if (api.isSSR()) {
                 console.log('SSR Enabled, source dir: ' + defaultConfig.sourcePath);
+
+                // TODO Temporary disable ssl verification for https requests
+                process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0;
             }
 
             require('@babel/register')(_.merge(
@@ -199,7 +202,10 @@ setTimeout(() => Promise.all(api._entries)
                 }
 
                 expressApp.get('*', async (request, response, next) => {
-                    const content = await require('./ssr/index').default(request.url, defaultConfig, getStats);
+                    const accessTokenMatch = (request.headers.cookie || '').match(/accessToken\s*=\s*(\w+)/);
+                    const accessToken = accessTokenMatch && accessTokenMatch[1] || null;
+
+                    const content = await require('./ssr/index').default(request.url, accessToken, defaultConfig, getStats);
                     if (content === false) {
                         next();
                     } else {

@@ -14,6 +14,10 @@ module.exports = {
             .replace(/([0-9]{4}).*/, '$1');
     },
 
+    getArgv(name) {
+        return (process.argv.slice(2).find(a => a.match(new RegExp('(--)?' + name), 'i') !== null) || '').replace(/^.+=/, '');
+    },
+
     isProduction() {
         return process.argv.slice(2).filter(a => a.match(/(--)?production/i) !== null).length > 0;
     },

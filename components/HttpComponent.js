@@ -43,9 +43,15 @@ export default class HttpComponent {
         }
 
         // Set access token
-        const clientStorage = require('components').clientStorage;
         if (this._accessToken === false) {
-            this._accessToken = clientStorage.get(this.accessTokenKey) || null;
+            const clientStorage = require('components').clientStorage;
+            this._accessToken = clientStorage.get(this.accessTokenKey, clientStorage.STORAGE_COOKIE)
+                || clientStorage.get(this.accessTokenKey)
+                || null;
+
+            if (this._accessToken) {
+                clientStorage.set(this.accessTokenKey, this._accessToken, clientStorage.STORAGE_COOKIE, 180);
+            }
         }
         if (this._accessToken) {
             config.headers['Authorization'] = 'Bearer ' + this._accessToken;
@@ -70,7 +76,7 @@ export default class HttpComponent {
         this.resetConfig();
 
         const clientStorage = require('components').clientStorage;
-        clientStorage.set(this.accessTokenKey, value);
+        clientStorage.set(this.accessTokenKey, value, clientStorage.STORAGE_COOKIE, 180);
     }
 
     /**
