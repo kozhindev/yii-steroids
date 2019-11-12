@@ -91,7 +91,7 @@ export const getMeta = (state, name) => {
     const meta = _get(state, ['fields', 'meta', name]) || null;
     if (!meta && isMetaFetched(state) && !warnings[name]) {
         warnings[name] = true;
-        console.warn('Steroids: Not found model meta:', name);
+        console.warn('Steroids: Not found model meta:', name); // eslint-disable-line no-console
     }
     return meta;
 };
