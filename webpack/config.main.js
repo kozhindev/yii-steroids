@@ -4,6 +4,7 @@ const fs = require('fs');
 const _ = require('lodash');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const ExportTranslationKeysPlugin = require('./plugins/ExportTranslationKeysPlugin');
+const BundleAllPlugin = require('./plugins/BundleAllPlugin');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const Dotenv = require('dotenv-webpack');
@@ -226,6 +227,7 @@ module.exports = (config, entry) => {
         plugins: [
             utils.isAnalyze() && new BundleAnalyzerPlugin(),
             new ExportTranslationKeysPlugin(),
+            new BundleAllPlugin({staticPath: config.staticPath}),
             new MiniCssExtractPlugin({
                 filename: `${config.staticPath}${config.baseUrl}bundle-[name]${config.useHash ? '.[hash]' : ''}.css`,
                 chunkFilename: `${config.staticPath}${config.baseUrl}bundle-[id]${config.useHash ? '.[hash]' : ''}.css`,
