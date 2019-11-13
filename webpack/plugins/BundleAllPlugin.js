@@ -24,29 +24,23 @@ BundleAllPlugin.prototype.apply = function(compiler) {
             }
         }
 
-        const scripts = pathsOfBundles.map(path => {
+        const scripts = pathsOfBundles.map((path, index) => {
+
             if (/.js$/.test(path)) {
-                return `<script async src=${path}><\/script>`;
+                return `var script${index}=document.createElement("script");script${index}.src="${path}",script${index}.type="text/javascript",script${index}.async=true,document.getElementsByTagName("body")[0].appendChild(script${index});`;
+
             }
 
             if (/.css$/.test(path)) {
-                //css loading after DOM
-                //<script>
-                //     document.addEventListener("DOMContentLoaded", function() {
-                //         const link = document.createElement("link");
-                //         link.rel = "stylesheet";
-                //         link.href = "${path}";
-                //         document.getElementsByTagName("head")[0].appendChild(link);
-                //     });
-                // </script>
-                return `<script>document.addEventListener("DOMContentLoaded",function(){const e=document.createElement("link");e.rel="stylesheet",e.href="${path}",document.getElementsByTagName("head")[0].appendChild(e)});</script>`;
+                return `var link=document.createElement("link");link.rel="stylesheet",link.href="${path}",document.getElementsByTagName("head")[0].appendChild(link);`;
             }
 
             return null;
-        }).filter(Boolean);
+        }).sort().filter(Boolean);
 
-        const bundleAll = `document.write('${scripts.join('')}');`;
-        
+
+        const bundleAll = scripts.join('\n');
+
         compilation.assets[path.join(staticPath || '', 'bundle-all.js')] = {
             source: function() {
                 return bundleAll;
