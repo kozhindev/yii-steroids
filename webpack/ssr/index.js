@@ -1,12 +1,10 @@
 import React from 'react';
 import fs from 'fs';
 import path from 'path';
-import {parse} from 'url';
 import IntlMessageFormat from 'intl-messageformat';
 import {renderToString} from 'react-dom/server';
 import _merge from 'lodash/merge';
 
-import template from './template';
 import SsrProvider from '../../ui/nav/Router/SsrProvider';
 import utils from '../utils';
 
@@ -47,14 +45,6 @@ const renderReact = async (Application, store, history, staticContext, accessTok
 };
 
 const renderContent = async (defaultConfig, routes, assets, url, accessToken) => {
-    const parsedUrl = parse(url);
-    const location = {
-        pathname: parsedUrl.pathname,
-        search: parsedUrl.search,
-        hash: parsedUrl.hash,
-        key: '1r9orr'
-    };
-
     const {walkRoutesRecursive} = require('../../ui/nav/navigationHoc');
     const StoreComponent = require('../../components/StoreComponent').default;
     const store = new StoreComponent();
@@ -94,20 +84,36 @@ const renderContent = async (defaultConfig, routes, assets, url, accessToken) =>
         console.error('Render error in url ' + url, e);
     }
 
-    // Temp render for fill store
-    return template(
-        content,
-        _merge(
-            store.getState(),
-            {
-                auth: {
-                    isInitialized: false,
-                },
-            }
-        ),
-        assets.filter(asset => /\.css/.test(asset.name)),
-        assets.filter(asset => /\.js/.test(asset.name)),
+    // Get final redux state
+    const state = _merge(
+        store.getState(),
+        {
+            auth: {
+                isInitialized: false,
+            },
+        }
     );
+
+    // Get template path
+    const templatePath = path.join(defaultConfig.sourcePath, 'index.html');
+    let template = fs.existsSync(templatePath)
+        ? fs.readFileSync(templatePath)
+        : fs.readFileSync(__dirname + '/template.html');
+
+    // Add css
+    const cssFiles = assets.filter(asset => /\.css/.test(asset.name)).map(asset => `<link rel="stylesheet" href="/${asset.name}">`).join('\n');
+    template = template.replace('</head>', '</head>' + cssFiles);
+
+    // Add js
+    const jsFiles = assets.filter(asset => /\.js/.test(asset.name)).map(asset => `<script src="/${asset.name}"></script>`).join('\n');
+    const jsCode = 'window.APP_REDUX_PRELOAD_STATES = ' + JSON.stringify([state]);
+    template = template.replace('</body>', `</body><script>${jsCode}</script>${jsFiles}`);
+
+    // Add content
+    template = template.replace('<div id="root">', '<div id="root">' + content);
+
+    // Temp render for fill store
+    return template;
 };
 
 const resolveFileExtension = path => {
