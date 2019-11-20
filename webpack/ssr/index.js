@@ -4,6 +4,7 @@ import path from 'path';
 import IntlMessageFormat from 'intl-messageformat';
 import {renderToString} from 'react-dom/server';
 import _merge from 'lodash/merge';
+import _set from 'lodash/set';
 
 import SsrProvider from '../../ui/nav/Router/SsrProvider';
 import utils from '../utils';
@@ -93,12 +94,13 @@ const renderContent = async (defaultConfig, routes, assets, url, accessToken) =>
             },
         }
     );
+    _set(state, 'navigation.configs', []);
 
     // Get template path
     const templatePath = path.join(defaultConfig.sourcePath, 'index.html');
     let template = fs.existsSync(templatePath)
-        ? fs.readFileSync(templatePath)
-        : fs.readFileSync(__dirname + '/template.html');
+        ? fs.readFileSync(templatePath, 'utf8')
+        : fs.readFileSync(__dirname + '/template.html', 'utf8');
 
     // Add css
     const cssFiles = assets.filter(asset => /\.css/.test(asset.name)).map(asset => `<link rel="stylesheet" href="/${asset.name}">`).join('\n');
