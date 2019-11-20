@@ -72,7 +72,7 @@ setTimeout(() => Promise.all(api._entries)
                         }));
                     }
 
-                    if (api.isTestSSR()) {
+                    if (api.isTestSSR() && (!stats.compilation.errors || stats.compilation.errors.length === 0)) {
                         console.log('Run SSR Test...');
                         require('./ssr/index').default('/', null, defaultConfig, getStats)
                             .catch(e => {
