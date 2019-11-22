@@ -53,7 +53,7 @@ class AuthLogin extends AuthLoginMeta
         return static::find()
             ->joinWith('user user')
             ->where(['accessToken' => $token])
-            ->andWhere('"user"."isBanned" IS NOT TRUE')
+            ->andWhere(['not', ['user.isBanned' => true]])
             ->andWhere(['>=', 'expireTime', date('Y-m-d H:i:s')])
             ->one() ?: null;
     }
