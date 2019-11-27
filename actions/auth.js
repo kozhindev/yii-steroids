@@ -13,11 +13,11 @@ export const AUTH_ADD_SOCIAL = 'AUTH_ADD_SOCIAL';
 
 let lastInitAction = null;
 
-export const init = initAction => (dispatch, getState) => {
+export const init = (initAction, skipInitialized = false) => (dispatch, getState) => {
     lastInitAction = initAction;
 
     const state = getState();
-    if (state.auth && state.auth.isInitialized) {
+    if (skipInitialized && state.auth && state.auth.isInitialized) {
         return Promise.resolve([]);
     }
 
