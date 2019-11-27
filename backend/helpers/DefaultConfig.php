@@ -82,7 +82,7 @@ class DefaultConfig
                         'class' => '\steroids\commands\SteroidsCommand',
                     ],
                 ],
-                'on beforeAction' => [static::class, 'onConsoleBeforeAction'],
+                'on beforeRequest' => [static::class, 'onConsoleBeforeRequest'],
             ],
             $yiiCustom
         );
@@ -254,7 +254,7 @@ class DefaultConfig
         }
     }
 
-    public static function onConsoleBeforeAction()
+    public static function onConsoleBeforeRequest()
     {
         Yii::setAlias('@tests', STEROIDS_ROOT_DIR . '/tests');
         Yii::setAlias('@webroot', STEROIDS_ROOT_DIR . '/public');
