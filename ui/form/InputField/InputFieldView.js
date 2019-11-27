@@ -14,7 +14,7 @@ export default class InputFieldView extends React.PureComponent {
         hint: PropTypes.string,
         required: PropTypes.bool,
         size: PropTypes.oneOf(['sm', 'md', 'lg']),
-        type: PropTypes.oneOf(['text', 'email', 'hidden', 'phone', 'password']),
+        type: PropTypes.string,
         placeholder: PropTypes.string,
         isInvalid: PropTypes.bool,
         disabled: PropTypes.bool,
