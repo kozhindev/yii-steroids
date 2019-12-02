@@ -1,6 +1,7 @@
 import _merge from 'lodash-es/merge';
 
 import ClientStorageComponent from './ClientStorageComponent';
+import HeadComponent from './HeadComponent';
 import HtmlComponent from './HtmlComponent';
 import HttpComponent from './HttpComponent';
 import LocaleComponent from './LocaleComponent';
@@ -11,6 +12,7 @@ import WidgetComponent from './WidgetComponent';
 
 // Create instances
 const clientStorage = new ClientStorageComponent();
+const head = new HeadComponent();
 const html = new HtmlComponent();
 const http = new HttpComponent();
 const locale = new LocaleComponent();
@@ -22,6 +24,7 @@ const widget = new WidgetComponent();
 // Apply configuration
 const customConfig = store.getState().config || {};
 _merge(clientStorage, customConfig.clientStorage);
+_merge(head, customConfig.head);
 _merge(html, customConfig.html);
 _merge(http, customConfig.http);
 _merge(locale, customConfig.locale);
@@ -32,6 +35,7 @@ _merge(widget, customConfig.widget);
 
 export {
     clientStorage,
+    head,
     html,
     http,
     locale,

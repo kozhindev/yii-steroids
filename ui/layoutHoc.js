@@ -7,13 +7,9 @@ import {getCurrentItem} from 'yii-steroids/reducers/navigation';
 
 import {getData, getUser, isInitialized} from '../reducers/auth';
 import {init} from '../actions/auth';
+import {getBreadcrumbs} from 'lib/yii-steroids/reducers/navigation';
 
-const stateMap = state => ({
-    page: getCurrentItem(state),
-    user: getUser(state),
-    data: getData(state),
-    isInitialized: isInitialized(state),
-});
+import {head} from 'components';
 
 export const STATUS_LOADING = 'loading';
 export const STATUS_NOT_FOUND = 'not_found';
@@ -21,6 +17,21 @@ export const STATUS_RENDER_ERROR = 'render_error';
 export const STATUS_HTTP_ERROR = 'render_error';
 export const STATUS_ACCESS_DENIED = 'access_denied';
 export const STATUS_OK = 'ok';
+
+const stateMap = state => {
+    const breadcrumbs = getBreadcrumbs(state);
+    const page = breadcrumbs.pop();
+    const parentItems = breadcrumbs.filter(item => item.isDocumentTitleVisible !== false);
+
+    return {
+        page,
+        user: getUser(state),
+        data: getData(state),
+        isInitialized: isInitialized(state),
+        routeTitle: page && page.isDocumentTitleVisible !== false && page.title || null,
+        routeParentTitles: parentItems.filter(Boolean).join(' | '),
+    };
+};
 
 export default (initAction) => WrappedComponent => @connect(stateMap)
     class LayoutHoc extends React.PureComponent {
@@ -41,6 +52,8 @@ export default (initAction) => WrappedComponent => @connect(stateMap)
             role: PropTypes.string,
         }),
         data: PropTypes.object,
+        routeTitle: PropTypes.string,
+        routeParentTitles: PropTypes.string,
     };
 
     static getDerivedStateFromError(e) {
@@ -69,6 +82,15 @@ export default (initAction) => WrappedComponent => @connect(stateMap)
 
                     throw e;
                 });
+        }
+    }
+
+    componentDidUpdate(prevProps) {
+        if (prevProps.routeTitle !== this.props.routeTitle) {
+            head.setRouteTitle(this.props.routeTitle);
+        }
+        if (prevProps.routeParentTitles !== this.props.routeParentTitles) {
+            head.setRouteParentTitles(this.props.routeParentTitles.split(' | '));
         }
     }
 
