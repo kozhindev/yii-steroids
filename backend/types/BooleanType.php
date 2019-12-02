@@ -3,6 +3,7 @@
 namespace steroids\types;
 
 use steroids\base\Type;
+use steroids\validators\ExtBooleanValidator;
 use yii\db\Schema;
 
 class BooleanType extends Type
@@ -86,7 +87,7 @@ class BooleanType extends Type
     public function giiRules($attributeEntity, &$useClasses = [])
     {
         return [
-            [$attributeEntity->name, 'boolean'],
+            [$attributeEntity->name, ExtBooleanValidator::class],
         ];
     }
 }

@@ -42,6 +42,12 @@ class CheckboxField extends React.PureComponent {
         errors: [], //for storybook
     };
 
+    componentDidMount() {
+        if (this.props.input.value === undefined) {
+            this.props.dispatch(this.props.input.onChange(false));
+        }
+    }
+
     render() {
         const CheckboxFieldView = this.props.view || ui.getView('form.CheckboxFieldView');
         return (
