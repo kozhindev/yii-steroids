@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import {change} from 'redux-form';
 import _remove from 'lodash-es/remove';
 import _some from 'lodash-es/some';
+import _has from 'lodash-es/has';
 import _isString from 'lodash-es/isString';
 import _isArray from 'lodash-es/isArray';
 import _isFunction from 'lodash-es/isFunction';
@@ -81,6 +82,7 @@ class DataProviderHoc extends React.PureComponent {
     static normalizeItems(items) {
         // Array
         if (_isArray(items)) {
+            // List of strings/numbers
             if (_some(items, item => _isString(item) || _isInteger(item))) {
                 return items.map(item => {
                     if (_isString(item) || _isInteger(item)) {
@@ -91,6 +93,19 @@ class DataProviderHoc extends React.PureComponent {
                     }
                     return item;
                 });
+            }
+
+            // Labels as ids
+            if (_some(items, item => !_has(item, 'id'))) {
+                return _uniqBy(
+                    items.map(item => {
+                        return {
+                            id: item.label,
+                            ...item,
+                        };
+                    }),
+                    'label'
+                );
             }
             return items;
         }
@@ -163,7 +178,7 @@ class DataProviderHoc extends React.PureComponent {
             });
 
             // Select first value on fetch data
-            if (this.props.items.length === 0 && nextProps.items.length > 0 && this.props.selectFirst) {
+            if ((this.props.items || []).length === 0 && (nextProps.items || []).length > 0 && this.props.selectFirst) {
                 this._onItemClick(sourceItems[0]);
             }
         }

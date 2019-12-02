@@ -38,6 +38,12 @@ export default class StoreComponent {
             ..._get(initialState, 'config.store.history', {}),
             ...config.history
         });
+
+        // Add '?' for fix connected-react-router
+        if (process.env.IS_SSR && !this.history.location.search) {
+            this.history.location.search = '?';
+        }
+
         this._routerReducer = connectRouter(this.history);
         this.store = createStore(
             reducers({

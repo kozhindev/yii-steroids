@@ -67,7 +67,16 @@ module.exports = (config, entry) => {
                                     !utils.isProduction() && 'react-hot-loader/babel',
                                 ].filter(Boolean),
                                 presets: [
-                                    '@babel/preset-env',
+                                    [
+                                        "@babel/preset-env",
+                                        {
+                                            "targets": {
+                                                "browsers": "last 2 versions, Android >= 4, safari >= 7, ios_saf >= 8, chrome >= 52"
+                                            },
+                                            "corejs": "^2.6.10",
+                                            "useBuiltIns": 'entry'
+                                        }
+                                    ],
                                     '@babel/preset-react',
                                     utils.isProduction() && ['minify', {
                                         builtIns: false,
@@ -101,7 +110,16 @@ module.exports = (config, entry) => {
                                     !utils.isProduction() && 'react-hot-loader/babel',
                                 ].filter(Boolean),
                                 presets: [
-                                    '@babel/preset-env',
+                                    [
+                                        "@babel/preset-env",
+                                        {
+                                            "targets": {
+                                                "browsers": "last 2 versions, Android >= 4, safari >= 7, ios_saf >= 8, chrome >= 52"
+                                            },
+                                            "corejs": "^2.6.10",
+                                            "useBuiltIns": 'entry'
+                                        }
+                                    ],
                                     '@babel/preset-react',
                                     utils.isProduction() && ['minify', {
                                         builtIns: false,

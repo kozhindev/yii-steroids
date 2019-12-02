@@ -72,6 +72,10 @@ setTimeout(() => Promise.all(api._entries)
                         }));
                     }
 
+                    if (stats.compilation.errors && stats.compilation.errors.length > 0) {
+                        process.exit(1);
+                    }
+
                     if (api.isTestSSR()) {
                         console.log('Run SSR Test...');
                         require('./ssr/index').default('/', null, defaultConfig, getStats)
@@ -105,7 +109,7 @@ setTimeout(() => Promise.all(api._entries)
             devServer = new WebpackDevServer(compiler, devServerConfig);
             expressApp = devServer.app;
             httpListen = devServer.listen.bind(devServer);
-            getStats = () => ({
+            getStats = () => _stats && ({
                 ...devServer._stats.toJson({all: false, assets: true}),
                 assetsUrls: Object.keys(devServer._stats.compilation.assets),
             });
