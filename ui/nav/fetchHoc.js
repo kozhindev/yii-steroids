@@ -57,7 +57,7 @@ class FetchHoc extends React.PureComponent {
         const prevConfigs = [].concat(configsFunc({
             ...prevProps,
             ...prevState.overwritedProps,
-            params: this.props.route.params,
+            params: prevProps.route.params,
         }));
         const nextConfigs = [].concat(configsFunc({
             ...this.props,
