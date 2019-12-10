@@ -3,11 +3,11 @@ import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import _get from 'lodash-es/get';
 import _isFunction from 'lodash-es/isFunction';
-import {getCurrentItem} from 'yii-steroids/reducers/navigation';
+import {getCurrentItemParam} from 'yii-steroids/reducers/navigation';
 
 import {getData, getUser, isInitialized} from '../reducers/auth';
 import {init} from '../actions/auth';
-import {getBreadcrumbs} from 'lib/yii-steroids/reducers/navigation';
+import {getBreadcrumbs} from '../reducers/navigation';
 
 import {head} from 'components';
 
@@ -19,17 +19,18 @@ export const STATUS_ACCESS_DENIED = 'access_denied';
 export const STATUS_OK = 'ok';
 
 const stateMap = state => {
-    const breadcrumbs = getBreadcrumbs(state);
+    const pageId = getCurrentItemParam(state, 'id');
+    const breadcrumbs = getBreadcrumbs(state, pageId);
     const page = breadcrumbs.pop();
-    const parentItems = breadcrumbs.filter(item => item.isDocumentTitleVisible !== false);
+    const breadcrumbItems = breadcrumbs.filter(item => item.isDocumentTitleVisible !== false);
 
     return {
         page,
         user: getUser(state),
         data: getData(state),
         isInitialized: isInitialized(state),
-        routeTitle: page && page.isDocumentTitleVisible !== false && page.title || null,
-        routeParentTitles: parentItems.filter(Boolean).join(' | '),
+        routeTitle: page && page.isDocumentTitleVisible !== false && (page.title || page.label) || null,
+        routeBreadcrumbTitles: breadcrumbItems.reverse().map(item => item.title || item.label).filter(Boolean).join(' | '),
     };
 };
 
@@ -53,7 +54,7 @@ export default (initAction) => WrappedComponent => @connect(stateMap)
         }),
         data: PropTypes.object,
         routeTitle: PropTypes.string,
-        routeParentTitles: PropTypes.string,
+        routeBreadcrumbTitles: PropTypes.string,
     };
 
     static getDerivedStateFromError(e) {
@@ -83,14 +84,21 @@ export default (initAction) => WrappedComponent => @connect(stateMap)
                     throw e;
                 });
         }
+
+        if (this.props.routeTitle) {
+            head.setRouteTitle(this.props.routeTitle);
+        }
+        if (this.props.routeBreadcrumbTitles) {
+            head.setBreadcrumbTitles(this.props.routeBreadcrumbTitles.split(' | '));
+        }
     }
 
     componentDidUpdate(prevProps) {
         if (prevProps.routeTitle !== this.props.routeTitle) {
             head.setRouteTitle(this.props.routeTitle);
         }
-        if (prevProps.routeParentTitles !== this.props.routeParentTitles) {
-            head.setRouteParentTitles(this.props.routeParentTitles.split(' | '));
+        if (prevProps.routeBreadcrumbTitles !== this.props.routeBreadcrumbTitles) {
+            head.setBreadcrumbTitles(this.props.routeBreadcrumbTitles.split(' | '));
         }
     }
 

@@ -1,18 +1,19 @@
 import React from 'react';
-import {connect} from 'react-redux';
 import _set from 'lodash-es/set';
 import _merge from 'lodash-es/merge';
 import _cloneDeep from 'lodash-es/cloneDeep';
 import _isArray from 'lodash-es/isArray';
 import _isEqual from 'lodash-es/isEqual';
-import {getBreadcrumbs} from '../reducers/navigation';
 
 export default class HeadComponent {
 
     constructor() {
-        this.siteName = null;
         this.titleSeparator = ' | ';
         this.initialParams = null;
+
+        this._hocTitle = null;
+        this._routeTitle = null;
+        this._breadcrumbTitles = null;
 
         this._ssrData = {};
         this._defaultMeta = {
@@ -33,18 +34,7 @@ export default class HeadComponent {
      */
     hoc(configFunc) {
         const seo = this;
-        const stateMap = state => {
-            const breadcrumbs = getBreadcrumbs(state);
-            const pageItem = breadcrumbs.pop();
-            const parentItems = breadcrumbs.filter(item => item.isDocumentTitleVisible !== false);
-
-            return {
-                pageTitle: pageItem && pageItem.isDocumentTitleVisible !== false && pageItem.title || null,
-                parentTitles: parentItems.filter(Boolean).join(this.titleSeparator),
-            };
-        };
-        return WrappedComponent => @connect(stateMap)
-        class SeoHOC extends React.Component {
+        return WrappedComponent => class SeoHOC extends React.Component {
 
             static WrappedComponent = WrappedComponent;
 
@@ -62,13 +52,17 @@ export default class HeadComponent {
                 this._onUpdate();
             }
 
+            componentWillUnmount() {
+                seo.setTitle(null);
+            }
+
             render() {
                 return (
                     <WrappedComponent {...this.props}/>
                 );
             }
 
-            _onUpdate(prevProps) {
+            _onUpdate() {
                 const prevParams = this._params || {};
                 const prevMeta = _merge({}, this._defaultMeta, prevParams.meta);
                 const nextParams = configFunc(this.props) || {};
@@ -78,20 +72,10 @@ export default class HeadComponent {
                 if (prevParams.title !== nextParams.title
                     || prevMeta['og:title'] !== nextMeta['og:title']
                     || prevMeta['twitter:title'] !== nextMeta['twitter:title']
-                    || prevProps.pageTitle !== this.props.pageTitle
-                    || prevProps.parentTitles !== this.props.parentTitles
                 ) {
-                    const title = [
-                        nextParams.title || this.props.pageTitle,
-                        this.props.parentTitles,
-                        this.siteName,
-                    ]
-                        .filter(Boolean)
-                        .join(seo.titleSeparator);
-
-                    seo.setTitle(title);
-                    seo.setMeta('og:title', nextMeta['og:title'] || title);
-                    seo.setMeta('twitter:title', nextMeta['twitter:title'] || nextMeta['og:title'] || title);
+                    seo.setTitle(nextParams.title);
+                    seo.setMeta('og:title', nextMeta['og:title'] || nextParams.title);
+                    seo.setMeta('twitter:title', nextMeta['twitter:title'] || nextMeta['og:title'] || nextParams.title);
                 }
 
                 // Update description
@@ -121,18 +105,31 @@ export default class HeadComponent {
 
     setRouteTitle(value) {
         this._routeTitle = value;
+        this._updateTitle();
     }
 
-
     setBreadcrumbTitles(value) {
-        this._routeTitle = value;
+        this._breadcrumbTitles = [].concat(value || []).join(this.titleSeparator);
+        this._updateTitle();
     }
 
     setTitle(value) {
+        this._hocTitle = value;
+        this._updateTitle();
+    }
+
+    _updateTitle() {
+        const title = [
+            this._hocTitle || this._routeTitle,
+            this._breadcrumbTitles,
+        ]
+            .filter(Boolean)
+            .join(this.titleSeparator);
+
         if (process.env.IS_SSR) {
-            _set(this._ssrData, 'title', value);
+            _set(this._ssrData, 'title', title);
         } else {
-            document.title = value;
+            document.title = title;
         }
     }
 

@@ -160,7 +160,9 @@ export const getBreadcrumbs = (state, pageId = null, params = {}) => {
             const route = findRecursivePage(root.items, pageId, items);
             items.push(root);
             items.reverse();
-            items.push(route);
+            if (route) {
+                items.push(route);
+            }
         } else {
             items.push(root);
         }
