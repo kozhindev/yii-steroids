@@ -54,7 +54,7 @@ export default class FieldSet extends React.PureComponent {
     getChildContext() {
         return {
             model: this.props.model || this.context.model,
-            prefix: (this.context.prefix || '') + (this.props.prefix || ''),
+            prefix: [this.context.prefix, this.props.prefix].filter(Boolean).join('.'),
             layout: this.props.layout || this.context.layout,
             layoutProps: {
                 ...this.context.layoutProps,

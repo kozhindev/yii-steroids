@@ -56,6 +56,8 @@ export const init = (initAction, skipInitialized = false) => (dispatch, getState
         });
 };
 
+export const reInit = () => init(lastInitAction);
+
 export const login = (token, redirectPageId = 'root') => dispatch => {
     http.setAccessToken(token);
     return dispatch(init(lastInitAction))

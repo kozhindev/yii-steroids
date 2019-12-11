@@ -90,7 +90,7 @@ export default class ClientStorageComponent {
 
     _getDomain() {
         const host = typeof location !== 'undefined' && location.hostname || '';
-        return host.split('.').slice(-2).join('.') || host;
+        return !/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/.test(host) && host.split('.').slice(-2).join('.') || host;
     }
 
 }
