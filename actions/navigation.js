@@ -50,6 +50,22 @@ export const goToPage = (pageId, params) => (dispatch, getState) => {
     return dispatch(push(getNavUrl(getState(), pageId, params)));
 };
 
+export const goToParent = (level = 1) => (dispatch, getState) => {
+    const getCurrentRoute = require('../reducers/navigation').getCurrentRoute;
+    const getBreadcrumbs = require('../reducers/navigation').getBreadcrumbs;
+
+    const state = getState();
+    const currentRoute = getCurrentRoute(state);
+    const breadcrumbs = currentRoute && getBreadcrumbs(state, currentRoute.id) || [];
+    const parentRoute = breadcrumbs.length > level + 1 ? breadcrumbs[breadcrumbs.length - (level + 1)] : null;
+    const parentRouteId = parentRoute ? parentRoute.id : null;
+    const parentRouteParams = parentRoute ? currentRoute.params : null;
+
+    if (parentRouteId) {
+        return dispatch(goToPage(parentRouteId, parentRouteParams));
+    }
+};
+
 export const getConfigId = config => config.id || _trim(config.url, '/');
 
 export const navigationAddConfigs = configs => dispatch => {
