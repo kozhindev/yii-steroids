@@ -9,10 +9,16 @@ import FileUp from 'fileup-core';
 import File from 'fileup-core/lib/models/File';
 import QueueCollection from 'fileup-core/lib/models/QueueCollection';
 import buildURL from 'axios/lib/helpers/buildURL';
-
+import {formValueSelector} from 'redux-form';
+import {connect} from 'react-redux';
 import {store} from 'components';
+
 import {fetch} from '../../actions/fields';
 
+@connect((state, props) => ({
+    initialFiles: props.initialFiles
+        || formValueSelector(props.formId)(state, [props.prefix, props.attribute.replace(/Ids?$/, '') + 'Initial'].filter(Boolean).join('.'))
+}))
 export default () => WrappedComponent => class FileHoc extends React.PureComponent {
 
     static WrappedComponent = WrappedComponent;
