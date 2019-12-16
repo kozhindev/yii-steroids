@@ -218,14 +218,14 @@ class FileModule extends Module
         $files = [];
         foreach ($uploader->files as $item) {
             $file = new File();
-            $file->attributes = ArrayHelper::merge($fileConfig, [
+            $file->attributes = ArrayHelper::merge([
                 'uid' => $item['uid'],
                 'title' => $item['title'],
                 'folder' => str_replace([$this->filesRootPath, $item['name']], '', $item['path']),
                 'fileName' => $item['name'],
                 'fileMimeType' => $item['type'],
                 'fileSize' => $item['bytesTotal'],
-            ]);
+            ], $fileConfig);
 
             if (is_readable($file->getPath())) {
                 $file->md5 = md5_file($file->getPath());
