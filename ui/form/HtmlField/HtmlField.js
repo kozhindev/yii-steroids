@@ -31,6 +31,7 @@ class HtmlField extends React.PureComponent {
         onChange: PropTypes.func,
         className: PropTypes.string,
         uploadUrl: PropTypes.string,
+        uploadImagesProcessor: PropTypes.string,
         view: PropTypes.elementType,
     };
 
@@ -85,12 +86,13 @@ class HtmlField extends React.PureComponent {
                                             bytesTotal: nativeFile.fileSize || nativeFile.size || 0
                                         });
                                         const uploader = new XhrUploader({
-                                            url: this.props.uploadUrl,
+                                            url: this.props.uploadUrl + (this.props.uploadImagesProcessor ? '?imagesProcessor=' + this.props.uploadImagesProcessor : ''),
                                             file,
                                         });
                                         file.setUploader(uploader);
                                         uploader.on(XhrUploader.EVENT_END, () => {
-                                            resolve(_get(file.getResultHttpMessage(), 'images.default.url'));
+                                            const processor = this.props.uploadImagesProcessor || 'defalut';
+                                            resolve(_get(file.getResultHttpMessage(), ['images', processor, 'url']));
                                         });
                                         uploader.start();
                                     });
