@@ -137,7 +137,9 @@ class File extends Model
             'url',
             'downloadUrl',
             'images',
-            'md5',
+            'md5' => function(File $model) { // fix call php md5() function on toFrontend()
+                return $model->md5;
+            },
             'userId'
         ];
     }
