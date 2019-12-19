@@ -10,4 +10,12 @@ class Photo extends BaseObject {
     public $width;
     public $height;
 
+    public function fields()
+    {
+        return [
+            'url',
+            'width',
+            'height',
+        ];
+    }
 }
