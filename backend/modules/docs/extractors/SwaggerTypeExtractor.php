@@ -312,7 +312,9 @@ class SwaggerTypeExtractor extends BaseObject
             }
 
             $isRelation = false;
-            if ($model instanceof BaseActiveRecord) {
+            $attributeType = $this->findAttributeType($className, $key);
+
+            if ($attributeType !== 'string' && $model instanceof BaseActiveRecord) {
                 try {
                     $isRelation = !!$model->getRelation($attributes, false);
                 } catch (\Exception $e) {
