@@ -10,7 +10,7 @@ import {ui} from 'components';
 export default class Nav extends React.PureComponent {
 
     static propTypes = {
-        layout: PropTypes.oneOf(['button', 'icon', 'link', 'tabs', 'navbar']),
+        layout: PropTypes.oneOf(['button', 'icon', 'link', 'tabs', 'navbar', 'list']),
         items: PropTypes.arrayOf(PropTypes.shape({
             id: PropTypes.string,
             label: PropTypes.oneOfType([
@@ -67,6 +67,7 @@ export default class Nav extends React.PureComponent {
             link: 'nav.NavLinkView',
             tabs: 'nav.NavTabsView',
             navbar: 'nav.NavBarView',
+            list: 'nav.NavListView',
         };
         const NavView = this.props.view || ui.getView(defaultViewMap[this.props.layout]);
         return (
