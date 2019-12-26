@@ -74,10 +74,16 @@ class Form extends React.PureComponent {
         onChange: PropTypes.func,
         onComplete: PropTypes.func,
         autoSave: PropTypes.bool,
-        initialValues: PropTypes.object,
+        initialValues: PropTypes.oneOfType([
+            PropTypes.object,
+            PropTypes.array,
+        ]),
         className: PropTypes.string,
         view: PropTypes.elementType,
-        formValues: PropTypes.object,
+        formValues: PropTypes.oneOfType([
+            PropTypes.object,
+            PropTypes.array,
+        ]),
         isInvalid: PropTypes.bool,
         formRegisteredFields: PropTypes.object,
         fields: PropTypes.arrayOf(PropTypes.oneOfType([

@@ -1,6 +1,6 @@
 {
   "name": "yii-steroids",
-  "version": "1.15.45",
+  "version": "1.15.48",
   "description": "JavaScript part for php library yii-steroids",
   "main": "index.js",
   "author": "Vladimir Kozhin <hello@kozhindev.com>",

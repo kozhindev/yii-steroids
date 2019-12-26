@@ -109,7 +109,7 @@ setTimeout(() => Promise.all(api._entries)
             devServer = new WebpackDevServer(compiler, devServerConfig);
             expressApp = devServer.app;
             httpListen = devServer.listen.bind(devServer);
-            getStats = () => _stats && ({
+            getStats = () => ({
                 ...devServer._stats.toJson({all: false, assets: true}),
                 assetsUrls: Object.keys(devServer._stats.compilation.assets),
             });
