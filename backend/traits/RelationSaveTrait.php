@@ -29,6 +29,7 @@ trait RelationSaveTrait
         }
 
         $this->listenRelation($relationNames, true);
+        unset($path);
 
         // Fetch ids from database
         foreach ($relationNames as $path) {
