@@ -59,7 +59,9 @@ const checkActiveRecursive = (pathname, item) => {
 };
 
 const buildNavItem = (state, item, params) => {
-    const pathname = _get(state, 'router.location.pathname');
+    const pathname = location.protocol === 'file:'
+        ? location.hash.replace(/^#/, '')
+        : _get(state, 'router.location.pathname');
     let url = item.path;
     try {
         url = pathToRegexp.compile(item.path)({
@@ -187,6 +189,13 @@ export const getRoute = (state, pageId) => {
     return root.id === pageId ? root : findRecursivePage(root.items, pageId);
 };
 
+export const getParentRoute = (state, level = 1) => {
+    const currentRoute = getCurrentRoute(state);
+    const breadcrumbs = currentRoute && getBreadcrumbs(state, currentRoute.id) || [];
+
+    return breadcrumbs.length > level + 1 ? breadcrumbs[breadcrumbs.length - (level + 1)] : null;
+};
+
 export const getCurrentRoute = (state) => {
     if (!state || _isEmpty(state)) {
         return null;
@@ -197,7 +206,9 @@ export const getCurrentRoute = (state) => {
         return null;
     }
 
-    const pathname = _get(state, 'router.location.pathname');
+    const pathname = location.protocol === 'file:'
+        ? location.hash.replace(/^#/, '')
+        : _get(state, 'router.location.pathname');
     if (pathname === null) {
         return null;
     }
