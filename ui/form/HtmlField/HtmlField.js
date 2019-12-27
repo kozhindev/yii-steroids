@@ -91,7 +91,7 @@ class HtmlField extends React.PureComponent {
                                         });
                                         file.setUploader(uploader);
                                         uploader.on(XhrUploader.EVENT_END, () => {
-                                            const processor = this.props.uploadImagesProcessor || 'defalut';
+                                            const processor = this.props.uploadImagesProcessor || 'default';
                                             resolve(_get(file.getResultHttpMessage(), ['images', processor, 'url']));
                                         });
                                         uploader.start();
