@@ -19,17 +19,16 @@ trait RelationSaveTrait
     public function listenRelationIds($relationNames)
     {
         $relationNames = (array)$relationNames;
-        foreach ($relationNames as &$path) {
+        foreach ($relationNames as &$name) {
             // Normalize (remove Ids suffix)
-            if (is_string($path)) {
-                $path = implode('.', array_map(function ($name) {
+            if (is_string($name)) {
+                $name = implode('.', array_map(function ($name) {
                     return $this->getRelationNameByIdsAttribute($name);
-                }, explode('.', $path)));
+                }, explode('.', $name)));
             }
         }
 
         $this->listenRelation($relationNames, true);
-        unset($path);
 
         // Fetch ids from database
         foreach ($relationNames as $path) {
