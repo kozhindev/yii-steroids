@@ -1,3 +1,4 @@
+import _merge from 'lodash-es/merge';
 import {AUTH_INIT_USER, AUTH_SET_DATA, AUTH_ADD_SOCIAL} from '../actions/auth';
 
 const initialState = {
@@ -18,7 +19,7 @@ export default (state = initialState, action) => {
             return {
                 ...state,
                 isInitialized: true,
-                data: action.data,
+                data: _merge(state.data, action.data),
             };
         case AUTH_ADD_SOCIAL:
             return {
