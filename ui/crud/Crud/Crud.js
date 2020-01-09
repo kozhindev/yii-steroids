@@ -193,7 +193,7 @@ export default class Crud extends React.PureComponent {
         const itemId = item[primaryKey];
         const defaultActions = {
             view: {
-                visible: false,
+                visible: !!this.props.detailView,
                 toRoute: this.props.baseRouteId + '_view',
                 toRouteParams: {
                     id: itemId,
