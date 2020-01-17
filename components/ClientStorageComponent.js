@@ -28,6 +28,19 @@ export default class ClientStorageComponent {
                 this.sessionStorageAvailable = false;
             }
         }
+
+        if (this.cookieAvailable) {
+            try {
+                cookie.set('cookieAvailable', true, {
+                    domain: this._getDomain(),
+                });
+                cookie.remove('cookieAvailable', {
+                    domain: this._getDomain()
+                });
+            } catch (e) {
+                this.cookieAvailable = false;
+            }
+        }
     }
 
     /**
@@ -38,14 +51,14 @@ export default class ClientStorageComponent {
     get(name, storageName) {
         storageName = storageName || this.STORAGE_LOCAL;
 
-        if (this.localStorageAvailable && storageName === this.STORAGE_LOCAL) {
+        if (storageName === this.STORAGE_LOCAL && this.localStorageAvailable) {
             return window.localStorage.getItem(name);
-        } else if (this.sessionStorageAvailable && storageName === this.STORAGE_SESSION) {
+        } else if (storageName === this.STORAGE_SESSION && this.sessionStorageAvailable) {
             return window.sessionStorage.getItem(name);
-        } else if (this.cookieAvailable) {
+        } else if (storageName === this.STORAGE_COOKIE && this.cookieAvailable) {
             return cookie.get(name);
         }
-        return null;
+        return window.localStorage.getItem(name);
     }
 
     /**
@@ -57,15 +70,17 @@ export default class ClientStorageComponent {
     set(name, value, storageName, expires = null) {
         storageName = storageName || this.STORAGE_LOCAL;
 
-        if (this.localStorageAvailable && storageName === this.STORAGE_LOCAL) {
+        if (storageName === this.STORAGE_LOCAL && this.localStorageAvailable) {
             window.localStorage.setItem(name, value);
-        } else if (this.sessionStorageAvailable && storageName === this.STORAGE_SESSION) {
+        } else if (storageName === this.STORAGE_SESSION && this.sessionStorageAvailable) {
             window.sessionStorage.setItem(name, value);
-        } else if (this.cookieAvailable) {
+        } else if (storageName === this.STORAGE_COOKIE && this.cookieAvailable) {
             cookie.set(name, value, {
                 expires,
                 domain: this._getDomain(),
             });
+        } else {
+            window.localStorage.setItem(name, value);
         }
     }
 
@@ -77,14 +92,16 @@ export default class ClientStorageComponent {
     remove(name, storageName) {
         storageName = storageName || this.STORAGE_LOCAL;
 
-        if (this.localStorageAvailable && storageName === this.STORAGE_LOCAL) {
+        if (storageName === this.STORAGE_LOCAL && this.localStorageAvailable) {
             window.localStorage.removeItem(name);
-        } else if (this.sessionStorageAvailable && storageName === this.STORAGE_SESSION) {
+        } else if (storageName === this.STORAGE_SESSION && this.sessionStorageAvailable) {
             window.sessionStorage.removeItem(name);
-        } else if (this.cookieAvailable) {
+        } else if (storageName === this.STORAGE_COOKIE && this.cookieAvailable) {
             cookie.remove(name, {
                 domain: this._getDomain()
             });
+        } else {
+            window.localStorage.removeItem(name);
         }
     }
 
