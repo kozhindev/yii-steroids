@@ -41,6 +41,11 @@ export default class ClientStorageComponent {
                 if (!cookieAvailable) {
                     this.cookieAvailable = false;
                 }
+
+                cookie.remove('cookieAvailable', {
+                    domain: this._getDomain()
+                });
+
             } catch (e) {
                 this.cookieAvailable = false;
             }
