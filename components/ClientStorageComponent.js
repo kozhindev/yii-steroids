@@ -30,19 +30,19 @@ export default class ClientStorageComponent {
         }
 
         if (this.cookieAvailable) {
-            if (location.protocol === 'file:') {
-                this.cookieAvailable = false;
-            } else {
-                try {
-                    cookie.set('cookieAvailable', true, {
-                        domain: this._getDomain(),
-                    });
-                    cookie.remove('cookieAvailable', {
-                        domain: this._getDomain()
-                    });
-                } catch (e) {
+            try {
+                cookie.set('cookieAvailable', true, {
+                    domain: this._getDomain(),
+                });
+                const cookieAvailable = cookie.get('cookieAvailable', {
+                    domain: this._getDomain()
+                });
+
+                if (!cookieAvailable) {
                     this.cookieAvailable = false;
                 }
+            } catch (e) {
+                this.cookieAvailable = false;
             }
         }
     }
