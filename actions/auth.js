@@ -58,10 +58,10 @@ export const init = (initAction, skipInitialized = false) => (dispatch, getState
 
 export const reInit = () => init(lastInitAction);
 
-export const login = (token, redirectPageId = 'root') => dispatch => {
+export const login = (token, redirectRouteId = 'root', redirectRouteParams) => dispatch => {
     http.setAccessToken(token);
     return dispatch(init(lastInitAction))
-        .then(() => dispatch(goToPage(redirectPageId)));
+        .then(() => dispatch(goToPage(redirectRouteId, redirectRouteParams)));
 };
 
 export const addSocial = social => ({
