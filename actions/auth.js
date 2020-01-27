@@ -10,6 +10,7 @@ import {goToPage} from './navigation';
 export const AUTH_INIT_USER = 'AUTH_INIT_USER';
 export const AUTH_SET_DATA = 'AUTH_SET_DATA';
 export const AUTH_ADD_SOCIAL = 'AUTH_ADD_SOCIAL';
+export const AUTH_REMOVE_DATA_KEYS = 'AUTH_REMOVE_DATA_KEYS';
 
 let lastInitAction = null;
 
@@ -86,3 +87,8 @@ export const logout = () => dispatch => {
         goToPage('root')
     ]);
 };
+
+export const removeDataKeys = (keys) => ({
+    type: AUTH_REMOVE_DATA_KEYS,
+    keys
+});

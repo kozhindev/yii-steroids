@@ -1,5 +1,11 @@
 import _merge from 'lodash-es/merge';
-import {AUTH_INIT_USER, AUTH_SET_DATA, AUTH_ADD_SOCIAL} from '../actions/auth';
+import _omit from 'lodash-es/omit';
+import {
+    AUTH_INIT_USER,
+    AUTH_SET_DATA,
+    AUTH_ADD_SOCIAL,
+    AUTH_REMOVE_DATA_KEYS,
+} from '../actions/auth';
 
 const initialState = {
     isInitialized: false,
@@ -30,6 +36,14 @@ export default (state = initialState, action) => {
                         ...state.user.socials,
                         action.social,
                     ],
+                }
+            };
+
+        case AUTH_REMOVE_DATA_KEYS:
+            return {
+                ...state,
+                data: {
+                    ..._omit(state.data, action.keys),
                 }
             };
     }
