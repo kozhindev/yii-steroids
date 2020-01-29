@@ -57,7 +57,7 @@ class TextField extends React.PureComponent {
                 {...this.props}
                 inputProps={{
                     name: this.props.input.name,
-                    value: this.props.input.value || '',
+                    value: this.props.input.value === 0 ? 0 : this.props.input.value || '',
                     onChange: e => this.props.input.onChange(e.target.value),
                     onKeyUp: this._onKeyUp,
                     placeholder: this.props.placeholder,

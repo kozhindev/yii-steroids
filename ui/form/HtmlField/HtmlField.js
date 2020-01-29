@@ -102,7 +102,7 @@ class HtmlField extends React.PureComponent {
                     },
                     this.props.editorProps,
                     {
-                        value: this.props.input.value || '',
+                        value: this.props.input.value === 0 ? 0 : this.props.input.value || '',
                         onChange: value => this.props.input.onChange(value),
                     },
                 )}

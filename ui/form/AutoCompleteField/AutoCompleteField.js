@@ -117,7 +117,7 @@ class AutoCompleteField extends React.PureComponent {
                     onChange: this._onChange,
                     onFocus: this._onFocus,
                     onBlur: this._onBlur,
-                    value: this.props.input.value || '',
+                    value: this.props.input.value === 0 ? 0 : this.props.input.value || '',
                 }}
                 items={this.props.items.map(item => ({
                     ...item,
