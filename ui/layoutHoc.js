@@ -100,6 +100,7 @@ export default (initAction) => WrappedComponent => @connect(stateMap)
                 {...this.props}
                 {...this.props.data}
                 status={status}
+                renderError={this.state.renderError}
             />
         );
     }

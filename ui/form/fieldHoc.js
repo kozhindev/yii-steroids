@@ -226,7 +226,7 @@ export default config => WrappedComponent => class FieldHocWrapper extends React
                 formId={this.props.formId || this.context.formId}
                 model={this.props.model || this.context.model}
                 prefix={this.props.prefix || this.context.prefix}
-                layout={this.props.layout || this.context.layout}
+                layout={this.props.layout || this.props.layout === false ? this.props.layout : this.context.layout}
                 layoutProps={{
                     ...this.context.layoutProps,
                     ...this.props.layoutProps,

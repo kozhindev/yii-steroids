@@ -10,6 +10,7 @@ import {goToPage} from './navigation';
 export const AUTH_INIT_USER = 'AUTH_INIT_USER';
 export const AUTH_SET_DATA = 'AUTH_SET_DATA';
 export const AUTH_ADD_SOCIAL = 'AUTH_ADD_SOCIAL';
+export const AUTH_REMOVE_DATA_KEYS = 'AUTH_REMOVE_DATA_KEYS';
 
 let lastInitAction = null;
 
@@ -58,10 +59,10 @@ export const init = (initAction, skipInitialized = false) => (dispatch, getState
 
 export const reInit = () => init(lastInitAction);
 
-export const login = (token, redirectPageId = 'root') => dispatch => {
+export const login = (token, redirectRouteId = 'root', redirectRouteParams) => dispatch => {
     http.setAccessToken(token);
     return dispatch(init(lastInitAction))
-        .then(() => dispatch(goToPage(redirectPageId)));
+        .then(() => dispatch(goToPage(redirectRouteId, redirectRouteParams)));
 };
 
 export const addSocial = social => ({
@@ -86,3 +87,8 @@ export const logout = () => dispatch => {
         goToPage('root')
     ]);
 };
+
+export const removeDataKeys = (keys) => ({
+    type: AUTH_REMOVE_DATA_KEYS,
+    keys
+});
