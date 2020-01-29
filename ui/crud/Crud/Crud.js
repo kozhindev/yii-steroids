@@ -173,7 +173,7 @@ export default class Crud extends React.PureComponent {
                 autoFocus
                 onComplete={() => {
                     window.scrollTo(0, 0);
-                    this.props.dispatch(showNotification('success', __('Запись успешно обновлена.')));
+                    this.props.dispatch(showNotification(__('Запись успешно обновлена.'), 'success'));
                 }}
                 {...this.props.form}
             />
