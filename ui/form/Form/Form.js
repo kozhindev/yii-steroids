@@ -47,7 +47,9 @@ export default
     }
 )
 @formSubmitHoc()
-@reduxForm()
+@reduxForm({
+    enableReinitialize: true,
+})
 class Form extends React.PureComponent {
 
     static propTypes = {
