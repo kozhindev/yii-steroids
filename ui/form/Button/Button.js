@@ -26,6 +26,16 @@ class ButtonInternal extends React.PureComponent {
 
 }
 
+export const defaultProps = {
+    type: 'button',
+    color: 'primary',
+    outline: false,
+    disabled: false,
+    submitting: false,
+    block: false,
+    className: '',
+};
+
 export default
 @connect(
     (state, props) => ({
@@ -67,15 +77,7 @@ class Button extends React.PureComponent {
         toRouteParams: PropTypes.object,
     };
 
-    static defaultProps = {
-        type: 'button',
-        color: 'primary',
-        outline: false,
-        disabled: false,
-        submitting: false,
-        block: false,
-        className: '',
-    };
+    static defaultProps = defaultProps;
 
     static contextTypes = {
         formId: PropTypes.string,

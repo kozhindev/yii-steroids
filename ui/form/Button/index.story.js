@@ -5,7 +5,9 @@ import { withReadme } from 'storybook-readme';
 import {text, boolean, select} from '@storybook/addon-knobs/react';
 
 import Button from './Button';
-import README from './README.md'
+import README from './README.md';
+
+import {defaultProps} from './Button';
 
 const colors = {
     primary: 'Primary',
@@ -25,17 +27,17 @@ const sizes = {
 
 storiesOf('Form', module)
     .addDecorator(withReadme(README))
-    .add(Button.name, context => (
+    .add('Button', context => (
         <div>
             {withInfo()(() => (
                 <Button
-                    disabled={boolean('Disabled', Button.defaultProps.disabled)}
-                    color={select('Color', colors, Button.defaultProps.color)}
-                    outline={boolean('Outline', Button.defaultProps.outline)}
-                    size={select('Size', sizes, Button.defaultProps.size)}
-                    block={boolean('Block', Button.defaultProps.block)}
-                    className={text('Class', Button.defaultProps.className)}
-                    url={text('Link url', Button.defaultProps.url)}
+                    disabled={boolean('Disabled', defaultProps.disabled)}
+                    color={select('Color', colors, defaultProps.color)}
+                    outline={boolean('Outline', defaultProps.outline)}
+                    size={select('Size', sizes, defaultProps.size)}
+                    block={boolean('Block', defaultProps.block)}
+                    className={text('Class', defaultProps.className)}
+                    url={text('Link url', defaultProps.url)}
                 >
                     {text('Label', 'Button')}
                 </Button>
