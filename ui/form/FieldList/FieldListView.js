@@ -11,6 +11,7 @@ export default class FieldListView extends React.PureComponent {
         label: PropTypes.oneOfType([
             PropTypes.string,
             PropTypes.bool,
+            PropTypes.element,
         ]),
         hint: PropTypes.string,
         size: PropTypes.oneOf(['sm', 'md', 'lg']),

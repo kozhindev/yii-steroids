@@ -39,6 +39,7 @@ class FieldList extends React.PureComponent {
         label: PropTypes.oneOfType([
             PropTypes.string,
             PropTypes.bool,
+            PropTypes.element,
         ]),
         hint: PropTypes.string,
         attribute: PropTypes.string,

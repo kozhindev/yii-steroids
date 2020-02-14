@@ -41,6 +41,7 @@ export default class Field extends React.Component {
         label: PropTypes.oneOfType([
             PropTypes.string,
             PropTypes.bool,
+            PropTypes.element,
         ]),
         attribute: PropTypes.string,
         model: PropTypes.oneOfType([

@@ -10,6 +10,7 @@ export default class FieldLayoutView extends React.PureComponent {
         label: PropTypes.oneOfType([
             PropTypes.string,
             PropTypes.bool,
+            PropTypes.element,
         ]),
         hint: PropTypes.oneOfType([
             PropTypes.string,
