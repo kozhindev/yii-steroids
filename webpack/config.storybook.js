@@ -1,7 +1,5 @@
 const path = require('path');
-const fs = require('fs');
 const _ = require('lodash');
-const utils = require('./utils');
 const getConfigDefault = require('./config.default');
 const mergeConfigs = require('@storybook/core/dist/server/utils/merge-webpack-config').default;
 
@@ -93,6 +91,8 @@ module.exports = (config) => {
     return storybookConfig => {
         const finalConfig = mergeConfigs(storybookConfig.config, webpackConfig);
 
+        finalConfig.module.rules = updateRulesToInlineSvg(finalConfig.module.rules);
+
         // No exclude yii-steroids package - it's es6 code
         finalConfig.module.rules[0].exclude = /node_modules(\/|\\+)(?!yii-steroids)/;
 
@@ -101,4 +101,31 @@ module.exports = (config) => {
 
         return finalConfig;
     };
+};
+
+const updateRulesToInlineSvg = rules => {
+    const updatedRules = rules.map( data => {
+        if (/svg\|/.test( String( data.test ) )) {
+            data.test = /\.(ico|jpg|jpeg|png|gif|eot|otf|webp|ttf|woff|woff2|cur|ani)(\?.*)?$/;
+        }
+
+        if (/jpe\?g\|gif\|png\|svg/.test(String(data.test))) {
+            data.test = /jpe?g|gif|png/;
+        }
+        return data;
+    });
+
+    updatedRules.push({
+        test: /\.svg$/,
+        use: [
+            {
+                loader: 'svg-inline-loader',
+                options: {
+                    removeSVGTagAttrs: false,
+                },
+            },
+        ]
+    });
+
+    return updatedRules;
 };
