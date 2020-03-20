@@ -39,10 +39,12 @@ export default class Crud extends React.PureComponent {
         gridView: PropTypes.elementType,
         formView: PropTypes.elementType,
         detailView: PropTypes.elementType,
+        refreshGridAfterDelete: PropTypes.bool,
     };
 
     static defaultProps = {
         primaryKey: 'id',
+        refreshGridAfterDelete: true,
     };
 
     constructor() {
@@ -208,7 +210,9 @@ export default class Crud extends React.PureComponent {
             delete: {
                 onClick: async () => {
                     await http.delete(`${this.props.restUrl}/${itemId}`);
-                    this.props.dispatch(refresh(getCrudId(this.props)))
+                    if (this.props.refreshGridAfterDelete) {
+                        this.props.dispatch(refresh(getCrudId(this.props)))
+                    }
                 }
             },
         };
