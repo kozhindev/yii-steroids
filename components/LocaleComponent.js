@@ -4,6 +4,7 @@ import moment from 'moment';
 import _isObject from 'lodash-es/isObject';
 import 'moment/locale/it';
 import 'moment/locale/ru';
+import 'moment/local/es';
 
 // Fix load locale data
 if (process.env.IS_SSR) {
