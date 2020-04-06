@@ -49,6 +49,7 @@ export default
 @formSubmitHoc()
 @reduxForm({
     enableReinitialize: true,
+    keepDirtyOnReinitialize: true,
 })
 class Form extends React.PureComponent {
 
