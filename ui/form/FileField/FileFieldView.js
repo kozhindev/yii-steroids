@@ -1,5 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import {SortableContainer, SortableElement} from 'react-sortable-hoc';
+import {arraySwap} from 'redux-form';
 
 import {html} from 'components';
 import Button from '../Button';
@@ -23,22 +25,23 @@ export default class FileFieldView extends React.PureComponent {
         disabled: PropTypes.bool,
         imagesOnly: PropTypes.bool,
         className: PropTypes.string,
+        sortable: PropTypes.bool,
+        onSortChange: PropTypes.func,
+    };
+
+    swapFiles = ({oldIndex, newIndex}) => {
+        if (oldIndex !== newIndex) {
+            this.props.dispatch(arraySwap(this.props.formId, this.props.attribute, oldIndex, newIndex));
+        }
     };
 
     render() {
         const ButtonComponent = this.props.buttonComponent || Button;
-        const FileItemView = this.props.itemView;
+
         return (
             <div className={bem.block()}>
-                <div className={bem(bem.element('files'), 'clearfix')}>
-                    {this.props.items.map(item => (
-                        <FileItemView
-                            key={item.uid}
-                            {...item}
-                            {...this.props.itemProps}
-                        />
-                    ))}
-                </div>
+                {this.renderFilesContainer()}
+
                 <div className={bem.element('button')}>
                     <ButtonComponent
                         {...this.props.buttonProps}
@@ -59,4 +62,63 @@ export default class FileFieldView extends React.PureComponent {
         );
     }
 
+    renderFilesContainer() {
+        const FileItemView = this.props.itemView;
+
+        if (!this.props.sortable) {
+            return (
+                <div className={bem(bem.element('files'), 'clearfix')}>
+                    {this.props.items.map(item => (
+                        <FileItemView
+                            key={item.uid}
+                            {...item}
+                            {...this.props.itemProps}
+                        />
+                    ))}
+                </div>
+            );
+        }
+
+        const SortableItem = SortableElement(
+            sortableItem => {
+                const {fileProps} = sortableItem;
+
+                return (
+                    <FileItemView
+                        key={fileProps.uid}
+                        {...fileProps}
+                        {...this.props.itemProps}
+                        showOrderIndex={sortableItem.showOrderIndex}
+                        orderIndex={sortableItem.orderIndex + 1}
+                    />
+                );
+            }
+        );
+
+        const ImagesSortableContainer = SortableContainer(({items}) => {
+            return (
+                <div className={bem(bem.element('files'), 'clearfix')}>
+                    {items.map((item, index) => (
+                        <SortableItem
+                            key={item.uid}
+                            index={index}
+                            fileProps={item}
+                            showOrderIndex={items.length > 1}
+                            // 'index' field is munched by SortableElement HOC, so we duplicating it here
+                            orderIndex={index}
+                        />
+                    ))}
+                </div>
+            );
+        });
+
+        return (
+            <ImagesSortableContainer
+                axis='xy'
+                items={this.props.items}
+                distance={1} // enables 'close' button handler
+                onSortEnd={this.swapFiles}
+            />
+        );
+    }
 }
