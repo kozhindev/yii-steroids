@@ -8,6 +8,20 @@ use yii\db\ActiveQuery;
 
 trait RelationOrderSubtrait
 {
+    /**
+     * Returns order field names for model relations
+     *
+     * @return array Associative array of the pairs for the fields to order
+     * where keys are relation names, and values are junction table order indices
+     *
+     * E.g. if the model Route has 'images' relation by the junction table 'route_images_junction',
+     * then we need to add column, e.g. 'orderIndex', to that table
+     *
+     * Then override this function so that it return
+     * [
+     *      'images' => 'orderIndex',
+     * ]
+     */
     public static function getOrderFields()
     {
         return [];
