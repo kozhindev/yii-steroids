@@ -47,6 +47,8 @@ class FileField extends React.PureComponent {
         itemProps: PropTypes.object,
         onBrowse: PropTypes.func,
         onRemove: PropTypes.func,
+
+        // Allow files to be ordered by drag'n'drop
         sortable: PropTypes.bool,
     };
 
