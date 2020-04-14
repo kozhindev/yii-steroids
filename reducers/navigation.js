@@ -193,7 +193,7 @@ export const getParentRoute = (state, level = 1) => {
     const currentRoute = getCurrentRoute(state);
     const breadcrumbs = currentRoute && getBreadcrumbs(state, currentRoute.id) || [];
 
-    return breadcrumbs.length > level + 1 ? breadcrumbs[breadcrumbs.length - (level + 1)] : null;
+    return breadcrumbs.length >= level + 1 ? breadcrumbs[breadcrumbs.length - (level + 1)] : null;
 };
 
 export const getCurrentRoute = (state) => {
