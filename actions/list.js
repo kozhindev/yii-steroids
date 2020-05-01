@@ -93,8 +93,8 @@ export const fetch = (listId, params = {}) => (dispatch, getState) => {
 
     return dispatch([
         {
-            ...params,
             listId,
+            payload: params,
             type: LIST_BEFORE_FETCH,
         },
         onFetch(list).then(data => {
@@ -103,8 +103,8 @@ export const fetch = (listId, params = {}) => (dispatch, getState) => {
             }
 
             return {
-                ...data,
                 listId,
+                payload: data,
                 type: LIST_AFTER_FETCH,
             };
         }),
