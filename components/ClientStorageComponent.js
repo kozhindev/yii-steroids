@@ -60,6 +60,10 @@ export default class ClientStorageComponent {
     get(name, storageName) {
         storageName = storageName || this.STORAGE_LOCAL;
 
+        if (process.env.IS_SSR) {
+            return null;
+        }
+
         if (storageName === this.STORAGE_LOCAL && this.localStorageAvailable) {
             return window.localStorage.getItem(name);
         } else if (storageName === this.STORAGE_SESSION && this.sessionStorageAvailable) {
@@ -78,6 +82,10 @@ export default class ClientStorageComponent {
      */
     set(name, value, storageName, expires = null) {
         storageName = storageName || this.STORAGE_LOCAL;
+
+        if (process.env.IS_SSR) {
+            return;
+        }
 
         if (storageName === this.STORAGE_LOCAL && this.localStorageAvailable) {
             window.localStorage.setItem(name, value);
@@ -100,6 +108,10 @@ export default class ClientStorageComponent {
      */
     remove(name, storageName) {
         storageName = storageName || this.STORAGE_LOCAL;
+
+        if (process.env.IS_SSR) {
+            return;
+        }
 
         if (storageName === this.STORAGE_LOCAL && this.localStorageAvailable) {
             window.localStorage.removeItem(name);
