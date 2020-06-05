@@ -100,6 +100,7 @@ class Button extends React.PureComponent {
         };
 
         this._onClick = this._onClick.bind(this);
+        this._isVirtualLink = this._isVirtualLink.bind(this);
     }
 
     componentDidMount() {
@@ -110,12 +111,16 @@ class Button extends React.PureComponent {
         this._isMounted = false;
     }
 
+    _isVirtualLink() {
+        return this.props.link && !(this.props.url || this.props.to);
+    }
+
     render() {
         const button = (
             <ButtonInternal
                 {...this.props}
                 isLoading={this.state.isLoading}
-                url={this.props.link && !(this.props.url || this.props.to)
+                url={this._isVirtualLink()
                     ? '#'
                     : this.props.url || this.props.to}
                 onClick={this._onClick}
@@ -148,6 +153,11 @@ class Button extends React.PureComponent {
 
     _onClick(e) {
         e.stopPropagation();
+
+        // It's just a click handler, then don't trigger <a> default behavior
+        if (this._isVirtualLink()) {
+            e.preventDefault();
+        }
 
         if (this.props.confirm && !confirm(this.props.confirm)) {
             e.preventDefault();
