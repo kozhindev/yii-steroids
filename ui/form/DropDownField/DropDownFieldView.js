@@ -1,6 +1,7 @@
 import React from 'react';
 import {findDOMNode} from 'react-dom';
 import PropTypes from 'prop-types';
+import _isFunction from 'lodash-es/isFunction';
 
 import {html} from 'components';
 const bem = html.bem('DropDownFieldView');
@@ -50,6 +51,7 @@ export default class DropDownFieldView extends React.PureComponent {
         onReset: PropTypes.func,
         onItemClick: PropTypes.func,
         onItemMouseOver: PropTypes.func,
+        onItemChange: PropTypes.func,
     };
 
     static defaultProps = {
@@ -103,7 +105,12 @@ export default class DropDownFieldView extends React.PureComponent {
                                 <div
                                     key={item.id}
                                     className={bem.element('drop-down-item', {hover: item.isHovered, select: item.isSelected})}
-                                    onClick={() => this.props.onItemClick(item)}
+                                    onClick={() => {
+                                        this.props.onItemClick(item);
+                                        if (this.props.onItemChange && _isFunction(this.props.onItemChange)) {
+                                            this.props.onItemChange(item);
+                                        }
+                                    }}
                                     onMouseOver={() => this.props.onItemMouseOver(item)}
                                 >
 
