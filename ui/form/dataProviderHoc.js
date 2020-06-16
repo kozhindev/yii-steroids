@@ -299,7 +299,16 @@ class DataProviderHoc extends React.PureComponent {
             return;
         }
 
-        const toWords = str => (str.match(/^[^A-ZА-Я]+/) || []).concat(str.match(/[A-ZА-Я][^A-ZА-Я]*/g) || []);
+        const toWords = str => {
+            let words = [];
+            String(str).split(' ').forEach(strItem => {
+                words = words.concat(strItem.match(/^[^\p{Lu}]+/u));
+                words = words.concat(strItem.match(/[\p{Lu}][^\p{Lu}]*/gu));
+                words.push(' ');
+            });
+            words.pop();
+            return words.filter(Boolean);
+        };
         const queryCharacters = query.split('');
 
         // Match
@@ -330,7 +339,7 @@ class DataProviderHoc extends React.PureComponent {
                     break;
                 }
 
-                const isMatch = !char.match(/[A-ZА-Я]/)
+                const isMatch = !char.match(/[\p{Lu}]/u)
                     ? wordChar.toLowerCase() === char.toLowerCase()
                     : wordChar === char;
 
