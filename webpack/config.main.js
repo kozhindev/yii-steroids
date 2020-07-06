@@ -71,7 +71,7 @@ module.exports = (config, entry) => {
                                         "@babel/preset-env",
                                         {
                                             "targets": {
-                                                "browsers": "last 2 versions, Android >= 4, safari >= 7, ios_saf >= 8, chrome >= 52"
+                                                "browsers": "last 2 versions, Android >= 4, safari >= 6, ios_saf >= 6, chrome >= 52"
                                             },
                                             "corejs": "^2.6.10",
                                             "useBuiltIns": 'entry'
@@ -114,7 +114,7 @@ module.exports = (config, entry) => {
                                         "@babel/preset-env",
                                         {
                                             "targets": {
-                                                "browsers": "last 2 versions, Android >= 4, safari >= 7, ios_saf >= 8, chrome >= 52"
+                                                "browsers": "last 2 versions, Android >= 4, safari >= 6, ios_saf >= 6, chrome >= 52"
                                             },
                                             "corejs": "^2.6.10",
                                             "useBuiltIns": 'entry'

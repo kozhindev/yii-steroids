@@ -26,6 +26,8 @@ export default class FileFieldItemView extends React.PureComponent {
         }),
         onRemove: PropTypes.func,
 
+        showOrderIndex: PropTypes.bool,
+        orderIndex: PropTypes.number,
     };
 
     render() {
@@ -58,6 +60,11 @@ export default class FileFieldItemView extends React.PureComponent {
                     </div>
                 )}
                 <div className='card-body'>
+                    {this.props.showOrderIndex && (
+                        <div className={bem.element('order-index')}>
+                            {this.props.orderIndex}
+                        </div>
+                    )}
                     <p
                         className={bem(bem.element('text'), 'card-text text-center')}
                         title={this.props.title}

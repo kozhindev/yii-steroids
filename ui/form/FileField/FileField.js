@@ -47,6 +47,9 @@ class FileField extends React.PureComponent {
         itemProps: PropTypes.object,
         onBrowse: PropTypes.func,
         onRemove: PropTypes.func,
+
+        // Allow files to be ordered by drag'n'drop
+        sortable: PropTypes.bool,
     };
 
     static defaultProps = {
@@ -63,6 +66,21 @@ class FileField extends React.PureComponent {
     render() {
         const FileFieldView = this.props.view || ui.getView('form.FileFieldView');
         const FileFieldItemView = this.props.itemView || ui.getView('form.FileFieldItemView');
+
+        let fieldItems = this.props.files.map(this.getFieldItem);
+
+        if (this.props.sortable && Array.isArray(this.props.value)) {
+            // If more than one file exist, sort them by 'this.props.value' order
+            const orderedItems = this.props.value
+                .map(fileId => fieldItems.find(item => item.fileId === fileId))
+                .filter(Boolean);
+
+            // Append files that are being uploaded (no fileId yet)
+            const itemsWithNoId = fieldItems.filter(item => !item.fileId);
+
+            fieldItems = orderedItems.concat(itemsWithNoId);
+        }
+
         return (
             <FileFieldView
                 {...this.props}
@@ -78,44 +96,46 @@ class FileField extends React.PureComponent {
                     ...this.props.buttonProps,
                 }}
                 itemView={FileFieldItemView}
-                items={this.props.files.map(file => {
-                    const data = file.getResultHttpMessage() || {};
-                    const item = {
-                        uid: file.getUid(),
-                        fileId: data.id || null,
-                        title: file.getName(),
-                        size: this.props.size,
-                        disabled: this.props.disabled,
-                        showRemove: this.props.showRemove,
-                        onRemove: () => this.props.onRemove(file),
-                        error: null,
-                        image: null,
-                        progress: null,
-                    };
-
-                    // Add error
-                    if (file.getResult() === File.RESULT_ERROR) {
-                        item.error = file.getResultHttpMessage().error;
-                    }
-
-                    // Add thumbnail image
-                    if (data.images) {
-                        // Image object has properties: url, width, height
-                        item.image = data.images[this.props.imagesProcessor] || _first(_values(data.images));
-                    }
-
-                    // Add progress
-                    if (file.getStatus() === File.STATUS_PROCESS) {
-                        item.progress = {
-                            bytesUploaded: file.getBytesUploaded(),
-                            percent: file.progress.getPercent(),
-                        };
-                    }
-
-                    return item;
-                })}
+                items={fieldItems}
             />
         );
+    }
+
+    getFieldItem = file => {
+        const data = file.getResultHttpMessage() || {};
+        const item = {
+            uid: file.getUid(),
+            fileId: data.id || null,
+            title: file.getName(),
+            size: this.props.size,
+            disabled: this.props.disabled,
+            showRemove: this.props.showRemove,
+            onRemove: () => this.props.onRemove(file),
+            error: null,
+            image: null,
+            progress: null,
+        };
+
+        // Add error
+        if (file.getResult() === File.RESULT_ERROR) {
+            item.error = file.getResultHttpMessage().error;
+        }
+
+        // Add thumbnail image
+        if (data.images) {
+            // Image object has properties: url, width, height
+            item.image = data.images[this.props.imagesProcessor] || _first(_values(data.images));
+        }
+
+        // Add progress
+        if (file.getStatus() === File.STATUS_PROCESS) {
+            item.progress = {
+                bytesUploaded: file.getBytesUploaded(),
+                percent: file.progress.getPercent(),
+            };
+        }
+
+        return item;
     }
 
 }

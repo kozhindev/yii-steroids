@@ -1,5 +1,6 @@
 import _get from 'lodash-es/get';
 import _isMatch from 'lodash-es/isMatch';
+import _isEqual from 'lodash-es/isEqual';
 import _every from 'lodash-es/every';
 import _extend from 'lodash-es/extend';
 
@@ -29,26 +30,32 @@ export default (state = initialState, action) => {
                 lists: {
                     ...state.lists,
                     [action.listId]: {
-                        meta: {},
+                        meta: null,
                         layoutName: null,
                         total: action.total || (action.items ? action.items.length : 0),
                         isFetched: !!action.items,
-                        isLoading: false,
+                        isLoading: Boolean(payload.action || payload.action === ''),
                         ...payload,
                     },
                 },
             };
 
         case LIST_BEFORE_FETCH:
+            const newList = {
+                ...state.lists[action.listId],
+                ...action.payload,
+                isLoading: true,
+            };
+
+            if (_isEqual(state.lists[action.listId], newList)) {
+                return state;
+            }
+
             return {
                 ...state,
                 lists: {
                     ...state.lists,
-                    [action.listId]: {
-                        ...state.lists[action.listId],
-                        ...action,
-                        isLoading: true,
-                    }
+                    [action.listId]: newList,
                 }
             };
 
@@ -58,12 +65,12 @@ export default (state = initialState, action) => {
 
             if (list && list.items && list.loadMore && list.page > 1) {
                 items = [].concat(list.items);
-                action.items.forEach((entry, i) => {
+                action.payload.items.forEach((entry, i) => {
                     const index = ((list.page - 1) * list.pageSize) + i;
                     items[index] = entry;
                 });
             } else {
-                items = [].concat(action.items);
+                items = [].concat(action.payload.items);
             }
 
             return {
@@ -72,7 +79,7 @@ export default (state = initialState, action) => {
                     ...state.lists,
                     [action.listId]: {
                         ...list,
-                        ...action,
+                        ...action.payload,
                         items,
                         isFetched: true,
                         isLoading: false,

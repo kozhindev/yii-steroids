@@ -43,7 +43,7 @@ export default class HttpComponent {
         }
 
         // Set access token
-        if (this._accessToken === false) {
+        if (this._accessToken === false && !process.env.IS_SSR) {
             const clientStorage = require('components').clientStorage;
             this._accessToken = clientStorage.get(this.accessTokenKey, clientStorage.STORAGE_COOKIE)
                 || clientStorage.get(this.accessTokenKey)
@@ -75,8 +75,10 @@ export default class HttpComponent {
         this._accessToken = value;
         this.resetConfig();
 
-        const clientStorage = require('components').clientStorage;
-        clientStorage.set(this.accessTokenKey, value, clientStorage.STORAGE_COOKIE, 180);
+        if (!process.env.IS_SSR) {
+            const clientStorage = require('components').clientStorage;
+            clientStorage.set(this.accessTokenKey, value, clientStorage.STORAGE_COOKIE, 180);
+        }
     }
 
     /**
@@ -84,8 +86,12 @@ export default class HttpComponent {
      */
     getAccessToken() {
         if (this._accessToken === false) {
-            const clientStorage = require('components').clientStorage;
-            this._accessToken = clientStorage.get(this.accessTokenKey) || null;
+            if (!process.env.IS_SSR) {
+                const clientStorage = require('components').clientStorage;
+                this._accessToken = clientStorage.get(this.accessTokenKey) || null;
+            } else {
+                this._accessToken = null;
+            }
         }
         return this._accessToken;
     }
