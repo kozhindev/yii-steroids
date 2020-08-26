@@ -70,6 +70,8 @@ class GiiController extends Controller
 
     public function actionApiGetEntities()
     {
+        \Yii::$app->language = \Yii::$app->sourceLanguage;
+
         $moduleIds = array_keys(GiiHelper::findModules());
         sort($moduleIds);
 
