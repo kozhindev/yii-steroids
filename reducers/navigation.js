@@ -3,6 +3,7 @@ import {matchPath} from 'react-router';
 import _get from 'lodash-es/get';
 import _isEmpty from 'lodash-es/isEmpty';
 import _isEqual from 'lodash-es/isEqual';
+import * as queryString from 'qs';
 
 import {
     NAVIGATION_INIT_ROUTES,
@@ -60,15 +61,31 @@ const checkActiveRecursive = (pathname, item) => {
 
 const buildNavItem = (state, item, params) => {
     const pathname = location.protocol === 'file:'
-        ? location.hash.replace(/^#/, '')
+        ? location.hash.replace(/^#/, '').replace(/\?.*$/, '')
         : _get(state, 'router.location.pathname');
     let url = item.path;
+    let pathKeys = [];
     try {
+        pathKeys = pathToRegexp.parse(item.path)
+            .slice(1)
+            .map((p) => p.name);
         url = pathToRegexp.compile(item.path)({
             ...state.navigation.params,
             ...params,
         });
     } catch (e) { // eslint-disable-line no-empty
+    }
+
+    // Append params, which keys is not included in path keys
+    const queryObj = {};
+    Object.keys(params || {})
+        .filter(key => !pathKeys.includes(key))
+        .forEach(key => {
+            queryObj[key] = params[key];
+        });
+    const query = queryString.stringify(queryObj);
+    if (!_isEmpty(query) && url) {
+        url = url + (url.indexOf('?') !== -1 ? '&' : '?') + query;
     }
 
     return {
@@ -207,7 +224,7 @@ export const getCurrentRoute = (state) => {
     }
 
     const pathname = location.protocol === 'file:'
-        ? location.hash.replace(/^#/, '')
+        ? location.hash.replace(/^#/, '').replace(/\?.*$/, '')
         : _get(state, 'router.location.pathname');
     if (pathname === null) {
         return null;
