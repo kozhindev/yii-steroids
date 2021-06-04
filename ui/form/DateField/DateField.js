@@ -68,6 +68,8 @@ class DateField extends React.PureComponent {
                     onDayChange: day => {
                         if (day) {
                             this.props.input.onChange(moment(day).format(this.props.valueFormat));
+                        } else {
+                            this.props.input.onChange(null);
                         }
                     },
                     dayPickerProps: {
