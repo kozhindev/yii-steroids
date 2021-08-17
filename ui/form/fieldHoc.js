@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
-import {Field, FieldArray, formValueSelector, getFormSubmitErrors, change} from 'redux-form';
+import {Field, FieldArray, formValueSelector, getFormSubmitErrors, change, getFormSyncErrors} from 'redux-form';
 import _get from 'lodash-es/get';
 import _upperFirst from 'lodash-es/upperFirst';
 import _isEqual from 'lodash-es/isEqual';
@@ -18,6 +18,7 @@ const defaultConfig = {
 };
 const valueSelectors = {};
 const errorSelectors = {};
+const syncErrorSelectors = {}; // filed level validation(frontend)
 
 @connect(
     (state, props) => {
@@ -41,11 +42,17 @@ const errorSelectors = {};
         if (!errorSelectors[props.formId]) {
             errorSelectors[props.formId] = getFormSubmitErrors(props.formId);
         }
+
+        if (!syncErrorSelectors[props.formId]) {
+            syncErrorSelectors[props.formId] = getFormSyncErrors(props.formId);
+        }
         const errorSelector = errorSelectors[props.formId];
+        const syncErrorSelector = syncErrorSelectors[props.formId];
 
         return {
             ...values,
             formErrors: errorSelector(state),
+            formSyncErrors: syncErrorSelector(state),
             fieldProps: getFieldProps(state, FieldHoc.getFieldId(props)),
         };
     }
@@ -56,6 +63,8 @@ class FieldHoc extends React.PureComponent {
         attribute: PropTypes.string,
         fieldProps: PropTypes.object,
         formErrors: PropTypes.object,
+        formSyncErrors: PropTypes.object,
+        isTouched: PropTypes.bool,
     };
 
     static getAttribute(props, attribute) {
@@ -123,12 +132,31 @@ class FieldHoc extends React.PureComponent {
         };
 
         // Get errors
-        let errors = this.props.errors;
+        let errors = this.props.errors || [];
         Object.keys(inputProps).map(key => {
             const name = inputProps[key].name;
             const error = _get(this.props.formErrors, name);
-            if (error) {
-                errors = (errors || []).concat(error);
+            let syncError = _get(this.props.formSyncErrors, name);
+
+            if (error && syncError) {
+                syncError = props.isTouched ? undefined : syncError; // show sync error after field was touched
+
+                if (props.isTouched) {
+                    errors = errors.concat(
+                        _isEqual(error, syncError)
+                            ? error
+                            : [].concat(errors, syncError)
+                    );
+                } else {
+                    errors = errors.concat(error);
+                }
+            } else {
+                if (error) {
+                    errors = errors.concat(error);
+                }
+                if (syncError && props.isTouched) {
+                    errors = errors.concat(syncError);
+                }
             }
         });
         const isInvalid = errors && errors.length > 0;
@@ -148,6 +176,7 @@ class FieldHoc extends React.PureComponent {
                         name={FieldHoc.getName(props, attribute)}
                         component='input'
                         type='hidden'
+                        validate={props.validate}
                     />
                 ))}
                 {_config.list && (
