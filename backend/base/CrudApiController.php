@@ -236,11 +236,13 @@ abstract class CrudApiController extends Controller
             $modelClass = static::$searchModelClass;
             return new $modelClass([
                 'fields' => $this->fields(),
+                'user' => Yii::$app->user->model,
             ]);
         } else {
             return new SearchModel([
                 'model' => static::$modelClass,
                 'fields' => $this->fields(),
+                'user' => Yii::$app->user->model,
             ]);
         }
     }
