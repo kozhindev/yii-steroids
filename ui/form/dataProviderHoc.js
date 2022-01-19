@@ -339,7 +339,7 @@ class DataProviderHoc extends React.PureComponent {
                     break;
                 }
 
-                const isMatch = !char.match(/[\p{Lu}]/u)
+                const isMatch = char.match(/[\p{Lu}]/u)
                     ? wordChar.toLowerCase() === char.toLowerCase()
                     : wordChar === char;
 
